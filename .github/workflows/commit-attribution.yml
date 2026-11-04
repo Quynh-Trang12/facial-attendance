@@ -24,7 +24,9 @@ jobs:
               "quynhtranglengoc@gmail.com",
               "134451044+quynh-trang12@users.noreply.github.com",
               "adam2006.vn@gmail.com",
+              "188028126+HoanV2802@users.noreply.github.com",
               "phamtruongquean@gmail.com",
+              "178349225+PhamAn0910@users.noreply.github.com",
               "nhdung98@gmail.com",
             ].map(email => email.trim().toLowerCase()));
 
