@@ -1,0 +1,174 @@
+Generated-image fixture integration run; NOT the Kaggle dataset.
+{
+  "timestamp_utc": "2026-11-04T01:02:30.866846+00:00",
+  "task": "FAC-01.2",
+  "status": "PASS",
+  "competition": "11-785-fall-20-homework-2-part-2",
+  "source": "local_files",
+  "kagglehub_version": "0.3.13",
+  "dataset_root": "/tmp/face-loader-fixture-zlhj9f87",
+  "class_count": 2,
+  "identity_mapping_sha256": "5a15eb7b29dd835f4bdc07d61cdfe4a877c4f25b73971989d32aade0edee1d32",
+  "identity_mapping_preview": {
+    "10": 0,
+    "2": 1
+  },
+  "classification": {
+    "train_data": {
+      "images": 6,
+      "identities_present": 2,
+      "batch_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "targets": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    },
+    "val_data": {
+      "images": 2,
+      "identities_present": 2,
+      "batch_shape": [
+        2,
+        3,
+        112,
+        112
+      ],
+      "targets": [
+        0,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    },
+    "test_data": {
+      "images": 2,
+      "identities_present": 2,
+      "batch_shape": [
+        2,
+        3,
+        112,
+        112
+      ],
+      "targets": [
+        0,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    }
+  },
+  "verification": {
+    "trials": 2,
+    "label_counts": {
+      "1": 1,
+      "0": 1
+    },
+    "left_batch_shape": [
+      2,
+      3,
+      112,
+      112
+    ],
+    "right_batch_shape": [
+      2,
+      3,
+      112,
+      112
+    ],
+    "batch_labels": [
+      1,
+      0
+    ],
+    "pairs_file_sha256": "2f831ea3da998e90f5ee8eb7c3dc45ef6635c86eb4d952f0ab6cead9e2169bec",
+    "trial_preview": [
+      {
+        "left": "verification_data/a.png",
+        "right": "verification_data/b.png",
+        "label": 1
+      },
+      {
+        "left": "verification_data/a.png",
+        "right": "verification_data/c.png",
+        "label": 0
+      }
+    ]
+  },
+  "sampled_training_pairs": [
+    {
+      "left": "classification_data/train_data/10/0.PNG",
+      "right": "classification_data/train_data/2/1.PNG",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/10/0.PNG",
+      "right": "classification_data/train_data/2/2.PNG",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/2/0.PNG",
+      "right": "classification_data/train_data/10/0.PNG",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/10/0.PNG",
+      "right": "classification_data/train_data/10/1.PNG",
+      "label": 1
+    },
+    {
+      "left": "classification_data/train_data/10/2.PNG",
+      "right": "classification_data/train_data/10/0.PNG",
+      "label": 1
+    },
+    {
+      "left": "classification_data/train_data/10/0.PNG",
+      "right": "classification_data/train_data/10/2.PNG",
+      "label": 1
+    }
+  ],
+  "sampling_seed": 42,
+  "training_pair_batch": {
+    "left_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "right_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "labels": [
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "checks": {
+    "shared_identity_mapping": true,
+    "classification_batches": true,
+    "verification_paths_and_labels": true,
+    "verification_batch": true,
+    "sampling_identity_rules": true,
+    "sampling_reproducible": true,
+    "sampled_pair_batch": true
+  },
+  "limits": "Decoded first batch per split and verification; not a full image/duplicate/leakage audit or model evaluation.",
+  "source_sha256": {
+    "scripts/check_face_data.py": "df7b27e4c2c12bb98627a6af09bf6b4965131bae0b6e56e037d419a636e4837b",
+    "src/facial_attendance/recognition/data.py": "9c2bd3c4366ac380166e2644c22ed192f0959d4a168909a9bcf4053649327307",
+    "src/facial_attendance/recognition/download.py": "848642151d7bc9dc607731d61f03dc6c094ad3391ee1c05ec8fa2b074a3fb735"
+  }
+}
+
+Exit code: 0

@@ -1,0 +1,8 @@
+# Paths are relative to the repository root, not the working directory.
+# Data ingestion owns validation of the actual downloaded dataset layout.
+[paths]
+face_data = "data/raw/face"
+liveness_data = "data/raw/liveness"
+emotion_data = "data/raw/emotion"
+checkpoints = "artifacts/checkpoints"
+attendance = "artifacts/attendance"

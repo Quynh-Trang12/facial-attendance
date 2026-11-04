@@ -1,0 +1,252 @@
+"""Map-style face datasets and reproducible training-pair sampling."""
+
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+import random
+
+
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
+SPLITS = ("train_data", "val_data", "test_data")
+
+
+@dataclass(frozen=True)
+class FaceLayout:
+    root: Path
+
+    @classmethod
+    def discover(cls, directory: Path) -> "FaceLayout":
+        """Accept the dataset root or one enclosing archive directory, without guessing files."""
+        directory = Path(directory).expanduser().resolve()
+        candidates = [directory]
+        if directory.is_dir():
+            candidates += sorted(p for p in directory.iterdir() if p.is_dir())
+        matches = []
+        for candidate in candidates:
+            if (
+                all(
+                    (candidate / "classification_data" / split).is_dir()
+                    for split in SPLITS
+                )
+                and (candidate / "verification_data").is_dir()
+                and (candidate / "verification_pairs_val.txt").is_file()
+            ):
+                matches.append(candidate)
+        if len(matches) != 1:
+            raise ValueError(
+                f"Expected one course dataset root under {directory}; found {len(matches)}. "
+                "Required: classification_data/{train_data,val_data,test_data}, "
+                "verification_data, verification_pairs_val.txt. Extract archives first; "
+                "do not rename a different dataset to make this check pass."
+            )
+        return cls(matches[0])
+
+    @property
+    def pairs_file(self) -> Path:
+        return self.root / "verification_pairs_val.txt"
+
+
+@dataclass(frozen=True)
+class FaceSample:
+    path: Path
+    identity: str
+    target: int
+
+
+@dataclass(frozen=True)
+class FacePair:
+    left: Path
+    right: Path
+    label: int  # 1 = same identity; 0 = different identities.
+
+
+def _read_image(path: Path, transform: Callable | None):
+    from PIL import Image
+
+    try:
+        with Image.open(path) as source:
+            image = source.convert("RGB")
+            return transform(image) if transform is not None else image.copy()
+    except (OSError, ValueError) as error:
+        raise ValueError(f"Cannot decode face image {path}: {error}") from error
+
+
+def image_transform(image_size: int):
+    """Inspection transform only; final model normalization belongs to its training contract."""
+    if image_size < 1:
+        raise ValueError("image_size must be positive")
+    from torchvision.transforms import Compose, Resize, ToTensor
+
+    return Compose([Resize((image_size, image_size)), ToTensor()])
+
+
+class ClassificationFaces:
+    """Return (RGB image or transformed tensor, integer identity target)."""
+
+    def __init__(
+        self,
+        layout: FaceLayout,
+        split: str,
+        *,
+        class_to_idx: dict[str, int] | None = None,
+        transform: Callable | None = None,
+    ):
+        if split not in SPLITS:
+            raise ValueError(f"Unknown classification split: {split}")
+        self.layout, self.split, self.transform = layout, split, transform
+        folder = layout.root / "classification_data" / split
+        identities = sorted(p.name for p in folder.iterdir() if p.is_dir())
+        if not identities:
+            raise ValueError(f"No identity folders in {folder}")
+        if class_to_idx is None:
+            if split != "train_data":
+                raise ValueError(
+                    "Validation/test must reuse the training identity mapping"
+                )
+            class_to_idx = {
+                identity: index for index, identity in enumerate(identities)
+            }
+        if not all(
+            isinstance(k, str) and isinstance(v, int) for k, v in class_to_idx.items()
+        ) or sorted(class_to_idx.values()) != list(range(len(class_to_idx))):
+            raise ValueError(
+                "Identity mapping must contain unique, contiguous integer targets"
+            )
+        unknown = set(identities) - set(class_to_idx)
+        if unknown:
+            raise ValueError(f"Unknown identities in {split}: {sorted(unknown)}")
+        self.class_to_idx = dict(class_to_idx)
+        samples = []
+        for identity in identities:
+            files = sorted(
+                p
+                for p in (folder / identity).rglob("*")
+                if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES
+            )
+            if not files:
+                raise ValueError(f"Identity {identity!r} has no image files in {split}")
+            for path in files:
+                resolved = path.resolve()
+                if not resolved.is_relative_to(folder.resolve()):
+                    raise ValueError(
+                        f"Image path escapes its classification split: {path}"
+                    )
+                samples.append(
+                    FaceSample(resolved, identity, self.class_to_idx[identity])
+                )
+        self.samples = tuple(samples)
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+        sample = self.samples[index]
+        return _read_image(sample.path, self.transform), sample.target
+
+
+def _verification_path(layout: FaceLayout, text: str, line_number: int) -> Path:
+    relative = PurePosixPath(text.replace("\\", "/"))
+    if relative.is_absolute() or ".." in relative.parts or ":" in text:
+        raise ValueError(f"Unsafe verification path at line {line_number}: {text}")
+    base = (layout.root / "verification_data").resolve()
+    candidates = {(layout.root / relative).resolve(), (base / relative).resolve()}
+    matches = [p for p in candidates if p.is_relative_to(base) and p.is_file()]
+    if len(matches) != 1:
+        raise ValueError(
+            f"Missing or ambiguous verification image at line {line_number}: {text}"
+        )
+    return matches[0]
+
+
+def read_verification_pairs(layout: FaceLayout) -> tuple[FacePair, ...]:
+    pairs = []
+    with layout.pairs_file.open(encoding="utf-8-sig") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            columns = line.split()
+            if len(columns) != 3 or columns[2] not in {"0", "1"}:
+                raise ValueError(
+                    f"Expected two image paths and label 0/1 at line {line_number}"
+                )
+            pairs.append(
+                FacePair(
+                    _verification_path(layout, columns[0], line_number),
+                    _verification_path(layout, columns[1], line_number),
+                    int(columns[2]),
+                )
+            )
+    if not pairs:
+        raise ValueError("Verification trials file is empty")
+    return tuple(pairs)
+
+
+class PairFaces:
+    """Return (left RGB image/tensor, right RGB image/tensor, same/different label)."""
+
+    def __init__(
+        self, pairs: tuple[FacePair, ...], *, transform: Callable | None = None
+    ):
+        if not pairs:
+            raise ValueError("Pair dataset is empty")
+        self.pairs = tuple(pairs)
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.pairs)
+
+    def __getitem__(self, index):
+        pair = self.pairs[index]
+        return (
+            _read_image(pair.left, self.transform),
+            _read_image(pair.right, self.transform),
+            pair.label,
+        )
+
+
+class VerificationPairs(PairFaces):
+    """Load official trials without resampling or reordering their labels."""
+
+    def __init__(self, layout: FaceLayout, *, transform: Callable | None = None):
+        super().__init__(read_verification_pairs(layout), transform=transform)
+
+
+def sample_training_pairs(
+    dataset: ClassificationFaces, *, count_per_label: int, seed: int = 42
+) -> tuple[FacePair, ...]:
+    """Draw a balanced reproducible training sample; official verification trials stay fixed.
+
+    Identities are sampled uniformly, then images uniformly within the selected identity.
+    Positive images are distinct. Sampling is with replacement across pairs, so repeated
+    pairs are possible. This is an inspectable baseline, not hard-negative mining.
+    """
+    if dataset.split != "train_data":
+        raise ValueError("Training pairs may only be sampled from train_data")
+    if count_per_label < 1:
+        raise ValueError("count_per_label must be positive")
+    by_identity = defaultdict(list)
+    for sample in dataset.samples:
+        by_identity[sample.identity].append(sample.path)
+    identities = sorted(by_identity)
+    positive_identities = [
+        identity for identity in identities if len(by_identity[identity]) >= 2
+    ]
+    if len(identities) < 2 or not positive_identities:
+        raise ValueError(
+            "Pair sampling needs two identities and an identity with at least two images"
+        )
+    rng = random.Random(seed)
+    pairs = []
+    for _ in range(count_per_label):
+        identity = rng.choice(positive_identities)
+        left, right = rng.sample(by_identity[identity], 2)
+        pairs.append(FacePair(left, right, 1))
+        left_id, right_id = rng.sample(identities, 2)
+        pairs.append(
+            FacePair(
+                rng.choice(by_identity[left_id]), rng.choice(by_identity[right_id]), 0
+            )
+        )
+    rng.shuffle(pairs)
+    return tuple(pairs)
