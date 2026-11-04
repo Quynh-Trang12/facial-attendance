@@ -2,32 +2,84 @@
 
 FAC-01.2 provides classification/pair datasets and baseline training-pair sampling for competition `11-785-fall-20-homework-2-part-2`. No other face dataset is substituted.
 
-## Acquisition
+## Download on your own machine
 
-The existing environment now uses **kagglehub 1.0.2**, pinned in the project after an explicitly authorized upgrade. It supports modern Kaggle API tokens. `recognition/download.py` keeps the reusable cache under the supported `KAGGLEHUB_CACHE` location, restores the previous variable afterwards and inspects the returned path without copying another set of images.
+Use the assigned [Kaggle competition](https://www.kaggle.com/c/11-785-fall-20-homework-2-part-2/overview/evaluation). `--download` calls `kagglehub.competition_download("11-785-fall-20-homework-2-part-2")`; it downloads on the first run and can reuse the cache later. It does not require manually uploading images to Colab or receiving another person's dataset folder.
 
-At [Kaggle API settings](https://www.kaggle.com/settings/api), choose **Generate New Token**. Store only the token text in `~/.kaggle/access_token` outside the repository, or set `KAGGLE_API_TOKEN` in the process that will download. The account owner supplies the token; never copy it into this repository. `kagglehub.login()` masks token input but stores credentials only in its current process, so a one-off login command does not configure another later process. Do not put a standalone token in `kaggle.json`, which is the legacy username/key JSON format. Accept competition rules in your account if required. No credentials belong in source or reports.
+### 1. Select the project interpreter
 
-From the repo root, using the existing Python 3.13 environment:
+Open a terminal in the repository root, the directory containing `configs/`, `scripts/` and `requirements.txt`. Complete the CPU or CUDA installation in [setup](setup.md) if this is a new machine. Commands below use `python` to mean **that configured environment's interpreter**, not an arbitrary system Python. On the owner's machine use `~/.local/share/ml-frameworks/.venv/bin/python` in place of `python`; do not reinstall that environment.
 
 ```bash
-~/.local/share/ml-frameworks/.venv/bin/python scripts/check_face_data.py \
-  --download --output reports/data/kaggle-review.json
+python --version
+python -m pip show kagglehub
 ```
 
-This invokes `kagglehub.competition_download("11-785-fall-20-homework-2-part-2")`. Cache files stay under ignored `data/.kagglehub/`; cached data may be reused. For offline use, pass the extracted dataset root returned in the report:
+Expected: Python 3.12 or 3.13 and KaggleHub 1.0.2. The pinned client supports modern API tokens.
+
+### 2. Configure your own Kaggle token once
+
+Sign in to Kaggle, open the competition and accept its rules if requested. In [Kaggle API settings](https://www.kaggle.com/settings/api), select **Generate New Token**. Store the token text in `~/.kaggle/access_token`, outside the repository. If the folder/file does not exist, the following command creates it and prompts without echoing the token or putting it into shell history:
 
 ```bash
-~/.local/share/ml-frameworks/.venv/bin/python scripts/check_face_data.py \
-  --data-root /path/to/extracted/dataset \
+python -c "from pathlib import Path; from getpass import getpass; p=Path.home()/'.kaggle'/'access_token'; p.parent.mkdir(mode=0o700, parents=True, exist_ok=True); token=getpass('Kaggle API token: ').strip(); assert token, 'Empty token'; p.write_text(token); p.chmod(0o600)"
+```
+
+Run this only when adding/replacing your own token; it replaces that token file. On Linux/macOS the file permission limits access to your user. Do not put the new token text in `kaggle.json`, which expects legacy username/key JSON. `KAGGLE_API_TOKEN` is another supported authentication route. Do not print tokens in logs or commit them. A one-off `kagglehub.login()` in another process does not configure the later loader process.
+
+### 3. Download and inspect
+
+```bash
+python scripts/check_face_data.py --download \
+  --output reports/data/kaggle-review.json
+```
+
+Expected: exit code 0 and JSON `status=PASS`. The script prints the dataset root, split counts, trial counts and batch checks. Download/extraction may take several minutes. Files remain under ignored `data/.kagglehub/`; the loader uses KaggleHub's returned root without copying a second dataset. Expected full-data counts are listed [below](#observed-evidence-and-acceptance).
+
+For a repeat run, choose a new output filename, for example `kaggle-review-02.json`; reports are intentionally not overwritten. When data is already present, local mode skips the Kaggle API:
+
+```bash
+python scripts/check_face_data.py \
   --output reports/data/local-review.json
 ```
 
-Without either input flag, the script reads `paths.face_data` in `configs/project.toml`. Use a new output filename per run. Layout discovery accepts the course layout or one enclosing directory. Further nested archives or a different layout raise an explicit error; the authenticated run has verified the actual competition layout described below.
+This reads `paths.face_data` from `configs/project.toml`. To use a manually extracted directory or another disk, explicitly select its dataset root:
+
+```bash
+python scripts/check_face_data.py --data-root /path/to/extracted/dataset \
+  --output reports/data/external-review.json
+```
+
+That root must contain `classification_data/`, `verification_data/` and `verification_pairs_val.txt`, as shown in [the storage guide](../data/README.md). Discovery also accepts one enclosing directory. Further nesting or incomplete extraction raises an error. API mode reads `paths.kaggle_cache` from the same config; `--cache-dir` overrides that cache and `--config` selects another TOML file. `--data-root` selects existing files and cannot be combined with `--download`.
+
+## Download on Google Colab
+
+First run steps 1–4 in [the Colab setup guide](setup.md#google-colab-cpu-or-nvidia-gpu). Those steps define `python`, `reports`, `command_env` and the `run(...)` helper. In Colab's **Secrets** panel (key icon), add a secret named `KAGGLE_API_TOKEN`, paste your modern token as its value, and enable notebook access. Then execute this cell without printing the secret:
+
+```python
+from google.colab import userdata
+
+# The project runs in a subprocess, so explicitly pass the notebook secret.
+command_env['KAGGLE_API_TOKEN'] = userdata.get('KAGGLE_API_TOKEN')
+```
+
+Then run the loader cell once in setup step 5. It uses the same competition API and repo-local cache as the local command. If the notebook secret cannot be read, check its spelling and notebook-access switch. No token needs to be embedded in a cell, source file or report. This secret handoff follows [KaggleHub's supported token mechanisms](https://github.com/Kaggle/kagglehub#authenticate); the current Colab acceptance run uploaded an image subset and did not transmit the owner's Kaggle token or exercise Colab authentication.
+
+## If a step fails
+
+| Symptom | Action |
+| --- | --- |
+| `User is not authenticated` | Check the selected interpreter/client version and token location, or the Colab secret handoff above |
+| Permission/competition-rules error | Sign in to the same Kaggle account that owns the token and accept the competition rules; verify token permissions |
+| Missing layout/files | Use the root of the extracted competition, not an archive or an individual split; finish extraction |
+| Output file already exists | Choose a new report filename rather than deleting the previous evidence |
+| Imports/package conflicts | Recheck the chosen environment/profile in setup; do not replace the owner's working GPU installation |
+
+Fix the cause and rerun with a new output path. A failed report is evidence of a failed attempt, not an accepted loader run.
 
 ## Loader and sampling contract
 
-Implementation: `src/facial_attendance/recognition/data_loader.py`.
+Implementation: `src/facial_attendance/recognition/data_loader.py`. Identity mapping and image indexing are separate helpers. The inspection script separates classification decoding, official pair batches and training-pair sampling rather than combining them into one long function. Inline comments explain train-only mapping, lazy RGB decoding, preserved trial order, path boundaries and local RNG use.
 
 | Interface | Behavior |
 | --- | --- |
@@ -46,8 +98,18 @@ Verification paths may be bare filenames or prefixed with `verification_data/`. 
 
 ## Observed evidence and acceptance
 
-- [Test log](../reports/data/loader-tests-kagglehub-1.0.2.log): **26 tests PASS**, including 19 loader/acquisition fixture tests and seven existing configuration tests. Mocked API tests establish the call contract, not real authentication.
-- [CLI fixture result](../reports/data/fixture-kagglehub-1.0.2.json): **PASS** on temporary generated PNGs. Classification train batch `[4,3,112,112]`; validation/test and verification batches `[2,3,112,112]`; sampled-pair batch `[4,3,112,112]`. All seven loader checks pass. These are not Kaggle images.
+### Colab checks with original competition images
+
+The [CPU report](../reports/environment/colab-cpu-real-2026-11-04.json) and [Tesla T4 report](../reports/environment/colab-cuda-real-2026-11-04.json) both passed on the same original-image subset. The [input manifest](../reports/data/colab-real-input-2026-11-04.json) records 56 image hashes verified against the locally downloaded competition before upload and again on each runtime. Four identities contribute 12 train, 8 validation and 8 classification-test images; 28 distinct verification images support the first 16 unmodified official trials. No image bytes or credentials are included in these reports.
+
+Each runtime passed all seven loader checks and 39 unit tests. A batch of four real training images also completed one tiny randomly initialized CNN optimizer update and finite inference on the selected device: CPU or `cuda:0`. This verifies decoded-image/model/device integration; it does not implement or assess the required embedding models. The subset run does not establish full-dataset Colab download, full image integrity or recognition accuracy. Full-layout and authenticated-download evidence below was obtained locally.
+
+### Local full-dataset acquisition and inspection
+
+The [current default-config run](../reports/data/config-default-audit-2026-11-04.json) passed on the real dataset without `--data-root`, invoked from `/tmp` to check working-directory independence. The following earlier runs retain their historical source hashes; their counts, mapping and sampled-pair outputs were compared against the refactor. The complete current suite has 39 passing tests.
+
+- Historical pre-refactor [test log](../reports/data/loader-tests-kagglehub-1.0.2.log): **26 tests PASS**, including 19 loader/acquisition fixture tests and seven existing configuration tests. Mocked API tests establish the call contract, not real authentication.
+- Historical pre-refactor [CLI fixture result](../reports/data/fixture-kagglehub-1.0.2.json): **PASS** on temporary generated PNGs. Classification train batch `[4,3,112,112]`; validation/test and verification batches `[2,3,112,112]`; sampled-pair batch `[4,3,112,112]`. All seven loader checks pass. These are not Kaggle images.
 - [Earlier acquisition attempt](../reports/data/kaggle-access-2026-11-04.json), under 0.3.13: **FAIL**, `UnauthenticatedError` before a network download. This historical failure was resolved by the modern-client upgrade and owner token configuration; it is not the current acceptance result.
 
 The [authenticated Kaggle run](../reports/data/kaggle-authenticated-2026-11-04.json) and [download/inspection log](../reports/data/kaggle-authenticated-2026-11-04.log) completed with **PASS**, exit code 0, using KaggleHub 1.0.2 and the assigned competition. Observed counts:

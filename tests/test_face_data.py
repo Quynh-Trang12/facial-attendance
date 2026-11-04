@@ -11,7 +11,11 @@ from unittest.mock import Mock, patch
 from PIL import Image
 
 from facial_attendance.recognition.data_loader import (
-    ClassificationFaces, FaceLayout, PairFaces, VerificationPairs, sample_training_pairs,
+    ClassificationFaces,
+    FaceLayout,
+    PairFaces,
+    VerificationPairs,
+    sample_training_pairs,
 )
 from facial_attendance.recognition.download import COMPETITION, download_face_data
 
@@ -24,7 +28,13 @@ class FaceDataTests(unittest.TestCase):
         for split in ("train_data", "val_data", "test_data"):
             for identity in ("10", "2"):
                 for index in range(3 if split == "train_data" else 1):
-                    path = self.root / "classification_data" / split / identity / f"{index}.PNG"
+                    path = (
+                        self.root
+                        / "classification_data"
+                        / split
+                        / identity
+                        / f"{index}.PNG"
+                    )
                     path.parent.mkdir(parents=True, exist_ok=True)
                     Image.new("L", (9, 7), color=50 + index).save(path)
         verification = self.root / "verification_data"
@@ -32,13 +42,19 @@ class FaceDataTests(unittest.TestCase):
         for name in ["a.png", "b.png", "c.png"]:
             Image.new("RGB", (7, 9), color=(20, 40, 60)).save(verification / name)
         self.pairs_file = self.root / "verification_pairs_val.txt"
-        self.pairs_file.write_text("verification_data/a.png verification_data/b.png 1\na.png c.png 0\n")
+        self.pairs_file.write_text(
+            "verification_data/a.png verification_data/b.png 1\na.png c.png 0\n"
+        )
         self.layout = FaceLayout.discover(self.root)
 
     def test_discovers_enclosing_directory(self):
         wrapped = self.root / "wrapped"
         wrapped.mkdir()
-        for name in ["classification_data", "verification_data", "verification_pairs_val.txt"]:
+        for name in [
+            "classification_data",
+            "verification_data",
+            "verification_pairs_val.txt",
+        ]:
             (self.root / name).rename(wrapped / name)
         self.assertEqual(FaceLayout.discover(self.root).root, wrapped)
 
@@ -58,16 +74,28 @@ class FaceDataTests(unittest.TestCase):
 
     def test_validation_reuses_training_mapping(self):
         train = ClassificationFaces(self.layout, "train_data")
-        val = ClassificationFaces(self.layout, "val_data", class_to_idx=train.class_to_idx)
+        val = ClassificationFaces(
+            self.layout, "val_data", class_to_idx=train.class_to_idx
+        )
         self.assertEqual([sample.target for sample in val.samples], [0, 1])
         with self.assertRaises(ValueError):
             ClassificationFaces(self.layout, "val_data")
 
+    def test_boolean_targets_are_not_accepted_as_integer_class_ids(self):
+        with self.assertRaisesRegex(ValueError, "integer targets"):
+            ClassificationFaces(
+                self.layout, "train_data", class_to_idx={"10": False, "2": True}
+            )
+
     def test_unknown_validation_identity_is_rejected(self):
         train = ClassificationFaces(self.layout, "train_data")
-        (self.root / "classification_data/val_data/2").rename(self.root / "classification_data/val_data/new")
+        (self.root / "classification_data/val_data/2").rename(
+            self.root / "classification_data/val_data/new"
+        )
         with self.assertRaises(ValueError):
-            ClassificationFaces(self.layout, "val_data", class_to_idx=train.class_to_idx)
+            ClassificationFaces(
+                self.layout, "val_data", class_to_idx=train.class_to_idx
+            )
 
     def test_empty_identity_is_rejected(self):
         (self.root / "classification_data/train_data/empty").mkdir()
@@ -96,7 +124,9 @@ class FaceDataTests(unittest.TestCase):
             VerificationPairs(self.layout)
 
     def test_path_traversal_is_rejected(self):
-        self.pairs_file.write_text("../classification_data/train_data/10/0.PNG b.png 1\n")
+        self.pairs_file.write_text(
+            "../classification_data/train_data/10/0.PNG b.png 1\n"
+        )
         with self.assertRaisesRegex(ValueError, "Unsafe"):
             VerificationPairs(self.layout)
 
@@ -114,16 +144,22 @@ class FaceDataTests(unittest.TestCase):
     def test_sampling_is_balanced_reproducible_and_identity_correct(self):
         train = ClassificationFaces(self.layout, "train_data")
         pairs = sample_training_pairs(train, count_per_label=10, seed=42)
-        self.assertEqual(pairs, sample_training_pairs(train, count_per_label=10, seed=42))
+        self.assertEqual(
+            pairs, sample_training_pairs(train, count_per_label=10, seed=42)
+        )
         self.assertEqual(Counter(p.label for p in pairs), {0: 10, 1: 10})
         identities = {sample.path: sample.identity for sample in train.samples}
         for pair in pairs:
             self.assertNotEqual(pair.left, pair.right)
-            self.assertEqual(identities[pair.left] == identities[pair.right], bool(pair.label))
+            self.assertEqual(
+                identities[pair.left] == identities[pair.right], bool(pair.label)
+            )
 
     def test_sampling_does_not_use_validation(self):
         train = ClassificationFaces(self.layout, "train_data")
-        val = ClassificationFaces(self.layout, "val_data", class_to_idx=train.class_to_idx)
+        val = ClassificationFaces(
+            self.layout, "val_data", class_to_idx=train.class_to_idx
+        )
         with self.assertRaises(ValueError):
             sample_training_pairs(val, count_per_label=1)
 
@@ -142,7 +178,9 @@ class FaceDataTests(unittest.TestCase):
 
     def test_download_calls_assigned_competition_and_restores_cache_environment(self):
         api = Mock(return_value=str(self.root))
-        with patch.dict("sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}):
+        with patch.dict(
+            "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
+        ):
             with patch.dict(os.environ, {"KAGGLEHUB_CACHE": "existing-cache"}):
                 layout = download_face_data(cache_dir=self.root / "cache")
                 self.assertEqual(layout.root, self.root)
@@ -151,7 +189,9 @@ class FaceDataTests(unittest.TestCase):
 
     def test_download_failure_preserves_original_error(self):
         api = Mock(side_effect=RuntimeError("authentication required"))
-        with patch.dict("sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}):
+        with patch.dict(
+            "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
+        ):
             with self.assertRaisesRegex(RuntimeError, "authentication required"):
                 download_face_data(cache_dir=self.root / "cache")
 

@@ -19,11 +19,15 @@ def download_face_data(*, cache_dir: Path) -> FaceLayout:
     """
     import kagglehub
 
+    # The caller owns cache location (local disk or a Colab mount), while
+    # KaggleHub owns the internal directory layout and token authentication.
     previous = os.environ.get("KAGGLEHUB_CACHE")
     os.environ["KAGGLEHUB_CACHE"] = str(cache_dir.expanduser().resolve())
     try:
         downloaded = Path(kagglehub.competition_download(COMPETITION))
     finally:
+        # Restore process state even on authentication/network failure so another
+        # download in the same notebook is not redirected into this project.
         if previous is None:
             os.environ.pop("KAGGLEHUB_CACHE", None)
         else:

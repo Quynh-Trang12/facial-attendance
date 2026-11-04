@@ -66,6 +66,7 @@ def _read_image(path: Path, transform: Callable | None):
 
     try:
         with Image.open(path) as source:
+            # Grayscale/RGBA sources must still yield the same three-channel CNN input.
             image = source.convert("RGB")
             return transform(image) if transform is not None else image.copy()
     except (OSError, ValueError) as error:
@@ -81,8 +82,55 @@ def image_transform(image_size: int):
     return Compose([Resize((image_size, image_size)), ToTensor()])
 
 
+def _identity_mapping(
+    identities: list[str], split: str, provided: dict | None
+) -> dict[str, int]:
+    """Build the encoding on train once; reject label drift in other splits."""
+    if provided is None:
+        if split != "train_data":
+            raise ValueError("Validation/test must reuse the training identity mapping")
+        # Folder IDs remain strings; sorted enumeration gives a stable target index
+        # without assuming numeric IDs are already contiguous class labels.
+        provided = {identity: index for index, identity in enumerate(identities)}
+    if not all(
+        isinstance(k, str) and type(v) is int for k, v in provided.items()
+    ) or sorted(provided.values()) != list(range(len(provided))):
+        raise ValueError(
+            "Identity mapping must contain unique, contiguous integer targets"
+        )
+    unknown = set(identities) - set(provided)
+    if unknown:
+        raise ValueError(f"Unknown identities in {split}: {sorted(unknown)}")
+    return dict(provided)
+
+
+def _index_images(
+    folder: Path, identities: list[str], mapping: dict[str, int]
+) -> tuple[FaceSample, ...]:
+    """Index paths/labels only; decode lazily instead of holding 380k images in RAM."""
+    folder = folder.resolve()
+    samples = []
+    for identity in identities:
+        files = sorted(
+            p
+            for p in (folder / identity).rglob("*")
+            if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES
+        )
+        if not files:
+            raise ValueError(
+                f"Identity {identity!r} has no image files in {folder.name}"
+            )
+        for path in files:
+            resolved = path.resolve()
+            # A symlink must not silently bring images from another split/storage tree.
+            if not resolved.is_relative_to(folder):
+                raise ValueError(f"Image path escapes its classification split: {path}")
+            samples.append(FaceSample(resolved, identity, mapping[identity]))
+    return tuple(samples)
+
+
 class ClassificationFaces:
-    """Return (RGB image or transformed tensor, integer identity target)."""
+    """Map-style dataset returning (RGB image/transformed tensor, integer target)."""
 
     def __init__(
         self,
@@ -99,43 +147,8 @@ class ClassificationFaces:
         identities = sorted(p.name for p in folder.iterdir() if p.is_dir())
         if not identities:
             raise ValueError(f"No identity folders in {folder}")
-        if class_to_idx is None:
-            if split != "train_data":
-                raise ValueError(
-                    "Validation/test must reuse the training identity mapping"
-                )
-            class_to_idx = {
-                identity: index for index, identity in enumerate(identities)
-            }
-        if not all(
-            isinstance(k, str) and isinstance(v, int) for k, v in class_to_idx.items()
-        ) or sorted(class_to_idx.values()) != list(range(len(class_to_idx))):
-            raise ValueError(
-                "Identity mapping must contain unique, contiguous integer targets"
-            )
-        unknown = set(identities) - set(class_to_idx)
-        if unknown:
-            raise ValueError(f"Unknown identities in {split}: {sorted(unknown)}")
-        self.class_to_idx = dict(class_to_idx)
-        samples = []
-        for identity in identities:
-            files = sorted(
-                p
-                for p in (folder / identity).rglob("*")
-                if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES
-            )
-            if not files:
-                raise ValueError(f"Identity {identity!r} has no image files in {split}")
-            for path in files:
-                resolved = path.resolve()
-                if not resolved.is_relative_to(folder.resolve()):
-                    raise ValueError(
-                        f"Image path escapes its classification split: {path}"
-                    )
-                samples.append(
-                    FaceSample(resolved, identity, self.class_to_idx[identity])
-                )
-        self.samples = tuple(samples)
+        self.class_to_idx = _identity_mapping(identities, split, class_to_idx)
+        self.samples = _index_images(folder, identities, self.class_to_idx)
 
     def __len__(self):
         return len(self.samples)
@@ -150,6 +163,8 @@ def _verification_path(layout: FaceLayout, text: str, line_number: int) -> Path:
     if relative.is_absolute() or ".." in relative.parts or ":" in text:
         raise ValueError(f"Unsafe verification path at line {line_number}: {text}")
     base = (layout.root / "verification_data").resolve()
+    # Accept both official prefixed paths and bare names, but never images from
+    # classification splits or arbitrary files outside verification_data.
     candidates = {(layout.root / relative).resolve(), (base / relative).resolve()}
     matches = [p for p in candidates if p.is_relative_to(base) and p.is_file()]
     if len(matches) != 1:
@@ -161,6 +176,7 @@ def _verification_path(layout: FaceLayout, text: str, line_number: int) -> Path:
 
 def read_verification_pairs(layout: FaceLayout) -> tuple[FacePair, ...]:
     pairs = []
+    # Keep official order/labels so future scores align with the published trials.
     with layout.pairs_file.open(encoding="utf-8-sig") as handle:
         for line_number, line in enumerate(handle, start=1):
             if not line.strip() or line.lstrip().startswith("#"):
@@ -221,6 +237,7 @@ def sample_training_pairs(
     Positive images are distinct. Sampling is with replacement across pairs, so repeated
     pairs are possible. This is an inspectable baseline, not hard-negative mining.
     """
+    # Sampling from held-out splits would mix evaluation data into training.
     if dataset.split != "train_data":
         raise ValueError("Training pairs may only be sampled from train_data")
     if count_per_label < 1:
@@ -229,6 +246,7 @@ def sample_training_pairs(
     for sample in dataset.samples:
         by_identity[sample.identity].append(sample.path)
     identities = sorted(by_identity)
+    # A singleton can contribute a negative, but cannot form a distinct positive.
     positive_identities = [
         identity for identity in identities if len(by_identity[identity]) >= 2
     ]
@@ -236,9 +254,11 @@ def sample_training_pairs(
         raise ValueError(
             "Pair sampling needs two identities and an identity with at least two images"
         )
+    # A local RNG preserves reproducibility without changing the model-training RNG.
     rng = random.Random(seed)
     pairs = []
     for _ in range(count_per_label):
+        # Draw identities uniformly so large identity folders do not dominate pairs.
         identity = rng.choice(positive_identities)
         left, right = rng.sample(by_identity[identity], 2)
         pairs.append(FacePair(left, right, 1))
