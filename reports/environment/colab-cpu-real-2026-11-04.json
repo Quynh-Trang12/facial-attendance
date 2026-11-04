@@ -1,0 +1,318 @@
+{
+  "status": "PASS",
+  "timestamp_utc": "2026-11-04T05:34:38.838053+00:00",
+  "platform": "Google Colab remote runtime",
+  "python": "3.13.18",
+  "requested_device": "cpu",
+  "workspace": "/content/facial-attendance",
+  "dataset_scope": "56 original competition images, four classification identities, first 16 official trials; not full-dataset audit",
+  "archive_sha256": "085b88aef84e5222dc6771b0a6e71a303013e6c573b87321600bdfdb195ea688",
+  "image_hashes_verified": 56,
+  "environment": {
+    "schema_version": 2,
+    "timestamp_utc": "2026-11-04T05:36:12.933477+00:00",
+    "operator": "colab-cpu-real",
+    "status": "PASS",
+    "python": "3.13.18",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "source_sha256": {
+      ".python-version": "2d82946ffb2ecf549699ebb86ecbbe663bbc19d53c49c681a1a425f003f80ddb",
+      "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140",
+      "pyproject.toml": "8e9f7a37ab922eb808bf41ccac1a9030316a8f747e3556d8a6cbf6cce65a2040",
+      "requirements-cpu.txt": "0f173490bafa5b82db238e699e137e6d5956de08d90b06a6f3fcecb54bbf4d86",
+      "requirements-cuda.txt": "ec536c166ac9684ad1a7809622d26030ec1b2670ea0ee0a35eb5d77498c5353c",
+      "requirements.lock": "3a852e8bbb3afa570e2330792e1dde24005b9d2910ebcb7eedb565f85da22a4b",
+      "requirements.txt": "e122d89983b53a006f29edd69dc8608e396fa55fbab2ae8cbd44b01779c6764b",
+      "scripts/check_environment.py": "9f2e44d04330a3be2786a32183272ac82472d7c03127590df71533b6144334e5",
+      "scripts/check_face_data.py": "2241e9dc0ea08033e2daa40804efe90e7db03e3545fe1ac35451443cfea39588",
+      "src/facial_attendance/__init__.py": "b5ce45acf9fcd5bb33c84f40bfc73924f81e3dce7eae082344b9647cfe8190c6",
+      "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+      "src/facial_attendance/emotion/__init__.py": "0e4d4046421d71cce3a9ed470f8c3078a3caa70734168a482c7503f983a231e7",
+      "src/facial_attendance/environment.py": "1b5fc1d7323b507859fdca30bff4d237a07ea3d8ea525e54394060cc59a0c3c4",
+      "src/facial_attendance/liveness/__init__.py": "7d8428f6f6e0d59905eb2edd09f416f8a2891619d7a3ab75a7d08ea0a913da50",
+      "src/facial_attendance/recognition/__init__.py": "56e9390700a9cf78a00c3544cb9b895d74c92217982c7b595aabe49ca487a1ac",
+      "src/facial_attendance/recognition/data_loader.py": "208358d03cbcb6ccc847ddf1af4c4f7dfa345be8975b70bf991c512c84e85819",
+      "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+      "src/facial_attendance/ui/__init__.py": "bf73df8d35c08c671b420a8ee52b2e708379d8f1e4144eaa68aa9cf823e0c5d5",
+      "tests/test_config.py": "b012e69348c59292dc4ab65cc32ae9afe2b6b68705cec45aa897637693c57b21",
+      "tests/test_data_cli.py": "8646fcd2a5bf3a178f487272d172de0c73fd26f985350157e768485a610b8d65",
+      "tests/test_face_data.py": "2824bb583cb0810f5633f727ee7bf3a9ab3ea5101380cd9d2891459445045702",
+      "tests/test_runtime.py": "e9ac743d0a78e654c8972987fd534440976a9b5d734c04383f26e8b231ec4499"
+    },
+    "versions": {
+      "torch": "2.13.0+cpu",
+      "torchvision": "0.28.0+cpu",
+      "numpy": "2.2.6",
+      "Pillow": "11.2.1",
+      "opencv-python": "5.0.0.93",
+      "scikit-learn": "1.9.1",
+      "matplotlib": "3.10.3",
+      "tqdm": "4.70.1",
+      "kagglehub": "1.0.2"
+    },
+    "version_policy": "portable_pins",
+    "locked_distributions_checked": 0,
+    "input": {
+      "source": "synthetic RGB tensor",
+      "shape": [
+        4,
+        3,
+        32,
+        32
+      ],
+      "seed": 42
+    },
+    "training": {
+      "loss": 0.7021355032920837,
+      "optimizer": "Adam",
+      "learning_rate": 0.001,
+      "updated_parameter_tensors": 4,
+      "gradients_finite": true
+    },
+    "inference": {
+      "shape": [
+        4,
+        2
+      ],
+      "finite": true,
+      "device": "cpu",
+      "requires_grad": false
+    },
+    "requested_device": "cpu",
+    "device": "cpu",
+    "gpu": null,
+    "torch_cuda_build": null,
+    "checks": {
+      "imports": true,
+      "direct_pins": true,
+      "config": true,
+      "model_and_data_on_requested_device": true,
+      "finite_loss": true,
+      "finite_gradients": true,
+      "parameters_updated": true,
+      "inference": true,
+      "image_and_metric_apis": true,
+      "pip_check": true
+    },
+    "pip_check": "No broken requirements found.",
+    "face_dataset_present": false,
+    "limits": "One synthetic step; no dataset accuracy, webcam or GUI evaluation."
+  },
+  "loader": {
+    "timestamp_utc": "2026-11-04T05:36:19.695145+00:00",
+    "task": "FAC-01.2",
+    "status": "PASS",
+    "competition": "11-785-fall-20-homework-2-part-2",
+    "source": "local_files",
+    "kagglehub_version": "1.0.2",
+    "configuration": {
+      "file": "/content/facial-attendance/configs/project.toml",
+      "face_data": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+      "kaggle_cache": "/content/facial-attendance/data/.kagglehub"
+    },
+    "dataset_root": "/content/facial-attendance/data/colab-sample",
+    "data_loading_device": "cpu",
+    "class_count": 4,
+    "identity_mapping_sha256": "e251a8418840ae27c1221050287d1c309643d7139de49a1d17eb0d7aab61f8f5",
+    "identity_mapping_preview": {
+      "n000003": 0,
+      "n000010": 1,
+      "n000011": 2,
+      "n000013": 3
+    },
+    "classification": {
+      "train_data": {
+        "images": 12,
+        "identities_present": 4,
+        "batch_shape": [
+          4,
+          3,
+          112,
+          112
+        ],
+        "targets": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "dtype": "torch.float32",
+        "finite": true
+      },
+      "val_data": {
+        "images": 8,
+        "identities_present": 4,
+        "batch_shape": [
+          4,
+          3,
+          112,
+          112
+        ],
+        "targets": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "dtype": "torch.float32",
+        "finite": true
+      },
+      "test_data": {
+        "images": 8,
+        "identities_present": 4,
+        "batch_shape": [
+          4,
+          3,
+          112,
+          112
+        ],
+        "targets": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "dtype": "torch.float32",
+        "finite": true
+      }
+    },
+    "verification": {
+      "trials": 16,
+      "label_counts": {
+        "0": 9,
+        "1": 7
+      },
+      "left_batch_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "right_batch_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "batch_labels": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "pairs_file_sha256": "2ea4b6f04fd25a9c6425b21ed3dd9125edc8bf2f7a9e1e8de397787dacc899f7",
+      "trial_preview": [
+        {
+          "left": "verification_data/00041961.jpg",
+          "right": "verification_data/00044353.jpg",
+          "label": 0
+        },
+        {
+          "left": "verification_data/00007133.jpg",
+          "right": "verification_data/00060449.jpg",
+          "label": 1
+        },
+        {
+          "left": "verification_data/00041961.jpg",
+          "right": "verification_data/00020166.jpg",
+          "label": 0
+        }
+      ]
+    },
+    "sampled_training_pairs": [
+      {
+        "left": "classification_data/train_data/n000003/0005_01.jpg",
+        "right": "classification_data/train_data/n000003/0009_02.jpg",
+        "label": 1
+      },
+      {
+        "left": "classification_data/train_data/n000003/0012_01.jpg",
+        "right": "classification_data/train_data/n000003/0005_01.jpg",
+        "label": 1
+      },
+      {
+        "left": "classification_data/train_data/n000010/0010_01.jpg",
+        "right": "classification_data/train_data/n000011/0012_01.jpg",
+        "label": 0
+      },
+      {
+        "left": "classification_data/train_data/n000010/0001_01.jpg",
+        "right": "classification_data/train_data/n000003/0012_01.jpg",
+        "label": 0
+      },
+      {
+        "left": "classification_data/train_data/n000013/0006_01.jpg",
+        "right": "classification_data/train_data/n000003/0005_01.jpg",
+        "label": 0
+      },
+      {
+        "left": "classification_data/train_data/n000010/0001_01.jpg",
+        "right": "classification_data/train_data/n000010/0010_01.jpg",
+        "label": 1
+      }
+    ],
+    "sampling_seed": 42,
+    "training_pair_batch": {
+      "left_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "right_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "labels": [
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    "checks": {
+      "shared_identity_mapping": true,
+      "classification_batches": true,
+      "verification_paths_and_labels": true,
+      "verification_batch": true,
+      "sampling_identity_rules": true,
+      "sampling_reproducible": true,
+      "sampled_pair_batch": true
+    },
+    "limits": "First decoded batches only; no full image/duplicate/leakage audit or model evaluation.",
+    "source_sha256": {
+      "scripts/check_face_data.py": "2241e9dc0ea08033e2daa40804efe90e7db03e3545fe1ac35451443cfea39588",
+      "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+      "src/facial_attendance/recognition/data_loader.py": "208358d03cbcb6ccc847ddf1af4c4f7dfa345be8975b70bf991c512c84e85819",
+      "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+      "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140"
+    }
+  },
+  "real-batch": {
+    "status": "PASS",
+    "input": "Original competition training images; infrastructure check only",
+    "images_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "targets": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "device": "cpu",
+    "gpu": null,
+    "loss": 1.4186933040618896,
+    "updated_parameter_tensors": 4,
+    "inference_shape": [
+      4,
+      4
+    ],
+    "limits": "One tiny randomly initialized CNN update, not face-model training or accuracy"
+  }
+}

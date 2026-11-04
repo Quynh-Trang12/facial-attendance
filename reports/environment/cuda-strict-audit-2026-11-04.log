@@ -1,0 +1,164 @@
+Host GPU preflight followed by strict-owner CUDA project check.
+Importing tensorflow
+Importing torch
+GPU training check: tensorflow
+GPU training check: torch
+Retesting first framework: tensorflow
+Hugging Face GPU check
+{
+  "status": "BOTH_FRAMEWORKS_GPU_PASS",
+  "order": "tensorflow-first",
+  "python": "3.13.16 (main, Oct 14 2026, 01:04:01) [Clang 23.1.3 ]",
+  "tensorflow": "2.21.0",
+  "torch": "2.13.0+cu126",
+  "torch_cuda": "12.6",
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "checks": {
+    "tensorflow": {
+      "matrix_device": "/job:localhost/replica:0/task:0/device:GPU:0",
+      "convolution_device": "/job:localhost/replica:0/task:0/device:GPU:0",
+      "mixed_precision_train_loss": 0.6997520923614502
+    },
+    "torch": {
+      "matrix_device": "cuda:0",
+      "convolution_device": "cuda:0",
+      "mixed_precision_train_loss": 0.701171875,
+      "torchvision_cuda_nms": true
+    },
+    "first_framework_retested": {
+      "matrix_device": "/job:localhost/replica:0/task:0/device:GPU:0",
+      "convolution_device": "/job:localhost/replica:0/task:0/device:GPU:0",
+      "mixed_precision_train_loss": 0.6997520923614502
+    }
+  },
+  "huggingface_gpu_backward": true,
+  "shared_dependency_imports": true
+}
+Importing torch
+Importing tensorflow
+GPU training check: torch
+GPU training check: tensorflow
+Retesting first framework: torch
+Hugging Face GPU check
+{
+  "status": "BOTH_FRAMEWORKS_GPU_PASS",
+  "order": "torch-first",
+  "python": "3.13.16 (main, Oct 14 2026, 01:04:01) [Clang 23.1.3 ]",
+  "tensorflow": "2.21.0",
+  "torch": "2.13.0+cu126",
+  "torch_cuda": "12.6",
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "checks": {
+    "torch": {
+      "matrix_device": "cuda:0",
+      "convolution_device": "cuda:0",
+      "mixed_precision_train_loss": 0.701171875,
+      "torchvision_cuda_nms": true
+    },
+    "tensorflow": {
+      "matrix_device": "/job:localhost/replica:0/task:0/device:GPU:0",
+      "convolution_device": "/job:localhost/replica:0/task:0/device:GPU:0",
+      "mixed_precision_train_loss": 0.6997520923614502
+    },
+    "first_framework_retested": {
+      "matrix_device": "cuda:0",
+      "convolution_device": "cuda:0",
+      "mixed_precision_train_loss": 0.701171875,
+      "torchvision_cuda_nms": true
+    }
+  },
+  "huggingface_gpu_backward": true,
+  "shared_dependency_imports": true
+}
+{
+  "schema_version": 2,
+  "timestamp_utc": "2026-11-04T04:13:35.245565+00:00",
+  "operator": "owner-host",
+  "status": "PASS",
+  "python": "3.13.16",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "source_sha256": {
+    ".python-version": "2d82946ffb2ecf549699ebb86ecbbe663bbc19d53c49c681a1a425f003f80ddb",
+    "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140",
+    "pyproject.toml": "8e9f7a37ab922eb808bf41ccac1a9030316a8f747e3556d8a6cbf6cce65a2040",
+    "requirements-cpu.txt": "0f173490bafa5b82db238e699e137e6d5956de08d90b06a6f3fcecb54bbf4d86",
+    "requirements-cuda.txt": "ec536c166ac9684ad1a7809622d26030ec1b2670ea0ee0a35eb5d77498c5353c",
+    "requirements.lock": "3a852e8bbb3afa570e2330792e1dde24005b9d2910ebcb7eedb565f85da22a4b",
+    "requirements.txt": "e122d89983b53a006f29edd69dc8608e396fa55fbab2ae8cbd44b01779c6764b",
+    "scripts/check_environment.py": "9f2e44d04330a3be2786a32183272ac82472d7c03127590df71533b6144334e5",
+    "scripts/check_face_data.py": "2241e9dc0ea08033e2daa40804efe90e7db03e3545fe1ac35451443cfea39588",
+    "src/facial_attendance/__init__.py": "b5ce45acf9fcd5bb33c84f40bfc73924f81e3dce7eae082344b9647cfe8190c6",
+    "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+    "src/facial_attendance/emotion/__init__.py": "0e4d4046421d71cce3a9ed470f8c3078a3caa70734168a482c7503f983a231e7",
+    "src/facial_attendance/environment.py": "1b5fc1d7323b507859fdca30bff4d237a07ea3d8ea525e54394060cc59a0c3c4",
+    "src/facial_attendance/liveness/__init__.py": "7d8428f6f6e0d59905eb2edd09f416f8a2891619d7a3ab75a7d08ea0a913da50",
+    "src/facial_attendance/recognition/__init__.py": "56e9390700a9cf78a00c3544cb9b895d74c92217982c7b595aabe49ca487a1ac",
+    "src/facial_attendance/recognition/data_loader.py": "208358d03cbcb6ccc847ddf1af4c4f7dfa345be8975b70bf991c512c84e85819",
+    "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+    "src/facial_attendance/ui/__init__.py": "bf73df8d35c08c671b420a8ee52b2e708379d8f1e4144eaa68aa9cf823e0c5d5",
+    "tests/test_config.py": "b012e69348c59292dc4ab65cc32ae9afe2b6b68705cec45aa897637693c57b21",
+    "tests/test_data_cli.py": "8646fcd2a5bf3a178f487272d172de0c73fd26f985350157e768485a610b8d65",
+    "tests/test_face_data.py": "2824bb583cb0810f5633f727ee7bf3a9ab3ea5101380cd9d2891459445045702",
+    "tests/test_runtime.py": "e9ac743d0a78e654c8972987fd534440976a9b5d734c04383f26e8b231ec4499"
+  },
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "torchvision": "0.28.0+cu126",
+    "numpy": "2.2.6",
+    "Pillow": "11.2.1",
+    "opencv-python": "5.0.0.93",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.10.3",
+    "tqdm": "4.70.1",
+    "kagglehub": "1.0.2"
+  },
+  "version_policy": "owner_snapshot",
+  "locked_distributions_checked": 58,
+  "input": {
+    "source": "synthetic RGB tensor",
+    "shape": [
+      4,
+      3,
+      32,
+      32
+    ],
+    "seed": 42
+  },
+  "training": {
+    "loss": 0.6945785284042358,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "updated_parameter_tensors": 4,
+    "gradients_finite": true
+  },
+  "inference": {
+    "shape": [
+      4,
+      2
+    ],
+    "finite": true,
+    "device": "cuda:0",
+    "requires_grad": false
+  },
+  "requested_device": "cuda",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "torch_cuda_build": "12.6",
+  "checks": {
+    "imports": true,
+    "direct_pins": true,
+    "config": true,
+    "model_and_data_on_requested_device": true,
+    "finite_loss": true,
+    "finite_gradients": true,
+    "parameters_updated": true,
+    "inference": true,
+    "image_and_metric_apis": true,
+    "pip_check": true
+  },
+  "pip_check": "No broken requirements found.",
+  "face_dataset_present": true,
+  "limits": "One synthetic step; no dataset accuracy, webcam or GUI evaluation."
+}
+
+Exit code: 0

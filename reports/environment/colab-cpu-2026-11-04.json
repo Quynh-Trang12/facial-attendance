@@ -1,0 +1,13 @@
+{
+  "timestamp_utc": "2026-11-04T04:48:02.796696+00:00",
+  "status": "FAIL",
+  "platform": "Google Colab remote CPU runtime",
+  "python": "3.13.18",
+  "architecture": "x86_64",
+  "workspace": "/content/facial-attendance",
+  "dataset_scope": "Generated RGB/grayscale fixtures only; no real face images or credentials uploaded",
+  "bundle_sha256": "e595268def6fd3e9430edcb68894ebe4045aa96ab17f8ace08190f999788b3b8",
+  "error_type": "RuntimeError",
+  "error": "environment failed (exit 1): ",
+  "traceback": "Traceback (most recent call last):\n  File \"/tmp/ipykernel_2582/356194440.py\", line 54, in <cell line: 0>\n    run_stage('environment', [python, 'scripts/check_environment.py', '--device', 'cpu',\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        '--operator', 'colab-cpu-check', '--output', str(reports / 'environment.json')])\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/ipykernel_2582/356194440.py\", line 35, in run_stage\n    raise RuntimeError(f'{name} failed (exit {result.returncode}): {result.stderr[-1500:]}')\nRuntimeError: environment failed (exit 1): \n"
+}

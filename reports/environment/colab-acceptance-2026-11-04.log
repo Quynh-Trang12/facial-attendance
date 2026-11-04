@@ -1,0 +1,6 @@
+{
+  "status": "FAIL",
+  "python": "3.13.18",
+  "error": "environment failed (exit 1): ",
+  "report": "/content/facial-attendance/reports/compatibility/colab-cpu/acceptance.json"
+}

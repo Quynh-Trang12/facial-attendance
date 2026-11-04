@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "device": "cpu",
+  "report_directory": "/content/facial-attendance/reports/compatibility/colab-cpu-20261104T053730072805Z",
+  "cells_executed": 5,
+  "dataset_mode": "Existing real-image subset; download flag replaced with documented local override",
+  "setup_cells_sha256": [
+    "241e98ded46c8f1efa6c3809064c456efbad04019b36981cafe16ad87b11a45b",
+    "602c19b99218616dc75be4d18396b00034bdc44abb7cd8855b74d6eea8604f1f",
+    "273c86a40ddeb92a3e55d32a3ffd56001f6a84842dfcf6114cfb0e26cd028292",
+    "4f7ec6044a3d8fc86a169dde3024a76699141fe9ce3065d3a1053f44c6201205",
+    "9e91046094792bd467d0a8a21e4006ea45aba5bcedf602208b05bcd04aa1f38a"
+  ]
+}

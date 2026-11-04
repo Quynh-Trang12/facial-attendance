@@ -1,74 +1,176 @@
-# Development environment
+# Runtime setup and verification
 
-## Runtime
+The owner reference environment is Python 3.13.16 with PyTorch 2.13.0+cu126 on Linux/NVIDIA. It stays unchanged at `~/.local/share/ml-frameworks/.venv`. The project also accepts Python 3.12 and other Python 3.13 patch releases, with explicit CPU or CUDA execution. `.python-version` is the owner's development pin; it is not a command to replace another machine's interpreter.
 
-The validated owner runtime is Python **3.13.16**, PyTorch **2.13.0+cu126**, torchvision **0.28.0+cu126**, Linux x86_64 and an NVIDIA RTX 3050 6GB Laptop GPU. TensorFlow 2.21.0 also exists in the shared lab environment; the application currently uses PyTorch and does not add TensorFlow as a project dependency. The full shared runtime's coexistence checks run through its existing launcher.
+## Choose dependencies for the target machine
 
-`requirements.txt` contains direct dependencies. `requirements.lock` contains their 58-package installed dependency closure for this Linux/Python/CUDA combination, including KaggleHub 1.0.2 and transitive CUDA libraries. Only KaggleHub was upgraded, with authorization; Python and the ML framework packages were preserved. It was derived from installed distribution metadata and checked against their active dependency requirements. It is a snapshot, not evidence of a successful clean install on another machine. Keep direct pins and the snapshot consistent when a deliberate change is reviewed; do not copy the entire unrelated lab environment into this project.
+| File | Purpose |
+| --- | --- |
+| `requirements.txt` | Shared public package versions; PyTorch CPU/CUDA build suffixes are allowed |
+| `requirements-cpu.txt` | Official PyTorch CPU wheel selection for a new CPU environment |
+| `requirements-cuda.txt` | Official CUDA 12.6 wheel selection for a new NVIDIA environment |
+| `requirements.lock` | Exact 58-package owner snapshot; not a portable CPU/Colab installation file |
 
-OpenCV supplies image/webcam support. Its GUI display functions require a desktop session and OS graphics libraries. Do not install another OpenCV variant in the same environment. The application GUI toolkit is still a SYS-02/UI decision; no unused UI framework has been added. CUDA training does not require an open webcam or desktop window.
+On the owner's working environment, install nothing. For another developer who actually needs a new environment, select **one** framework profile, then install the shared dependencies:
 
-## Existing owner environment
+```bash
+python -m pip install -r requirements-cpu.txt
+python -m pip install -r requirements.txt
+```
 
-Reuse `~/.local/share/ml-frameworks/.venv`, kernel `ml-frameworks-gpu` (**Python 3.13 (TensorFlow + PyTorch GPU)**). Do not run the fresh-install procedure against this environment.
+For NVIDIA, replace the first file with `requirements-cuda.txt`; the driver must support that CUDA wheel. Public `torch==2.13.0` accepts the corresponding `+cpu` or `+cu126` build selected in the first step. Do not install both profiles or use the owner lock to force NVIDIA packages onto a CPU machine. These are setup instructions, not evidence of a fresh installation on every supported platform.
 
-Read its README and use the existing host launcher from the repository root:
+## Owner GPU check
+
+Use the existing host launcher, which verifies TensorFlow/PyTorch coexistence before the project check:
 
 ```bash
 ~/.local/share/ml-frameworks/run_gpu.sh scripts/check_environment.py \
-  --operator "owner-host" \
-  --output reports/environment/owner-check.json
+  --device cuda --strict-owner --operator owner-host \
+  --output reports/environment/new-owner-check.json
 ```
 
-The launcher tests both frameworks on the GPU in both import orders before running the project check. Restricted execution environments can hide NVIDIA devices; a restricted-process failure is not sufficient evidence of a broken host driver. Run the check from a host terminal with GPU access. The shared runtime has its own native compatibility hook for TensorFlow/PyTorch coexistence; this project does not recreate or modify it.
+`--strict-owner` also checks Python 3.13.16 and every exact owner-lock version. Without it, the check uses the supported Python range and shared direct package versions. Requested CUDA fails when inaccessible; it never silently becomes CPU.
 
-## Another developer's setup
+## Explicit CPU check
 
-First inspect and reuse a compatible Python 3.13 GPU environment if one already exists. Only a developer who needs a fresh environment should create one on their own machine. For the recorded **Linux x86_64 / Python 3.13.16 / NVIDIA CUDA 12.6** profile:
+A CUDA-built PyTorch can also execute CPU operations. The owner can test that path without installing or replacing anything:
 
 ```bash
-python3.13 --version
-python3.13 -m venv .venv
-.venv/bin/python -m pip install -r requirements.lock \
-  --extra-index-url https://download.pytorch.org/whl/cu126
-.venv/bin/python -m pip check
-.venv/bin/python scripts/check_environment.py \
-  --operator "Vy / independent execution" \
-  --output reports/environment/vy-check.json
+~/.local/share/ml-frameworks/.venv/bin/python scripts/check_environment.py \
+  --device cpu --operator cpu-check \
+  --output reports/environment/new-cpu-check.json
 ```
 
-The interpreter patch must match `.python-version`. Access to the package indexes and an NVIDIA driver compatible with the wheel are required. The wheel supplies CUDA user-space dependencies; a separate local CUDA toolkit is not needed just to execute it. OpenCV may need OS graphics libraries such as `libGL.so.1`. Do not change the OS Python, GPU driver or owner's shared environment as a routine setup step.
+Both devices run one optimizer step on four synthetic images, verify finite gradients and changed weights, then run finite `[4,2]` inference. This is a small infrastructure check, not dataset training or model accuracy. The JSON identifies the actual execution device separately from the installed CUDA build. Use a new output file each time.
 
-Windows, macOS and different Python/CUDA profiles are not certified by this Linux snapshot. If a teammate uses another profile, record the actual differences and validate it as a separate review outcome before changing the agreed environment.
+## Google Colab: CPU or NVIDIA GPU
 
-**If GPU access is unavailable:** stop the GPU workload and record the failing command and error. The proposed alternative is a teammate's compatible NVIDIA GPU host, subject to the user's/group's confirmation and the same check. Do not automatically switch runtime, launch paid cloud resources, install drivers or use CPU as a successful replacement. No alternate host has been independently approved/tested in this task.
+Follow these cells in order in one notebook session. They run repository scripts in a separate `.venv` using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. The supported Python range is 3.12–3.13; a different patch release from the owner's 3.13.16 is acceptable.
 
-## Check budget and behavior
+### 1. Put the repository in one directory and select the device
 
-This is an infrastructure check with one Adam update on four synthetic RGB tensors of shape `[4,3,32,32]`, then one inference pass. Expected project-check cost is seconds to about a minute after imports; the existing two-framework host preflight adds startup time. There is no architecture search, epoch training, dataset split, checkpoint selection or final accuracy comparison at this stage.
+Upload/extract the repository to `/content/facial-attendance`. It is ready when `/content/facial-attendance/scripts/check_environment.py` exists. In Colab choose **Runtime → Change runtime type** and select CPU or an NVIDIA GPU before proceeding. GPU availability depends on the account/runtime allocation; code does not silently switch to CPU.
 
-The script imports the pinned dependencies, checks the Linux dependency snapshot and storage configuration, requires model/data/labels on CUDA, and verifies finite loss, finite gradients and an actual parameter update. It then checks `eval()`/inference mode and finite GPU output with shape `[4,2]`, plus image conversion, a toy ROC/AUC API call and `pip check`.
+```python
+from pathlib import Path
+from datetime import datetime, timezone
+import os
+import subprocess
+import sys
+import venv
 
-Use a new output path per run. JSON contains timestamps, self-reported operator, source/config/dependency SHA-256 values and observed results. Existing evidence is never overwritten. FAIL exits nonzero and records a traceback when the script can start; launcher failures are retained in the host log. No result claims project AUC or webcam/GUI functionality.
+repo = Path('/content/facial-attendance')
+assert (repo / 'scripts/check_environment.py').is_file(), 'Extract the repo first'
+assert (3, 12) <= sys.version_info[:2] < (3, 14), sys.version
+# Match the Colab runtime you selected: 'cpu' or 'cuda'.
+device = 'cpu'
+if device == 'cuda':
+    subprocess.run(['nvidia-smi'], check=True)
+assert device in ('cpu', 'cuda')
+run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+reports = repo / 'reports/compatibility' / f'colab-{device}-{run_id}'
+reports.mkdir(parents=True, exist_ok=False)
+python = repo / '.venv/bin/python'
+print('Kernel:', sys.version.split()[0], '| device:', device)
+print('Project:', repo, '| reports:', reports)
+```
 
-## Evidence and review
+Keep a CPU environment and a CUDA environment in different Colab sessions. Do not install both wheel profiles into the same `.venv`.
 
-The final source-checkout entry point was executed on **4 November 2026**. The [owner JSON result](../reports/environment/2026-11-04-owner/result.json) and [technical host log](../reports/environment/2026-11-04-owner/host.log) record **PASS**, exit code 0, all 49 locked distributions matched, finite loss `0.6945785284042358`, finite gradients and four updated parameter tensors. Inference returned finite `[4,2]` output on `cuda:0`, with gradients disabled. `pip check` found no broken requirements. The host preflight also passed both framework import orders. The seven source/configuration tests passed locally; the GitHub workflow is configured but has not run remotely.
+### 2. Prepare a command runner and the isolated environment
 
-This run verifies the owner host only; Vy's independent reproduction remains pending. Publication copies omit operator-identifying metadata. Original unredacted records are retained locally outside the repository publication folder; technical observations and source hashes are unchanged.
+The runner saves each command's full output, prints a short stage result and raises on failure. `capture_output=True` also works under notebook output capture. `MPLBACKEND=Agg` avoids inheriting Colab's inline display backend into a subprocess that does not install notebook plugins; it affects these noninteractive checks only.
 
-The saved SYS-03 run predates the FAC-01.2 additions. Its 49-package count and source hashes describe that earlier revision, not the current expanded repo. Current loader tests and acquisition evidence are documented in [data loading](data-loading.md); no new GPU result is inferred from a loader test.
+```python
+command_env = {
+    **os.environ,
+    'MPLBACKEND': 'Agg',
+    'PYTHONDONTWRITEBYTECODE': '1',
+    'PYTHONPATH': os.pathsep.join([str(repo / 'src'), str(repo / 'tests')]),
+}
 
-A [post-upgrade compatibility run](../reports/environment/2026-11-04-kagglehub-upgrade/result.json) on 4 November passed the current 58-package project check and both host framework preflights. Standalone Keras 3.15.1 with TensorFlow 2.21.0 on Python 3.13.16 also completed a finite-loss GPU optimizer update (four parameter tensors changed) and finite `[4,2]` inference on `/GPU:0`. The exact [probe source](../reports/environment/2026-11-04-kagglehub-upgrade/probe.py) is preserved with its hash in the result. This establishes the tested configuration, not compatibility of every third-party model or future upgrade.
+def run(stage, command):
+    result = subprocess.run([str(arg) for arg in command], cwd=repo,
+                            env=command_env, capture_output=True, text=True)
+    (reports / f'{stage}.log').write_text(result.stdout + result.stderr)
+    print(stage, 'PASS' if result.returncode == 0 else 'FAIL')
+    if result.returncode:
+        print((result.stdout + result.stderr)[-3000:])
+    result.check_returncode()
 
-| Checkpoint | Owner deliverable | Remaining acceptance condition |
-| --- | --- | --- |
-| SYS-03.1 | Python pin, direct dependencies, Linux snapshot, runtime and fallback procedure | Vy confirms compatibility and group runtime agreement |
-| SYS-03.2 | Executable CUDA training/inference check and owner logs/results | Vy reviews the observations |
-| SYS-03.3 | Reproduction commands and evidence schema | Vy independently installs/runs and reports PASS or reproducible errors |
-| SYS-03.4 | Error handling, retained diagnostics and a defined retest command | Resolve actual review findings; if none, record no fix needed after review |
-| SYS-03.5 | Shared repo layout, setup commands and runtime limitations | Human publication and final reviewer walkthrough |
+# Bootstrap pip through the existing kernel; keep installed packages in .venv.
+venv.EnvBuilder(with_pip=False).create(repo / '.venv')
+run('bootstrap-pip', [sys.executable, '-m', 'pip', '--python', python,
+                      'install', 'pip'])
+```
 
-For independent review, Vy must run the check, retain `vy-check.json` and record the reviewed source/commit, commands, host/device, exit code and findings. Reading or copying the owner log is insufficient. Operator text is self-reported; the script cannot authenticate a reviewer or confirm the Sheets checkbox. If review exposes an error, retain the failing evidence, fix the cause and produce a new retest file; do not invent findings or mark an unrun retest as passed.
+### 3. Install one wheel profile, then shared requirements
 
-After the human owner publishes the repo, link actual GitHub file permalinks for setup/dependencies, the check and owner evidence in Sheets. Link Vy's actual run and review separately. Independent review is still pending; SYS-03 cannot be marked fully closed yet.
+```python
+profile = 'requirements-cpu.txt' if device == 'cpu' else 'requirements-cuda.txt'
+run('install-framework', [python, '-m', 'pip', 'install', '-r', profile])
+run('install-project', [python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+```
+
+The CUDA profile uses CUDA 12.6 wheels and needs a compatible NVIDIA driver. If installation or CUDA checks fail, inspect the stage log rather than changing devices or package versions silently. Do not use `--strict-owner` or install `requirements.lock` on Colab.
+
+### 4. Run tests and the selected-device check
+
+```python
+run('unit-tests', [python, '-m', 'unittest', 'discover', '-s', 'tests', '-v'])
+run('environment', [python, 'scripts/check_environment.py', '--device', device,
+                    '--operator', 'colab-review',
+                    '--output', reports / 'environment.json'])
+```
+
+Expected: 39 tests pass; environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
+
+### 5. Run the loader on real competition data
+
+Configure your own Kaggle token using [the data-loading instructions](data-loading.md#download-on-google-colab), then run:
+
+```python
+run('loader', [python, 'scripts/check_face_data.py', '--download',
+               '--output', reports / 'loader.json'])
+```
+
+This downloads/reuses the assigned competition and checks its actual data. To use files you already uploaded, extracted or mounted, replace `--download` with `--data-root`, followed by their root path, for example `repo / 'data/colab-sample'`. That folder must have the [required layout](../data/README.md); the example subset is not shipped with the repository. Loader decoding/collation runs on CPU even when the model runs on GPU. The environment JSON's `face_dataset_present` describes the configured default path at the time it ran; an explicit `--data-root` can point elsewhere.
+
+Expected full-dataset counts: 380,638 train images, 8,000 validation images, 8,000 classification test images, 4,000 identities, and 8,805 official trials. A deliberately uploaded subset will have smaller counts and must be labelled as such. `status=PASS` checks mappings, finite decoded batches, pair labels/paths and seeded training-pair rules; it does not decode every image or measure recognition accuracy.
+
+Download the report directory before ending the session, then disconnect and delete the runtime in Colab. Runtime files are temporary; keep credentials and raw images out of Git.
+
+### Recorded remote evidence
+
+- [Earlier CPU fixture check](../reports/environment/colab-cpu-retest-2026-11-04.json): 39 tests and synthetic optimizer/inference passed on Python 3.13.18. Generated-image loader inputs were explicitly labelled as fixtures.
+- [First CPU failure](../reports/environment/colab-cpu-first-failure-2026-11-04.json): inherited inline Matplotlib backend failed in the isolated subprocess. The runner above explicitly sets Agg to resolve it.
+- Current real-image CPU/GPU results are indexed in [verification evidence](../reports/README.md). Image inputs are a byte-verified subset of the required competition; local acquisition/full-layout inspection is recorded separately. Webcam/GUI behavior, model training, ROC/AUC and full image/duplicate/leakage audits remain outside this infrastructure check.
+
+See [Google's runtime documentation](https://research.google.com/colaboratory/runtime-version-faq.html) for runtime changes and [official PyTorch wheel profiles](https://pytorch.org/get-started/previous-versions/) for installation background.
+
+## Dataset configuration
+
+`configs/project.toml` contains both `kaggle_cache` and `face_data`. The defaults now match the actual downloaded competition under `data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2`. Both dataset CLI branches read this config; `--data-root`, `--cache-dir` and `--config` are explicit overrides for external disks or Colab mounts.
+
+Dataset decoding/collation happens on CPU and does not require GPU access. In Colab, put the modern token in a private Kaggle token file or its supported environment/secret mechanism, then use [the data-loading commands](data-loading.md). Do not put tokens in notebook output or source control.
+
+## Current evidence and remaining review
+
+- [Configured default dataset check](../reports/data/config-default-audit-2026-11-04.json): actual data loaded without `--data-root`, from a different working directory.
+- [Fresh CPU-only installation](../reports/environment/cpu-wheel-clean-install-2026-11-04.json): project requirements installed into a separate temporary environment with actual CPU wheels.
+- Colab real-image checks: [CPU](../reports/environment/colab-cpu-real-2026-11-04.json), Python 3.13.18 / CPU wheels; [Tesla T4 CUDA](../reports/environment/colab-cuda-real-2026-11-04.json), Python 3.13.16 / CUDA 12.6 wheels. Both checked the same byte-verified 56-image subset and a real-image optimizer/inference batch.
+- Documented-cell execution: [CPU](../reports/environment/colab-cpu-guide-review-2026-11-04.json) and [CUDA](../reports/environment/colab-cuda-guide-review-2026-11-04.json), five cells executed in real IPython runtimes with the documented existing-data override. The API/Colab-secret branch was documented but not executed remotely.
+- [CPU/IPython check](../reports/environment/cpu-notebook-audit-2026-11-04.json): optimizer/inference execution in a captured notebook context.
+- [Strict owner CUDA check](../reports/environment/cuda-strict-audit-2026-11-04.json): host GPU preflight and current owner snapshot verified.
+- Earlier environment/Keras and data runs remain historical evidence at their recorded source hashes. They are not silently relabelled as runs of current code.
+
+The source/configuration suite contains 39 tests. CI is configured for Python 3.12 and 3.13 with Pillow and generated image fixtures; it does not download the competition or certify a GPU. The remote GitHub workflow has not been run here.
+
+SYS-03 reviewer reproduction remains a human task for Vy. FAC-01.2 loader evidence is available for Que An's independent review. Keep findings and retests under new output filenames; do not replace original results or mark an unrun review as passed. All Git/GitHub publication is performed by the human owner.
+
+Primary wheel reference: [official PyTorch CPU/CUDA installation commands](https://pytorch.org/get-started/previous-versions/).
+
+## Colab CLI on this machine
+
+The official [google-colab-cli](https://github.com/googlecolab/google-colab-cli) version 0.7.5 is installed user-wide at `~/.local/bin/colab` through `uv tool`, separate from ML libraries. The earlier [source-only transfer](../reports/environment/colab-source-only-input-2026-11-04.json) used generated fixtures. After separate explicit authorization, the same 56 original competition images and project files were uploaded to CPU and T4 runtimes under `/content/facial-attendance/`; the [real-image manifest](../reports/data/colab-real-input-2026-11-04.json) records individual image hashes and the archive hash. Inputs were stored in `data/colab-sample/`, the isolated runtime in `.venv/`, and results in `reports/compatibility/`. No Kaggle credentials, Git metadata or workspace instructions were uploaded. Both test runtimes were stopped after retrieving the evidence.
