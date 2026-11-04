@@ -1,7 +1,8 @@
-# Direct project dependencies verified in the existing Python 3.13 GPU runtime.
-# Install PyTorch CUDA wheels from the official index; see docs/setup.md.
-torch==2.13.0+cu126
-torchvision==0.28.0+cu126
+# Shared project versions. Public PyTorch versions match either CPU or CUDA wheels.
+# Install ONE wheel profile first, then this file; see docs/setup.md.
+# The owner's Python 3.13 environment already satisfies these; do not reinstall it.
+torch==2.13.0
+torchvision==0.28.0
 numpy==2.2.6
 Pillow==11.2.1
 opencv-python==5.0.0.93

@@ -7,7 +7,7 @@ name = "facial-attendance"
 version = "0.1.0"
 description = "Face verification, liveness and emotion recognition for workplace applications"
 readme = "README.md"
-requires-python = ">=3.13,<3.14"
+requires-python = ">=3.12,<3.14"
 dynamic = ["dependencies"]
 
 [tool.setuptools.packages.find]

@@ -10,6 +10,9 @@ permissions:
 jobs:
   source-checks:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12", "3.13"]
     timeout-minutes: 5
     env:
       PYTHONPATH: src
@@ -20,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v7
         with:
-          python-version-file: .python-version
+          python-version: ${{ matrix.python }}
       - name: Install image-decoding dependency for fixture tests
         run: python -m pip install Pillow==11.2.1
       - name: Validate configuration and dataset loaders with generated fixtures

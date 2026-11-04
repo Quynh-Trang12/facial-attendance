@@ -1,4 +1,5 @@
-# Installed project dependency closure: Linux x86_64, Python 3.13.16, CUDA 12.6.
+# Owner-only snapshot: Linux x86_64, Python 3.13.16, CUDA 12.6.
+# Do not install this snapshot on CPU/Colab; choose a wheel profile plus requirements.txt.
 # Snapshot of the existing runtime, not a clean-install/resolver result.
 # KaggleHub 1.0.2 supports modern API tokens; excludes optional TensorFlow and unrelated lab tools.
 # Install with the official CUDA wheel index; see docs/setup.md.
