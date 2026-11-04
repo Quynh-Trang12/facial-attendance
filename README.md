@@ -6,6 +6,8 @@ COS30082 group project combining face verification, anti-spoofing and emotion re
 
 The repository contains the application scaffold, an explicit CPU/CUDA environment check, classification/pair loaders and an entry point for the assigned Kaggle competition. Authenticated Kaggle acquisition and classification/verification/training-pair loader checks pass on the assigned dataset. Face models, model-training pipelines, registration and the webcam UI remain to be implemented.
 
+[LIV-01 data and attack protocol](docs/liveness-protocol.md) selects CelebA-Spoof, specifies subject-disjoint partitions and defines held-out webcam print/replay tests. Its [split specification](configs/liveness-protocol.json) is ready for independent review; raw-data audit and reviewer acceptance remain pending.
+
 ## Repository layout
 
 ```text

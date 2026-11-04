@@ -18,7 +18,7 @@ If your files are elsewhere (for example `/content/drive/MyDrive/face-data` on C
 
 Use [the data-loading guide](../docs/data-loading.md) for actual counts, API/local commands, dataset interfaces, sampling rules and limits. The assigned source is the [11-785 competition](https://www.kaggle.com/c/11-785-fall-20-homework-2-part-2/overview/evaluation). Decoding and DataLoader collation work on CPU; the training caller later chooses where to move tensors.
 
-`data/raw/liveness/` and `data/raw/emotion/` are reserved config paths, not already downloaded datasets. Their source/license, labels and split protocols remain separate tasks. Never commit credentials, raw face images or personal attendance records.
+`data/raw/liveness/` and `data/raw/emotion/` are reserved config paths, not already downloaded datasets. The [LIV-01 protocol](../docs/liveness-protocol.md) selects CelebA-Spoof for liveness and specifies labels, splits, licensing and physical attack tests; acquisition/audit and independent acceptance remain pending. Emotion source/labels remain a separate task. Never commit credentials, raw face images or personal attendance records.
 
 ## Local files, API and working directory
 

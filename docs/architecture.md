@@ -5,7 +5,7 @@ Keep a single Python application with one package, `facial_attendance`. Training
 | Area | Responsibility | Next implementation |
 | --- | --- | --- |
 | `recognition/` | Classification/pair datasets, Kaggle acquisition and a training-pair sampler; future embeddings/evaluation | Review split/leakage protocol, then implement two baselines |
-| `liveness/` | Live/spoof data, trained anti-spoofing model and inference | Source/split audit and print/replay protocol |
+| `liveness/` | Live/spoof data, trained anti-spoofing model and inference | Review [LIV-01 protocol](liveness-protocol.md), acquire/audit selected data, then implement training |
 | `emotion/` | Public expression data, trained classifier and label mapping | Dataset audit and per-class evaluation |
 | `ui/` | Webcam lifecycle, registration, identity feedback and display of all modules | UI prototype and agreed module adapters |
 | `config.py` | Resolve shared data/output locations from TOML | Add settings only when their consuming feature exists |

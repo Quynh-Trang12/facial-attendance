@@ -1,0 +1,65 @@
+{
+  "protocol_id": "LIV-01-v1",
+  "created": "2026-11-05",
+  "status": "design_ready_for_independent_review",
+  "dataset": {
+    "name": "CelebA-Spoof",
+    "source": "https://github.com/ZhangYuanhan-AI/CelebA-Spoof",
+    "paper": "https://arxiv.org/abs/2007.12342",
+    "download": "https://drive.google.com/drive/folders/1OW_1bawO79pRqdVEVmBzp8HSxdSwln_Z",
+    "terms": "Non-commercial research; no redistribution outside the permitted internal single-site organizational use. See the author's Dataset Agreement.",
+    "reported_images_all_types": 625537,
+    "reported_subjects_all_types": 10177,
+    "local_data_audited": false,
+    "selected_image_count": null,
+    "modality": "RGB still images",
+    "temporal_replay_evidence": false
+  },
+  "labels": {
+    "binary": {"live": 0, "spoof": 1},
+    "spoof_type_attribute_index": 40,
+    "binary_attribute_index": 43,
+    "selected_source_types": {
+      "0": {"source_name": "Live", "binary": 0, "attack_family": "live"},
+      "1": {"source_name": "Photo", "binary": 1, "attack_family": "print"},
+      "2": {"source_name": "Poster", "binary": 1, "attack_family": "print"},
+      "3": {"source_name": "A4", "binary": 1, "attack_family": "print"},
+      "7": {"source_name": "PC", "binary": 1, "attack_family": "screen"},
+      "8": {"source_name": "Pad", "binary": 1, "attack_family": "screen"},
+      "9": {"source_name": "Phone", "binary": 1, "attack_family": "screen"}
+    },
+    "excluded_source_types": [4, 5, 6, 10],
+    "unknown_source_type": "reject",
+    "score": "p_spoof; larger means more likely spoof"
+  },
+  "splits": [
+    {"name": "train", "assignment": "official training subject membership", "use": "fit weights and learned preprocessing", "observed_rows": null},
+    {"name": "validation", "assignment": "official validation subject membership", "use": "select checkpoint and threshold", "observed_rows": null},
+    {"name": "test", "assignment": "official test subject membership", "use": "locked final assessment", "observed_rows": null},
+    {"name": "webcam_test", "assignment": "new consenting local subjects; no training or selection", "use": "held-out physical print and temporal replay assessment", "observed_rows": null}
+  ],
+  "split_rules": {
+    "published_ratio_all_types": [8, 1, 1],
+    "random_image_resplit": false,
+    "subject_overlap_allowed": false,
+    "derived_samples_inherit_parent_split": true,
+    "unknown_subject_or_membership": "quarantine; never infer from row order",
+    "missing_official_validation": "stop; resolve release metadata before generating a manifest"
+  },
+  "inventory_columns": ["dataset", "release", "relative_path", "subject_id", "split", "source_type", "binary_label", "attack_family", "source_media_id", "session_id", "capture_device", "presentation_device", "lighting", "sha256"],
+  "webcam": {
+    "subjects": 3,
+    "capture_devices": 2,
+    "lighting_conditions": ["diffuse_front", "backlit_dim"],
+    "presentations": ["live", "print", "screen_photo", "video_replay"],
+    "repetitions": 2,
+    "seconds_per_clip": 10,
+    "planned_clips": 96,
+    "sampling_hz": 5,
+    "clip_score": "mean p_spoof over valid sampled face crops",
+    "insufficient_valid_frames": "error_no_attendance; fewer than 25 valid samples",
+    "threshold_source": "validation only; frozen before test and webcam_test",
+    "execution_status": "not_run"
+  },
+  "review": {"owner": "Trang", "reviewer": "chị Dung", "independent_review": "pending", "review_findings": null, "reviewer_retest": "pending"}
+}

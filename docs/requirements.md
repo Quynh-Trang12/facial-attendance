@@ -6,7 +6,7 @@ The governing source is the supplied [project brief](reference/project-brief.pdf
 | --- | --- | --- |
 | Train CNN embeddings with both classification-based and metric-learning approaches and compare verification performance | `recognition/` | Data/pair loaders verified on the assigned competition data; models not trained |
 | Compute ROC/AUC on `verification_pairs_val.txt`; research similarity metrics | `recognition/` evaluation | Trial loader and all listed paths/labels validated; model evaluation pending |
-| Train and integrate anti-spoofing for real, printed and screen/replay faces | `liveness/`, `ui/` | Scaffold only |
+| Train and integrate anti-spoofing for real, printed and screen/replay faces | `liveness/`, `ui/` | [LIV-01 source/split and webcam protocol](liveness-protocol.md) prepared for review; data audit, training and integration pending |
 | Train emotion recognition on public data and display emotion labels/icons | `emotion/`, `ui/` | Scaffold only |
 | Real-time webcam, display registered identity, prompt unknown users and support registration | `ui/`, `recognition/` | Scaffold only |
 | Versioned shared setup and a training/inference check | Dependencies, `environment.py`, setup guide, execution reports | Owner GPU check implemented; independent review pending |
