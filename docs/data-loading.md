@@ -8,14 +8,14 @@ Use the assigned [Kaggle competition](https://www.kaggle.com/c/11-785-fall-20-ho
 
 ### 1. Select the project interpreter
 
-Open a terminal in the repository root, the directory containing `configs/`, `scripts/` and `requirements.txt`. Complete the CPU or CUDA installation in [setup](setup.md) if this is a new machine. Commands below use `python` to mean **that configured environment's interpreter**, not an arbitrary system Python. On the owner's machine use `~/.local/share/ml-frameworks/.venv/bin/python` in place of `python`; do not reinstall that environment.
+Open a terminal in the repository root, the directory containing `configs/`, `scripts/` and `requirements.txt`. Complete the CPU or CUDA installation in [setup](setup.md) if this is a new machine. Commands below use `python` to mean **that configured environment's interpreter**, not an arbitrary system Python. In Windows PowerShell, use `.\.venv\Scripts\python.exe`; on macOS use `.venv/bin/python` after completing its OS-specific setup. On the owner's machine use `~/.local/share/ml-frameworks/.venv/bin/python` in place of `python`; do not reinstall that environment.
 
 ```bash
 python --version
 python -m pip show kagglehub
 ```
 
-Expected: Python 3.12 or 3.13 and KaggleHub 1.0.2. The pinned client supports modern API tokens.
+Expected: Python 3.13.x and KaggleHub 1.0.2. The pinned client supports modern API tokens.
 
 ### 2. Configure your own Kaggle token once
 
@@ -30,8 +30,7 @@ Run this only when adding/replacing your own token; it replaces that token file.
 ### 3. Download and inspect
 
 ```bash
-python scripts/check_face_data.py --download \
-  --output reports/data/kaggle-review.json
+python scripts/check_face_data.py --download --output reports/data/kaggle-review.json
 ```
 
 Expected: exit code 0 and JSON `status=PASS`. The script prints the dataset root, split counts, trial counts and batch checks. Download/extraction may take several minutes. Files remain under ignored `data/.kagglehub/`; the loader uses KaggleHub's returned root without copying a second dataset. Expected full-data counts are listed [below](#observed-evidence-and-acceptance).
@@ -39,15 +38,13 @@ Expected: exit code 0 and JSON `status=PASS`. The script prints the dataset root
 For a repeat run, choose a new output filename, for example `kaggle-review-02.json`; reports are intentionally not overwritten. When data is already present, local mode skips the Kaggle API:
 
 ```bash
-python scripts/check_face_data.py \
-  --output reports/data/local-review.json
+python scripts/check_face_data.py --output reports/data/local-review.json
 ```
 
 This reads `paths.face_data` from `configs/project.toml`. To use a manually extracted directory or another disk, explicitly select its dataset root:
 
 ```bash
-python scripts/check_face_data.py --data-root /path/to/extracted/dataset \
-  --output reports/data/external-review.json
+python scripts/check_face_data.py --data-root "/path/to/extracted/dataset" --output reports/data/external-review.json
 ```
 
 That root must contain `classification_data/`, `verification_data/` and `verification_pairs_val.txt`, as shown in [the storage guide](../data/README.md). Discovery also accepts one enclosing directory. Further nesting or incomplete extraction raises an error. API mode reads `paths.kaggle_cache` from the same config; `--cache-dir` overrides that cache and `--config` selects another TOML file. `--data-root` selects existing files and cannot be combined with `--download`.
@@ -106,7 +103,7 @@ Each runtime passed all seven loader checks and 39 unit tests. A batch of four r
 
 ### Local full-dataset acquisition and inspection
 
-The [current default-config run](../reports/data/config-default-audit-2026-11-04.json) passed on the real dataset without `--data-root`, invoked from `/tmp` to check working-directory independence. The following earlier runs retain their historical source hashes; their counts, mapping and sampled-pair outputs were compared against the refactor. The complete current suite has 39 passing tests.
+The [current default-config run](../reports/data/config-default-audit-2026-11-04.json) passed on the real dataset without `--data-root`, invoked from `/tmp` to check working-directory independence. The following earlier runs retain their historical source hashes; their counts, mapping and sampled-pair outputs were compared against the refactor. The complete current suite has 46 passing tests.
 
 - Historical pre-refactor [test log](../reports/data/loader-tests-kagglehub-1.0.2.log): **26 tests PASS**, including 19 loader/acquisition fixture tests and seven existing configuration tests. Mocked API tests establish the call contract, not real authentication.
 - Historical pre-refactor [CLI fixture result](../reports/data/fixture-kagglehub-1.0.2.json): **PASS** on temporary generated PNGs. Classification train batch `[4,3,112,112]`; validation/test and verification batches `[2,3,112,112]`; sampled-pair batch `[4,3,112,112]`. All seven loader checks pass. These are not Kaggle images.

@@ -1,0 +1,95 @@
+{
+  "schema_version": 2,
+  "timestamp_utc": "2026-11-04T16:01:33.505143+00:00",
+  "operator": "os-policy-cpu",
+  "status": "PASS",
+  "python": "3.13.16",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "os": "Linux",
+  "architecture": "x86_64",
+  "macos_version": "",
+  "source_sha256": {
+    ".python-version": "2d82946ffb2ecf549699ebb86ecbbe663bbc19d53c49c681a1a425f003f80ddb",
+    "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140",
+    "pyproject.toml": "8e9f7a37ab922eb808bf41ccac1a9030316a8f747e3556d8a6cbf6cce65a2040",
+    "requirements-cpu.txt": "2b8d74b1b1517b6a8174b844481202d4065f7741c37be91a51d0851d37330397",
+    "requirements-cuda.txt": "5f0ce8040646dacffafddd679b598f1d7e81ab4ff8997c609ed229f891b28860",
+    "requirements.lock": "3a852e8bbb3afa570e2330792e1dde24005b9d2910ebcb7eedb565f85da22a4b",
+    "requirements.txt": "e122d89983b53a006f29edd69dc8608e396fa55fbab2ae8cbd44b01779c6764b",
+    "scripts/check_environment.py": "9f2e44d04330a3be2786a32183272ac82472d7c03127590df71533b6144334e5",
+    "scripts/check_face_data.py": "ea2db0ddad1dfac28972e1eb21d77a2d9a57a86ccfb7fa497f23758947af0b9e",
+    "src/facial_attendance/__init__.py": "b5ce45acf9fcd5bb33c84f40bfc73924f81e3dce7eae082344b9647cfe8190c6",
+    "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+    "src/facial_attendance/emotion/__init__.py": "0e4d4046421d71cce3a9ed470f8c3078a3caa70734168a482c7503f983a231e7",
+    "src/facial_attendance/environment.py": "08060fb1af6846e2fa9bf7b99915b9186c8e63e56229dd2c13bdfd7a1141326c",
+    "src/facial_attendance/liveness/__init__.py": "7d8428f6f6e0d59905eb2edd09f416f8a2891619d7a3ab75a7d08ea0a913da50",
+    "src/facial_attendance/recognition/__init__.py": "56e9390700a9cf78a00c3544cb9b895d74c92217982c7b595aabe49ca487a1ac",
+    "src/facial_attendance/recognition/data_loader.py": "16f1c0161ecdd8e6ac65870ea92c3fb646413d53e589c7b8c5664a8939a4c3c0",
+    "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+    "src/facial_attendance/runtime_checks.py": "6534250b6df24b3f79dda8876145877bfa7b35c4be89ce96d80d3eef81f5202e",
+    "src/facial_attendance/ui/__init__.py": "bf73df8d35c08c671b420a8ee52b2e708379d8f1e4144eaa68aa9cf823e0c5d5",
+    "tests/test_config.py": "dd27cbcfd24c879b9f5c42b89809090607c7b8e5360f4cbf5716d8f681b3ccb5",
+    "tests/test_data_cli.py": "3174fce3a4da07a60947f75857109d5f646597a6a66ced741a93b7bbbb05ec20",
+    "tests/test_face_data.py": "1c54deeb40f6943ed12d783b2590ac3443db5daaec5de6b55706a358142eda61",
+    "tests/test_runtime.py": "91d0a9e68fd58179b91600c834d58da71a5c54c412a75ad160967e22b7d027e7"
+  },
+  "versions": {
+    "torch": "2.13.0+cpu",
+    "torchvision": "0.28.0+cpu",
+    "numpy": "2.2.6",
+    "Pillow": "11.2.1",
+    "opencv-python": "5.0.0.93",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.10.3",
+    "tqdm": "4.70.1",
+    "kagglehub": "1.0.2"
+  },
+  "version_policy": "portable_pins",
+  "locked_distributions_checked": 0,
+  "input": {
+    "source": "synthetic RGB tensor",
+    "shape": [
+      4,
+      3,
+      32,
+      32
+    ],
+    "seed": 42
+  },
+  "training": {
+    "loss": 0.7021355032920837,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "updated_parameter_tensors": 4,
+    "gradients_finite": true
+  },
+  "inference": {
+    "shape": [
+      4,
+      2
+    ],
+    "finite": true,
+    "device": "cpu",
+    "requires_grad": false
+  },
+  "requested_device": "cpu",
+  "device": "cpu",
+  "gpu": null,
+  "torch_cuda_build": null,
+  "checks": {
+    "platform": true,
+    "imports": true,
+    "direct_pins": true,
+    "config": true,
+    "model_and_data_on_requested_device": true,
+    "finite_loss": true,
+    "finite_gradients": true,
+    "parameters_updated": true,
+    "inference": true,
+    "image_and_metric_apis": true,
+    "pip_check": true
+  },
+  "pip_check": "No broken requirements found.",
+  "face_dataset_present": true,
+  "limits": "One synthetic step; no dataset accuracy, webcam or GUI evaluation."
+}

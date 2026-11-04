@@ -19,7 +19,8 @@ facial-attendance/
 ├── configs/project.toml           # Dataset and generated-output locations
 ├── src/facial_attendance/
 │   ├── config.py                  # Portable storage-path configuration
-│   ├── environment.py             # Staged version, CPU/CUDA and API checks
+│   ├── environment.py             # Version policy, CLI and evidence reporting
+│   ├── runtime_checks.py          # ML imports and actual CPU/CUDA computation checks
 │   ├── recognition/               # Working data/pair loaders; future embedding models
 │   ├── liveness/                  # Reserved for the trained anti-spoofing module
 │   ├── emotion/                   # Reserved for the trained emotion module
@@ -40,7 +41,7 @@ facial-attendance/
 
 ## Development setup
 
-The project supports **Python 3.12–3.13** and explicit CPU/CUDA execution. On Trang's machine, retain the existing **Python 3.13.16** GPU environment; do not reinstall it:
+The project targets **Python 3.13.x**, Linux/Windows x64 CPU or NVIDIA CUDA, and macOS 14+ Apple Silicon CPU. See the [OS-specific setup and verification status](docs/setup.md#choose-the-operating-system-and-runtime-first); Windows/macOS native execution is pending. On Trang's machine, retain the existing **Python 3.13.16** GPU environment; do not reinstall it:
 
 ```bash
 ~/.local/share/ml-frameworks/run_gpu.sh scripts/check_environment.py \
@@ -59,9 +60,9 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 \
   ~/.local/share/ml-frameworks/.venv/bin/python -m unittest discover -s tests -v
 ```
 
-GitHub CI is configured for source and generated-image tests on Python 3.12 and 3.13 with Pillow; it neither downloads competition data nor certifies CUDA. The workflow has read-only repository permissions and never commits generated results.
+GitHub CI uses only the Python version in `.python-version` (3.13.16): one Linux source check and CPU installation/test jobs on Windows x64 and macOS Apple Silicon; it neither downloads competition data nor certifies CUDA. The workflow has read-only repository permissions and never commits generated results. Members use one Python 3.13 environment on their own OS; they do not need to test other Python versions or every device profile.
 
 ## Project delivery
 
-[Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Current verification evidence](reports/README.md) links the configured-data, CPU/IPython and strict CUDA runs; older runs retain their recorded source hashes. The suite now has 39 passing configuration, runtime-policy and loader tests; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent reviewer execution remains pending. Small reports may be committed after inspection; datasets, credentials, checkpoints and personal attendance records stay local.
+[Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Current verification evidence](reports/README.md) links the configured-data, CPU/IPython and strict CUDA runs; older runs retain their recorded source hashes. The suite now has 46 passing configuration, runtime-policy and loader tests; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent reviewer execution remains pending. Small reports may be committed after inspection; datasets, credentials, checkpoints and personal attendance records stay local.
 
