@@ -1,0 +1,97 @@
+name: Commit policy
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  attribution:
+    name: Commit attribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Validate commit authors and co-authors
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const allowed = new Set([
+              "quynhtranglengoc@gmail.com",
+              "adam2006.vn@gmail.com",
+              "phamtruongquean@gmail.com",
+              "nhdung98@gmail.com",
+            ].map(email => email.trim().toLowerCase()));
+
+            if ([...allowed].some(email => email.startsWith("replace_with_"))) {
+              throw new Error("Configure the team's actual commit emails first.");
+            }
+
+            const params = {
+              ...context.repo,
+              pull_number: context.payload.pull_request.number,
+            };
+
+            const { data: pr } = await github.rest.pulls.get(params);
+            const commits = await github.paginate(
+              github.rest.pulls.listCommits,
+              { ...params, per_page: 100 }
+            );
+
+            // Fail rather than silently accept an incomplete API result.
+            if (commits.length !== pr.commits || commits.length === 0) {
+              throw new Error(
+                "Could not inspect every PR commit. Check the API result " +
+                "or split a PR containing more than 250 commits."
+              );
+            }
+
+            function validateCommit(entry) {
+              const errors = [];
+              const sha = entry.sha.slice(0, 7);
+              const author = (entry.commit.author?.email ?? "")
+                .trim().toLowerCase();
+
+              if (!allowed.has(author)) {
+                errors.push(
+                  `${sha}: author email is not approved: ${author || "(missing)"}`
+                );
+              }
+
+              // Inspect metadata only; never execute commit-message content.
+              for (const line of (entry.commit.message ?? "").split(/\r?\n/)) {
+                const trailer = line.match(/^\s*Co-authored-by\s*:(.*)$/i);
+                if (!trailer) continue;
+
+                const identity = trailer[1].trim()
+                  .match(/^([^<>]+)\s+<([^<>\s]+)>$/);
+
+                if (!identity) {
+                  errors.push(`${sha}: malformed Co-authored-by trailer`);
+                  continue;
+                }
+
+                const email = identity[2].toLowerCase();
+                if (!allowed.has(email)) {
+                  errors.push(
+                    `${sha}: co-author email is not approved: ${email}`
+                  );
+                }
+              }
+
+              return errors;
+            }
+
+            const errors = commits.flatMap(validateCommit);
+            if (errors.length) {
+              for (const error of errors) core.error(error);
+              core.setFailed("Commit attribution policy failed.");
+            } else {
+              core.info(
+                `PASS: checked authors and co-authors in ${commits.length} commits.`
+              );
+            }
