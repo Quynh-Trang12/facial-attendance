@@ -22,6 +22,7 @@ jobs:
           script: |
             const allowed = new Set([
               "quynhtranglengoc@gmail.com",
+              "134451044+quynh-trang12@users.noreply.github.com",
               "adam2006.vn@gmail.com",
               "phamtruongquean@gmail.com",
               "nhdung98@gmail.com",
