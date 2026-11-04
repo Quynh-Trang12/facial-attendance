@@ -48,11 +48,9 @@ def version_matches(expected: str, installed: str) -> bool:
 def validate_python(
     actual: tuple[int, int, int], *, owner_patch: str | None = None
 ) -> None:
-    # This is the supported project envelope, not a demand to replace Colab's Python.
-    # The owner-specific patch pin is checked only for an explicit snapshot replay.
-    require(
-        (3, 12) <= actual[:2] < (3, 14), "Project runtime requires Python 3.12 or 3.13"
-    )
+    # The team uses one Python minor version. Patch releases may differ between
+    # machines/Colab; only an explicit owner snapshot replay requires its patch.
+    require(actual[:2] == (3, 13), "Project runtime requires Python 3.13.x")
     if owner_patch is not None:
         require(
             ".".join(map(str, actual)) == owner_patch,
@@ -71,6 +69,48 @@ def select_device(requested: str, *, cuda_available: bool) -> str:
         )
         return "cuda:0"
     raise ValueError(f"Unsupported device: {requested}")
+
+
+def validate_platform(
+    system: str,
+    machine: str,
+    *,
+    macos_version: str = "",
+    device: str = "cpu",
+    strict_owner: bool = False,
+) -> None:
+    """Reject targets without wheels for the pinned stack before ML imports."""
+    x64 = machine.lower() in {"amd64", "x86_64"}
+    if strict_owner:
+        require(
+            system == "Linux" and x64,
+            "--strict-owner is the Linux x86_64 owner snapshot; omit it on Windows/macOS.",
+        )
+    if system == "Darwin":
+        # Intel and Rosetta Python cannot install the pinned arm64 Torch wheels.
+        require(
+            machine.lower() == "arm64",
+            "The pinned Torch stack requires native Apple Silicon Python on macOS. "
+            "macOS Intel/Rosetta is unsupported; see docs/setup.md.",
+        )
+        try:
+            major = int(macos_version.split(".")[0])
+        except ValueError:
+            raise RuntimeError(
+                "Could not determine macOS version; macOS 14+ is required."
+            ) from None
+        require(major >= 14, "The pinned Torch wheels require macOS 14 or newer.")
+        require(
+            device == "cpu",
+            "macOS does not support this CUDA profile. Select --device cpu explicitly; "
+            "MPS execution has not been implemented or verified.",
+        )
+    elif system in {"Windows", "Linux"}:
+        require(x64, f"This project setup targets {system} x86_64, not {machine}.")
+    else:
+        raise RuntimeError(
+            f"Unsupported operating system: {system}. See docs/setup.md."
+        )
 
 
 def source_hashes(root: Path) -> dict[str, str]:
@@ -94,7 +134,7 @@ def source_hashes(root: Path) -> dict[str, str]:
     ]:
         files.extend((root / folder).rglob(pattern))
     return {
-        str(path.relative_to(root)): sha256(path.read_bytes()).hexdigest()
+        path.relative_to(root).as_posix(): sha256(path.read_bytes()).hexdigest()
         for path in sorted(files)
     }
 
@@ -132,125 +172,24 @@ def check_versions(root: Path, *, strict_owner: bool) -> dict:
     }
 
 
-def check_training_step(device) -> tuple[dict, object]:
-    """Prove that autograd and the optimizer work, not merely that a model imports."""
-    import torch
-
-    torch.manual_seed(42)
-    if device.type == "cuda":
-        torch.cuda.manual_seed_all(42)
-    batch = torch.rand(4, 3, 32, 32, device=device)
-    targets = torch.tensor([0, 1, 0, 1], device=device)
-    model = torch.nn.Sequential(
-        torch.nn.Conv2d(3, 8, 3, padding=1),
-        torch.nn.ReLU(),
-        torch.nn.AdaptiveAvgPool2d(1),
-        torch.nn.Flatten(),
-        torch.nn.Linear(8, 2),
-    ).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    require(
-        all(p.device == batch.device == targets.device for p in model.parameters()),
-        "Model, images and targets must share the requested device",
-    )
-
-    # Compare weights before/after: a finite loss alone cannot detect a no-op update.
-    before = [parameter.detach().clone() for parameter in model.parameters()]
-    model.train()
-    optimizer.zero_grad(set_to_none=True)
-    loss = torch.nn.functional.cross_entropy(model(batch), targets)
-    require(torch.isfinite(loss).item(), "Training loss is not finite")
-    loss.backward()
-    require(
-        all(
-            p.grad is not None and torch.isfinite(p.grad).all().item()
-            for p in model.parameters()
-        ),
-        "Missing or nonfinite gradients",
-    )
-    optimizer.step()
-    require(
-        all(torch.isfinite(p).all().item() for p in model.parameters()),
-        "Nonfinite parameters after optimization",
-    )
-    changed = sum(
-        not torch.equal(old, new.detach())
-        for old, new in zip(before, model.parameters())
-    )
-    require(changed > 0, "No parameters changed after the optimizer step")
-
-    # eval() changes layer behavior; inference_mode() independently disables autograd.
-    model.eval()
-    with torch.inference_mode():
-        output = model(batch)
-    require(not model.training and not output.requires_grad, "Invalid inference mode")
-    require(
-        list(output.shape) == [4, 2] and output.device == device,
-        "Inference shape/device does not match the contract",
-    )
-    require(torch.isfinite(output).all().item(), "Nonfinite inference output")
-    return {
-        "input": {
-            "source": "synthetic RGB tensor",
-            "shape": list(batch.shape),
-            "seed": 42,
-        },
-        "training": {
-            "loss": loss.item(),
-            "optimizer": "Adam",
-            "learning_rate": 0.001,
-            "updated_parameter_tensors": changed,
-            "gradients_finite": True,
-        },
-        "inference": {
-            "shape": list(output.shape),
-            "finite": True,
-            "device": str(output.device),
-            "requires_grad": output.requires_grad,
-        },
-    }, output
-
-
-def check_image_and_metric_apis(output) -> None:
-    """Exercise array/image interoperability without reporting a fake project AUC."""
-    import cv2
-    import numpy as np
-    from PIL import Image
-    from sklearn.metrics import roc_auc_score
-    import torchvision
-
-    image = Image.fromarray(np.zeros((8, 8, 3), dtype=np.uint8))
-    converted = cv2.cvtColor(np.asarray(image), cv2.COLOR_BGR2RGB)
-    require(
-        torchvision.transforms.functional.to_tensor(image).shape == (3, 8, 8)
-        and converted.shape == (8, 8, 3),
-        "Image conversion failed",
-    )
-    require(np.isfinite(output.cpu().numpy()).all(), "Tensor/NumPy conversion failed")
-    require(roc_auc_score([0, 1], [0.1, 0.9]) == 1.0, "Metric API check failed")
-
-
 def check_environment(
     root: Path, *, device: str = "cuda", strict_owner: bool = False
 ) -> dict:
     """Validate setup in stages; dataset availability is reported, not fabricated."""
-    import cv2
-    import matplotlib
-    import numpy
-    import PIL
-    import sklearn
-    import torch
-    import torchvision
-    import tqdm
-
+    validate_platform(
+        platform.system(),
+        platform.machine(),
+        macos_version=platform.mac_ver()[0],
+        device=device,
+        strict_owner=strict_owner,
+    )
     versions = check_versions(root, strict_owner=strict_owner)
     paths = load_paths(root / "configs/project.toml", root=root)
-    # CPU is a deliberate mode. It can run with a CUDA-built wheel without using CUDA.
-    selected = torch.device(
-        select_device(device, cuda_available=torch.cuda.is_available())
-    )
-    computation, output = check_training_step(selected)
-    check_image_and_metric_apis(output)
+    # A single lazy boundary keeps --help/policy tests lightweight and lets main()
+    # record missing-package/import failures in JSON instead of crashing at startup.
+    from .runtime_checks import check_runtime
+
+    computation = check_runtime(device)
     package_check = subprocess.run(
         [sys.executable, "-m", "pip", "check"], capture_output=True, text=True
     )
@@ -261,13 +200,8 @@ def check_environment(
     return {
         **versions,
         **computation,
-        "requested_device": device,
-        "device": str(selected),
-        "gpu": torch.cuda.get_device_name(selected)
-        if selected.type == "cuda"
-        else None,
-        "torch_cuda_build": torch.version.cuda,
         "checks": {
+            "platform": True,
             "imports": True,
             "direct_pins": True,
             "config": True,
@@ -311,6 +245,9 @@ def main(argv: list[str] | None = None) -> int:
         "status": "FAIL",
         "python": platform.python_version(),
         "platform": platform.platform(),
+        "os": platform.system(),
+        "architecture": platform.machine(),
+        "macos_version": platform.mac_ver()[0],
     }
     exit_code = 1
     try:

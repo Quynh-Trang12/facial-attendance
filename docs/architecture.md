@@ -9,7 +9,10 @@ Keep a single Python application with one package, `facial_attendance`. Training
 | `emotion/` | Public expression data, trained classifier and label mapping | Dataset audit and per-class evaluation |
 | `ui/` | Webcam lifecycle, registration, identity feedback and display of all modules | UI prototype and agreed module adapters |
 | `config.py` | Resolve shared data/output locations from TOML | Add settings only when their consuming feature exists |
-| `environment.py` | Staged public-version/device/computation checks; optional strict owner snapshot | Independent developer reproduction on an explicit CPU/CUDA target |
+| `environment.py` | Version/device policy, CLI and JSON evidence; no eager ML imports | Independent developer reproduction on an explicit CPU/CUDA target |
+| `runtime_checks.py` | ML imports, optimizer/inference and image/metric API smoke checks | Loaded once when the environment check executes |
+
+The environment CLI loads `runtime_checks.py` at one documented boundary so help, policy tests and failed-install reports work without an installed ML stack. Computational helpers keep their imports at module level.
 
 Recognition now contains working `data_loader.py` and `download.py` implementations described in [data loading](data-loading.md). Liveness, emotion and UI remain package boundaries whose `__init__.py` files do not implement the features. Add `data_loader.py`, `model.py`, `train.py` or `evaluate.py` inside a feature only as it gains working code. Put reusable tests under `tests/`; keep command entry points in `scripts/` and implementation in `src/`.
 

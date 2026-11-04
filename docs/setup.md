@@ -1,24 +1,79 @@
 # Runtime setup and verification
 
-The owner reference environment is Python 3.13.16 with PyTorch 2.13.0+cu126 on Linux/NVIDIA. It stays unchanged at `~/.local/share/ml-frameworks/.venv`. The project also accepts Python 3.12 and other Python 3.13 patch releases, with explicit CPU or CUDA execution. `.python-version` is the owner's development pin; it is not a command to replace another machine's interpreter.
+The owner reference environment is Python 3.13.16 with PyTorch 2.13.0+cu126 on Linux/NVIDIA. It stays unchanged at `~/.local/share/ml-frameworks/.venv`. The team uses Python 3.13.x, with explicit CPU or CUDA execution. Other 3.13 patch releases, such as 3.13.18, are accepted; no patch-version test matrix is required. `.python-version` is the owner's development pin; it is not a command to replace another machine's interpreter.
 
-## Choose dependencies for the target machine
+## Choose the operating system and runtime first
 
-| File | Purpose |
-| --- | --- |
-| `requirements.txt` | Shared public package versions; PyTorch CPU/CUDA build suffixes are allowed |
-| `requirements-cpu.txt` | Official PyTorch CPU wheel selection for a new CPU environment |
-| `requirements-cuda.txt` | Official CUDA 12.6 wheel selection for a new NVIDIA environment |
-| `requirements.lock` | Exact 58-package owner snapshot; not a portable CPU/Colab installation file |
+Use Python **3.13.x** for the team's common setup. CI reads **3.13.16** from `.python-version`; do not downgrade a working 3.13 environment just to match that patch. An existing compatible environment can be reused. The owner's Linux GPU environment must not be reinstalled. These instructions define supported targets; wheel availability and dependency resolution are not the same as a successful native execution test.
 
-On the owner's working environment, install nothing. For another developer who actually needs a new environment, select **one** framework profile, then install the shared dependencies:
+| Target | Installation | Execution | Verification status |
+| --- | --- | --- | --- |
+| Linux x86_64 | One CPU/CUDA profile, then shared requirements | `cpu` or NVIDIA `cuda` | Executed locally; Colab evidence is separate |
+| Windows x64 | One CPU/CUDA profile, then shared requirements | `cpu` or NVIDIA `cuda` | CPU dependency resolution passed; native CPU CI configured, pending execution |
+| macOS 14+ on Apple Silicon | Shared requirements from PyPI; native arm64 Python | Explicit `cpu` | Dependency resolution passed; native CPU CI configured, pending execution |
+| macOS Intel, or Apple Silicon using Rosetta/x86_64 Python | No supported install for the current pins | Unsupported locally | Torch 2.13 has no Intel macOS wheel; requires a separately selected/tested stack |
+| Windows ARM64 / other architectures | Not covered by this setup | Unsupported target | Do not assume that availability of a Torch wheel covers every dependency |
+
+The macOS minimum comes from the pinned [Torch release wheels](https://pypi.org/project/torch/2.13.0/#files). It is not a requirement to match the owner's OS or Python patch. On macOS, check **Apple menu → About This Mac** for the chip and OS version. The interpreter's architecture matters too: an Apple Silicon computer running x86_64 Python through Rosetta cannot use arm64 wheels.
+
+`requirements.txt` pins the nine shared direct dependencies. `requirements-cpu.txt` selects official CPU wheels for Linux/Windows x64; `requirements-cuda.txt` selects CUDA 12.6 wheels for Linux/Windows NVIDIA. `requirements.lock` is only the owner's 58-package Linux/CUDA snapshot. Neither CUDA nor the strict owner snapshot is a macOS setup profile. MPS acceleration is outside the currently implemented/verified device modes.
+
+### Windows: PowerShell
+
+Open PowerShell in the repository root. If you already have a compatible environment, use its Python executable and skip environment creation. Otherwise, with Python 3.13 already installed:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-cpu.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe scripts/check_environment.py --device cpu --operator windows-review --output reports/environment/windows-review.json
+```
+
+Directly invoking the executable avoids PowerShell activation/execution-policy issues. For an intentional NVIDIA run, use `requirements-cuda.txt` instead of the CPU profile, then explicitly use `--device cuda` and a new output filename. The GPU driver must support CUDA 12.6; Windows CPU compatibility does not establish CUDA compatibility on that machine. Do not run the owner's `.sh` launcher or copy `~/.local/share/ml-frameworks/...` paths onto Windows.
+
+To run the source/loader tests in PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+### macOS: Terminal on Apple Silicon, macOS 14+
+
+Open Terminal in the repository root. Check the OS and Python architecture first:
+
+```bash
+sw_vers -productVersion
+python3.13 -c "import platform; print(platform.machine())"
+```
+
+The architecture must be `arm64`. Use a native arm64 Python 3.13 installation; do not run an Intel interpreter under Rosetta for this dependency set. Reuse a compatible environment if present; otherwise:
+
+```bash
+python3.13 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python scripts/check_environment.py --device cpu --operator macos-review --output reports/environment/macos-review.json
+PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
+```
+
+Install from PyPI on macOS; do not use CUDA wheels, `--device cuda`, or `--strict-owner`. CPU mode is deliberate, not an automatic fallback. An Intel Mac cannot install the pinned Torch stack natively. The previously verified Colab setup is an available alternative if the member chooses it; no runtime is switched silently and no untested older dependency stack is substituted.
+
+### Linux or Colab
+
+For a new Linux x86_64 environment, install one wheel profile, then shared requirements:
 
 ```bash
 python -m pip install -r requirements-cpu.txt
 python -m pip install -r requirements.txt
 ```
 
-For NVIDIA, replace the first file with `requirements-cuda.txt`; the driver must support that CUDA wheel. Public `torch==2.13.0` accepts the corresponding `+cpu` or `+cu126` build selected in the first step. Do not install both profiles or use the owner lock to force NVIDIA packages onto a CPU machine. These are setup instructions, not evidence of a fresh installation on every supported platform.
+For NVIDIA, replace the first profile with `requirements-cuda.txt` and explicitly request `--device cuda`. On the owner's environment, install nothing. Colab has its own complete sequence below.
+
+### Review failures without guessing the cause
+
+Use a new output filename each time. The environment check records `os`, `architecture`, `macos_version`, Python and either the actual computation result or a failed-check traceback. It runs platform checks before importing the ML stack, so missing dependencies and unsupported OS/architecture can still produce evidence. If pip installation fails, retain its terminal output too; the environment script does not capture an earlier pip command.
+
+Ask the reviewer to share the generated JSON and the failed command/output, rather than interpret the error themselves. A generic report of an OS mismatch does not identify whether the failing layer was a shell command, Python architecture, wheel availability, native library, or driver. Repeated installation is not the default remedy.
 
 ## Owner GPU check
 
@@ -46,7 +101,7 @@ Both devices run one optimizer step on four synthetic images, verify finite grad
 
 ## Google Colab: CPU or NVIDIA GPU
 
-Follow these cells in order in one notebook session. They run repository scripts in a separate `.venv` using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. The supported Python range is 3.12–3.13; a different patch release from the owner's 3.13.16 is acceptable.
+Follow these cells in order in one notebook session. They run repository scripts in a separate `.venv` using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. Use the Python 3.13 interpreter supplied by Colab; a different patch release from the owner's 3.13.16 is acceptable. Do not install another Python just to match the patch.
 
 ### 1. Put the repository in one directory and select the device
 
@@ -62,7 +117,7 @@ import venv
 
 repo = Path('/content/facial-attendance')
 assert (repo / 'scripts/check_environment.py').is_file(), 'Extract the repo first'
-assert (3, 12) <= sys.version_info[:2] < (3, 14), sys.version
+assert sys.version_info[:2] == (3, 13), sys.version
 # Match the Colab runtime you selected: 'cpu' or 'cuda'.
 device = 'cpu'
 if device == 'cuda':
@@ -124,7 +179,7 @@ run('environment', [python, 'scripts/check_environment.py', '--device', device,
                     '--output', reports / 'environment.json'])
 ```
 
-Expected: 39 tests pass; environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
+Expected: 46 tests pass; environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
 
 ### 5. Run the loader on real competition data
 
@@ -157,6 +212,11 @@ Dataset decoding/collation happens on CPU and does not require GPU access. In Co
 
 ## Current evidence and remaining review
 
+- Current Python 3.13-only policy: [CPU runtime report](../reports/environment/cpu-python313-2026-11-04.json) and [46-test log](../reports/environment/python313-tests-2026-11-04.log).
+
+- [Historical platform dependency resolution](../reports/environment/platform-resolution-2026-11-04.json): includes the now-retired Python 3.12 target alongside 3.13. The Python 3.13 Windows x64/macOS arm64 resolutions passed; this is not native execution and does not require members to repeat resolution tests.
+- Earlier OS-policy execution: [Linux CPU](../reports/environment/cpu-os-policy-2026-11-04.json), [Linux CUDA](../reports/environment/cuda-os-policy-2026-11-04.json), and [46-test log](../reports/environment/os-policy-tests-2026-11-04.log).
+
 - [Configured default dataset check](../reports/data/config-default-audit-2026-11-04.json): actual data loaded without `--data-root`, from a different working directory.
 - [Fresh CPU-only installation](../reports/environment/cpu-wheel-clean-install-2026-11-04.json): project requirements installed into a separate temporary environment with actual CPU wheels.
 - Colab real-image checks: [CPU](../reports/environment/colab-cpu-real-2026-11-04.json), Python 3.13.18 / CPU wheels; [Tesla T4 CUDA](../reports/environment/colab-cuda-real-2026-11-04.json), Python 3.13.16 / CUDA 12.6 wheels. Both checked the same byte-verified 56-image subset and a real-image optimizer/inference batch.
@@ -165,7 +225,11 @@ Dataset decoding/collation happens on CPU and does not require GPU access. In Co
 - [Strict owner CUDA check](../reports/environment/cuda-strict-audit-2026-11-04.json): host GPU preflight and current owner snapshot verified.
 - Earlier environment/Keras and data runs remain historical evidence at their recorded source hashes. They are not silently relabelled as runs of current code.
 
-The source/configuration suite contains 39 tests. CI is configured for Python 3.12 and 3.13 with Pillow and generated image fixtures; it does not download the competition or certify a GPU. The remote GitHub workflow has not been run here.
+The source/configuration suite contains 46 tests. All CI jobs read `.python-version` and run **3.13.16 only**. The Linux check retains its existing `source-checks (3.13)` name. Windows x64 and macOS Apple Silicon CPU jobs cover the team's actual operating systems, not extra Python versions. Native Windows/macOS execution is pending until the owner publishes the workflow and GitHub runs it.
+
+If the branch ruleset still requires `source-checks (3.12)`, remove that obsolete requirement under Settings → Rules → Rulesets → main-pr-and-ci → required status checks. Keep `source-checks (3.13)`. After successful native runs, the Windows/macOS check names remain `OS compatibility (windows-latest)` and `OS compatibility (macos-15)`.
+
+For SYS-03 review, Vy runs the documented check once on his own OS and chosen device, then records the result. No member is asked to install another Python patch, test every OS or rerun both CPU/CUDA profiles. CI handles the operating-system checks.
 
 SYS-03 reviewer reproduction remains a human task for Vy. FAC-01.2 loader evidence is available for Que An's independent review. Keep findings and retests under new output filenames; do not replace original results or mark an unrun review as passed. All Git/GitHub publication is performed by the human owner.
 
