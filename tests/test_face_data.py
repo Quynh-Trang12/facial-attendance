@@ -56,7 +56,7 @@ class FaceDataTests(unittest.TestCase):
             "verification_pairs_val.txt",
         ]:
             (self.root / name).rename(wrapped / name)
-        self.assertEqual(FaceLayout.discover(self.root).root, wrapped)
+        self.assertEqual(FaceLayout.discover(self.root).root, wrapped.resolve())
 
     def test_rejects_incomplete_layout(self):
         self.pairs_file.unlink()
@@ -183,7 +183,7 @@ class FaceDataTests(unittest.TestCase):
         ):
             with patch.dict(os.environ, {"KAGGLEHUB_CACHE": "existing-cache"}):
                 layout = download_face_data(cache_dir=self.root / "cache")
-                self.assertEqual(layout.root, self.root)
+                self.assertEqual(layout.root, self.root.resolve())
                 self.assertEqual(os.environ["KAGGLEHUB_CACHE"], "existing-cache")
         api.assert_called_once_with(COMPETITION)
 

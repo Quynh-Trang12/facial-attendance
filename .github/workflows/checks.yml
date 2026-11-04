@@ -69,20 +69,24 @@ jobs:
             requirements.txt
             requirements-cpu.txt
       - name: Install the target OS dependencies
+        id: dependencies
         run: |
           if [ "$RUNNER_OS" = "Windows" ]; then
             python -m pip install -r requirements-cpu.txt
           fi
           # macOS uses native arm64 wheels from PyPI, not the CUDA index.
           python -m pip install -r requirements.txt
-      - name: Run tests and a real CPU optimizer/inference step
-        run: |
-          python -m unittest discover -s tests -v
-          python scripts/check_environment.py --device cpu --operator github-os-review --output reports/environment/github-os-review.json
+      - name: Run configuration and loader tests
+        run: python -m unittest discover -s tests -v
+      - name: Run a real CPU optimizer/inference step
+        id: runtime
+        # Preserve runtime evidence even if the independent unit-test step fails.
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: python scripts/check_environment.py --device cpu --operator github-os-review --output reports/environment/github-os-review.json
       - name: Preserve the environment report
-        if: always()
-        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && (steps.runtime.outcome == 'success' || steps.runtime.outcome == 'failure') }}
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: environment-${{ matrix.os }}
           path: reports/environment/github-os-review.json
-          if-no-files-found: warn
+          if-no-files-found: error

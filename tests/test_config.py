@@ -3,6 +3,7 @@
 from pathlib import Path
 from contextlib import redirect_stderr
 from io import StringIO
+import json
 import tempfile
 import unittest
 
@@ -28,20 +29,32 @@ class ConfigTests(unittest.TestCase):
             attendance="artifacts/attendance",
         )
         values.update(overrides)
-        lines = ["[paths]"] + [f'{key} = "{value}"' for key, value in values.items()]
-        self.config.write_text("\n".join(lines))
+        # Escape backslashes/quotes for TOML basic strings. Keep Unicode literal
+        # so non-BMP characters are not encoded as JSON-only surrogate pairs.
+        lines = ["[paths]"] + [
+            f"{key} = {json.dumps(value, ensure_ascii=False)}"
+            for key, value in values.items()
+        ]
+        self.config.write_text("\n".join(lines), encoding="utf-8")
 
     def test_resolves_paths_without_creating_data(self):
         self.write_config()
         paths = load_paths(self.config, root=self.root)
-        self.assertEqual(paths.face_data, self.root / "data/raw/face")
+        # The loader returns canonical paths; macOS temp roots can contain symlinks.
+        self.assertEqual(paths.face_data, (self.root / "data/raw/face").resolve())
         self.assertFalse(paths.face_data.exists())
         self.assertFalse(paths.checkpoints.exists())
 
     def test_supports_external_dataset_storage(self):
-        external = self.root / "external-face-data"
-        self.write_config(face_data=str(external))
-        self.assertEqual(load_paths(self.config, root=self.root).face_data, external)
+        # Exercise Windows backslash escapes even when this suite runs on Linux.
+        for folder in ("external-face-data", r"external\Users\O'Brien\face-data"):
+            with self.subTest(folder=folder):
+                external = self.root / folder
+                self.write_config(face_data=str(external))
+                self.assertEqual(
+                    load_paths(self.config, root=self.root).face_data,
+                    external.resolve(),
+                )
 
     def test_repository_dataset_default_matches_download_cache(self):
         # This checks configuration coherence without requiring private data in CI.
