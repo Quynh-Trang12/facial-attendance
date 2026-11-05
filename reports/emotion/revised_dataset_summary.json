@@ -1,0 +1,54 @@
+{
+  "created_utc": "2026-11-05T18:32:06.957212+00:00",
+  "seed": 42,
+  "validation_fraction": 0.2,
+  "split_method": "Per-class SHA256(seed|label|pixel_hash) rank; round(n*fraction) validation images.",
+  "source_images": 35887,
+  "retained_images": 34028,
+  "counts": {
+    "train": {
+      "angry": 3024,
+      "disgust": 282,
+      "fear": 3040,
+      "happy": 5625,
+      "sad": 3750,
+      "surprise": 1971,
+      "neutral": 3859
+    },
+    "val": {
+      "angry": 756,
+      "disgust": 71,
+      "fear": 760,
+      "happy": 1406,
+      "sad": 937,
+      "surprise": 493,
+      "neutral": 965
+    },
+    "test": {
+      "angry": 944,
+      "disgust": 109,
+      "fear": 1008,
+      "happy": 1767,
+      "sad": 1242,
+      "surprise": 793,
+      "neutral": 1226
+    }
+  },
+  "excluded_by_reason": {
+    "train_test_overlap": 690,
+    "duplicate_copy": 1145,
+    "manual_exclusion": 24
+  },
+  "manual_exclusion_groups": 6,
+  "relabeled_source_images": 69,
+  "relabeled_source_test_images": 12,
+  "relabeled_retained_test_images": 10,
+  "review_sha256": "b511734391e6f2823b420a15167faef4e98862b7785d2f13d1d243cee19899ea",
+  "source_manifest_sha256": "8cda1bd9d0fb7a689004d6da25d4aa828a0e3b9c1968f19a9b24fce4cff6a191",
+  "manifest_sha256": "d167c8cba441751fce37a04ef7babf7f27f64a304c03327436c6a297dbf3e189",
+  "implementation_sha256": "eb1d9638a30dcf0eaefa97866f835c1b1cf3011b2a7ba4cbe0b4585ecd78f335",
+  "config_sha256": "c8d757bfc8beed1354fbad3b3beaf9b58c1cd2a91f18fd3bc6ef8f378bdde8a7",
+  "validation": "Every output copy verified against source SHA256; one retained image per pixel hash; no pixel overlap between splits.",
+  "evaluation_note": "Revised FER2013 test set: manually changed labels and removed images; not directly comparable to the original benchmark.",
+  "limitations": "No identity or near-duplicate audit. Manual labels reflect one reviewer; no independent agreement measured."
+}
