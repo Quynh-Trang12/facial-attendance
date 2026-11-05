@@ -1,6 +1,6 @@
 # Face data loading
 
-FAC-01.2 provides classification/pair datasets and baseline training-pair sampling for competition `11-785-fall-20-homework-2-part-2`. No other face dataset is substituted.
+FAC-01.2 provides classification/pair datasets and baseline training-pair sampling for competition `11-785-fall-20-homework-2-part-2`. No other face dataset is substituted. How each partition is used for training, selection and evaluation, and the score direction, are fixed in the [face data protocol](face-data-protocol.md).
 
 ## Download on your own machine
 
