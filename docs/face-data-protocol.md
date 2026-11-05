@@ -40,7 +40,7 @@ The FAC-01.3 audit checks the full data before the protocol is relied on:
 - That every image decodes, with a histogram of image sizes and colour modes.
 - A seeded spot-check list of training paths with identities and trials with labels, for manual inspection.
 
-Undecodable images, conflicting trial labels and duplicates across partitions fail the audit. Duplicates within one identity are warnings, because they can make a "positive" pair of identical bytes. If any are found, FAC-01.4 decides whether to remove them before sampling. The audit report will be committed under `reports/data/` and linked here.
+Undecodable images, conflicting trial labels and duplicates across partitions fail the audit. Duplicates within one identity are warnings, because they can make a "positive" pair of identical bytes. If any are found, FAC-01.4 decides whether to remove them before sampling. The [full-data audit](../reports/data/colab-audit-2026-11-05.json) failed on cross-partition duplicates; the finding and the open decision are in [face data leakage](face-data-leakage.md).
 
 ## Known limits
 

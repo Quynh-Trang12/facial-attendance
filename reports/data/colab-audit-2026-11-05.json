@@ -1,0 +1,1119 @@
+{
+  "timestamp_utc": "2026-11-05T16:24:48.110454+00:00",
+  "task": "FAC-01.3",
+  "status": "FAIL",
+  "competition": "11-785-fall-20-homework-2-part-2",
+  "source": "kaggle_api",
+  "kagglehub_version": "1.0.2",
+  "configuration": {
+    "file": "configs/project.toml",
+    "face_data": "data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+    "kaggle_cache": "data/.kagglehub"
+  },
+  "dataset_root": "data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+  "failures": [
+    "12 identical images are shared by train_data/val_data",
+    "6 identical images are shared by train_data/test_data",
+    "8396 identical images are shared by train_data/verification_data",
+    "195 identical images are shared by val_data/verification_data",
+    "167 identical images are shared by test_data/verification_data"
+  ],
+  "warnings": [
+    "169 duplicate copies inside one identity; sampled positives can then compare identical images"
+  ],
+  "files_audited": 465735,
+  "dataset_manifest_sha256": "97ceaaa88e25cc95135c46c36271cb2f680810b06a07eea7b300b92f30784b83",
+  "identity_mapping_sha256": "4ce1e17377c40652c0d41cf302a17e1a938797be15f7a56b40aad7b8e8c8ce91",
+  "pairs_file_sha256": "55ecf1495188024f414e3b0faac2b7f4cc374000a809e3b98579ecd8f4f25fdd",
+  "partitions": {
+    "train_data": {
+      "images": 380638,
+      "identities": 4000,
+      "images_per_identity": {
+        "min": 15,
+        "median": 91.0,
+        "max": 249,
+        "singletons": 0
+      }
+    },
+    "val_data": {
+      "images": 8000,
+      "identities": 4000,
+      "images_per_identity": {
+        "min": 2,
+        "median": 2.0,
+        "max": 2,
+        "singletons": 0
+      },
+      "subset_of_train": true,
+      "train_identities_absent": 0
+    },
+    "test_data": {
+      "images": 8000,
+      "identities": 4000,
+      "images_per_identity": {
+        "min": 2,
+        "median": 2.0,
+        "max": 2,
+        "singletons": 0
+      },
+      "subset_of_train": true,
+      "train_identities_absent": 0
+    },
+    "verification_data": {
+      "images": 69097
+    }
+  },
+  "duplicates": {
+    "within_identity": {
+      "groups": 127,
+      "redundant_files": 169,
+      "examples": [
+        {
+          "sha256": "03ba848230c1a408ed04faec0acedb2e1307ef1157486a9ab76bca5d9997a794",
+          "paths": [
+            "classification_data/train_data/n007171/0077_01.jpg",
+            "classification_data/train_data/n007171/0608_01.jpg"
+          ]
+        },
+        {
+          "sha256": "03fa01c1aa44fa88f095c1687cf1c4b9bf534f8404a8e305dae52f66cf10522f",
+          "paths": [
+            "classification_data/train_data/n001593/0481_03.jpg",
+            "classification_data/train_data/n001593/0631_03.jpg",
+            "classification_data/train_data/n001593/0846_03.jpg",
+            "classification_data/train_data/n001593/0907_03.jpg",
+            "classification_data/train_data/n001593/1092_03.jpg",
+            "classification_data/val_data/n001593/0074_03.jpg"
+          ]
+        },
+        {
+          "sha256": "0424f5b242419d95b966cc4cd0696bdd1c7a435339139bb43a7d175de01e02e9",
+          "paths": [
+            "classification_data/train_data/n007175/0155_06.jpg",
+            "classification_data/train_data/n007175/0715_06.jpg",
+            "classification_data/train_data/n007175/0833_06.jpg"
+          ]
+        },
+        {
+          "sha256": "0997f6d2124ba50a755846c27b42726ad688a93573474acbf3da5e13a90a1ab4",
+          "paths": [
+            "classification_data/train_data/n003017/0117_02.jpg",
+            "classification_data/train_data/n003017/0561_02.jpg",
+            "classification_data/train_data/n003017/0585_02.jpg"
+          ]
+        },
+        {
+          "sha256": "0a455dc16925301135e6b7b5fc4588e52424ab1195484200fbca629de181cd77",
+          "paths": [
+            "classification_data/train_data/n001661/0174_03.jpg",
+            "classification_data/train_data/n001661/0553_03.jpg"
+          ]
+        },
+        {
+          "sha256": "0ec9733f2523f12359b4e25c776f29a38470c0e69d9854d40e6aacef1eb3fddc",
+          "paths": [
+            "classification_data/train_data/n004404/0248_01.jpg",
+            "classification_data/train_data/n004404/0412_01.jpg"
+          ]
+        },
+        {
+          "sha256": "12220e461954a826b65382fff130aeea9c249b13a3489578a6fdbc7bb7999f3a",
+          "paths": [
+            "classification_data/train_data/n002818/0319_02.jpg",
+            "classification_data/train_data/n002818/0691_02.jpg"
+          ]
+        },
+        {
+          "sha256": "13ea188fb779505311121abd4fdfe8bcd949b5f9b2035fdd7feb21f0e54aec48",
+          "paths": [
+            "classification_data/train_data/n002580/0031_01.jpg",
+            "classification_data/train_data/n002580/0464_01.jpg"
+          ]
+        },
+        {
+          "sha256": "14e64beb4e24cb39b41f7d973106f7b07fcf6ece8f23148d51814d2402b479b9",
+          "paths": [
+            "classification_data/train_data/n002312/0862_02.jpg",
+            "classification_data/train_data/n002312/0912_02.jpg"
+          ]
+        },
+        {
+          "sha256": "14e92d5901ba331397e4882d034fc0b17f7b55e512bdbc8faad4fb84a3e668b1",
+          "paths": [
+            "classification_data/train_data/n005438/0237_03.jpg",
+            "classification_data/train_data/n005438/0396_03.jpg"
+          ]
+        },
+        {
+          "sha256": "14f43f3cad21ed65c8d81b41e61a63d995729e4370a6bc179ea3801e4a4d1017",
+          "paths": [
+            "classification_data/train_data/n002239/0013_01.jpg",
+            "classification_data/train_data/n002239/0364_01.jpg",
+            "classification_data/train_data/n002239/0380_01.jpg"
+          ]
+        },
+        {
+          "sha256": "1831edc88600f099c73c6e4d3cddd0c7abd43f5b9f02813675c93832b62b218a",
+          "paths": [
+            "classification_data/train_data/n002441/0104_01.jpg",
+            "classification_data/train_data/n002441/0175_01.jpg"
+          ]
+        },
+        {
+          "sha256": "1951c68aa9118027592faf4e00f1608f91912d00bb68533bd6347d34e0b7cb08",
+          "paths": [
+            "classification_data/train_data/n007171/0217_01.jpg",
+            "classification_data/train_data/n007171/0864_01.jpg"
+          ]
+        },
+        {
+          "sha256": "1b88e9a4d20af7eb52fc30b9e5fc8985cfd89f23cc5d9c4007db022a7aecae59",
+          "paths": [
+            "classification_data/train_data/n002979/0075_06.jpg",
+            "classification_data/train_data/n002979/0205_06.jpg"
+          ]
+        },
+        {
+          "sha256": "1c96ea4405102d179595d38ee313ef8022061bfaa83e90d474434f3e28e71ce7",
+          "paths": [
+            "classification_data/train_data/n002169/0068_03.jpg",
+            "classification_data/train_data/n002169/0246_03.jpg"
+          ]
+        },
+        {
+          "sha256": "1f137c0cea57872514d48130d597becc65ed1d943ab1ffcc0eff52727dc3f9e5",
+          "paths": [
+            "classification_data/train_data/n007099/0028_02.jpg",
+            "classification_data/train_data/n007099/0137_02.jpg"
+          ]
+        },
+        {
+          "sha256": "20330e5eb36ad1eedafa36f5394ea738921ffb461adb61e502e03fed9792e0ac",
+          "paths": [
+            "classification_data/train_data/n007099/0023_03.jpg",
+            "classification_data/train_data/n007099/0495_03.jpg"
+          ]
+        },
+        {
+          "sha256": "239871257267ebd318afc3ba0a9c4275dc3b7381bf99c5a6d60258f158bca792",
+          "paths": [
+            "classification_data/train_data/n007370/0419_01.jpg",
+            "classification_data/train_data/n007370/0885_01.jpg"
+          ]
+        },
+        {
+          "sha256": "239bc8127bbd3a97e419391542ac74e8ed96a96fdab119036882eedbb71fa036",
+          "paths": [
+            "classification_data/train_data/n003017/0570_01.jpg",
+            "classification_data/train_data/n003017/0617_01.jpg",
+            "classification_data/train_data/n003017/0703_01.jpg"
+          ]
+        },
+        {
+          "sha256": "28c13158a6de0fa49c832bb83894652b0feb11679d9f73d8311e205aef2cb8c2",
+          "paths": [
+            "classification_data/train_data/n005439/0069_01.jpg",
+            "classification_data/train_data/n005439/0382_01.jpg"
+          ]
+        }
+      ]
+    },
+    "across_identities": {
+      "groups": 0,
+      "examples": []
+    },
+    "across_partitions": {
+      "train_data/val_data": {
+        "shared_images": 12,
+        "examples": [
+          {
+            "sha256": "03fa01c1aa44fa88f095c1687cf1c4b9bf534f8404a8e305dae52f66cf10522f",
+            "paths": [
+              "classification_data/train_data/n001593/0481_03.jpg",
+              "classification_data/train_data/n001593/0631_03.jpg",
+              "classification_data/train_data/n001593/0846_03.jpg",
+              "classification_data/train_data/n001593/0907_03.jpg",
+              "classification_data/train_data/n001593/1092_03.jpg",
+              "classification_data/val_data/n001593/0074_03.jpg"
+            ]
+          },
+          {
+            "sha256": "1d541dbd617fcde5aa32ca5f31f10aa6e3af297c266aa07b1afd8620f9a72bed",
+            "paths": [
+              "classification_data/train_data/n007171/0331_01.jpg",
+              "classification_data/val_data/n007171/0016_01.jpg"
+            ]
+          },
+          {
+            "sha256": "33db98de32cfe4eb61a3e2bc5bbb6e8eb9f1c0a910b26c769a97b9e27b77471d",
+            "paths": [
+              "classification_data/train_data/n007175/0208_06.jpg",
+              "classification_data/val_data/n007175/0498_06.jpg"
+            ]
+          },
+          {
+            "sha256": "52b0bad5f0732dc53f02665cb5db2be57aae3009086bd2f8c01dbc99213efb61",
+            "paths": [
+              "classification_data/train_data/n001014/0184_01.jpg",
+              "classification_data/val_data/n001014/0059_01.jpg"
+            ]
+          },
+          {
+            "sha256": "74955a1eebfd118a847f4118bde8a2a7452a00d823f250bbc6c2f8855f493800",
+            "paths": [
+              "classification_data/train_data/n003165/0570_02.jpg",
+              "classification_data/val_data/n003165/0581_02.jpg"
+            ]
+          },
+          {
+            "sha256": "80a7fbf25ebe28d0c0faa9a4618439efe5f5e5606654f0141bacd8f0dc1316a1",
+            "paths": [
+              "classification_data/train_data/n007370/0077_02.jpg",
+              "classification_data/val_data/n007370/0350_02.jpg"
+            ]
+          },
+          {
+            "sha256": "932473297f1c784998573968b948ae7080ecad9469d976bd9bc177508a1ed341",
+            "paths": [
+              "classification_data/train_data/n002819/0083_01.jpg",
+              "classification_data/val_data/n002819/0027_01.jpg"
+            ]
+          },
+          {
+            "sha256": "a4b39f38d9b197dc77db64aa410709f74bc35bba570c014d61b0041892a71777",
+            "paths": [
+              "classification_data/train_data/n001611/0609_01.jpg",
+              "classification_data/train_data/n001611/0681_01.jpg",
+              "classification_data/val_data/n001611/0070_01.jpg",
+              "verification_data/00033370.jpg"
+            ]
+          },
+          {
+            "sha256": "ba842c2344b5cd470c4e6a9c5b0b3be9bbfb14c37b46cf03945167bc49b630e8",
+            "paths": [
+              "classification_data/train_data/n005472/0035_02.jpg",
+              "classification_data/train_data/n005472/0171_02.jpg",
+              "classification_data/train_data/n005472/0476_02.jpg",
+              "classification_data/val_data/n005472/0420_02.jpg"
+            ]
+          },
+          {
+            "sha256": "ca2484a627d58c812aa8836c10f041b2bc9ebc066762a8a799169dcf077ca0c2",
+            "paths": [
+              "classification_data/train_data/n004836/0096_01.jpg",
+              "classification_data/val_data/n004836/0647_01.jpg"
+            ]
+          },
+          {
+            "sha256": "d3b568075425dc527d0f8070c1a85272ff5157859938b39290ff23d84d088370",
+            "paths": [
+              "classification_data/train_data/n002818/0404_06.jpg",
+              "classification_data/train_data/n002818/0450_06.jpg",
+              "classification_data/val_data/n002818/1046_06.jpg"
+            ]
+          },
+          {
+            "sha256": "fdbca5ed78083d8bc114ed01246192b1742ee642c348c50616353a7266eb176a",
+            "paths": [
+              "classification_data/train_data/n002913/0447_02.jpg",
+              "classification_data/train_data/n002913/0740_02.jpg",
+              "classification_data/val_data/n002913/0116_02.jpg"
+            ]
+          }
+        ]
+      },
+      "train_data/test_data": {
+        "shared_images": 6,
+        "examples": [
+          {
+            "sha256": "200b475a3525922ed748c7f80c28a39ffe67d031fc360cff49665f79b48fe410",
+            "paths": [
+              "classification_data/train_data/n000360/0262_02.jpg",
+              "classification_data/test_data/n000360/0104_02.jpg"
+            ]
+          },
+          {
+            "sha256": "75fd31aaf0d247924d6c8a69734d96483ab6ce1796a17bc10542dc44f8288067",
+            "paths": [
+              "classification_data/train_data/n003464/0008_01.jpg",
+              "classification_data/test_data/n003464/0261_01.jpg"
+            ]
+          },
+          {
+            "sha256": "7c2abef133c5da577da39be787ce8ef60927133fc8f3d8e3457d66e2947ce51d",
+            "paths": [
+              "classification_data/train_data/n003522/0283_01.jpg",
+              "classification_data/train_data/n003522/0401_01.jpg",
+              "classification_data/test_data/n003522/0072_01.jpg"
+            ]
+          },
+          {
+            "sha256": "83e8f57fd6969b04ab91d43057055fd71ead120611ab70e98c78fdbd81f8d64e",
+            "paths": [
+              "classification_data/train_data/n001789/0205_03.jpg",
+              "classification_data/test_data/n001789/0279_03.jpg"
+            ]
+          },
+          {
+            "sha256": "d86dbfaa048b0cc5e0773b8b5834ac4ab941af5aaa6d5fa486ebec00d11b905c",
+            "paths": [
+              "classification_data/train_data/n004631/0365_03.jpg",
+              "classification_data/test_data/n004631/0107_03.jpg"
+            ]
+          },
+          {
+            "sha256": "e3952f05f4217f914d7b4cad2841091b4735225fb972f38aeb1822881e339d3e",
+            "paths": [
+              "classification_data/train_data/n002818/0003_02.jpg",
+              "classification_data/test_data/n002818/0854_02.jpg"
+            ]
+          }
+        ]
+      },
+      "train_data/verification_data": {
+        "shared_images": 8396,
+        "examples": [
+          {
+            "sha256": "00064d58476deb1b87e2978a52db8788d99e3c56258af494946f3879b846e3c5",
+            "paths": [
+              "classification_data/train_data/n007112/0085_02.jpg",
+              "verification_data/00020426.jpg"
+            ]
+          },
+          {
+            "sha256": "0008dfa8d8db357bb29aab435be472990f5abf407fa83926b0b88602527b056a",
+            "paths": [
+              "classification_data/train_data/n001390/0139_01.jpg",
+              "verification_data/00032172.jpg"
+            ]
+          },
+          {
+            "sha256": "000cd43b5dcf86826ccd433c7e5245c2576e8ae673e51130c998c039d28e11cd",
+            "paths": [
+              "classification_data/train_data/n005540/0159_01.jpg",
+              "verification_data/00032675.jpg"
+            ]
+          },
+          {
+            "sha256": "0015410e86d12ab4fa9eaaf1240ba7b7caf30359971d98c004b9eb632294b3ed",
+            "paths": [
+              "classification_data/train_data/n000327/0120_04.jpg",
+              "verification_data/00012892.jpg"
+            ]
+          },
+          {
+            "sha256": "001b02acc0dc03ad0f20dd88cb62975051cb14e510b1b26adfcd9337859a2aff",
+            "paths": [
+              "classification_data/train_data/n004026/0306_02.jpg",
+              "verification_data/00059222.jpg"
+            ]
+          },
+          {
+            "sha256": "002d6ebcf0692bff7ed02eb2503ba92e76351d21c73084ae42ae68c64e23fcc8",
+            "paths": [
+              "classification_data/train_data/n005988/0352_03.jpg",
+              "verification_data/00065010.jpg"
+            ]
+          },
+          {
+            "sha256": "0030c27e2ca0ce0f6afaf10ccf6a75ed32b51c00b5bbced79f6e1c259e8c2401",
+            "paths": [
+              "classification_data/train_data/n004870/0085_02.jpg",
+              "verification_data/00001087.jpg"
+            ]
+          },
+          {
+            "sha256": "00326cb70024905d860b64d1d4d1357b0caa4b22acf298a56440e7ca4d07ee59",
+            "paths": [
+              "classification_data/train_data/n001945/0395_01.jpg",
+              "verification_data/00001265.jpg"
+            ]
+          },
+          {
+            "sha256": "003430beac6ed4a587c51be77f0c41367bef83e6014587ce4ae840c6e1a03421",
+            "paths": [
+              "classification_data/train_data/n005252/0170_01.jpg",
+              "verification_data/00014217.jpg"
+            ]
+          },
+          {
+            "sha256": "0036520c0d145232e1ec9f6bee9ecc477ec4681963bbe92643651bf1bd9255d5",
+            "paths": [
+              "classification_data/train_data/n005383/0159_01.jpg",
+              "verification_data/00007861.jpg"
+            ]
+          },
+          {
+            "sha256": "0046bf5f074926e954e2fff324e7ebccd588baa2dc2be67f726beaed67dc3ad2",
+            "paths": [
+              "classification_data/train_data/n004693/0238_01.jpg",
+              "verification_data/00017942.jpg"
+            ]
+          },
+          {
+            "sha256": "00472bb928a6d08d211ec51c0d96e2f382e748980ff65f6dcefde90b7f2826dc",
+            "paths": [
+              "classification_data/train_data/n005768/0395_01.jpg",
+              "verification_data/00045902.jpg"
+            ]
+          },
+          {
+            "sha256": "004e6e775e59497f6e99e3a2db6e753ca6e6aa7021cd28f65d5b78611f9e7117",
+            "paths": [
+              "classification_data/train_data/n004979/0498_01.jpg",
+              "verification_data/00052423.jpg"
+            ]
+          },
+          {
+            "sha256": "005963d89579526ba38e79e754edef93c1d1402f670c9bd20227986b46cfa052",
+            "paths": [
+              "classification_data/train_data/n008161/0040_01.jpg",
+              "verification_data/00030964.jpg"
+            ]
+          },
+          {
+            "sha256": "0059bb1ee6d876d1e9c47fad0048170fffabc0b7997d9b5248403d785e0ef3fe",
+            "paths": [
+              "classification_data/train_data/n004734/0035_01.jpg",
+              "verification_data/00017878.jpg"
+            ]
+          },
+          {
+            "sha256": "005b0a1ec8c2501fb25008f15ab91852b43388e7960f67d7997547f2537d53b0",
+            "paths": [
+              "classification_data/train_data/n006769/0021_09.jpg",
+              "verification_data/00015417.jpg"
+            ]
+          },
+          {
+            "sha256": "005f24766a209550d82f3c79b931b1931888bccb038a1b0ae7823f4703365844",
+            "paths": [
+              "classification_data/train_data/n000801/0030_01.jpg",
+              "verification_data/00000290.jpg"
+            ]
+          },
+          {
+            "sha256": "006483aaaee533227e17a7bb701c248f465478f32bbf02ebcb118d43eeafc99b",
+            "paths": [
+              "classification_data/train_data/n009237/0386_01.jpg",
+              "verification_data/00067299.jpg"
+            ]
+          },
+          {
+            "sha256": "0067471a2faa034a850e568f74b52bae4b68f2eaaf36a5c8c24d9c8a5449026d",
+            "paths": [
+              "classification_data/train_data/n007173/0030_01.jpg",
+              "verification_data/00048577.jpg"
+            ]
+          },
+          {
+            "sha256": "00679041be9751de4518a9f3b3c86334e6d2bd710edf57b06763da3ed119b47d",
+            "paths": [
+              "classification_data/train_data/n000300/0447_01.jpg",
+              "verification_data/00058694.jpg"
+            ]
+          }
+        ]
+      },
+      "val_data/verification_data": {
+        "shared_images": 195,
+        "examples": [
+          {
+            "sha256": "006ae53e71473257ad53c4dc62b41cc77b5642ddedbee85f70fe24f38f45e4af",
+            "paths": [
+              "classification_data/val_data/n004581/0170_01.jpg",
+              "verification_data/00032529.jpg"
+            ]
+          },
+          {
+            "sha256": "01078cf51da5787d783c953a8196d3a58026890846799167cae53bc31e3d33cc",
+            "paths": [
+              "classification_data/val_data/n008987/0386_01.jpg",
+              "verification_data/00017643.jpg"
+            ]
+          },
+          {
+            "sha256": "024d32ad4f08f4de388155d2b99cec962493f427b7f8060274fa5131145ad964",
+            "paths": [
+              "classification_data/val_data/n008634/0447_01.jpg",
+              "verification_data/00037570.jpg"
+            ]
+          },
+          {
+            "sha256": "02d29a268260c27cf2c1ff4b30281248829fd803b8ccbebd8a9d3294fb157f9f",
+            "paths": [
+              "classification_data/val_data/n007529/0236_02.jpg",
+              "verification_data/00030472.jpg"
+            ]
+          },
+          {
+            "sha256": "03d8e1cdbc25f75cf2c4f604036a81daff3ff9c0c7074b2bf9773bc94bda40fb",
+            "paths": [
+              "classification_data/val_data/n004533/0030_01.jpg",
+              "verification_data/00005388.jpg"
+            ]
+          },
+          {
+            "sha256": "0455a23b09d3952528380db77591ad1b309ec8f88b83c70534c375f2818fb22c",
+            "paths": [
+              "classification_data/val_data/n003808/0164_06.jpg",
+              "verification_data/00058059.jpg"
+            ]
+          },
+          {
+            "sha256": "0475b33c6053d51a696fd86e9021f7f61961bb6ec476229d2905d0983ade83b2",
+            "paths": [
+              "classification_data/val_data/n007825/0030_01.jpg",
+              "verification_data/00001734.jpg"
+            ]
+          },
+          {
+            "sha256": "072ce91a062d34d82cded20018dee3264561e1e22e8f457c1607ea8b750344b9",
+            "paths": [
+              "classification_data/val_data/n001624/0030_01.jpg",
+              "verification_data/00062909.jpg"
+            ]
+          },
+          {
+            "sha256": "07b6d09d8268039534ee139c3ceed80e68738f00c4e177c8bcb6831f2eeeca59",
+            "paths": [
+              "classification_data/val_data/n000892/0040_01.jpg",
+              "verification_data/00014816.jpg"
+            ]
+          },
+          {
+            "sha256": "087273b8335126bf005f93ef7014deecf7f13499a44a1812bf7cdb4722c62875",
+            "paths": [
+              "classification_data/val_data/n007396/0386_01.jpg",
+              "verification_data/00001660.jpg"
+            ]
+          },
+          {
+            "sha256": "0bba8e0d06490e7d1175c7b621a819a26ef0a2a758725dff579bc0ce38e98785",
+            "paths": [
+              "classification_data/val_data/n006905/0115_02.jpg",
+              "verification_data/00021340.jpg"
+            ]
+          },
+          {
+            "sha256": "0f1b4c8b8f40fa4a5a9cf9e5b037e850bf8a5cc0eb3c3a157069206af9d417a7",
+            "paths": [
+              "classification_data/val_data/n001204/0164_02.jpg",
+              "verification_data/00040175.jpg"
+            ]
+          },
+          {
+            "sha256": "0f35c950e81de905aefb71f17a7fa9ff354cdb30e5de07f3eef3c3f36cf33dbc",
+            "paths": [
+              "classification_data/val_data/n005707/0238_01.jpg",
+              "verification_data/00026408.jpg"
+            ]
+          },
+          {
+            "sha256": "10daf2c3dbce139c37153e61280379aec37f393cadb91149399d40a1de502e5b",
+            "paths": [
+              "classification_data/val_data/n004197/0030_01.jpg",
+              "verification_data/00003495.jpg"
+            ]
+          },
+          {
+            "sha256": "10f6c628bcc6ae2f56c1123fb432f7117cc773c5049b21084badc2f175da73a5",
+            "paths": [
+              "classification_data/val_data/n007342/0510_02.jpg",
+              "verification_data/00026426.jpg"
+            ]
+          },
+          {
+            "sha256": "12445dc1da2da09fea481ef052930779b1a784d8f4ec185b5934701ab27c13d6",
+            "paths": [
+              "classification_data/val_data/n008383/0170_01.jpg",
+              "verification_data/00004266.jpg"
+            ]
+          },
+          {
+            "sha256": "1694cca082f90771f0e8051334b224f894cc6d423d0a0afb0aa814e60ca0f7d7",
+            "paths": [
+              "classification_data/val_data/n008096/0170_01.jpg",
+              "verification_data/00048589.jpg"
+            ]
+          },
+          {
+            "sha256": "16d030dabd3ee9d8ec48ebcb593d1ead683ce0cb192e87fc865387e47342b425",
+            "paths": [
+              "classification_data/val_data/n007491/0395_02.jpg",
+              "verification_data/00065410.jpg"
+            ]
+          },
+          {
+            "sha256": "172063d6d7c7c8874d216d04f8f6a50cb7a4d261ac5da3354f123054d2a56e06",
+            "paths": [
+              "classification_data/val_data/n002589/0306_02.jpg",
+              "verification_data/00033994.jpg"
+            ]
+          },
+          {
+            "sha256": "1726c4f193a0292ce8882f9138a42fa3a44f24256edbe9be685f511462e1c273",
+            "paths": [
+              "classification_data/val_data/n002187/0239_01.jpg",
+              "verification_data/00068652.jpg"
+            ]
+          }
+        ]
+      },
+      "test_data/verification_data": {
+        "shared_images": 167,
+        "examples": [
+          {
+            "sha256": "006aaa4bbc674e8c39f32fefd592b4e5526f00e483841b85d922d941841d0d61",
+            "paths": [
+              "classification_data/test_data/n005933/0239_01.jpg",
+              "verification_data/00024934.jpg"
+            ]
+          },
+          {
+            "sha256": "01c33e7698339d01537be043694cc82bd9a423b04f0522db55e814c400873934",
+            "paths": [
+              "classification_data/test_data/n003576/0159_01.jpg",
+              "verification_data/00004010.jpg"
+            ]
+          },
+          {
+            "sha256": "02b004d6f4d19886aecd970e044ee3720ab09d6685a01630ae5ed7eb8023f2a1",
+            "paths": [
+              "classification_data/test_data/n006633/0386_01.jpg",
+              "verification_data/00025349.jpg"
+            ]
+          },
+          {
+            "sha256": "044fdd5cf72678f4253684346cf156dff80c43f2f926e80a06780e723f596015",
+            "paths": [
+              "classification_data/test_data/n001295/0239_01.jpg",
+              "verification_data/00037061.jpg"
+            ]
+          },
+          {
+            "sha256": "0491e6b30c151aa6203064b002b636916b41c6c03e7ec13dd96c759e3ede2f4f",
+            "paths": [
+              "classification_data/test_data/n008272/0447_01.jpg",
+              "verification_data/00046684.jpg"
+            ]
+          },
+          {
+            "sha256": "049d82b628a72db61eb11416062811cb987702826a68c721081659827ed5ea8d",
+            "paths": [
+              "classification_data/test_data/n008947/0120_04.jpg",
+              "verification_data/00056503.jpg"
+            ]
+          },
+          {
+            "sha256": "05620cd5cf666ce260fb8052c73939e88084d66fa7747a0209335e98a5474bb2",
+            "paths": [
+              "classification_data/test_data/n002698/0040_01.jpg",
+              "verification_data/00048997.jpg"
+            ]
+          },
+          {
+            "sha256": "05a25f9583d095e71c2405ef84e5f40ff6f76164df96ebaa9f10406ce9e9939d",
+            "paths": [
+              "classification_data/test_data/n004052/0239_01.jpg",
+              "verification_data/00045607.jpg"
+            ]
+          },
+          {
+            "sha256": "06b57107f9f605efee474de38cf5b1f9f24ce03f9295114cb0a7251832f1bc09",
+            "paths": [
+              "classification_data/test_data/n007590/0465_01.jpg",
+              "verification_data/00032863.jpg"
+            ]
+          },
+          {
+            "sha256": "079df18097c594fe7505ba993658b685a49550d31e63ec345db86bd96b979de0",
+            "paths": [
+              "classification_data/test_data/n008665/0386_01.jpg",
+              "verification_data/00024042.jpg"
+            ]
+          },
+          {
+            "sha256": "079e526f831dad3f4aca3b40556ef05272171fef7babd1a4dbbffdd866e19439",
+            "paths": [
+              "classification_data/test_data/n005554/0099_01.jpg",
+              "verification_data/00052912.jpg"
+            ]
+          },
+          {
+            "sha256": "0876b42f0ce88dcc0d1a1f05f42df40afdb2e2a61818f1d6e301f762e758ce77",
+            "paths": [
+              "classification_data/test_data/n005310/0239_01.jpg",
+              "verification_data/00009714.jpg"
+            ]
+          },
+          {
+            "sha256": "09e1cbc2a55132bd0474a16346b650afc21f853393df7ab67b855e04cd35208f",
+            "paths": [
+              "classification_data/test_data/n002044/0099_01.jpg",
+              "verification_data/00017328.jpg"
+            ]
+          },
+          {
+            "sha256": "0e1a1856a83c9fed91ce87a009922931be4760307dc366158ba6e7b8685cfbaa",
+            "paths": [
+              "classification_data/test_data/n000649/0030_01.jpg",
+              "verification_data/00044615.jpg"
+            ]
+          },
+          {
+            "sha256": "0e8b229e7fa87a25062daea96a6fcda3caa2119bdebb1ef19f6369cb3e9b2090",
+            "paths": [
+              "classification_data/test_data/n000531/0299_04.jpg",
+              "verification_data/00037483.jpg"
+            ]
+          },
+          {
+            "sha256": "114f32ce943456dbd494316942ab8671d4f8fd7015bd8e5baff6d4e54db168f1",
+            "paths": [
+              "classification_data/test_data/n002709/0139_01.jpg",
+              "verification_data/00042586.jpg"
+            ]
+          },
+          {
+            "sha256": "13173385fc2e2315baf75267a2263e48a157ef2f1c32000afd207a5bc10ab047",
+            "paths": [
+              "classification_data/test_data/n003580/0170_01.jpg",
+              "verification_data/00062166.jpg"
+            ]
+          },
+          {
+            "sha256": "138f2f975bed1a795c45b84b4f2412f68318bb8abf5e550bc203779648820802",
+            "paths": [
+              "classification_data/test_data/n009245/0356_02.jpg",
+              "verification_data/00028684.jpg"
+            ]
+          },
+          {
+            "sha256": "159cfc2bfbd46038922cfca663b9bd7775a02f903423e58a9c7147e86e21ac28",
+            "paths": [
+              "classification_data/test_data/n005020/0170_01.jpg",
+              "verification_data/00044213.jpg"
+            ]
+          },
+          {
+            "sha256": "1604a78a23744fa11c9c960b6661450e0454c4bbccb7410dbd6de0b072a73c04",
+            "paths": [
+              "classification_data/test_data/n006027/0040_01.jpg",
+              "verification_data/00008930.jpg"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "trials": {
+    "trials": 8805,
+    "label_counts": {
+      "0": 4490,
+      "1": 4315
+    },
+    "same_identity_fraction": 0.4901,
+    "self_pairs": {
+      "count": 0,
+      "examples": []
+    },
+    "identical_content_pairs": {
+      "count": 0,
+      "by_label": {}
+    },
+    "repeated_pairs": {
+      "pairs": 0,
+      "extra_trials": 0,
+      "examples": []
+    },
+    "conflicting_labels": {
+      "pairs": 0,
+      "examples": []
+    },
+    "distinct_images_used": 9355,
+    "verification_images_unused": 59742
+  },
+  "images": {
+    "decode_failures": {
+      "count": 0,
+      "examples": []
+    },
+    "sizes": {
+      "train_data": {
+        "64x64": 380638
+      },
+      "val_data": {
+        "64x64": 8000
+      },
+      "test_data": {
+        "64x64": 8000
+      },
+      "verification_data": {
+        "64x64": 69097
+      }
+    },
+    "modes": {
+      "train_data": {
+        "RGB": 380638
+      },
+      "val_data": {
+        "RGB": 8000
+      },
+      "test_data": {
+        "RGB": 8000
+      },
+      "verification_data": {
+        "RGB": 69097
+      }
+    }
+  },
+  "spot_check": {
+    "seed": 42,
+    "train_samples": [
+      {
+        "path": "classification_data/train_data/n008163/0076_01.jpg",
+        "identity": "n008163",
+        "target": 3515
+      },
+      {
+        "path": "classification_data/train_data/n001451/0197_01.jpg",
+        "identity": "n001451",
+        "target": 610
+      },
+      {
+        "path": "classification_data/train_data/n000334/0064_01.jpg",
+        "identity": "n000334",
+        "target": 139
+      },
+      {
+        "path": "classification_data/train_data/n003601/0429_01.jpg",
+        "identity": "n003601",
+        "target": 1515
+      },
+      {
+        "path": "classification_data/train_data/n003209/0369_02.jpg",
+        "identity": "n003209",
+        "target": 1340
+      },
+      {
+        "path": "classification_data/train_data/n002928/0242_03.jpg",
+        "identity": "n002928",
+        "target": 1219
+      },
+      {
+        "path": "classification_data/train_data/n001798/0021_01.jpg",
+        "identity": "n001798",
+        "target": 755
+      },
+      {
+        "path": "classification_data/train_data/n001331/0019_01.jpg",
+        "identity": "n001331",
+        "target": 559
+      },
+      {
+        "path": "classification_data/train_data/n008654/0331_01.jpg",
+        "identity": "n008654",
+        "target": 3711
+      },
+      {
+        "path": "classification_data/train_data/n006967/0204_01.jpg",
+        "identity": "n006967",
+        "target": 3005
+      },
+      {
+        "path": "classification_data/train_data/n001117/0074_02.jpg",
+        "identity": "n001117",
+        "target": 474
+      },
+      {
+        "path": "classification_data/train_data/n007509/0016_01.jpg",
+        "identity": "n007509",
+        "target": 3249
+      },
+      {
+        "path": "classification_data/train_data/n005424/0252_01.jpg",
+        "identity": "n005424",
+        "target": 2303
+      },
+      {
+        "path": "classification_data/train_data/n000417/0393_02.jpg",
+        "identity": "n000417",
+        "target": 176
+      },
+      {
+        "path": "classification_data/train_data/n000387/0464_01.jpg",
+        "identity": "n000387",
+        "target": 167
+      },
+      {
+        "path": "classification_data/train_data/n001206/0228_01.jpg",
+        "identity": "n001206",
+        "target": 509
+      },
+      {
+        "path": "classification_data/train_data/n002862/0202_01.jpg",
+        "identity": "n002862",
+        "target": 1196
+      },
+      {
+        "path": "classification_data/train_data/n003063/0238_01.jpg",
+        "identity": "n003063",
+        "target": 1272
+      },
+      {
+        "path": "classification_data/train_data/n006454/0169_01.jpg",
+        "identity": "n006454",
+        "target": 2776
+      },
+      {
+        "path": "classification_data/train_data/n007657/0028_01.jpg",
+        "identity": "n007657",
+        "target": 3310
+      }
+    ],
+    "trials": [
+      {
+        "trial": 107,
+        "left": "verification_data/00056047.jpg",
+        "right": "verification_data/00026947.jpg",
+        "label": 1
+      },
+      {
+        "trial": 435,
+        "left": "verification_data/00018396.jpg",
+        "right": "verification_data/00029906.jpg",
+        "label": 1
+      },
+      {
+        "trial": 1520,
+        "left": "verification_data/00020442.jpg",
+        "right": "verification_data/00004467.jpg",
+        "label": 1
+      },
+      {
+        "trial": 1585,
+        "left": "verification_data/00037059.jpg",
+        "right": "verification_data/00013676.jpg",
+        "label": 1
+      },
+      {
+        "trial": 1675,
+        "left": "verification_data/00001282.jpg",
+        "right": "verification_data/00007347.jpg",
+        "label": 1
+      },
+      {
+        "trial": 2548,
+        "left": "verification_data/00041071.jpg",
+        "right": "verification_data/00062918.jpg",
+        "label": 1
+      },
+      {
+        "trial": 2616,
+        "left": "verification_data/00059074.jpg",
+        "right": "verification_data/00043306.jpg",
+        "label": 1
+      },
+      {
+        "trial": 3258,
+        "left": "verification_data/00008103.jpg",
+        "right": "verification_data/00023971.jpg",
+        "label": 1
+      },
+      {
+        "trial": 3528,
+        "left": "verification_data/00060107.jpg",
+        "right": "verification_data/00026353.jpg",
+        "label": 0
+      },
+      {
+        "trial": 3612,
+        "left": "verification_data/00037818.jpg",
+        "right": "verification_data/00018883.jpg",
+        "label": 1
+      },
+      {
+        "trial": 4553,
+        "left": "verification_data/00028070.jpg",
+        "right": "verification_data/00016690.jpg",
+        "label": 1
+      },
+      {
+        "trial": 4558,
+        "left": "verification_data/00041961.jpg",
+        "right": "verification_data/00037084.jpg",
+        "label": 0
+      },
+      {
+        "trial": 5515,
+        "left": "verification_data/00042205.jpg",
+        "right": "verification_data/00038472.jpg",
+        "label": 1
+      },
+      {
+        "trial": 5575,
+        "left": "verification_data/00037063.jpg",
+        "right": "verification_data/00043734.jpg",
+        "label": 0
+      },
+      {
+        "trial": 5636,
+        "left": "verification_data/00029997.jpg",
+        "right": "verification_data/00053764.jpg",
+        "label": 1
+      },
+      {
+        "trial": 5882,
+        "left": "verification_data/00055749.jpg",
+        "right": "verification_data/00061686.jpg",
+        "label": 1
+      },
+      {
+        "trial": 6225,
+        "left": "verification_data/00037063.jpg",
+        "right": "verification_data/00012278.jpg",
+        "label": 0
+      },
+      {
+        "trial": 6874,
+        "left": "verification_data/00037063.jpg",
+        "right": "verification_data/00008849.jpg",
+        "label": 0
+      },
+      {
+        "trial": 6925,
+        "left": "verification_data/00033634.jpg",
+        "right": "verification_data/00019070.jpg",
+        "label": 1
+      },
+      {
+        "trial": 7360,
+        "left": "verification_data/00037063.jpg",
+        "right": "verification_data/00015708.jpg",
+        "label": 0
+      }
+    ]
+  },
+  "rules": {
+    "fail": [
+      "undecodable image",
+      "trial pair with conflicting labels",
+      "identical image shared across train_data/val_data, train_data/test_data, train_data/verification_data, val_data/verification_data, test_data/verification_data"
+    ],
+    "warn": [
+      "duplicate inside one identity",
+      "image under more than one identity",
+      "self-pair, identical-content or repeated trial"
+    ]
+  },
+  "source_sha256": {
+    "scripts/audit_face_data.py": "236c9d3c8c1c6a03e874b564927f00b32d8775456f1f08138d5c075c241ee7f2",
+    "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+    "src/facial_attendance/recognition/audit.py": "3cc996395f41375d5ca9be84340f08734dda699083c66e5b58ba5510c2aef970",
+    "src/facial_attendance/recognition/data_loader.py": "16f1c0161ecdd8e6ac65870ea92c3fb646413d53e589c7b8c5664a8939a4c3c0",
+    "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+    "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140"
+  }
+}

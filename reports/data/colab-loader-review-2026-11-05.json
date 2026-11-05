@@ -1,0 +1,193 @@
+{
+  "timestamp_utc": "2026-11-05T16:21:40.571241+00:00",
+  "task": "FAC-01.2",
+  "status": "PASS",
+  "competition": "11-785-fall-20-homework-2-part-2",
+  "source": "kaggle_api",
+  "kagglehub_version": "1.0.2",
+  "configuration": {
+    "file": "/content/facial-attendance/configs/project.toml",
+    "face_data": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+    "kaggle_cache": "/content/facial-attendance/data/.kagglehub"
+  },
+  "dataset_root": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+  "data_loading_device": "cpu",
+  "class_count": 4000,
+  "identity_mapping_sha256": "4ce1e17377c40652c0d41cf302a17e1a938797be15f7a56b40aad7b8e8c8ce91",
+  "identity_mapping_preview": {
+    "n000003": 0,
+    "n000010": 1,
+    "n000011": 2,
+    "n000013": 3,
+    "n000015": 4
+  },
+  "classification": {
+    "train_data": {
+      "images": 380638,
+      "identities_present": 4000,
+      "batch_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "targets": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    },
+    "val_data": {
+      "images": 8000,
+      "identities_present": 4000,
+      "batch_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "targets": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    },
+    "test_data": {
+      "images": 8000,
+      "identities_present": 4000,
+      "batch_shape": [
+        4,
+        3,
+        112,
+        112
+      ],
+      "targets": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    }
+  },
+  "verification": {
+    "trials": 8805,
+    "label_counts": {
+      "0": 4490,
+      "1": 4315
+    },
+    "left_batch_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "right_batch_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "batch_labels": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "pairs_file_sha256": "55ecf1495188024f414e3b0faac2b7f4cc374000a809e3b98579ecd8f4f25fdd",
+    "trial_preview": [
+      {
+        "left": "verification_data/00041961.jpg",
+        "right": "verification_data/00044353.jpg",
+        "label": 0
+      },
+      {
+        "left": "verification_data/00007133.jpg",
+        "right": "verification_data/00060449.jpg",
+        "label": 1
+      },
+      {
+        "left": "verification_data/00041961.jpg",
+        "right": "verification_data/00020166.jpg",
+        "label": 0
+      }
+    ]
+  },
+  "sampled_training_pairs": [
+    {
+      "left": "classification_data/train_data/n001357/0035_02.jpg",
+      "right": "classification_data/train_data/n001357/0251_01.jpg",
+      "label": 1
+    },
+    {
+      "left": "classification_data/train_data/n002243/0389_01.jpg",
+      "right": "classification_data/train_data/n004845/0009_01.jpg",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/n006112/0007_41.jpg",
+      "right": "classification_data/train_data/n006112/0007_15.jpg",
+      "label": 1
+    },
+    {
+      "left": "classification_data/train_data/n000826/0268_01.jpg",
+      "right": "classification_data/train_data/n005682/0023_02.jpg",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/n007046/0173_01.jpg",
+      "right": "classification_data/train_data/n002694/0085_01.jpg",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/n000297/0042_01.jpg",
+      "right": "classification_data/train_data/n000297/0153_01.jpg",
+      "label": 1
+    }
+  ],
+  "sampling_seed": 42,
+  "training_pair_batch": {
+    "left_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "right_shape": [
+      4,
+      3,
+      112,
+      112
+    ],
+    "labels": [
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "checks": {
+    "shared_identity_mapping": true,
+    "classification_batches": true,
+    "verification_paths_and_labels": true,
+    "verification_batch": true,
+    "sampling_identity_rules": true,
+    "sampling_reproducible": true,
+    "sampled_pair_batch": true
+  },
+  "limits": "First decoded batches only; no full image/duplicate/leakage audit or model evaluation.",
+  "source_sha256": {
+    "scripts/check_face_data.py": "ea2db0ddad1dfac28972e1eb21d77a2d9a57a86ccfb7fa497f23758947af0b9e",
+    "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+    "src/facial_attendance/recognition/data_loader.py": "16f1c0161ecdd8e6ac65870ea92c3fb646413d53e589c7b8c5664a8939a4c3c0",
+    "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+    "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140"
+  }
+}

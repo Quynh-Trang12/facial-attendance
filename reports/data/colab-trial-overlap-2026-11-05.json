@@ -1,0 +1,49 @@
+{
+  "trials": 8805,
+  "distinct_trial_images": 9355,
+  "trial_images_shared_with": {
+    "train_data": 667,
+    "val_data": 27,
+    "test_data": 26
+  },
+  "trials_touching_train": {
+    "trials": 929,
+    "same": 527,
+    "different": 402,
+    "both_images_shared": 48
+  },
+  "trials_touching_any_split": {
+    "trials": 1002,
+    "same": 567,
+    "different": 435,
+    "both_images_shared": 54
+  },
+  "clean_trials": 7803,
+  "clean_trial_examples": [
+    [
+      "verification_data/00041961.jpg",
+      "verification_data/00044353.jpg",
+      "0"
+    ],
+    [
+      "verification_data/00007133.jpg",
+      "verification_data/00060449.jpg",
+      "1"
+    ],
+    [
+      "verification_data/00041961.jpg",
+      "verification_data/00020166.jpg",
+      "0"
+    ],
+    [
+      "verification_data/00002921.jpg",
+      "verification_data/00041331.jpg",
+      "0"
+    ],
+    [
+      "verification_data/00002921.jpg",
+      "verification_data/00005486.jpg",
+      "0"
+    ]
+  ]
+}
