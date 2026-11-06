@@ -37,6 +37,7 @@ facial-attendance/
     ├── data-loading.md            # Loader contracts, sampling and acceptance evidence
     ├── face-data-protocol.md      # Partition roles, pair rules and score direction
     ├── embedding-schema.md        # Face input, gallery record, matching and enrollment
+    ├── experiment-settings.md     # Training settings, model selection and run traceability
     ├── requirements.md            # Course requirements and current coverage
     └── reference/project-brief.pdf
 ```
