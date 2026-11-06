@@ -85,6 +85,7 @@ Every training run commits a manifest at `reports/runs/<run_id>/manifest.json`, 
 
 - **Closed-set selection.** Validation pairs contain only identities the model trained on, so `τ` may be too permissive for people it has never seen. SYS-07.6 checks it on the webcam. The AUC on those pairs is a selection measure, not an estimate of real-world performance.
 - **`val_data` and metric learning.** The brief says `val_data` is not needed for metric learning. This project uses it for selection anyway, because the official trials must stay out of selection, and the report must say so.
+- **Unfiltered data.** As published, `val_data` shares 195 images and `test_data` 167 with `verification_data`, as the [leakage note](face-data-leakage.md) records, so selection data is not fully separate from the official trials. A result from a run without an exclusion list must say so and can't be called independent.
 - **Reuse of official trials.** If any run does use them for a selection step, the report names that step and does not call the result independent.
 - **Clean-trial AUC.** An AUC on the trials with no shared image may be reported as extra analysis only. It is not evidence that overlap is gone.
 - **What a hash can't show.** Zero hash overlap does not rule out the same person appearing across partitions, as the [leakage note](face-data-leakage.md) explains.
