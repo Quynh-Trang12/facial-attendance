@@ -70,3 +70,5 @@ GitHub CI uses only the Python version in `.python-version` (3.13.16): one Linux
 ## Emotion dataset
 
 The emotion task uses three aggregated targets: Negative (Angry, Disgust, Fear, Sad), Neutral, and Positive (Happy). Surprise is excluded. See [the EDA notebook](notebooks/emotion_eda.ipynb) for analysis and measured counts, and [the three-class data guide](docs/emotion-3class.md) for reproducible preparation. Training data belongs under ignored `data/processed/emotion_3class/`; source images and processed images are not included in Git. The [display and webcam test plan](docs/emotion-display-and-webcam-tests.md) defines the proposed interface behavior; model training and running webcam tests remain pending.
+
+The [emotion loader guide](docs/emotion-loader.md) and [batch notebook](notebooks/emotion_data_loader.ipynb) cover the three-class loader. `configs/emotion.toml` defines the baseline grayscale input and scaling; `scripts/check_emotion_data.py` records real CPU batch checks. Model training and GUI adapter integration are separate steps.
