@@ -66,3 +66,7 @@ GitHub CI uses only the Python version in `.python-version` (3.13.16): one Linux
 
 [Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Current verification evidence](reports/README.md) links the configured-data, CPU/IPython and strict CUDA runs; older runs retain their recorded source hashes. The suite now has 46 passing configuration, runtime-policy and loader tests; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent reviewer execution remains pending. Small reports may be committed after inspection; datasets, credentials, checkpoints and personal attendance records stay local.
 
+
+## Emotion dataset
+
+The emotion task uses three aggregated targets: Negative (Angry, Disgust, Fear, Sad), Neutral, and Positive (Happy). Surprise is excluded. See [the EDA notebook](notebooks/emotion_eda.ipynb) for analysis and measured counts, and [the three-class data guide](docs/emotion-3class.md) for reproducible preparation. Training data belongs under ignored `data/processed/emotion_3class/`; source images and processed images are not included in Git. The [display and webcam test plan](docs/emotion-display-and-webcam-tests.md) defines the proposed interface behavior; model training and running webcam tests remain pending.
