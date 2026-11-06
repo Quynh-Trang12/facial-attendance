@@ -3,9 +3,9 @@
 | | |
 | --- | --- |
 | Found by | **FAC-01.3** (Review identity labels and leakage risks), full-data audit on Colab, 5 Nov 2026 |
-| Decided and fixed in | **FAC-01.4** (Revise the split and pair-loader design), owner Quế An |
-| Affects | FAC-01.2 loader (Trang), FAC-05/SYS-04 verification evaluation |
-| Status | **Open: waiting for a team decision.** Nothing has been changed in the loader or the protocol yet. |
+| Decided and fixed in | **FAC-01.4** (Revise the split and pair-loader design) |
+| Affects | FAC-01.2 loader, FAC-05/SYS-04 verification evaluation |
+| Status | **Open: option C is proposed and waiting for a decision.** Nothing in the loader, audit or protocol has changed on this branch. The option C code below is a proposal: a local draft exists, tested on generated fixtures only. It has not been pushed or run on the full data. |
 
 ## What was checked
 
@@ -34,36 +34,79 @@ The official trials use only 9,355 of the 69,097 verification images, so most sh
 | Trials using an image that is also in any classification split | 1,002 (11.4%) |
 | Clean trials, no shared image | 7,803 |
 
-**Why it matters.** The verification AUC is the required result. If a model trains on all of `train_data`, about one trial in nine compares a face the model has already seen, so the reported AUC is likely higher than the model's real performance. The 12 + 6 train/val/test duplicates have the same effect, on a much smaller scale, on validation selection and test accuracy.
+**Why it matters.** The verification AUC is the required result. If a model trains on all of `train_data`, about one trial in nine compares a face the model has already seen, so the reported AUC is likely higher than the model's real performance. The 12 + 6 train/val/test duplicates have the same effect, on a much smaller scale, on validation selection and test accuracy. The 195 + 167 val/test copies in `verification_data` also mean those partitions are not independent of the verification result.
+
+The overlap comes from the competition data as published, not from how the project split it. Any run that loads the data unchanged inherits it.
 
 There are also 169 duplicate copies inside single identities (a warning, not leakage). Sampled positive pairs can then compare two identical files.
+
+The audit has not yet compared `val_data` with `test_data`, so any overlap between those two is still unknown.
 
 The competition data cannot be changed. The fix has to be in how we use it.
 
 ## Options
 
-| | A. Keep training data, report both AUCs | B. Remove shared images from training (recommended) |
+### Rejected options
+
+**A. Keep the training data and report two AUCs (rejected).** Every model would be scored on all 8,805 trials and on the 7,803 clean trials. Rejected because nothing is corrected: the overlap stays in training and is only measured and disclosed, FAC-01.4 asks for a correction, and results built on data known to leak put the marks at serious risk.
+
+**B. Remove shared images from `train_data` only (rejected, previously recommended).** This was the earlier recommendation because it removes the largest overlap with a small loader change. Rejected because it does not reach zero overlap:
+
+- 195 `val_data` and 167 `test_data` images would still be shared with `verification_data`.
+- `val_data` and `test_data` would still not be compared with each other.
+- Its proof relied partly on two AUCs being close. An AUC can suggest a problem, but it can't show that overlap is gone.
+
+### C. Filter every partition until hash overlap is 0 (proposed)
+
+Each distinct image is kept in one partition only, and the loader loads that filtered data instead of the data as published.
+
+| Part | Rule |
+| --- | --- |
+| Which copy is kept | First match in the order `verification_data`, `test_data`, `val_data`, `train_data`. Verification comes first because the required AUC uses every official trial. Val and test come before train because they hold only two images per identity. |
+| Duplicates inside one identity | One copy is kept, so a sampled positive pair can't compare identical images. |
+| Where the rule lives | `configs/face-exclusions.tsv`, a committed list of paths and reasons generated from the full-data hashes. No image files are copied, changed or committed. |
+| Loader | `FaceLayout.discover` applies the list by default. Unfiltered data needs an explicit `exclusions=None`. A list that doesn't match the dataset raises an error. |
+| What stays the same | All 8,805 official trials, and the identity mapping and class targets. |
+
+**Expected effect.** These figures are estimates until the full-data run. The real counts may be lower, because one shared image can have several copies.
+
+| Partition | Now | Expected after filtering |
 | --- | --- | --- |
-| What changes | Nothing in training. Every final model is scored on all 8,805 trials and also on the 7,803 clean trials. | The images in `train_data` that are byte-identical to any `verification_data`, `val_data` or `test_data` image are excluded from training through a committed exclusion list. Identity mapping stays the same. |
-| Leakage | **Still present** in training. It is only measured and disclosed. | **Removed** for the official trials and for val/test. |
-| Cost | A clean-trial list and one paragraph in the protocol. | An exclusion list, a small loader change reviewed by Trang, tests, and one more Colab audit to prove no overlap remains. Roughly 8,400 of 380,638 training images (about 2%) are removed; the smallest identity has 15 images now, and its count after removal still has to be checked. |
-| Fits FAC-01.4? | Weak. FAC-01.4 asks to **correct** the findings, not only record them. | Yes. It corrects the finding and gives a revised protocol to check. |
+| `train_data` | 380,638 | About 372,000 (about 2% fewer) |
+| `val_data` | 8,000 | About 7,800 |
+| `test_data` | 8,000 | About 7,800 |
+| `verification_data` | 69,097 | Unchanged |
 
-With option B, both AUCs are still reported. If the leakage is gone, the two numbers should be close, which is the evidence for the fix.
+### Evidence required for option C
 
-## Decision needed before the next step
+Option C is accepted only when a full-data audit of what the loader actually loads shows all of the following:
 
-Who: Quế An (FAC-01.4 owner) with Trang (owner of the FAC-01.2 loader). A reviewer for FAC-01.4 also has to be named, because chị Dung is unavailable.
+1. Hash overlap is 0 for all six pairs among train, val, test and verification.
+2. The number of images the loader dropped equals the number listed.
+3. No image in a seeded sample of 100,000 training pairs shares a hash with held-out data or appears in the list, and no positive pair compares identical images.
+4. No duplicate copies remain inside an identity.
+5. The loader check passes on the filtered data, and no training identity has lost all its images.
 
-- [ ] Choose option A or B.
-- [ ] If B: Trang agrees to an exclusion-list change in `data_loader.py`.
-- [ ] Decide whether the 169 within-identity duplicates are also removed, or left as a known warning.
+The AUC on all trials and on the 7,803 previously clean trials may be reported as extra analysis. Neither number counts as evidence that overlap is gone.
+
+### Limits of option C
+
+- **Hash overlap of 0 does not mean no shared people.** A hash finds only byte-identical files. The same person in a different photo, or the same photo re-encoded, isn't detected. Verification images have no identity labels, so this can't be measured, and the report must say so.
+- **Val and test become uneven.** Some identities will have one image or none, so closed-set accuracy is measured on slightly fewer images.
+
+## Decision needed
+
+- [ ] Accept option C.
+- [ ] Accept the change to `data_loader.py`, so that the filtered data becomes the default.
+- [ ] Choose how `val_data` and `test_data` handle removed images:
+  - **Drop only (recommended).** This is simpler and moves no image between partitions, but leaves uneven counts per identity.
+  - **Refill from `train_data`.** This keeps two images per identity, but needs more code and changes what each split contains.
 - [ ] Name the FAC-01.4 reviewer.
 
 ## Next steps after the decision
 
-1. Record the decision and the revised rule in [face-data-protocol.md](face-data-protocol.md).
-2. Option B only: generate the exclusion list from the full data, add it to the loader with tests, and rerun the audit on Colab. The train/val, train/test and train/verification failures must reach 0.
-3. Both options: commit a fixed list of the 7,803 clean trials, so every final model also reports a clean-trial AUC.
+1. Run the audit on the unfiltered data on Colab, which also generates the list and gives the first `val_data`/`test_data` comparison.
+2. Commit the list, then audit the filtered data and run the loader check on Colab.
+3. Replace the estimates above with the measured counts, and record the rule in [face-data-protocol.md](face-data-protocol.md) and [data-loading.md](data-loading.md).
 4. Set the face input size `S = 64` in the [embedding schema](embedding-schema.md), from the audit's image-size histogram.
-5. Update FAC-01.3, FAC-01.4 and FAC-01.5 evidence in the WBS sheet, and ask the reviewer to check the corrected loader (FAC-01.4) and the rerun audit.
+5. Update FAC-01.3, FAC-01.4 and FAC-01.5 evidence in the WBS sheet, and ask the reviewer to check the corrected loader and the filtered audit.
