@@ -1,0 +1,166 @@
+{
+  "protocol_id": "LIV-01-v2",
+  "created": "2026-11-05",
+  "status": "design_ready_for_independent_review",
+  "dataset": {
+    "name": "CelebA-Spoof",
+    "source": "https://github.com/ZhangYuanhan-AI/CelebA-Spoof",
+    "paper": "https://arxiv.org/abs/2007.12342",
+    "download": "https://drive.google.com/drive/folders/1OW_1bawO79pRqdVEVmBzp8HSxdSwln_Z",
+    "terms": "Non-commercial research; no redistribution outside the permitted internal single-site organizational use. See the author's Dataset Agreement.",
+    "reported_images_all_types": 625537,
+    "reported_subjects_all_types": 10177,
+    "local_data_audited": false,
+    "selected_image_count": null,
+    "modality": "RGB still images",
+    "temporal_replay_evidence": false,
+    "subset_policy": "A documented smaller subset is permitted; preserve official subject membership and selected attack families, and report subset counts/results."
+  },
+  "labels": {
+    "binary": {
+      "live": 0,
+      "spoof": 1
+    },
+    "spoof_type_attribute_index": 40,
+    "binary_attribute_index": 43,
+    "selected_source_types": {
+      "0": {
+        "source_name": "Live",
+        "binary": 0,
+        "attack_family": "live"
+      },
+      "1": {
+        "source_name": "Photo",
+        "binary": 1,
+        "attack_family": "print"
+      },
+      "2": {
+        "source_name": "Poster",
+        "binary": 1,
+        "attack_family": "print"
+      },
+      "3": {
+        "source_name": "A4",
+        "binary": 1,
+        "attack_family": "print"
+      },
+      "7": {
+        "source_name": "PC",
+        "binary": 1,
+        "attack_family": "screen"
+      },
+      "8": {
+        "source_name": "Pad",
+        "binary": 1,
+        "attack_family": "screen"
+      },
+      "9": {
+        "source_name": "Phone",
+        "binary": 1,
+        "attack_family": "screen"
+      }
+    },
+    "excluded_source_types": [
+      4,
+      5,
+      6,
+      10
+    ],
+    "unknown_source_type": "reject",
+    "score": "p_spoof; larger means more likely spoof"
+  },
+  "splits": [
+    {
+      "name": "train",
+      "assignment": "official training subject membership",
+      "use": "fit weights and learned preprocessing",
+      "observed_rows": null
+    },
+    {
+      "name": "validation",
+      "assignment": "official validation subject membership",
+      "use": "select checkpoint and threshold",
+      "observed_rows": null
+    },
+    {
+      "name": "test",
+      "assignment": "official test subject membership",
+      "use": "locked final assessment",
+      "observed_rows": null
+    },
+    {
+      "name": "webcam_test",
+      "assignment": "new consenting local subjects; no training or selection",
+      "use": "held-out physical print, screen-photo and video-replay tests",
+      "observed_rows": null
+    }
+  ],
+  "split_rules": {
+    "published_ratio_all_types": [
+      8,
+      1,
+      1
+    ],
+    "random_image_resplit": false,
+    "subject_overlap_allowed": false,
+    "derived_samples_inherit_parent_split": true,
+    "unknown_subject_or_membership": "quarantine; never infer from row order",
+    "missing_official_validation": "stop; resolve release metadata before generating a manifest"
+  },
+  "inventory_columns": [
+    "relative_path",
+    "subject_id",
+    "split",
+    "source_type",
+    "binary_label",
+    "attack_family",
+    "sha256"
+  ],
+  "webcam": {
+    "presentations": [
+      "live",
+      "print",
+      "screen_photo",
+      "video_replay"
+    ],
+    "conditions": "Use people, devices and lighting outside training conditions; record actual conditions and any unverified independence.",
+    "test_design": "Cover each presentation; no fixed counts, durations, sampling rates or full condition cross-product.",
+    "threshold_source": "validation only; frozen before final dataset and webcam tests",
+    "record_per_attempt": [
+      "true_case",
+      "participant_id",
+      "device",
+      "lighting",
+      "prediction",
+      "attendance_outcome"
+    ],
+    "record_per_session": [
+      "model_version",
+      "preprocessing_version",
+      "threshold"
+    ],
+    "report": "correct/total per presentation; live rejection and attack failures with observed conditions",
+    "execution_status": "not_run"
+  },
+  "review": {
+    "owner": "Trang",
+    "reviewer": "chị Dung",
+    "independent_review": "pending",
+    "review_findings": null,
+    "reviewer_retest": "pending"
+  },
+  "revised": "2026-11-05",
+  "method": {
+    "model": "one RGB CNN; train from scratch or partially fine-tune",
+    "prediction_unit": "face image",
+    "decision": "spoof when p_spoof >= validation-selected threshold",
+    "attendance_policy": "block spoof and show warning; require live and verified identity to record attendance",
+    "invalid_input": "no attendance decision",
+    "policy_origin": "attendance blocking is a project design choice; the brief requires integration and liveness display",
+    "scope": "image classification; no motion analysis or multi-frame aggregation"
+  },
+  "inventory_metadata_where_supported": [
+    "source_media_id",
+    "session_id"
+  ]
+}
