@@ -1,10 +1,13 @@
 # SYS-05 — Owner verification and independent-review handover
 
-Vỹ's Windows manual run on **8 November 2026** verified physical webcam 0
-through frame freeze, manual crop and the displayed stub payload. The local
-branch `feature/sys-05-webcam-gui-stubs` is ready to commit and share with
-Trang for independent review. The working tree is based on `ddf3fc6`.
-Assign the review commit after committing the four SYS-05 files listed below.
+The committed baseline is `578e6e9` on `feature/sys-05-webcam-gui-stubs`.
+Vỹ verified the revised build on a physical Windows webcam on
+**8 November 2026**. The automatic detector, filtering, mode switching,
+reset changes and associated tests are in the **unstaged working tree**
+above that baseline. The owner evidence and final automated rerun support
+using these six files as one review candidate. Assign a commit ID when the
+owner commits the candidate, then give that ID and the runtime instructions
+to Trang for an independent run.
 
 ## WBS acceptance audit
 
@@ -13,16 +16,16 @@ reflects the evidence available for this handover. [Requirements rows 40–50](h
 
 | Task | Acceptance criterion | Owner evidence and remaining action |
 | --- | --- | --- |
-| SYS-05.1 | Define webcam/crop flow and three stub interfaces. Agree the sample outputs. | Flow, fields and four scenarios documented below. Trang's agreement on the sample payloads is pending. |
-| SYS-05.2 | Connect webcam, stubs and GUI with inspectable, clearly labelled outputs. | Owner verified webcam 0, manual crop and the displayed scenarios on Windows. Ready for review. |
-| SYS-05.3 | Reviewer runs the prototype against SYS-02 and records reproducible interface or connection findings. | Pending Trang's independent run. Use the checklist below and record expected versus actual behavior. |
-| SYS-05.4 | Correct reviewer findings and have the reviewer check affected flows. If there are no findings, record a passing check. | Awaiting SYS-05.3 findings. Apply and verify corrections only where the review identifies an issue. |
-| SYS-05.5 | Reviewer reruns the corrected flow and prior failures and checks that the stubs are replaceable. | Owner no-face and camera-error checks passed. Independent retest remains pending. Extra camera and multi-region checks are supplementary. |
-| SYS-05.6 | Smoke test on the intended demo runtime and check outstanding fixes or limitations. | Windows owner smoke evidence is available. Confirm the intended demo machine and rerun on that runtime if it differs. Recheck any later fixes there. |
-| SYS-05.7 | Identify and freeze the reviewed source and configuration for later adapter replacement. | Replacement points documented below. Freeze a reviewed commit and record its runtime and launch configuration after review and retest. |
-| SYS-05.8 | Reviewer launches the identified release candidate and confirms required files and reproducibility. | Pending a frozen candidate and Trang's fresh launch from it. |
-| SYS-05.9 | Demonstrate capture, crop, adapter calls and output. Identify the simulated components and answer questions. | Owner has run the flow. The walkthrough with Trang and any follow-up questions remain pending. |
-| SYS-05.10 | Hand the runnable version, instructions and execution evidence to the integrating members. | Handover package prepared here. Share the identified version and record receipt by the UI-03/UI-04 integrating members. |
+| SYS-05.1 | Define webcam/crop flow and three stub interfaces. Agree the sample outputs. | Owner implementation and documentation cover both modes, the shared fields and four scenarios. Trang's agreement on the sample payloads is pending. |
+| SYS-05.2 | Connect webcam, stubs and GUI with inspectable, clearly labelled outputs. | Owner verified the revised automatic and manual paths on Windows, including a 205 × 205 automatic crop and the registration Live match stub. |
+| SYS-05.3 | Reviewer runs the prototype against SYS-02 and records reproducible interface or connection findings. | Owner evidence and checklist are ready. Trang's independent run and findings are pending. |
+| SYS-05.4 | Correct reviewer findings and have the reviewer check affected flows. If there are no findings, record a passing check. | The owner addressed the nested-box false positive and verified the revised single-face and two-region behavior. Any independent findings and their disposition follow SYS-05.3. |
+| SYS-05.5 | Reviewer reruns the corrected flow and prior failures and checks that the stubs are replaceable. | Owner no-face, camera-error and manual fallback checks passed. Trang's independent retest and assessment of adapter replacement are pending. |
+| SYS-05.6 | Smoke test on the intended demo runtime and check outstanding fixes or limitations. | Owner smoke passed on Windows webcam 0. Haar's angled-face limitation and the phone-based two-region test are recorded below. Repeat on the intended demo machine if it differs from the owner's test machine. |
+| SYS-05.7 | Identify and freeze the reviewed source and configuration for later adapter replacement. | Candidate files, baseline, wheel and launch configuration recorded. Assign the review commit ID after this audit. Freeze the reviewed version after any findings are resolved. |
+| SYS-05.8 | Reviewer launches the identified release candidate and confirms required files and reproducibility. | Trang's fresh setup and launch from the identified candidate are pending. |
+| SYS-05.9 | Demonstrate capture, crop, adapter calls and output. Identify the simulated components and answer questions. | Walkthrough prepared below. The demonstration with Trang and any follow-up are pending. |
+| SYS-05.10 | Hand the runnable version, instructions and execution evidence to the integrating members. | Owner evidence and integration handover are ready. Sharing the identified version and recording receipt remain pending. |
 
 ## Read-only compatibility audit
 
@@ -32,7 +35,7 @@ The comparison uses [SYS-02 Final v1.0](https://app.notion.com/p/40d863094ebe80d
 
 | Boundary | Verified source and contract | SYS-05 treatment |
 | --- | --- | --- |
-| Capture and face region | SYS-02 §3. BGR `uint8[H,W,3]`, one face, original-frame integer half-open `[x1,y1,x2,y2]`. Zero/multiple regions or invalid geometry block evaluation. `origin/main` (`ddf3fc6`), `docs/architecture.md`, has a UI package boundary and no camera/detector implementation. | Use OpenCV capture. In this prototype the operator marks the face region on a frozen frame. Crop the source pixels without applying a model transform. Automatic detection and final boundary policy belong to later integration. |
+| Capture and face region | SYS-02 §3. BGR `uint8[H,W,3]`, one face, original-frame integer half-open `[x1,y1,x2,y2]`. Zero/multiple regions or invalid geometry block evaluation. `origin/main` (`ddf3fc6`), `docs/architecture.md`, has a UI package boundary and no camera/detector implementation. | Capture with OpenCV. Find regions on a frozen source frame with the bundled Haar detector or mark them manually on the preview. Convert either path to validated source coordinates. The final recognition crop policy belongs to UI-03. |
 | Recognition | `origin/docs/sys-04-experiment-settings` (`71f3b56`), `docs/embedding-schema.md`, `docs/experiment-settings.md`. Square crop with proposed margin 1.2, clipped to frame, 64×64 bilinear RGB, /255 then ImageNet mean/std, float32 NCHW. Output L2-normalized 512D embeddings. Compare by cosine against compatible templates using the selected checkpoint threshold. SYS-02 §4 adds canonical `person_id`, `name`, `score`, `accepted`, `model_id`, `model_version` and null semantics. | Return controlled match/Unknown payloads. Keep checkpoint fields null for stubs. No model input resizing, scoring, threshold or padding policy is selected here. |
 | Older face schema and loaders | `origin/fac-01/face-data-protocol-audit` (`82e34b0`), `docs/embedding-schema.md`, has pending S/D, `identity_id`, singular `embedding` and checkpoint-file hash in `model_id`. SYS-04 and SYS-02 supersede those fields with 64/512, `person_id`, one template in `embeddings`, run ID and weights version. FAC-01 `docs/face-data-protocol.md`, `src/facial_attendance/recognition/audit.py`, `tests/test_face_audit.py` cover dataset roles, scoring direction and integrity. `origin/main` `src/facial_attendance/recognition/data_loader.py`, `scripts/check_face_data.py`, `tests/test_face_data.py` cover RGB decoding and pair fixtures. CLI size 112 is for inspection. | Keep loaders/audit in their training and evaluation roles. They provide no live recognition adapter. Use SYS-02 field names and defer the trained checkpoint. |
 | Liveness and reset | `origin/docs/liv-02-liveness-gating` (`48279ac`), `docs/liveness-gating.md`, and SYS-02 §§5, 7–8. RGB binary labels 0 live, 1 spoof. Finite `p_spoof` in [0,1], null when scoring fails. Adapter owns `live/spoof/uncertain`, `reason`, model/preprocessing/policy versions and `source`. Equality at the selected threshold gives spoof. Below threshold requires a valid quality decision. Spoof aborts, uncertain needs a fresh capture, and stale completions are discarded. Stub results cannot authorize either operation. | Stub decisions are chosen by scenario. Operational errors are separate. Clear active results on capture invalidation/retry/mode change, block further callbacks after spoof, keep `can_save=false`. The branch has design review cases and no runtime adapter. |
@@ -50,17 +53,34 @@ ordering remain integration work.
 
 ## Phase 1 flow and sample payloads
 
-OpenCV captures and previews actual video in webcam mode. The operator freezes
-one frame and manually draws a face region. The app maps that rectangle to the
-source frame, validates and crops it, and passes the same request context to
-the stub adapters. The GUI displays text summaries and the result JSON.
-Automatic face detection has yet to be demonstrated. The selected region and
-the scenario dropdown drive separate parts of the demo. Recognition, liveness
-and emotion are simulated by the selected scenario in both camera modes.
+1. **Camera → detector.** OpenCV previews actual video in webcam mode.
+   **Freeze frame** copies the latest BGR source frame. **Automatic detection**
+   converts that frame to grayscale and runs OpenCV's bundled frontal-face Haar
+   cascade with `scaleFactor=1.1` and `minNeighbors=5`. It draws amber overlays
+   for the validated, filtered regions. The detector is separate from the three stubs.
+2. **Detector → crop.** Haar's `(x,y,w,h)` boxes become integer half-open
+   source rectangles. An invalid rectangle rejects the batch. **Manual
+   selection** draws a green rectangle and maps it from the scaled preview
+   to the same source coordinates, with the start rounded down and end rounded
+   up. Switching to manual on a frozen frame is the fallback for an empty or
+   failed detection. **Run stubs** gives `no_face` for zero regions or
+   `multiple_faces` for more than one, with no crop evaluated.
+3. **Crop → stubs → controller → GUI.** With one region, the controller creates
+   a `FaceRequest` for that source and box. Liveness runs first, recognition
+   runs only for live, and emotion is display-only. The controller checks
+   the capture context and renders the summary and SYS-02 JSON. The three
+   results are determined by the scenario dropdown in both selection modes.
 
-Use **Retry / resume preview** for a fresh attempt. Changing operation also
-invalidates the active capture. Zero regions produce `no_face`. Two regions
-produce `multiple_faces`. These checks count manually marked regions.
+Retry, operation changes and scenario changes discard the frozen frame and
+current results. Clearing or switching region modes invalidates the previous
+attempt. Spoof and uncertain require a fresh frame. Camera failure clears the
+capture, selections and results, and retry opens the camera again.
+
+Haar is a frontal-face locator and may miss faces or return extra boxes,
+especially when pose or lighting changes. Results describe the frozen frame.
+Returning to live preview clears them. The generated demo placeholder is for
+manual selection and GUI testing. It provides no evidence of real-face
+detection or model accuracy.
 
 | Scenario | Liveness | Recognition | Emotion |
 | --- | --- | --- | --- |
@@ -75,19 +95,69 @@ with an `init=False` field. Both action modes use that envelope, and the
 prototype has no persistence control or storage call for enrollment or
 attendance. Webcam frames and crops remain in memory.
 
+## Nested Haar detection regression
+
+On the physical Windows webcam, the owner observed one person with a large
+face box and a smaller eye-region box fully inside it. Counting both boxes
+produced `ui_state=multiple_faces` with `can_save=false`. This was a safe
+block, but the eye box was a false second detection.
+
+The Haar adapter validates every box before filtering and considers larger
+boxes first. It drops a candidate when it is fully contained in a retained
+box and has at most half its area, or when intersection over union with a
+retained box is at least 0.80. The first rule targets small internal
+features. The second requires nearly coincident regions and implicitly
+requires similar areas. These are conservative prototype heuristics.
+Separate boxes and ambiguous overlaps survive. The surviving rectangles
+keep their original half-open source coordinates.
+
+The GUI draws the same filtered list that it passes to the controller.
+The regression fixture produces one overlay and one crop from a face plus
+an eye box. Adding a separate face yields two overlays and
+`multiple_faces` with no crop or stub evaluation. Empty detections and
+invalid boxes still take their existing guard paths. Manual selection
+bypasses the Haar filter. In the revised physical run the owner observed
+one frontal face produce one 205 × 205 crop, and a person plus a face on
+a phone produce two regions and a block.
+
 ## Reproduce on Windows
 
-Use the project Python 3.13 virtual environment with OpenCV, Pillow, NumPy
-and Tk. From the repository root in PowerShell, run one GUI command at a time.
-Close the current window before launching the next command.
+Use the existing project `.venv` with Python 3.13, Pillow, NumPy and Tk.
+The setup was verified locally on Windows AMD64 with Python 3.13.17,
+NumPy 2.2.6, Pillow 11.2.1 and Tk 8.6. See [project setup](setup.md)
+if the base environment is missing.
+
+The pinned OpenCV 5.0.0.93 main wheel lacks the Haar classifier and cascade
+XML. The same-version contrib wheel supplied the classifier but had no bundled
+XML in the Windows wheel tested here. The OpenCV 4.13.0.92 Windows wheel includes
+both. The inspected isolated wheel is `cp37-abi3-win_amd64` and uses the
+base environment's NumPy 2.x. Load it for SYS-05 from the ignored
+`artifacts/sys05-haar` directory. `--target` isolates the install and
+`--no-deps` avoids reinstalling NumPy or replacing the base packages.
+[OpenCV migration guide](https://github.com/opencv/opencv/wiki/OpenCV-4-to-5-migration)
+
+From the repository root in PowerShell, install once on a fresh review
+checkout. Reuse the target directory if it already passes the check below.
 
 ```powershell
-$env:PYTHONPATH = 'src'
+.venv\Scripts\python.exe -m pip install --no-deps --only-binary=:all: --target artifacts/sys05-haar opencv-python==4.13.0.92
+```
 
-# Generated frames
+Set the import path for the GUI and verify the wheel and bundled classifier.
+The path printed by the check should be under `artifacts/sys05-haar`.
+
+```powershell
+$env:PYTHONPATH = 'artifacts/sys05-haar;src'
+.venv\Scripts\python.exe -c "from pathlib import Path; import importlib.metadata as md, cv2; p=Path(cv2.data.haarcascades)/'haarcascade_frontalface_default.xml'; assert md.version('opencv-python') == '4.13.0.92'; assert Path(cv2.__file__).resolve().is_relative_to(Path('artifacts/sys05-haar').resolve()); assert p.is_file() and not cv2.CascadeClassifier(str(p)).empty(); print(cv2.__version__, cv2.__file__, p)"
+```
+
+Launch one GUI at a time. Close the window before opening another.
+
+```powershell
+# Generated frames for manual selection
 .venv\Scripts\python.exe -m facial_attendance.ui.webcam_app --demo-camera
 
-# Physical webcam on the owner's machine
+# Physical webcam. Select Automatic detection or Manual selection in the GUI.
 .venv\Scripts\python.exe -m facial_attendance.ui.webcam_app --camera 0
 
 # Unavailable camera case on the owner's machine
@@ -95,56 +165,100 @@ $env:PYTHONPATH = 'src'
 
 # Reopen the physical webcam after the failure case
 .venv\Scripts\python.exe -m facial_attendance.ui.webcam_app --camera 0
+```
 
-# Contract tests and complete suite
-.venv\Scripts\python.exe -m unittest discover -s tests -p 'test_webcam_prototype.py' -v
+For tests, return to the ordinary project import path. Set the Haar path
+again before launching automatic detection.
+
+```powershell
+$env:PYTHONPATH = 'src'
+.venv\Scripts\python.exe -m unittest discover -s tests -p 'test_webcam*.py' -v
 .venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Choose a scenario, select **Freeze frame**, draw one rectangle and select
-**Run stubs**. Inspect the summary and scroll through the result JSON.
-Camera indices depend on the machine. If the review host uses another webcam
-index or has a device at index 99, record the indices actually tested.
+The GUI starts in **Manual selection**, which also works with
+`PYTHONPATH=src` and the project's original OpenCV wheel. Select
+**Automatic detection** before freezing to draw Haar's boxes. If the wheel
+lacks the cascade, the GUI reports a detector error and allows manual fallback.
+Camera indices depend on the machine. Record the indices actually tested.
+The import and classifier check passed on this Windows worktree. Trang will
+run it on her Windows machine as part of independent review.
 
 ## Manual verification — owner, Windows, 8 November 2026
 
-These observations were supplied by the owner from the physical Windows run.
+The owner supplied the following results from the **revised** working tree
+on physical webcam 0. The earlier manual-only run on committed baseline
+`578e6e9` also passed preview, manual crop, all four stub scenarios,
+reset and camera recovery.
 
 | Check | Observed result |
 | --- | --- |
-| Open webcam 0 | **Pass.** Live video displayed. |
-| Freeze, draw one manual region, run stubs | **Pass.** The crop-to-result flow completed. |
-| Live match | **Pass.** Demo Person, `liveness.status=live`, Positive and `can_save=false`. |
-| Live unknown | **Pass.** `recognition.accepted=false`, `person_id=null`, `liveness.status=live` and `can_save=false`. |
-| Spoof | **Pass.** `liveness.status=spoof`, `recognition=null`, `emotion=null`, `ui_state=spoof` and `can_save=false`. |
-| Uncertain | **Pass.** `liveness.status=uncertain`, `recognition=null`, `ui_state=uncertain` and `can_save=false`. A demo emotion may still be displayed. |
-| Retry / resume preview | **Pass.** Previously displayed identity and emotion cleared. |
-| Clear regions, then Run stubs | **Pass for behavior.** `ui_state=no_face`, null recognition/liveness/emotion, `can_save=false` and a blocking `no_face` error. The owner did not separately check whether the rectangle disappeared visually. |
-| Close and reopen webcam 0 | **Pass.** Live video was available after reopening. |
-| Launch camera 99, then reopen webcam 0 | **Pass.** The unavailable-camera handling appeared on 99 and webcam 0 reopened successfully. |
+| Automatic detection, one frontal face | **Pass.** One valid source crop, 205 × 205 pixels. |
+| Automatic detection, person plus a face displayed on a phone | **Pass.** Two distinct regions, `multiple_faces` and `can_save=false`. This was a two-region test with one physically present person. |
+| No face | **Pass.** `no_face`, null recognition/liveness/emotion and `can_save=false`. |
+| Manual selection with Haar available | **Pass.** Manual selection and crop still worked. |
+| Angled face | **Pass for fallback.** Frontal Haar missed the angled face. Manual selection worked. |
+| Manual-to-automatic mode change | **Pass.** Old recognition cleared and the owner returned to preview. |
+| Registration Live match | **Pass.** `context.action=registration`, expected demo identity/liveness/emotion and `can_save=false`. |
+| Reset | **Pass.** Prior identity and emotion cleared, and `ui_state` returned to `idle`. |
+| Camera 99 error, then reopen camera 0 | **Pass.** The expected unavailable-camera error appeared. Webcam 0 reopened successfully. |
+| Close and reopen the physical webcam | **Pass.** The webcam remained usable after reopening. |
+
+The phone case verifies the region-count guard. Two physically present
+people and spoof-model behavior were outside that check. Frontal Haar can
+miss angled or profile faces. The detector locates regions, while identity,
+liveness and emotion remain deterministic stubs and all persistence stays
+disabled.
 
 ## Automated verification — 8 November 2026
 
-Rerun on Windows with Python 3.13.17 and `PYTHONPATH=src`, using the commands
-above. The full suite includes the ten contract tests.
+The unit suites and both Tk smoke checks were rerun for this candidate
+on Windows with Python 3.13.17. The full suite includes all 31 SYS-05
+tests. Tk smoke checks used generated frames.
 
 | Check | Rerun result |
 | --- | --- |
-| SYS-05 contract tests | **10 passed**, 0 failed, 0 skipped. Covers original-frame cropping, context rejection, fail-closed demo results and reset/error behavior. |
-| Full unit suite | **56 passed**, 0 failed, 0 skipped. |
-| Synthetic Tk smoke | **Passed.** Exercised generated preview, selection-to-crop coordinates, all four scenarios, JSON and display states, operation change, retry, zero/two regions, simulated read failure, recovery and camera release. Asserted the canvas rectangle item was removed by Clear regions. |
+| SYS-05 tests | **31 passed**, 0 failed, 0 skipped. Includes five regressions for nested and duplicate detections, ambiguous overlaps, separate faces, and agreement between the overlay and controller. Empty/invalid detections, mode changes, resets and stub safety also passed. |
+| Full unit suite | **77 passed**, 0 failed, 0 skipped. |
+| Tk with pinned OpenCV 5 | **Passed.** Typed missing-Haar error, manual fallback, all four scenarios, registration, reset, Clear regions, simulated camera failure, recovery and release. |
+| Tk with isolated OpenCV 4.13 | **Passed.** Actual Haar returned `no_face` for a blank frame. Controlled nested and separate boxes exercised the filter, overlays, crop and multiple-face blocking. The manual, scenario, registration and camera lifecycle checks also passed. |
 
-The earlier Codex physical-camera probe reached the unavailable-camera state.
-The physical-camera success evidence above comes from the separate owner run.
-The current automated rerun used generated frames for the GUI check.
+The unit checks use controlled detections. The physical results above come
+from the separate owner run.
+
+## Windows reproduction checklist for review
+
+1. Launch `--camera 0` with the isolated wheel. Confirm live preview.
+   Select **Automatic detection** and freeze a well-lit frontal face.
+   Reproduce the framing that previously yielded the eye box. Check that
+   the overlay and crop retain the enclosing face without a second eye box,
+   then inspect the result JSON and `can_save=false`.
+2. Freeze with no face, then with a person plus a face on a phone to repeat
+   the owner's two-region case. Check `no_face` and `multiple_faces`.
+   Record the actual count and scene if Haar misses a face. When two
+   boxes appear, verify that neither one is selected for evaluation.
+   Testing two physically present people is a separate supplementary case.
+3. Switch to **Manual selection** on a frozen frame after an empty detection.
+   Draw a green rectangle and evaluate it. Clear regions and verify both
+   overlay removal and the blocking `no_face` result. Try an angled face
+   and confirm the manual fallback when Haar misses it.
+4. Use fresh captures for all four scenarios. Check `can_save=false` in
+   attendance and registration. Confirm retry, operation changes, mode
+   changes and scenario changes clear the previous result. After spoof
+   and uncertain, confirm a fresh capture is required.
+5. Close and reopen webcam 0. Run camera 99 or another unused index and
+   confirm the typed unavailable-camera state, then reopen the working webcam.
+   Record results as text, including the machine, camera index, resolution
+   and runtime. Keep webcam images out of Git.
 
 ## Trang's independent-review checklist
 
-1. Record the review commit, date, OS, Python version and camera indices. Check
-   the four files below and run both test commands.
-2. Start with `--demo-camera`, then open the physical webcam. Freeze a frame,
-   mark one region and run each scenario with a fresh capture. Compare the
-   summary and JSON with the manual evidence table. Confirm the demo labels.
+1. Record the review commit, date, OS, Python version, OpenCV wheel and
+   camera indices. Verify the isolated wheel and bundled cascade using
+   the setup check above. Run both test commands and confirm the files below.
+2. Start with `--demo-camera` in manual mode, then open the physical webcam
+   and work through the reproduction checklist independently. Follow the walkthrough
+   above and compare the four scenario payloads with the documented values.
 3. Compare the capture, bbox and result flow with SYS-02. Check
    `contract_version=sys02-v1`, `attempt_id`, `action`, `capture_id`, `face_id`,
    all three module fields, `ui_state`, `can_save` and typed errors. Confirm
@@ -164,22 +278,28 @@ The current automated rerun used generated frames for the GUI check.
 
 ## Integration and files to share
 
-The current controller dispatches adapters serially on the Tk thread.
-Use the three `StubAdapters` methods and the `run_stubs` call site as the
-UI-03/UI-04 integration boundary. Keep the request context and original-frame
-coordinates. The demo controller accepts only `source="stub"` for liveness.
-Trained results need a reviewed controller path with verified preprocessing
-and result validation. Genuine persistence also requires explicit authorization
-based on liveness, gallery/checkpoint compatibility and the applicable
-enrollment or attendance rules. The automatic detector, deployed crop policy
-and trained-model behavior remain integration work.
+The controller dispatches serially on the Tk thread. For a different
+detector, replace `WebcamApp.detect_faces` with a callable that accepts
+the frozen BGR frame and returns source boxes. For recognition, liveness and
+emotion, use the corresponding `StubAdapters` methods and the `run_stubs`
+call in `WebcamApp.evaluate` as the UI-03/UI-04 boundary. Preserve
+`FaceRequest` source and context fields and return context-bound
+`Completion` results. Trained results need verified preprocessing and a
+reviewed controller path. The current liveness guard accepts only
+`source="stub"`. Genuine persistence requires liveness, compatible gallery
+and checkpoint metadata, and explicit enrollment or attendance authorization.
 
-The four intended files are currently untracked:
+Only the following six paths belong in the SYS-05 commit:
 
-- `docs/sys-05-phase-1.md` — compatibility audit, verification and handover.
-- `src/facial_attendance/ui/webcam_app.py` — camera lifecycle, crop selection and Tk display.
-- `src/facial_attendance/ui/webcam_prototype.py` — request context, controller and stub adapter boundary.
-- `tests/test_webcam_prototype.py` — ten contract tests.
+- `docs/sys-05-phase-1.md` — updated audit, verification and handover.
+- `src/facial_attendance/ui/webcam_app.py` — updated camera lifecycle, region modes and Tk display.
+- `src/facial_attendance/ui/webcam_prototype.py` — updated shared box validation.
+- `src/facial_attendance/ui/face_detection.py` — new Haar adapter.
+- `tests/test_webcam_app.py` — new deterministic GUI flow tests.
+- `tests/test_webcam_detection.py` — new deterministic Haar and filtering tests.
 
-`reports/environment/vy-independent-retest.json` is a pre-existing, unrelated
-untracked report. Preserve it locally and exclude it from the SYS-05 commit.
+The existing `tests/test_webcam_prototype.py` remains part of the baseline
+and requires no staging. Keep the unrelated
+`reports/environment/vy-independent-retest.json` local. Exclude the
+`artifacts/sys05-haar/` wheel and cascade files, `.venv/`, caches,
+webcam images and recordings from the commit.

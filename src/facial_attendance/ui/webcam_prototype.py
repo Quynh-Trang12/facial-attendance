@@ -99,7 +99,7 @@ def frame_size(frame: "NDArray[uint8]") -> tuple[int, int]:
     return width, height
 
 
-def _box_in_frame(box: Box, width: int, height: int) -> bool:
+def box_in_frame(box: Box, width: int, height: int) -> bool:
     if len(box) != 4 or not all(
         isinstance(value, Integral) and not isinstance(value, bool) for value in box
     ):
@@ -146,12 +146,12 @@ class PrototypeController:
             self.capture_error("invalid_input", str(error))
             return None
         if not boxes:
-            self.capture_error("no_face", "No face region selected.")
+            self.capture_error("no_face", "No face region available.")
             return None
         if len(boxes) != 1:
             self.capture_error("multiple_faces", "Select one face region at a time.")
             return None
-        if not _box_in_frame(boxes[0], width, height):
+        if not box_in_frame(boxes[0], width, height):
             self.capture_error("invalid_input", "Face region is empty or outside the source frame.")
             return None
 

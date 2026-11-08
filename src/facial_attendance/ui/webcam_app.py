@@ -1,9 +1,11 @@
 """Runnable Tk webcam demo for SYS-05.1 and SYS-05.2."""
 
 import argparse
+from contextlib import suppress
 from dataclasses import asdict
 import json
 
+from .face_detection import FaceDetectorUnavailable, HaarFaceDetector
 from .webcam_prototype import (
     SCENARIOS,
     PrototypeController,
@@ -12,9 +14,12 @@ from .webcam_prototype import (
     run_stubs,
 )
 
+AUTOMATIC = "Automatic detection"
+MANUAL = "Manual selection"
+
 
 class WebcamApp:
-    """Preview frames and send one operator-selected region to the stub adapters."""
+    """Preview frames and pass one detected or manually selected region to the stubs."""
 
     def __init__(self, root, open_camera, *, source_name: str):
         import tkinter as tk
@@ -24,6 +29,7 @@ class WebcamApp:
         self.root = root
         self.open_camera = open_camera
         self.controller = PrototypeController()
+        self.detect_faces = HaarFaceDetector()
         self.camera = None
         self.latest = self.frozen = None
         self.photo = None
@@ -71,15 +77,24 @@ class WebcamApp:
         settings.pack(fill="x")
         self.action = tk.StringVar(value="attendance")
         self.scenario = tk.StringVar(value=SCENARIOS[0])
+        self.selection_mode = tk.StringVar(value=MANUAL)
         action_choice = ttk.Combobox(
             settings, textvariable=self.action, values=("attendance", "registration"),
             state="readonly", width=13,
         )
         action_choice.pack(side="left")
-        action_choice.bind("<<ComboboxSelected>>", self._change_action)
-        ttk.Combobox(
+        action_choice.bind("<<ComboboxSelected>>", self._change_run_settings)
+        scenario_choice = ttk.Combobox(
             settings, textvariable=self.scenario, values=SCENARIOS, state="readonly", width=15
-        ).pack(side="left", padx=(6, 0))
+        )
+        scenario_choice.pack(side="left", padx=(6, 0))
+        scenario_choice.bind("<<ComboboxSelected>>", self._change_run_settings)
+        selection_choice = ttk.Combobox(
+            results, textvariable=self.selection_mode, values=(AUTOMATIC, MANUAL),
+            state="readonly", width=22,
+        )
+        selection_choice.pack(anchor="w", pady=(6, 0))
+        selection_choice.bind("<<ComboboxSelected>>", self._change_selection_mode)
         self.summary = tk.StringVar()
         ttk.Label(results, textvariable=self.summary, wraplength=340, justify="left").pack(
             anchor="w", pady=8
@@ -90,19 +105,33 @@ class WebcamApp:
         self._render()
         self._timer = root.after(0, self._tick)
 
-    def _change_action(self, _event):
-        self.controller.reset(self.action.get())
-        self.retry()
+    def _change_run_settings(self, _event):
+        if self.camera is not None:
+            self._resume_preview()
+
+    def _change_selection_mode(self, _event):
+        if self.frozen is not None:
+            if self.controller.state.ui_state in {"spoof", "uncertain"}:
+                self._resume_preview()
+            else:
+                self._prepare_selection()
 
     def retry(self):
-        self.controller.reset()
-        self.frozen = self.latest = None
-        self.evaluated = False
-        self._clear_regions()
-        self.canvas.delete("all")
+        self._resume_preview()
         if self.camera is None:
             self.start()
+
+    def _resume_preview(self):
+        self.controller.reset(self.action.get())
+        self._discard_frame()
         self._render()
+
+    def _discard_frame(self):
+        self.frozen = self.latest = self.photo = None
+        self.evaluated = False
+        self.preview_size = (0, 0)
+        self._erase_regions()
+        self.canvas.delete("all")
 
     def start(self):
         import cv2
@@ -116,15 +145,16 @@ class WebcamApp:
             self._camera_error("Camera unavailable. Check camera access and retry.")
 
     def _release(self):
-        if self.camera is not None:
-            self.camera.release()
-            self.camera = None
+        import cv2
+
+        camera, self.camera = self.camera, None
+        if camera is not None:
+            with suppress(OSError, cv2.error):
+                camera.release()
 
     def _camera_error(self, message):
         self._release()
-        self.latest = self.frozen = self.photo = None
-        self.boxes.clear()
-        self.canvas.delete("all")
+        self._discard_frame()
         self.controller.capture_error("camera_unavailable", message)
         self._render()
 
@@ -164,13 +194,45 @@ class WebcamApp:
             return
         self.frozen = self.latest.copy()
         self.frozen.flags.writeable = False
-        self.evaluated = False
-        self.controller.reset()
-        self.hint.set("Draw a rectangle around one face, then select Run stubs.")
+        self._prepare_selection()
+
+    def _prepare_selection(self):
+        self._reset_selection()
+        if self.selection_mode.get() == AUTOMATIC:
+            self._detect_regions()
         self._render()
 
+    def _detect_regions(self):
+        import cv2
+
+        try:
+            boxes = self.detect_faces(self.frozen)
+        except FaceDetectorUnavailable as error:
+            self.controller.capture_error("model_unavailable", str(error), module="detector")
+        except ValueError as error:
+            self.controller.capture_error("invalid_input", str(error), module="detector")
+        except cv2.error:
+            self.controller.capture_error(
+                "inference_error", "OpenCV could not detect face regions.", module="detector"
+            )
+        else:
+            self.boxes.extend(boxes)
+            width, height = frame_size(self.frozen)
+            view_width, view_height = self.preview_size
+            for x1, y1, x2, y2 in boxes:
+                self.canvas.create_rectangle(
+                    x1 * view_width / width, y1 * view_height / height,
+                    x2 * view_width / width, y2 * view_height / height,
+                    outline="#ffce65", width=2, tags="region",
+                )
+            self.hint.set(
+                f"{len(boxes)} face region(s) detected. Run stubs or switch to Manual selection."
+            )
+            return
+        self.hint.set("Automatic detection unavailable for this frame. Switch to Manual selection.")
+
     def _start_drag(self, event):
-        if self.frozen is None or self.evaluated:
+        if self.frozen is None or self.evaluated or self.selection_mode.get() != MANUAL:
             return
         width, height = self.preview_size
         if 0 <= event.x < width and 0 <= event.y < height:
@@ -213,15 +275,31 @@ class WebcamApp:
         self.canvas.create_rectangle(left, top, right, bottom, outline="#5df6cb", width=2, tags="region")
         self.hint.set(f"{len(self.boxes)} region(s) selected. Run stubs or clear the selection.")
 
-    def _clear_regions(self):
+    def _erase_regions(self):
         self.boxes.clear()
         self.drag_start = self.drag_outline = None
         self.canvas.delete("region")
-        if self.frozen is not None:
+
+    def _reset_selection(self):
+        self._erase_regions()
+        self.controller.reset(self.action.get())
+        self.evaluated = False
+        if self.selection_mode.get() == MANUAL:
             self.hint.set("Draw a rectangle around one face, then select Run stubs.")
+        else:
+            self.hint.set("No regions selected. Resume preview and freeze again to detect faces.")
+
+    def _clear_regions(self):
+        if self.frozen is None:
+            return
+        if self.controller.state.ui_state in {"spoof", "uncertain"}:
+            self._resume_preview()
+            return
+        self._reset_selection()
+        self._render()
 
     def evaluate(self):
-        if self.frozen is None or self.evaluated:
+        if self.frozen is None or self.evaluated or self.controller.state.ui_state == "error":
             return
         self.evaluated = True
         request = self.controller.begin_capture(self.frozen, self.boxes)
@@ -230,13 +308,13 @@ class WebcamApp:
             self.hint.set(f"Source crop {width} × {height} pixels. Resume preview for a fresh frame.")
             run_stubs(self.controller, request, StubAdapters(self.scenario.get()))
         else:
-            self.hint.set("Resume preview and select a face region in a fresh frame.")
+            self.hint.set("Resume preview for a fresh frame or adjust the region selection.")
         self._render()
 
     def _render(self):
         state = self.controller.state
         messages = {
-            "idle": "Preview",
+            "idle": "Frame frozen" if self.frozen is not None else "Preview",
             "checking": "Checking liveness",
             "live": "Live face (stub)",
             "spoof": "Spoof (stub). Attempt blocked. Retry with a fresh frame.",
@@ -253,9 +331,9 @@ class WebcamApp:
         self.payload.insert("1.0", json.dumps(asdict(state), indent=2, allow_nan=False))
         self.payload.configure(state="disabled")
         self.freeze_button.configure(state="normal" if self.latest is not None and self.frozen is None else "disabled")
-        can_select = self.frozen is not None and not self.evaluated
-        self.run_button.configure(state="normal" if can_select else "disabled")
-        self.clear_button.configure(state="normal" if can_select else "disabled")
+        can_run = self.frozen is not None and not self.evaluated and state.ui_state != "error"
+        self.run_button.configure(state="normal" if can_run else "disabled")
+        self.clear_button.configure(state="normal" if self.frozen is not None else "disabled")
         if self.frozen is None:
             self.hint.set("Freeze a preview frame to select a face region." if self.latest is not None else status)
 
