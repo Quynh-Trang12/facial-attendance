@@ -13,6 +13,10 @@ This protocol fixes how the assigned [11-785 competition](https://www.kaggle.com
 
 Classification target IDs come from `train_data` alone; validation and test reuse that mapping and reject unknown identities. For selection, the classification model uses validation top-1 accuracy. Both approaches also report verification AUC on a fixed, seeded pair list built only from `val_data` (same-identity pairs within an identity folder, different-identity pairs drawn uniformly), so the two models are selected by the same measure. The attendance decision threshold is chosen on that validation pair list too. The official trials are then scored once per final model. If any run reuses the official trials for a selection step, the report must say which step and present that result separately, as SYS-04 requires.
 
+## Filtered data
+
+Every run loads the filtered data, as decided in [face data leakage](face-data-leakage.md). `configs/face-exclusions.tsv` lists classification images that are byte-identical to an image in another partition, or a repeat inside one identity, and the loader drops them by default. The counts above are the data as published; the images actually used are recorded in each audit report. `val_data` and `test_data` only lose images and are never refilled, so some identities may have one image or none. `verification_data` and the 8,805 trials are not filtered.
+
 ## Pair rules
 
 - **Official trials.** Each line is `left right label`, with `1` = same identity and `0` = different. Trials are read in file order, never resampled, filtered or relabelled, and every reported AUC uses all 8,805.
@@ -35,16 +39,16 @@ Passing a raw distance would invert the ROC curve and report `1 − AUC`. Thresh
 The FAC-01.3 audit checks the full data before the protocol is relied on:
 
 - Images per identity in each split, and that `val_data` and `test_data` identities are a subset of `train_data`.
-- Exact duplicates by SHA-256 content hash: within one identity, across identities (possible label error), between `train_data` and `val_data`/`test_data`, and between every classification split and `verification_data`.
+- Exact duplicates by SHA-256 content hash: within one identity, across identities (possible label error), and between every two of `train_data`, `val_data`, `test_data` and `verification_data`.
 - Trial label balance, self-pairs, repeated trials, conflicting labels for the same pair, and the number of distinct images the trials use.
 - That every image decodes, with a histogram of image sizes and colour modes.
 - A seeded spot-check list of training paths with identities and trials with labels, for manual inspection.
 
-Undecodable images, conflicting trial labels and duplicates across partitions fail the audit. Duplicates within one identity are warnings, because they can make a "positive" pair of identical bytes. If any are found, FAC-01.4 decides whether to remove them before sampling. The [full-data audit](../reports/data/colab-audit-2026-11-05.json) failed on cross-partition duplicates; the finding and the open decision are in [face data leakage](face-data-leakage.md).
+Undecodable images, conflicting trial labels and duplicates across partitions fail the audit. Duplicates within one identity are warnings on unfiltered data, because they can make a "positive" pair of identical bytes, and failures once the exclusion list is applied. The [full-data audit](../reports/data/colab-audit-2026-11-05.json) failed on cross-partition duplicates; the finding and the decision are in [face data leakage](face-data-leakage.md).
 
 ## Known limits
 
 - `val_data` and `test_data` hold the same 4,000 identities as training. Their scores measure closed-set recognition of seen people and are likely to be higher than results on unseen identities.
-- Verification images have no identity labels, so overlap between trial identities and training identities cannot be measured. Only exact duplicate images across partitions can be detected.
+- Verification images have no identity labels, so overlap between trial identities and training identities can only be bounded from below, using byte-identical files. Filtering removes shared files, not shared people, so the verification AUC is not a result on unseen people.
 - Do not open the split folders in the Jupyter/Colab file browser. A `.ipynb_checkpoints` folder becomes an extra identity, which the loader rejects as unknown or empty.
 - Image size, crop and normalization for the models are not fixed here; they belong to the [embedding schema](embedding-schema.md) under SYS-02.

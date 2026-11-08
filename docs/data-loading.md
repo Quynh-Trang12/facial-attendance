@@ -80,8 +80,8 @@ Implementation: `src/facial_attendance/recognition/data_loader.py`. Identity map
 
 | Interface | Behavior |
 | --- | --- |
-| `FaceLayout.discover(root)` | Require three classification splits, verification directory and trials file at one unambiguous root |
-| `ClassificationFaces(...)` | Return `(RGB image/tensor, integer target)`; sort training identities deterministically and reuse that mapping for validation/test; reject unknown identities |
+| `FaceLayout.discover(root)` | Require three classification splits, verification directory and trials file at one unambiguous root; apply `configs/face-exclusions.tsv` unless called with `exclusions=None` |
+| `ClassificationFaces(...)` | Return `(RGB image/tensor, integer target)`; sort training identities deterministically and reuse that mapping for validation/test; reject unknown identities; drop listed images, recorded in `excluded_count`; fail if a training identity loses every image |
 | `VerificationPairs(...)` | Return `(left image/tensor, right image/tensor, label)` in official file order; preserve `1=same`, `0=different` |
 | `sample_training_pairs(train, count_per_label=N, seed=42)` | Draw N positives and N negatives from train only, using a local seeded generator |
 | `PairFaces(records, transform=...)` | Load sampled pair records through the same pair-image interface |
@@ -91,7 +91,7 @@ These map-style datasets work with PyTorch `DataLoader`. Without a transform the
 
 For positives, choose uniformly among identities with at least two images, then choose two distinct images. For negatives, choose two different identities uniformly, then one image per identity. Sampling is with replacement across pairs; repeated pairs are possible. Singleton identities can supply negatives. This is a reproducible baseline, not exhaustive sampling or hard-negative mining. Official verification trials are never resampled.
 
-Verification paths may be bare filenames or prefixed with `verification_data/`. Nonblank/noncomment lines require exactly two paths and label 0/1. Missing files, malformed labels/rows, escaping paths, unknown classification IDs and unreadable sampled images fail explicitly. Full duplicate/leakage audits and model evaluation remain separate tasks.
+Verification paths may be bare filenames or prefixed with `verification_data/`. Nonblank/noncomment lines require exactly two paths and label 0/1. Missing files, malformed labels/rows, escaping paths, unknown classification IDs and unreadable sampled images fail explicitly. A list entry that is not a classification image of this dataset raises an error. The rule behind the list is in [face data leakage](face-data-leakage.md). Model evaluation remains a separate task.
 
 ## Observed evidence and acceptance
 
