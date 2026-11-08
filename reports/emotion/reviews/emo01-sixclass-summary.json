@@ -1,0 +1,60 @@
+{
+  "created_utc": "2026-11-08T06:25:47.698596+00:00",
+  "source_images": 35887,
+  "retained_images": 30747,
+  "counts": {
+    "train": {
+      "angry": 3022,
+      "disgust": 281,
+      "fear": 3044,
+      "happy": 5626,
+      "sad": 3742,
+      "neutral": 3858
+    },
+    "val": {
+      "angry": 755,
+      "disgust": 70,
+      "fear": 761,
+      "happy": 1406,
+      "sad": 935,
+      "neutral": 964
+    },
+    "test": {
+      "angry": 941,
+      "disgust": 108,
+      "fear": 1009,
+      "happy": 1766,
+      "sad": 1235,
+      "neutral": 1224
+    }
+  },
+  "model_ids": {
+    "angry": 0,
+    "disgust": 1,
+    "fear": 2,
+    "happy": 3,
+    "sad": 4,
+    "neutral": 5
+  },
+  "labels_changed": 0,
+  "excluded_by_reason": {
+    "surprise_class": 4002,
+    "duplicate_copy": 646,
+    "train_test_overlap": 390,
+    "conflicting_labels": 102
+  },
+  "excluded_conflicting_groups": 39,
+  "seed": 42,
+  "validation_fraction": 0.2,
+  "split_method": "Per-class SHA256(seed|label|pixel_hash) rank; round(n*fraction), halves up.",
+  "source_manifest_sha256": "8cda1bd9d0fb7a689004d6da25d4aa828a0e3b9c1968f19a9b24fce4cff6a191",
+  "manifest_sha256": "35501a952f1b65259b5547b1160411e1d2ba7673f6c85052dfb3851f832fd6fc",
+  "implementation_sha256": "01167668bb2c632e679794c4a0f05e3db04258bef59f6a5790987c3d11af067f",
+  "image_audit_implementation_sha256": "2652fd17a2fb7f018ea8c689656f8eca9303218ecd999629869a8ab6959e7eb5",
+  "config_sha256": "c8d757bfc8beed1354fbad3b3beaf9b58c1cd2a91f18fd3bc6ef8f378bdde8a7",
+  "python": "3.13.17",
+  "pillow": "11.2.1",
+  "verification": "Every retained image verified against source file hash; one copy per decoded-pixel hash; no exact content overlap between splits.",
+  "evaluation_note": "Six-class FER2013 with exclusions and deduplication. Not directly comparable to the original seven-class benchmark.",
+  "limitations": "Original labels may contain errors. No full visual review, identity check or near-duplicate search."
+}
