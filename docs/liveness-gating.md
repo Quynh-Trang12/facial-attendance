@@ -54,7 +54,7 @@ If UI-01 requires multiple enrollment samples, each sample must pass liveness in
 
 ## Registration and attendance flow
 
-Steps 1–4 are shared. Steps 5R–6R cover registration; steps 5A–6A cover attendance. Both branches continue through steps 7–9 when their checks pass. Decision nodes use the parent step number with a letter suffix.
+**Steps 1–4** are shared. **Steps 5R–6R** cover registration; **steps 5A–6A** cover attendance. Both branches continue through **steps 7–9** when their checks pass. Decision nodes use the parent step number with a letter suffix.
 
 ```mermaid
 flowchart TD
@@ -92,7 +92,7 @@ flowchart TD
     T -->|No| Z[Show Could not save; no success message]
 ```
 
-uncertain requires a new capture; spoof aborts the attempt and requires an explicit retry with a new attempt ID. Missing faces, multiple faces and operational errors also block saving. A failed or uncertain sample cannot be retained for enrollment. A spoof discards all uncommitted samples from that registration attempt.
+`uncertain` requires a new capture; `spoof` aborts the attempt and requires an explicit retry with a new attempt ID. Missing faces, multiple faces and operational errors also block saving. A failed or uncertain sample cannot be retained for enrollment. A spoof discards all uncommitted samples from that registration attempt.
 
 **Step 7 — Final save check** runs immediately before step 8 writes the record. It is an application processing step, not another liveness input state: liveness must still be live for the data being saved. Its outcome is proceed to saving or refuse to save; success is displayed only after persistence succeeds.
 
