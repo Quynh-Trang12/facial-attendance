@@ -1,5 +1,9 @@
 # UI-01 Gallery Base — Design and Implementation Notes
 
+These are the historical UI-01.2 baseline notes. See the separate
+[local UI-01.4 revisions](ui-01-4-gallery-revisions.md) for the current v0.2 API,
+compatibility decisions and regression results; the original evidence below is retained.
+
 Status: Draft implementation; review pending for UI-01.2 (Quế An) and UI-01.4 (chị Dung).
 
 ## Scope

@@ -1,22 +1,24 @@
-"""Minimal, model-independent face gallery for UI-01.2.
+"""Model-independent gallery storage for UI-01.2/UI-01.4.
 
-The caller is responsible for face quality, liveness and embedding inference.
-No matching threshold, normalization or embedding model is selected here.
+The caller supplies an averaged, L2-normalized enrollment template after face
+quality, liveness and recognition checks. Storage does not infer or normalize.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
+from collections.abc import Mapping, Set
 import json
 import math
+from numbers import Integral, Real
 import os
 from pathlib import Path
 import tempfile
 from typing import Any
 
 
-SCHEMA_VERSION = "0.1"
+SCHEMA_VERSION = "0.2"
 
 
 class GalleryError(Exception):
@@ -45,12 +47,13 @@ class GalleryStorageError(GalleryError):
 
 @dataclass(frozen=True)
 class Identity:
-    """An immutable identity record, including one or more embeddings."""
+    """An immutable identity with one averaged template and its sample count."""
 
     person_id: str
     name: str
     embeddings: tuple[tuple[float, ...], ...]
     created_at: str
+    n_images: int
 
 
 def _required_text(value: Any, field: str) -> str:
@@ -69,20 +72,43 @@ def _timestamp(value: str | None) -> str:
         raise ValueError("created_at must be an ISO 8601 timestamp") from exc
     if parsed.utcoffset() is None:
         raise ValueError("created_at must contain a timezone offset")
-    return value
+    return parsed.astimezone(timezone.utc).isoformat()
+
+
+def _image_count(value: Any) -> int:
+    if isinstance(value, bool) or not isinstance(value, Integral) or not 3 <= value <= 10:
+        raise ValueError("n_images must be an integer from 3 to 10 accepted images")
+    return int(value)
 
 
 def _vector(value: Any, dimension: int) -> tuple[float, ...]:
-    if not isinstance(value, (tuple, list)) or len(value) != dimension:
-        raise ValueError(f"embedding must contain exactly {dimension} numeric values")
+    # Do not coerce the container first: NumPy coercion can turn mixed bool/text
+    # inputs into numbers and hide invalid values. No NumPy import is required.
+    if isinstance(value, (str, bytes, bytearray, Mapping, Set)) or getattr(value, "ndim", 1) != 1:
+        raise ValueError("embedding must be a one-dimensional numeric vector")
+    try:
+        if len(value) != dimension:
+            raise ValueError(f"embedding must contain exactly {dimension} numeric values")
+        components = iter(value)
+    except TypeError as exc:
+        raise ValueError("embedding must be a one-dimensional numeric vector") from exc
     result = []
-    for component in value:
-        if isinstance(component, bool) or not isinstance(component, (int, float)):
+    for component in components:
+        if isinstance(component, bool) or not isinstance(component, Real):
             raise ValueError("embedding values must be numbers, not bool or text")
-        number = float(component)
+        try:
+            number = float(component)
+        except (ValueError, OverflowError) as exc:
+            raise ValueError("embedding values must be finite numbers") from exc
         if not math.isfinite(number):
             raise ValueError("embedding values must be finite")
+        if not -1.0 <= number <= 1.0:
+            raise ValueError("embedding values must be in [-1, 1]")
         result.append(number)
+    if len(result) != dimension:
+        raise ValueError(f"embedding must contain exactly {dimension} numeric values")
+    if abs(math.hypot(*result) - 1.0) > 1e-3:
+        raise ValueError("embedding must be L2-normalized (norm 1 +/- 1e-3)")
     return tuple(result)
 
 
@@ -90,8 +116,10 @@ class FaceGallery:
     """Register identity embeddings without owning the recognition model.
 
     Embedding dimension and model metadata are provided by the caller and must
-    be agreed with the recognition owner before integration. IDs are
-    case-sensitive; names are not used as uniqueness keys.
+    match the active checkpoint (currently D=512). IDs use casefold comparisons
+    while preserving original spelling; names are not uniqueness keys.
+    Mutations are staged until save succeeds. Failed saves roll back to the
+    last successful save/load. Use one serialized writer per logical gallery.
     """
 
     def __init__(self, *, model_id: str, model_version: str, embedding_dim: int):
@@ -101,6 +129,7 @@ class FaceGallery:
             raise ValueError("embedding_dim must be a positive integer")
         self.embedding_dim = embedding_dim
         self._people: dict[str, Identity] = {}
+        self._saved_people: dict[str, Identity] = {}
 
     @property
     def people(self) -> tuple[Identity, ...]:
@@ -108,34 +137,43 @@ class FaceGallery:
         return tuple(self._people[key] for key in sorted(self._people))
 
     def get(self, person_id: str) -> Identity | None:
-        return self._people.get(person_id)
+        return self._people.get(_required_text(person_id, "person_id").casefold())
 
     def register(
         self,
         person_id: str,
         name: str,
-        embedding: list[float] | tuple[float, ...],
+        embedding: Any,
         *,
+        n_images: int,
         created_at: str | None = None,
     ) -> Identity:
         """Create a new identity. Updating an existing ID is a separate action."""
         person_id = _required_text(person_id, "person_id")
         name = _required_text(name, "name")
-        if person_id in self._people:
+        if len(name) > 64:
+            raise ValueError("name must contain 1 to 64 characters")
+        key = person_id.casefold()
+        if key in self._people:
             raise DuplicatePersonIDError(f"person_id {person_id!r} already exists")
         vector = _vector(embedding, self.embedding_dim)
-        identity = Identity(person_id, name, (vector,), _timestamp(created_at))
-        self._people[person_id] = identity
+        identity = Identity(person_id, name, (vector,), _timestamp(created_at), _image_count(n_images))
+        self._people[key] = identity
         return identity
 
-    def add_embedding(self, person_id: str, embedding: list[float] | tuple[float, ...]) -> Identity:
-        """Explicitly add a sample to an existing ID without creating a duplicate."""
-        identity = self._people.get(person_id)
+    def add_embedding(self, person_id: str, embedding: Any) -> Identity:
+        """Reject the v0.1 sample-append API instead of silently changing its meaning."""
+        raise ValueError("schema 0.2 stores one template; use update_template(..., n_images=...)")
+
+    def update_template(self, person_id: str, embedding: Any, *, n_images: int) -> Identity:
+        """Stage a replacement averaged template from a new accepted enrollment."""
+        key = _required_text(person_id, "person_id").casefold()
+        identity = self._people.get(key)
         if identity is None:
             raise UnknownPersonIDError(f"person_id {person_id!r} is not registered")
         vector = _vector(embedding, self.embedding_dim)
-        updated = replace(identity, embeddings=identity.embeddings + (vector,))
-        self._people[person_id] = updated
+        updated = replace(identity, embeddings=(vector,), n_images=_image_count(n_images))
+        self._people[key] = updated
         return updated
 
     def to_dict(self) -> dict[str, Any]:
@@ -150,6 +188,7 @@ class FaceGallery:
                     "name": person.name,
                     "embeddings": [list(vector) for vector in person.embeddings],
                     "created_at": person.created_at,
+                    "n_images": person.n_images,
                 }
                 for person in self.people
             ],
@@ -162,7 +201,10 @@ class FaceGallery:
         if not isinstance(payload, dict) or set(payload) != fields:
             raise GalleryFormatError("invalid gallery fields")
         if payload["schema_version"] != SCHEMA_VERSION:
-            raise GalleryFormatError("unsupported gallery schema version")
+            raise GalleryFormatError(
+                "unsupported gallery schema version; expected 0.2. Keep legacy files intact; "
+                "v0.1 requires verified manual migration or re-enrollment (see docs/ui-01-4-gallery-revisions.md)"
+            )
         try:
             gallery = cls(
                 model_id=payload["model_id"],
@@ -174,28 +216,32 @@ class FaceGallery:
                 raise ValueError("people must be a list")
             for record in people:
                 if not isinstance(record, dict) or set(record) != {
-                    "person_id", "name", "embeddings", "created_at"
+                    "person_id", "name", "embeddings", "created_at", "n_images"
                 }:
                     raise ValueError("invalid identity record fields")
                 embeddings = record["embeddings"]
-                if not isinstance(embeddings, list) or not embeddings:
-                    raise ValueError("identity must contain at least one embedding")
+                if not isinstance(embeddings, list) or len(embeddings) != 1:
+                    raise ValueError("identity must contain exactly one averaged template")
+                _required_text(record["created_at"], "created_at")
                 gallery.register(
                     record["person_id"], record["name"], embeddings[0],
-                    created_at=record["created_at"],
+                    created_at=record["created_at"], n_images=record["n_images"],
                 )
-                for vector in embeddings[1:]:
-                    gallery.add_embedding(record["person_id"], vector)
         except (ValueError, TypeError, DuplicatePersonIDError) as exc:
             raise GalleryFormatError(f"invalid gallery content: {exc}") from exc
+        gallery._saved_people = gallery._people.copy()
         return gallery
 
     def save(self, path: str | Path) -> None:
-        """Write via a temporary sibling file, replacing the destination on success."""
-        path = Path(path)
-        payload = json.dumps(self.to_dict(), ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+        """Atomically save, or discard all changes since the last save/load.
+
+        After failure the caller must explicitly reapply registration/updates
+        before retrying; a later save cannot accidentally persist failed work.
+        """
         temporary: str | None = None
         try:
+            path = Path(path)
+            payload = json.dumps(self.to_dict(), ensure_ascii=False, indent=2, allow_nan=False) + "\n"
             path.parent.mkdir(parents=True, exist_ok=True)
             fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
             with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
@@ -204,13 +250,18 @@ class FaceGallery:
                 os.fsync(handle.fileno())
             os.replace(temporary, path)
             temporary = None
-        except OSError as exc:
-            raise GalleryStorageError(f"could not save gallery to {path}") from exc
+            self._saved_people = self._people.copy()
+        except (OSError, ValueError, TypeError) as exc:
+            self._people = self._saved_people.copy()
+            raise GalleryStorageError(
+                f"could not save gallery to {path}; pending changes rolled back"
+            ) from exc
         finally:
             if temporary is not None:
                 try:
                     os.unlink(temporary)
-                except FileNotFoundError:
+                except OSError:
+                    # Best-effort cleanup must not hide the original save error.
                     pass
 
     @classmethod
