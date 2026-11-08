@@ -1,0 +1,313 @@
+{
+  "status": "PASS",
+  "python": "3.13.17",
+  "torch": "2.13.0+cpu",
+  "pillow": "11.2.1",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "counts": {
+    "train": {
+      "positive": 5626,
+      "negative": 10089,
+      "neutral": 3858
+    },
+    "val": {
+      "neutral": 964,
+      "negative": 2521,
+      "positive": 1406
+    },
+    "test": {
+      "negative": 3293,
+      "positive": 1766,
+      "neutral": 1224
+    }
+  },
+  "mapping": {
+    "negative": 0,
+    "neutral": 1,
+    "positive": 2
+  },
+  "preprocessing": {
+    "image_shape": [
+      1,
+      48,
+      48
+    ],
+    "range": [
+      0,
+      1
+    ],
+    "dtype": "float32",
+    "augmentation": "none"
+  },
+  "seed": 42,
+  "batch_size": 32,
+  "manifest_sha256": "79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b",
+  "config_sha256": "29f070b7409f8d9f9805326b7fb82922b43cf120b47e3fd477a2dc49c2aa7e10",
+  "batches": {
+    "train": {
+      "image_shape": [
+        32,
+        1,
+        48,
+        48
+      ],
+      "target_shape": [
+        32
+      ],
+      "min": 0.0,
+      "max": 1.0,
+      "targets": [
+        2,
+        2,
+        0,
+        1,
+        2,
+        2,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        2,
+        0,
+        1,
+        2,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        2,
+        0,
+        2
+      ]
+    },
+    "val": {
+      "image_shape": [
+        32,
+        1,
+        48,
+        48
+      ],
+      "target_shape": [
+        32
+      ],
+      "min": 0.0,
+      "max": 1.0,
+      "targets": [
+        1,
+        0,
+        0,
+        0,
+        2,
+        1,
+        1,
+        1,
+        2,
+        2,
+        0,
+        0,
+        1,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        2,
+        1,
+        0,
+        0,
+        0,
+        2,
+        1,
+        0,
+        0,
+        0,
+        2,
+        1
+      ]
+    },
+    "test": {
+      "image_shape": [
+        32,
+        1,
+        48,
+        48
+      ],
+      "target_shape": [
+        32
+      ],
+      "min": 0.0,
+      "max": 1.0,
+      "targets": [
+        0,
+        2,
+        2,
+        0,
+        2,
+        0,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        2,
+        2,
+        0,
+        1,
+        2,
+        0,
+        0,
+        0,
+        1,
+        2,
+        2,
+        0,
+        2,
+        0,
+        1,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "examples": {
+    "train": [
+      {
+        "path": "train/negative/0003c220c1a31047143b519191c232afed3f94b504283b91f1813c99f25bdab0.jpg",
+        "label": "negative",
+        "target": 0,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "8ae087ed9178e15b303df06c9f4e8426acef4070438f76c9e4581404e77bbc15"
+      },
+      {
+        "path": "train/neutral/00281ec5503391629f59d140ac1c94dd939b8a5a5813f9af80f17a032c34e49e.jpg",
+        "label": "neutral",
+        "target": 1,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "885ecc197989d49eb7edad16fdd266ed1e43af57da84e32576e67a53a6de618b"
+      },
+      {
+        "path": "train/positive/0002fd1e3c422bf79d4e0b81e1a6cfc5463a71de665f73d9d6791ea2e5105c2b.jpg",
+        "label": "positive",
+        "target": 2,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "52e41250dde66ba43456347b80b09984c340327dc92a86a735b9963a8f7982a3"
+      }
+    ],
+    "val": [
+      {
+        "path": "val/negative/00249d88f5af36b817b561f40c3a5ff3b823f8cae312d95c459f93db984fa27c.jpg",
+        "label": "negative",
+        "target": 0,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "e7bacea4234207d82db7b66527c66b89010ad036b1fddf33f1d2ccd2618b9192"
+      },
+      {
+        "path": "val/neutral/001fafee87377081895d18c2a006cfac191269690ad6803d710550a85ae346ee.jpg",
+        "label": "neutral",
+        "target": 1,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "8ab42944e40eccea41746b67d35731b5d58d2aeb714242d42eb3395bc64de82b"
+      },
+      {
+        "path": "val/positive/006258bebd586acaad9f9196d37bbb675806102f7e44ccc6210b3e3a91ecf482.jpg",
+        "label": "positive",
+        "target": 2,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "54c1a7d34b44f76206ca70b88f4c2f9ca939cc4b30c450c12e282b195f96e154"
+      }
+    ],
+    "test": [
+      {
+        "path": "test/negative/00010611dd3befd9c4751c24f7690ae53683fbe071e312a13f29a2aa61d226bf.jpg",
+        "label": "negative",
+        "target": 0,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "672d1f0d6ed6fdec591142844d3ff4173376cf219368d04cc5899cf3fc608dea"
+      },
+      {
+        "path": "test/neutral/00bb7855cf6ae3cd990961cfea79776948b25f62374055ecbda1924183836629.jpg",
+        "label": "neutral",
+        "target": 1,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "e8ac6a893a7a020f1cc7fc9d5218ca34d3b3a71b1a22a3c3c6cb3e37cfc52e79"
+      },
+      {
+        "path": "test/positive/00067c70ce55a80801880d52c2b5082a024c436a526581872d06b69a853b0d60.jpg",
+        "label": "positive",
+        "target": 2,
+        "image_shape": [
+          1,
+          48,
+          48
+        ],
+        "file_sha256": "4fb8a3286e7ccbbdc8d1237a8c69b9f91775d2828339dded70f5834166ae2e57"
+      }
+    ]
+  },
+  "checks": [
+    "Manifest checksum and class counts match.",
+    "Real files match manifest inventory.",
+    "Unique pixel hashes across all partitions.",
+    "Each loaded image matches its source file hash.",
+    "Real batches have finite float32 [B,1,48,48] images and int64 [B] targets.",
+    "All class mappings checked on each partition.",
+    "Repeated preprocessing is deterministic.",
+    "Seeded training shuffle is reproducible; evaluation order is fixed."
+  ],
+  "source_sha256": {
+    "src/facial_attendance/emotion/data_loader.py": "255f69eed4836d9007e3d4323020c9548a7b614cefed15dbf383ea0110ab9681",
+    "src/facial_attendance/emotion/tensor_data.py": "616077e79d6550657ecd23748802e56309a740f94f7fe6ed6640164518b465f9",
+    "scripts/check_emotion_data.py": "f7beacb87eb5d28386d0b415a7f424b760daa50b31032c985451380f20e6888e"
+  },
+  "limitations": "Manifest pixel hashes were audited during preparation. Only sampled images were decoded in this run. No training, model accuracy, near-duplicate or identity audit."
+}
