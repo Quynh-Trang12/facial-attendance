@@ -5,7 +5,8 @@
 [paths]
 kaggle_cache = "data/.kagglehub"
 face_data = "data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2"
-# Reserved paths: liveness/emotion datasets have not been selected or downloaded.
+# Reserved storage: liveness is selected in liveness-protocol.json but not
+# downloaded/audited; emotion data selection remains pending.
 liveness_data = "data/raw/liveness"
 emotion_data = "data/raw/emotion"
 # Generated model weights and attendance records are kept out of version control.
