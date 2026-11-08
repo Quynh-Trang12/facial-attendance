@@ -3,13 +3,15 @@
 import os
 from pathlib import Path
 
-from .data_loader import FaceLayout
+from .data_loader import DEFAULT_EXCLUSIONS, FaceLayout
 
 
 COMPETITION = "11-785-fall-20-homework-2-part-2"
 
 
-def download_face_data(*, cache_dir: Path) -> FaceLayout:
+def download_face_data(
+    *, cache_dir: Path, exclusions: Path | None = DEFAULT_EXCLUSIONS
+) -> FaceLayout:
     """Return the discovered extracted dataset root without copying raw images.
 
     Keep KaggleHub's reusable cache in the requested local directory, call the
@@ -32,4 +34,4 @@ def download_face_data(*, cache_dir: Path) -> FaceLayout:
             os.environ.pop("KAGGLEHUB_CACHE", None)
         else:
             os.environ["KAGGLEHUB_CACHE"] = previous
-    return FaceLayout.discover(downloaded)
+    return FaceLayout.discover(downloaded, exclusions=exclusions)

@@ -15,18 +15,24 @@ from .data_loader import (
     ClassificationFaces,
     FaceLayout,
     read_verification_pairs,
+    sample_training_pairs,
 )
 
 VERIFICATION = "verification_data"
-# Evaluation data must not share image bytes with training data, and the
-# verification trials must not reuse any classification image.
+# All four partitions are independent, so no two of them may share image bytes.
 LEAKAGE_PAIRS = (
     ("train_data", "val_data"),
     ("train_data", "test_data"),
+    ("val_data", "test_data"),
     ("train_data", VERIFICATION),
     ("val_data", VERIFICATION),
     ("test_data", VERIFICATION),
 )
+# Who keeps an image found in several partitions. Verification stays whole because the
+# required AUC uses every official trial; val/test hold only two images per identity,
+# while train can spare a copy.
+KEEP_ORDER = (VERIFICATION, "test_data", "val_data", "train_data")
+SAMPLED_PAIRS_PER_LABEL = 50_000
 EXAMPLE_LIMIT = 20
 HASH_CHUNK = 1 << 20
 
@@ -167,6 +173,95 @@ def _keep(examples: list, item):
         examples.append(item)
 
 
+def exclusion_entries(records: list[ImageRecord], relative: Callable) -> list:
+    """Return sorted (path, reason) so one copy of each image survives, in one partition."""
+    by_digest = defaultdict(list)
+    for record in records:
+        by_digest[record.sha256].append(record)
+    entries = []
+    for group in by_digest.values():
+        owner = min((r.partition for r in group), key=KEEP_ORDER.index)
+        kept = set()
+        for record in sorted(group, key=lambda r: r.path):
+            if record.partition == VERIFICATION:
+                continue
+            if record.partition != owner:
+                reason = owner
+            elif record.identity in kept:
+                reason = "within_identity"
+            else:
+                kept.add(record.identity)
+                continue
+            entries.append((relative(record.path), reason))
+    return sorted(entries)
+
+
+def _write_exclusions(file: Path, entries: list, manifest: str):
+    file.parent.mkdir(parents=True, exist_ok=True)
+    # Never overwritten: a new list changes what every model is trained and scored on.
+    with file.open("x", encoding="utf-8") as handle:
+        handle.write(
+            "# Classification images the loader must not use. Do not edit by hand; "
+            "regenerate with scripts/audit_face_data.py --raw --write-exclusions.\n"
+            f"# unfiltered dataset_manifest_sha256={manifest}\n"
+            "# columns: path, partition that keeps the image or within_identity\n"
+        )
+        handle.writelines(f"{path}\t{reason}\n" for path, reason in entries)
+
+
+def _sampler_check(train, records: list[ImageRecord], *, seed: int) -> dict:
+    """Hash-check what the training sampler really draws, not only the pool it reads."""
+    digests = {r.path: r.sha256 for r in records}
+    held_out = {r.sha256 for r in records if r.partition != "train_data"}
+    pairs = sample_training_pairs(
+        train, count_per_label=SAMPLED_PAIRS_PER_LABEL, seed=seed
+    )
+    images = {path for pair in pairs for path in (pair.left, pair.right)}
+    return {
+        "seed": seed,
+        "pairs": len(pairs),
+        "distinct_images": len(images),
+        "images_shared_with_held_out": sum(digests[p] in held_out for p in images),
+        "excluded_images_drawn": sum(p in train.layout.excluded for p in images),
+        "identical_positive_pairs": sum(
+            pair.label == 1 and digests[pair.left] == digests[pair.right]
+            for pair in pairs
+        ),
+    }
+
+
+def _known_identities(records: list[ImageRecord], trials) -> dict:
+    """Count verification images and trials whose person a byte-identical copy reveals.
+
+    Verification images have no identity labels, so this is a lower bound on how often
+    the official trials involve people the model trains on. It needs the unfiltered data:
+    filtering removes the classification copies that name the person.
+    """
+    identities_by_digest = defaultdict(set)
+    for record in records:
+        if record.identity is not None:
+            identities_by_digest[record.sha256].add(record.identity)
+    named = {
+        record.path: identities_by_digest[record.sha256]
+        for record in records
+        if record.partition == VERIFICATION and record.sha256 in identities_by_digest
+    }
+    scored = {path for trial in trials for path in (trial.left, trial.right)} & set(named)
+    sides_named = [(trial.left in named) + (trial.right in named) for trial in trials]
+    return {
+        "is_lower_bound": True,
+        "verification_images_named": len(named),
+        "identities_named": len(set().union(*named.values())),
+        "scored_images_named": len(scored),
+        "identities_named_by_scored_images": len(
+            set().union(*(named[path] for path in scored))
+        ),
+        "trials": len(trials),
+        "trials_with_a_named_image": sum(count > 0 for count in sides_named),
+        "trials_with_both_images_named": sum(count == 2 for count in sides_named),
+    }
+
+
 def _trial_checks(trials, digests: dict[Path, str], relative: Callable) -> dict:
     labels = Counter(t.label for t in trials)
     keys = defaultdict(list)
@@ -247,6 +342,7 @@ def audit_dataset(
     seed: int = 42,
     sample_size: int = 20,
     progress: Callable[[int, int], None] | None = None,
+    write_exclusions: Path | None = None,
 ) -> dict:
     """Hash and decode every file; derive identity, duplicate, leakage and trial checks.
 
@@ -275,6 +371,9 @@ def audit_dataset(
     digests = {r.path: r.sha256 for r in auditor.records if r.partition == VERIFICATION}
     trial_report = _trial_checks(trials, digests, auditor.relative)
 
+    sampler = _sampler_check(train, auditor.records, seed=seed)
+    excluded_loaded = sum(d.excluded_count for d in splits.values())
+
     train_ids = set(train.class_to_idx)
     partitions = {split: _identity_stats(dataset) for split, dataset in splits.items()}
     for split in SPLITS[1:]:
@@ -295,6 +394,23 @@ def audit_dataset(
         )
     for name, count in leaked.items():
         failures.append(f"{count} identical images are shared by {name}")
+    if sampler["images_shared_with_held_out"] or sampler["excluded_images_drawn"]:
+        failures.append(
+            f"{sampler['images_shared_with_held_out']} sampled training images are also "
+            f"held out and {sampler['excluded_images_drawn']} are excluded images"
+        )
+    if layout.excluded:
+        # A stale list could drop nothing and still leave the rest of the data clean.
+        if excluded_loaded != len(layout.excluded):
+            failures.append(
+                f"The loader dropped {excluded_loaded} of "
+                f"{len(layout.excluded)} listed images"
+            )
+        if within["groups"]:
+            failures.append(
+                f"{within['redundant_files']} duplicate copies inside one identity "
+                "remain after filtering"
+            )
     warnings = []
     if within["groups"]:
         warnings.append(
@@ -325,7 +441,17 @@ def audit_dataset(
     manifest = sha256()
     for record in sorted(auditor.records, key=lambda r: r.path):
         manifest.update(f"{auditor.relative(record.path)}\t{record.sha256}\n".encode())
-    return {
+    report_exclusions = {}
+    if write_exclusions is not None:
+        entries = exclusion_entries(auditor.records, auditor.relative)
+        _write_exclusions(write_exclusions, entries, manifest.hexdigest())
+        report_exclusions = {
+            "written_exclusions": {
+                "entries": len(entries),
+                "by_reason": dict(Counter(reason for _, reason in entries)),
+            }
+        }
+    return report_exclusions | {
         "status": "FAIL" if failures else "PASS",
         "failures": failures,
         "warnings": warnings,
@@ -335,6 +461,17 @@ def audit_dataset(
             json.dumps(train.class_to_idx, sort_keys=True).encode()
         ).hexdigest(),
         "pairs_file_sha256": file_sha256(layout.pairs_file),
+        "filtering": {
+            "mode": "filtered" if layout.excluded else "unfiltered",
+            "images_listed": len(layout.excluded),
+            "images_dropped_by_loader": {
+                split: dataset.excluded_count for split, dataset in splits.items()
+            },
+        },
+        "sampler": sampler,
+        "known_identities": None
+        if layout.excluded
+        else _known_identities(auditor.records, trials),
         "partitions": partitions,
         "duplicates": {
             "within_identity": within,
@@ -359,6 +496,8 @@ def audit_dataset(
                 "trial pair with conflicting labels",
                 "identical image shared across "
                 + ", ".join(f"{a}/{b}" for a, b in LEAKAGE_PAIRS),
+                "sampled training image that is held out or excluded",
+                "filtered data only: listed image not dropped, or duplicate inside one identity",
             ],
             "warn": [
                 "duplicate inside one identity",

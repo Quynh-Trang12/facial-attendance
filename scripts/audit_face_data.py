@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from facial_attendance.config import load_paths
 from facial_attendance.recognition.audit import audit_dataset
-from facial_attendance.recognition.data_loader import FaceLayout
+from facial_attendance.recognition.data_loader import DEFAULT_EXCLUSIONS, FaceLayout
 from facial_attendance.recognition.download import COMPETITION, download_face_data
 
 PROGRESS_EVERY = 20_000
@@ -39,19 +39,42 @@ def parse_arguments(argv: list[str] | None = None):
         "--seed", type=int, default=42, help="Seed for the manual spot-check sample"
     )
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--exclusions",
+        type=Path,
+        default=DEFAULT_EXCLUSIONS,
+        help="Images the loader drops; the audit checks what is left",
+    )
+    parser.add_argument(
+        "--raw", action="store_true", help="Audit the data as published, unfiltered"
+    )
+    parser.add_argument(
+        "--write-exclusions",
+        type=Path,
+        help="With --raw, generate an exclusion list from this audit's hashes",
+    )
     args = parser.parse_args(argv)
     if args.output.exists():
         parser.error("Choose a new output file; earlier audit reports are evidence")
+    if args.write_exclusions is not None and (
+        not args.raw or args.write_exclusions.exists()
+    ):
+        parser.error("--write-exclusions needs --raw and a new file")
     return args
 
 
 def resolve_layout(args):
     """All default storage locations come from one config, not duplicated literals."""
     paths = load_paths(args.config, root=ROOT)
+    exclusions = None if args.raw else args.exclusions
     if args.download:
-        layout = download_face_data(cache_dir=args.cache_dir or paths.kaggle_cache)
+        layout = download_face_data(
+            cache_dir=args.cache_dir or paths.kaggle_cache, exclusions=exclusions
+        )
     else:
-        layout = FaceLayout.discover(args.data_root or paths.face_data)
+        layout = FaceLayout.discover(
+            args.data_root or paths.face_data, exclusions=exclusions
+        )
     return layout, paths
 
 
@@ -90,7 +113,14 @@ def main(argv: list[str] | None = None) -> int:
             "kaggle_cache": display(paths.kaggle_cache),
         }
         report["dataset_root"] = display(layout.root)
-        report.update(audit_dataset(layout, seed=args.seed, progress=show_progress))
+        report.update(
+            audit_dataset(
+                layout,
+                seed=args.seed,
+                progress=show_progress,
+                write_exclusions=args.write_exclusions,
+            )
+        )
         code = 0 if report["status"] == "PASS" else 1
     except Exception as error:
         report.update(
@@ -108,6 +138,7 @@ def main(argv: list[str] | None = None) -> int:
         ROOT / "src/facial_attendance/recognition/data_loader.py",
         ROOT / "src/facial_attendance/recognition/download.py",
         args.config.resolve(),
+        (args.write_exclusions or args.exclusions).resolve(),
     ]
     report["source_sha256"] = {
         display(p): sha256(p.read_bytes()).hexdigest() for p in files if p.is_file()

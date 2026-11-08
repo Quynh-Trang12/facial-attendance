@@ -9,15 +9,45 @@ import random
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
 SPLITS = ("train_data", "val_data", "test_data")
+# Classification images byte-identical to another partition, generated from the full
+# data by scripts/audit_face_data.py. Loading the competition as published would leak.
+DEFAULT_EXCLUSIONS = Path(__file__).resolve().parents[3] / "configs/face-exclusions.tsv"
+
+
+def _read_exclusions(root: Path, file: Path) -> frozenset[Path]:
+    """Read listed paths; a listed file that is absent means this is different data."""
+    excluded = set()
+    # Official trials stay whole, so only classification images can be dropped.
+    base = (root / "classification_data").resolve()
+    with file.open(encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip() or line.startswith("#"):
+                continue
+            relative = PurePosixPath(line.split("\t")[0].strip())
+            path = (root / relative).resolve()
+            if not path.is_relative_to(base) or not path.is_file():
+                raise ValueError(
+                    f"{file.name} line {line_number} is not a classification image "
+                    f"of this dataset: {relative}"
+                )
+            excluded.add(path)
+    return frozenset(excluded)
 
 
 @dataclass(frozen=True)
 class FaceLayout:
     root: Path
+    excluded: frozenset[Path] = frozenset()
 
     @classmethod
-    def discover(cls, directory: Path) -> "FaceLayout":
-        """Accept the dataset root or one enclosing archive directory, without guessing files."""
+    def discover(
+        cls, directory: Path, *, exclusions: Path | None = DEFAULT_EXCLUSIONS
+    ) -> "FaceLayout":
+        """Accept the dataset root or one enclosing archive directory, without guessing files.
+
+        Every dataset built from the layout drops the listed images. Only `exclusions=None`
+        gives the unfiltered data, for generating the list or for generated fixtures.
+        """
         directory = Path(directory).expanduser().resolve()
         candidates = [directory]
         if directory.is_dir():
@@ -40,7 +70,9 @@ class FaceLayout:
                 "verification_data, verification_pairs_val.txt. Extract archives first; "
                 "do not rename a different dataset to make this check pass."
             )
-        return cls(matches[0])
+        if exclusions is None:
+            return cls(matches[0])
+        return cls(matches[0], _read_exclusions(matches[0], Path(exclusions)))
 
     @property
     def pairs_file(self) -> Path:
@@ -148,7 +180,14 @@ class ClassificationFaces:
         if not identities:
             raise ValueError(f"No identity folders in {folder}")
         self.class_to_idx = _identity_mapping(identities, split, class_to_idx)
-        self.samples = _index_images(folder, identities, self.class_to_idx)
+        indexed = _index_images(folder, identities, self.class_to_idx)
+        self.samples = tuple(s for s in indexed if s.path not in layout.excluded)
+        self.excluded_count = len(indexed) - len(self.samples)
+        # The mapping keeps every folder, so a class left without training images would
+        # be an untrainable target. A held-out identity may lose its images.
+        emptied = set(identities) - {s.identity for s in self.samples}
+        if split == "train_data" and emptied:
+            raise ValueError(f"Exclusions empty training identities: {sorted(emptied)}")
 
     def __len__(self):
         return len(self.samples)

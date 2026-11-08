@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from facial_attendance.config import load_paths
 from facial_attendance.recognition.data_loader import (
+    DEFAULT_EXCLUSIONS,
     ClassificationFaces,
     FaceLayout,
     PairFaces,
@@ -53,6 +54,7 @@ def inspect_classification(splits: dict, *, batch_size: int, image_size: int) ->
             raise RuntimeError(f"Invalid classification batch in {split}")
         observations[split] = {
             "images": len(dataset),
+            "images_dropped_by_exclusions": dataset.excluded_count,
             "identities_present": len({s.identity for s in dataset.samples}),
             "batch_shape": list(images.shape),
             "targets": targets.tolist(),
@@ -261,6 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         ROOT / "src/facial_attendance/config.py",
         ROOT / "src/facial_attendance/recognition/data_loader.py",
         ROOT / "src/facial_attendance/recognition/download.py",
+        DEFAULT_EXCLUSIONS,
         args.config.resolve(),
     ]
     report["source_sha256"] = {

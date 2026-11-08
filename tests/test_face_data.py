@@ -1,6 +1,7 @@
 """Generated-image fixtures test loader behavior; they are not Kaggle data."""
 
 from collections import Counter
+import inspect
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,6 +12,7 @@ from unittest.mock import Mock, patch
 from PIL import Image
 
 from facial_attendance.recognition.data_loader import (
+    DEFAULT_EXCLUSIONS,
     ClassificationFaces,
     FaceLayout,
     PairFaces,
@@ -45,7 +47,7 @@ class FaceDataTests(unittest.TestCase):
         self.pairs_file.write_text(
             "verification_data/a.png verification_data/b.png 1\na.png c.png 0\n"
         )
-        self.layout = FaceLayout.discover(self.root)
+        self.layout = FaceLayout.discover(self.root, exclusions=None)
 
     def test_discovers_enclosing_directory(self):
         wrapped = self.root / "wrapped"
@@ -56,7 +58,7 @@ class FaceDataTests(unittest.TestCase):
             "verification_pairs_val.txt",
         ]:
             (self.root / name).rename(wrapped / name)
-        self.assertEqual(FaceLayout.discover(self.root).root, wrapped.resolve())
+        self.assertEqual(FaceLayout.discover(self.root, exclusions=None).root, wrapped.resolve())
 
     def test_rejects_incomplete_layout(self):
         self.pairs_file.unlink()
@@ -172,6 +174,63 @@ class FaceDataTests(unittest.TestCase):
         self.assertEqual((left.mode, right.mode), ("RGB", "RGB"))
         self.assertEqual(label, records[0].label)
 
+    def exclude(self, *relative) -> FaceLayout:
+        exclusions = self.root / "exclusions.tsv"
+        exclusions.write_text(
+            "# comment\n" + "".join(f"{path}\tverification_data\n" for path in relative)
+        )
+        return FaceLayout.discover(self.root, exclusions=exclusions)
+
+    def test_listed_images_are_not_loaded_and_targets_do_not_change(self):
+        layout = self.exclude("classification_data/train_data/10/0.PNG")
+        full = ClassificationFaces(self.layout, "train_data")
+        train = ClassificationFaces(layout, "train_data")
+        self.assertEqual((len(full), len(train), train.excluded_count), (6, 5, 1))
+        self.assertEqual(train.class_to_idx, full.class_to_idx)
+        self.assertNotIn(
+            (self.root / "classification_data/train_data/10/0.PNG").resolve(),
+            {sample.path for sample in train.samples},
+        )
+
+    def test_sampled_pairs_never_use_a_listed_image(self):
+        relative = "classification_data/train_data/10/0.PNG"
+        train = ClassificationFaces(self.exclude(relative), "train_data")
+        pairs = sample_training_pairs(train, count_per_label=200, seed=42)
+        drawn = {path for pair in pairs for path in (pair.left, pair.right)}
+        self.assertNotIn((self.root / relative).resolve(), drawn)
+
+    def test_held_out_identity_may_lose_its_images(self):
+        layout = self.exclude("classification_data/val_data/10/0.PNG")
+        train = ClassificationFaces(layout, "train_data")
+        val = ClassificationFaces(layout, "val_data", class_to_idx=train.class_to_idx)
+        self.assertEqual((len(val), val.excluded_count), (1, 1))
+        self.assertEqual(val.class_to_idx, train.class_to_idx)
+
+    def test_training_identity_may_not_lose_all_images(self):
+        layout = self.exclude(
+            *(f"classification_data/train_data/2/{i}.PNG" for i in range(3))
+        )
+        with self.assertRaisesRegex(ValueError, "empty training identities"):
+            ClassificationFaces(layout, "train_data")
+
+    def test_list_must_match_this_dataset(self):
+        with self.assertRaisesRegex(ValueError, "line 2"):
+            self.exclude("classification_data/train_data/10/missing.PNG")
+
+    def test_official_trial_images_can_not_be_listed(self):
+        with self.assertRaisesRegex(ValueError, "not a classification image"):
+            self.exclude("verification_data/a.png")
+
+    def test_loading_defaults_to_the_committed_list(self):
+        self.assertEqual(
+            inspect.signature(FaceLayout.discover).parameters["exclusions"].default,
+            DEFAULT_EXCLUSIONS,
+        )
+        self.assertEqual(
+            inspect.signature(download_face_data).parameters["exclusions"].default,
+            DEFAULT_EXCLUSIONS,
+        )
+
     def test_empty_pair_dataset_is_rejected(self):
         with self.assertRaises(ValueError):
             PairFaces(())
@@ -182,7 +241,9 @@ class FaceDataTests(unittest.TestCase):
             "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
         ):
             with patch.dict(os.environ, {"KAGGLEHUB_CACHE": "existing-cache"}):
-                layout = download_face_data(cache_dir=self.root / "cache")
+                layout = download_face_data(
+                    cache_dir=self.root / "cache", exclusions=None
+                )
                 self.assertEqual(layout.root, self.root.resolve())
                 self.assertEqual(os.environ["KAGGLEHUB_CACHE"], "existing-cache")
         api.assert_called_once_with(COMPETITION)
