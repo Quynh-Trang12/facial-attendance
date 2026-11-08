@@ -14,6 +14,9 @@ kaggle.json
 .idea/
 .DS_Store
 
+# Local assistant instructions
+/.github/instructions/
+
 # Datasets, checkpoints and personal attendance records stay local.
 /data/*
 !/data/README.md
