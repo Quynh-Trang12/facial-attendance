@@ -1,6 +1,6 @@
 """Device/version policy tests require no GPU or ML package installation in CI."""
 
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 import json
 from pathlib import Path
@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from facial_attendance.environment import (
+    check_versions,
     main,
     select_device,
     validate_python,
@@ -42,9 +43,15 @@ class RuntimeTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Select --device cpu explicitly"):
             validate_platform("Darwin", "arm64", macos_version="14.0", device="cuda")
 
-    def test_owner_snapshot_is_not_required_on_other_platforms(self):
-        with self.assertRaisesRegex(RuntimeError, "omit it on Windows/macOS"):
-            validate_platform("Windows", "AMD64", strict_owner=True)
+    def test_removed_snapshot_flag_is_rejected_before_execution(self):
+        with (
+            patch("facial_attendance.environment.check_environment") as check,
+            redirect_stderr(StringIO()),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            main(["--strict-owner", "--operator", "test", "--output", "unused.json"])
+        self.assertEqual(raised.exception.code, 2)
+        check.assert_not_called()
 
     def test_unsupported_architecture_or_os_has_clear_error(self):
         for system, machine in (("Windows", "ARM64"), ("FreeBSD", "x86_64")):
@@ -91,9 +98,18 @@ class RuntimeTests(unittest.TestCase):
             with self.subTest(actual=actual), self.assertRaises(RuntimeError):
                 validate_python(actual)
 
-    def test_owner_replay_still_enforces_owner_patch(self):
-        with self.assertRaises(RuntimeError):
-            validate_python((3, 13, 18), owner_patch="3.13.16")
+    def test_versions_only_require_shared_pins(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "requirements.txt").write_text("torch==2.13.0\n")
+            # No reference Python file or archived lock is needed for this check.
+            with (
+                patch("facial_attendance.environment.version", return_value="2.13.0+cpu"),
+                patch("facial_attendance.environment.sys.version_info", (3, 13, 17)),
+            ):
+                report = check_versions(root)
+        self.assertEqual(report["versions"], {"torch": "2.13.0+cpu"})
+        self.assertEqual(report["version_policy"], "portable_pins")
 
     def test_public_version_accepts_cpu_and_cuda_builds(self):
         self.assertTrue(version_matches("2.13.0", "2.13.0+cpu"))
