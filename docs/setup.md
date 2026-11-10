@@ -154,13 +154,38 @@ Run one check using the same environment as steps 1–2. If you reused an enviro
 
 **If it fails:** the command, terminal output and generated JSON identify the failed check.
 
+## Run unit tests
+
+Run the suite after installing dependencies to check the setup, and after code or configuration changes to catch regressions before review.
+
+The current tests check path/configuration handling, Python/device policy, dataset labels and trial ordering, image decoding and seeded pair sampling. For example, they can detect a change that maps validation identities incorrectly or alters official trial order. They use generated fixtures and mocked download calls, so the current suite needs no GPU, Kaggle token or competition download.
+
+The command below uses `unittest` discovery to collect tests from `tests/`. As model and system-integration tests are added, the discovered test count and covered behavior can grow.
+
+From the repository root, using the environment selected in step 1 (substitute its executable if it is outside `.venv`):
+
+```bash
+# Linux/macOS
+PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
+```
+
+```powershell
+# Windows PowerShell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+**Expected:** exit code 0 and `Ran N tests` followed by `OK`, where `N` is the number discovered for the checked-out revision, not a fixed target. `FAILED` lists failures/errors to investigate; skipped tests are reported separately and do not establish that the skipped behavior works.
+
+Passing the suite confirms only the behavior covered by its tests. The device check above exercises actual training/inference; dataset inspection and model-performance evaluation remain separate checks.
+
 ## 4. Download and check the dataset
 
 Continue with [Download on your own machine](data-loading.md#download-on-your-own-machine), following its steps in order.
 
 **For subsequent runs:** open a terminal at the repository root, activate the existing environment and run `python ...`. Environment creation and dependency installation are one-time setup steps.
 
-Development tests, platform verification status and previous results are in the [reference section](#reference); they are not additional setup steps.
+Platform verification and previous execution results are in the [reference section](#reference).
 
 ## Google Colab: CPU or NVIDIA GPU
 
@@ -255,7 +280,7 @@ run('environment', [python, 'scripts/check_environment.py', '--device', device,
                     '--output', run_dir / 'environment.json'])
 ```
 
-Expected: 46 tests pass; environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
+Expected: the discovered tests finish with `OK`; environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
 
 ### 5. Run the loader on real competition data
 
@@ -292,22 +317,9 @@ Download the `run_dir` directory shown in step 1 before ending the session, then
 ## Reference
 
 <details>
-<summary>Development tests and platform status</summary>
+<summary>Platform verification</summary>
 
-### Development tests and platform status
-
-From the repository root, using the environment selected in step 1 (substitute its executable if it is outside `.venv`):
-
-```bash
-# Linux/macOS
-PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
-```
-
-```powershell
-# Windows PowerShell
-$env:PYTHONPATH = "src"
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
+### Platform verification
 
 Linux CPU/CUDA execution has recorded evidence. Windows 11 and Mac M1 CPU execution passed in the accepted independent review; see [review notes](../evidence/SYS-03/README.md#sys-03-independent-review). Historical dependency-resolution reports remain separate evidence. The macOS minimum follows the pinned [Torch wheels](https://pypi.org/project/torch/2.13.0/#files).
 
@@ -342,7 +354,7 @@ Dataset decoding/collation happens on CPU and does not require GPU access. In Co
 
 - Current Python 3.13-only policy: [CPU runtime report](../evidence/SYS-03/cpu-python313-2026-11-04.json) and [46-test log](../evidence/SYS-03/python313-tests-2026-11-04.log).
 
-The source/configuration suite contains 46 tests. All CI jobs read `.python-version` and run **3.13.16 only**. The Linux check retains its existing `source-checks (3.13)` name. Windows x64 and macOS Apple Silicon CPU jobs cover the team's actual operating systems, not extra Python versions. Independent Windows/macOS CPU execution passed in the accepted review; GitHub CI execution remains unverified.
+CI discovers tests from `tests/` rather than checking a fixed test count. All CI jobs read `.python-version` and run **3.13.16 only**. The Linux check retains its existing `source-checks (3.13)` name. Windows x64 and macOS Apple Silicon CPU jobs cover the team's actual operating systems, not extra Python versions. Independent Windows/macOS CPU execution passed in the accepted review; GitHub CI execution remains unverified.
 
 The workflow defines `source-checks (3.13)`, `OS compatibility (windows-latest)` and `OS compatibility (macos-15)`. The former `source-checks (3.12)` job is retired; repository ruleset configuration is separate from execution evidence.
 

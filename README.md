@@ -13,7 +13,8 @@ The team's [Google Sheets workbook](https://docs.google.com/spreadsheets/d/1GkZo
 ## Start here
 
 1. [Setup](docs/setup.md): select your machine/device, prepare the environment and verify execution.
-2. [Data loading](docs/data-loading.md#download-on-your-own-machine): download and check the dataset after setup passes.
+2. [Unit tests](docs/setup.md#run-unit-tests): check for regressions after setup or changes to code/configuration.
+3. [Data loading](docs/data-loading.md#download-on-your-own-machine): download and check the dataset after setup passes.
 
 Follow only the branch for your machine. Verification evidence and current limitations are in [evidence](evidence/README.md); reading them is not required to start setup.
 
@@ -52,5 +53,5 @@ facial-attendance/
 
 ## Project delivery
 
-[Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Task evidence](evidence/README.md) links selected SYS-03 and FAC-01 artifacts. The suite now has 46 passing configuration, runtime-policy and loader tests; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent setup test results are documented in the [review record](evidence/SYS-03/README.md#sys-03-independent-review). Routine outputs stay under ignored `evidence/runs/`; selected artifacts are organized by parent task. Datasets, credentials, checkpoints and personal attendance records stay local.
+[Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Task evidence](evidence/README.md) links selected SYS-03 and FAC-01 artifacts. The [test suite](docs/setup.md#run-unit-tests) checks configuration, runtime policy and loader behavior; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent setup test results are documented in the [review record](evidence/SYS-03/README.md#sys-03-independent-review). Routine outputs stay under ignored `evidence/runs/`; selected artifacts are organized by parent task. Datasets, credentials, checkpoints and personal attendance records stay local.
 

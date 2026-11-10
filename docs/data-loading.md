@@ -158,7 +158,7 @@ Each runtime passed all seven loader checks and 39 unit tests. A batch of four r
 
 ### Local full-dataset acquisition and inspection
 
-The [current default-config run](../evidence/FAC-01/config-default-audit-2026-11-04.json) passed on the real dataset without `--data-root`, invoked from `/tmp` to check working-directory independence. The following earlier runs retain their historical source hashes; their counts, mapping and sampled-pair outputs were compared against the refactor. The complete current suite has 46 passing tests.
+The [current default-config run](../evidence/FAC-01/config-default-audit-2026-11-04.json) passed on the real dataset without `--data-root`, invoked from `/tmp` to check working-directory independence. The following earlier runs retain their historical source hashes; their counts, mapping and sampled-pair outputs were compared against the refactor. The [unit-test command](setup.md#run-unit-tests) finds and runs the tests in the repository’s `tests/` folder.
 
 The [authenticated Kaggle run](../evidence/FAC-01/kaggle-authenticated-2026-11-04.json) and [download/inspection log](../evidence/FAC-01/kaggle-authenticated-2026-11-04.log) completed with **PASS**, exit code 0, using KaggleHub 1.0.2 and the assigned competition. Observed counts:
 
