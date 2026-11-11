@@ -1,0 +1,7 @@
+id,label,score,status,family
+synthetic-1,0,0.1,live,live
+synthetic-2,0,0.4,uncertain,live
+synthetic-3,0,,failure,live
+synthetic-4,1,0.2,live,print
+synthetic-5,1,0.9,spoof,screen
+synthetic-6,1,,failure,video_replay

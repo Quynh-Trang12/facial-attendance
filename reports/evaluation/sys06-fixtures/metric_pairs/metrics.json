@@ -1,0 +1,98 @@
+{
+  "approach": "metric",
+  "mode": "fixture",
+  "metrics": {
+    "cosine": {
+      "auc": 1.0,
+      "count": 4,
+      "negative_count": 2,
+      "positive_count": 2,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": null
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.5,
+          "threshold": 0.9
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 1.0,
+          "threshold": 0.8
+        },
+        {
+          "fpr": 0.5,
+          "tpr": 1.0,
+          "threshold": 0.2
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.1
+        }
+      ]
+    },
+    "negative_euclidean": {
+      "auc": 1.0,
+      "count": 4,
+      "negative_count": 2,
+      "positive_count": 2,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": null
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.5,
+          "threshold": -0.4
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 1.0,
+          "threshold": -0.5
+        },
+        {
+          "fpr": 0.5,
+          "tpr": 1.0,
+          "threshold": -2.0
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": -3.0
+        }
+      ]
+    }
+  },
+  "score_representation": "cosine(raw embeddings), negative Euclidean(raw embeddings)",
+  "input_limitation": "Saved embeddings/scores are supplied by the caller; image decoding, inference and checkpoint provenance are not independently verified.",
+  "task": "verification",
+  "run_id": "sys06-synthetic-metric",
+  "checkpoint_id": "synthetic",
+  "created_utc": "2026-11-11T14:42:00.417614+00:00",
+  "python": "3.13.9",
+  "numpy": "2.2.6",
+  "sklearn": "1.9.1",
+  "git_commit": "c6e4f6754a4cadd479c32f8774be1ecb81f2583f",
+  "git_tracked_dirty": true,
+  "git_working_tree_dirty": true,
+  "inputs": {
+    "trials": {
+      "sha256": "3f38033c429202aade9bd35382404c97788987e960c98e1cb3584a2476586602",
+      "filename": "trials.txt"
+    },
+    "scores": {
+      "sha256": "c1663c8ae4a365ffe3934e5620f70229af4a0f33dfeccabd2cb1bc667ad52a98",
+      "filename": "metric_pairs.csv"
+    }
+  },
+  "source_sha256": {
+    "scripts/evaluate.py": "17bf5e29261331f444076096eebd63edd915633273d9a0f045e80d13762da2c5",
+    "src/facial_attendance/evaluation/metrics.py": "ed930d684fb5b5e1a4d5b334d6bd18418996d59dd9179014e9491f3a3c1d95d4"
+  }
+}
