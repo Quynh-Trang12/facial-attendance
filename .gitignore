@@ -14,6 +14,9 @@ kaggle.json
 .idea/
 .DS_Store
 
+# Local assistant instructions
+/.github/instructions/
+
 # Datasets, checkpoints and personal attendance records stay local.
 /data/*
 !/data/README.md
@@ -26,3 +29,9 @@ kaggle.json
 *.tar
 *.tar.gz
 
+
+# Routine runs stay local; selected task evidence is retained separately.
+/evidence/runs/
+
+# Historical troubleshooting archives are local support files.
+/evidence/archive/

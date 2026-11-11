@@ -1,6 +1,5 @@
 # Shared project versions. Public PyTorch versions match either CPU or CUDA wheels.
 # Install ONE wheel profile first, then this file; see docs/setup.md.
-# The owner's Python 3.13 environment already satisfies these; do not reinstall it.
 torch==2.13.0
 torchvision==0.28.0
 numpy==2.2.6

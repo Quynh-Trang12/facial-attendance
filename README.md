@@ -6,63 +6,52 @@ COS30082 group project combining face verification, anti-spoofing and emotion re
 
 The repository contains the application scaffold, an explicit CPU/CUDA environment check, classification/pair loaders and an entry point for the assigned Kaggle competition. Authenticated Kaggle acquisition and classification/verification/training-pair loader checks pass on the assigned dataset. Face models, model-training pipelines, registration and the webcam UI remain to be implemented.
 
+## Project Tracker
+
+The team's [Google Sheets workbook](https://docs.google.com/spreadsheets/d/1GkZogmafVGGMJrRnzRzTURIFnva_MPgCsVlqgpB9uR8/edit?usp=sharing), referred to as the **Project Tracker**, supports planning and coordination throughout the project. It contains the Gantt chart, WBS, requirements, blockers and product backlog, including task assignments, evidence and review records. Task status and reviewer confirmation are maintained in the Project Tracker; repository documentation links to those records.
+
+## Start here
+
+1. [Setup](docs/setup.md): select your machine/device, prepare the environment and verify execution.
+2. [Unit tests](docs/setup.md#run-unit-tests): check for regressions after setup or changes to code/configuration.
+3. [Data loading](docs/data-loading.md#download-on-your-own-machine): download and check the dataset after setup passes.
+
+Follow only the branch for your machine. Verification evidence and current limitations are in [evidence](evidence/README.md); reading them is not required to start setup.
+
 ## Repository layout
 
 ```text
 facial-attendance/
-├── .github/workflows/checks.yml    # Read-only source/configuration CI
-├── pyproject.toml                 # Python package metadata
-├── requirements.txt               # Shared public package versions
-├── requirements-cpu.txt           # CPU wheel selection
-├── requirements-cuda.txt          # CUDA 12.6 wheel selection
-├── requirements.lock              # Owner-only Linux/CUDA snapshot
-├── configs/project.toml           # Dataset and generated-output locations
+├── .github/workflows/checks.yml    # Source checks
+├── pyproject.toml                 # Package metadata
+├── requirements.txt               # Shared dependencies
+├── requirements-cpu.txt           # CPU wheels
+├── requirements-cuda.txt          # CUDA 12.6 wheels
+├── requirements.lock              # Archived dependency snapshot
+├── configs/project.toml           # Dataset and output paths
 ├── src/facial_attendance/
-│   ├── config.py                  # Portable storage-path configuration
-│   ├── environment.py             # Version policy, CLI and evidence reporting
-│   ├── runtime_checks.py          # ML imports and actual CPU/CUDA computation checks
-│   ├── recognition/               # Working data/pair loaders; future embedding models
-│   ├── liveness/                  # Reserved for the trained anti-spoofing module
-│   ├── emotion/                   # Reserved for the trained emotion module
-│   └── ui/                        # Reserved for webcam/registration integration
-├── scripts/check_environment.py   # Source-checkout entry point
-├── scripts/check_face_data.py     # Kaggle/local acquisition and loader inspection
-├── tests/                        # Configuration and generated-image loader tests
-├── data/README.md                 # Assigned dataset layout; raw files ignored
-├── artifacts/                     # Local checkpoints/attendance; ignored
-├── reports/                       # Environment and data-loader execution evidence
+│   ├── config.py                  # Storage configuration
+│   ├── environment.py             # Version checks and reporting
+│   ├── runtime_checks.py          # CPU/CUDA computation checks
+│   ├── recognition/               # Loaders; models pending
+│   ├── liveness/                  # Anti-spoofing scaffold
+│   ├── emotion/                   # Emotion scaffold
+│   └── ui/                        # Webcam UI scaffold
+├── scripts/check_environment.py   # Environment check entry point
+├── scripts/check_face_data.py     # Dataset check entry point
+├── tests/                        # Configuration and loader tests
+├── data/README.md                 # Dataset layout
+├── artifacts/                     # Local checkpoints and attendance
+├── evidence/                       # Execution evidence
 └── docs/
-    ├── setup.md                   # Setup, device checks and independent review
-    ├── architecture.md            # Module boundaries and extension rules
-    ├── data-loading.md            # Loader contracts, sampling and acceptance evidence
-    ├── requirements.md            # Course requirements and current coverage
+    ├── setup.md                   # Setup and device checks
+    ├── architecture.md            # Module interfaces
+    ├── data-loading.md            # Loader contracts and evidence
+    ├── requirements.md            # Requirements and coverage
     └── reference/project-brief.pdf
 ```
 
-## Development setup
-
-The project targets **Python 3.13.x**, Linux/Windows x64 CPU or NVIDIA CUDA, and macOS 14+ Apple Silicon CPU. See the [OS-specific setup and verification status](docs/setup.md#choose-the-operating-system-and-runtime-first); Windows/macOS native execution is pending. On Trang's machine, retain the existing **Python 3.13.16** GPU environment; do not reinstall it:
-
-```bash
-~/.local/share/ml-frameworks/run_gpu.sh scripts/check_environment.py \
-  --device cuda --strict-owner --operator "owner-host" \
-  --output reports/environment/owner-check.json
-```
-
-Run the GPU command in a host terminal. For an intentional CPU check, use the same environment's Python directly with `--device cpu` and omit `--strict-owner`. Requested CUDA still fails if unavailable; it never falls back silently. Choose a new evidence filename per run. Source entry points also work from another directory using an absolute script path.
-
-For new CPU/CUDA installations and step-by-step Colab cells, use [the setup guide](docs/setup.md). It distinguishes portable direct pins from the optional owner snapshot. Colab [CPU](reports/environment/colab-cpu-real-2026-11-04.json) and [Tesla T4 GPU](reports/environment/colab-cuda-real-2026-11-04.json) checks passed: 39 tests per runtime, loader checks on the same 56 original competition images, and optimizer/inference with a real-image batch. This is a subset compatibility check, not full-dataset training or accuracy evaluation. To download the full competition with your own account, follow [data loading](docs/data-loading.md#download-on-your-own-machine). Dataset paths and external-storage overrides are documented in [data/README.md](data/README.md).
-
-Run the source/configuration/loader suite without installing the project or changing the shared environment:
-
-```bash
-PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 \
-  ~/.local/share/ml-frameworks/.venv/bin/python -m unittest discover -s tests -v
-```
-
-GitHub CI uses only the Python version in `.python-version` (3.13.16): one Linux source check and CPU installation/test jobs on Windows x64 and macOS Apple Silicon; it neither downloads competition data nor certifies CUDA. The workflow has read-only repository permissions and never commits generated results. Members use one Python 3.13 environment on their own OS; they do not need to test other Python versions or every device profile.
-
 ## Project delivery
 
-[Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Current verification evidence](reports/README.md) links the configured-data, CPU/IPython and strict CUDA runs; older runs retain their recorded source hashes. The suite now has 46 passing configuration, runtime-policy and loader tests; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent reviewer execution remains pending. Small reports may be committed after inspection; datasets, credentials, checkpoints and personal attendance records stay local.
+[Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Task evidence](evidence/README.md) links selected SYS-03 and FAC-01 artifacts. The [test suite](docs/setup.md#run-unit-tests) checks configuration, runtime policy and loader behavior; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent setup test results are documented in the [review record](evidence/SYS-03/README.md#sys-03-independent-review). Routine outputs stay under ignored `evidence/runs/`; selected artifacts are organized by parent task. Datasets, credentials, checkpoints and personal attendance records stay local.
 
