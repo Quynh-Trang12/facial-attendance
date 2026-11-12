@@ -1,0 +1,55 @@
+COMMAND /home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/scripts/prepare_liveness_data.py --output-dir /tmp/liveness reviewer 7b728x8d/dataset with spaces --configure-validation 10
+{"train": 198, "validation": 22, "test": 22, "quarantine": 0}
+COMMAND /home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/scripts/check_liveness_data.py --data-root /tmp/liveness reviewer 7b728x8d/dataset with spaces --data-description /tmp/liveness reviewer 7b728x8d/dataset with spaces/data-description.json --output-dir /tmp/liveness reviewer 7b728x8d/review output/initial --summary-output /tmp/liveness reviewer 7b728x8d/review output/initial-summary.json --workers 4
+FAIL: /tmp/liveness reviewer 7b728x8d/review output/initial/audit.json
+Data audit failed; inspect overlaps, missing_families and image_errors
+COMMAND /home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/scripts/prepare_liveness_data.py --output-dir /tmp/liveness reviewer 7b728x8d/dataset with spaces --resolve-audit /tmp/liveness reviewer 7b728x8d/review output/initial/audit.json
+{"train": 187, "validation": 22, "test": 22, "quarantine": 11}
+COMMAND /home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/scripts/check_liveness_data.py --data-root /tmp/liveness reviewer 7b728x8d/dataset with spaces --data-description /tmp/liveness reviewer 7b728x8d/dataset with spaces/reviewed-data-description.json --output-dir /tmp/liveness reviewer 7b728x8d/review output/final --summary-output /tmp/liveness reviewer 7b728x8d/review output/final-summary.json --workers 4
+PASS: /tmp/liveness reviewer 7b728x8d/review output/final/audit.json
+COMMAND -c import sys; sys.path.insert(0,'src')
+from pathlib import Path
+from torch.utils.data import DataLoader
+from facial_attendance.liveness.data_loader import LivenessImages
+from facial_attendance.recognition.data_loader import image_transform
+dataset=LivenessImages(Path(sys.argv[1]),Path(sys.argv[2]),'train',transform=image_transform(224))
+images,targets=next(iter(DataLoader(dataset,batch_size=8,shuffle=False)))
+print(images.shape,images.dtype,targets.shape,targets.dtype)
+print(dataset.samples[0].relative_path) /tmp/liveness reviewer 7b728x8d/dataset with spaces /tmp/liveness reviewer 7b728x8d/review output/final/inventory.csv
+torch.Size([8, 3, 224, 224]) torch.float32 torch.Size([8]) torch.int64
+Data/train/103/live/0.png
+PASS: documented preparation -> failed initial audit -> resolution -> final audit -> loader API on paths with spaces.
+COMMAND /home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/scripts/prepare_liveness_data.py --output-dir /tmp/liveness validation reproduction h9biss8a --configure-validation 10
+{"train": 444685, "validation": 49504, "test": 67170, "quarantine": 216}
+PASS: fresh validation generation from all original annotations reproduces the saved 821-subject list and documented canonical fingerprint.
+Scope: native Linux CLI, generated image fixtures and actual source metadata. No full source-image audit, Windows or macOS execution performed.
+DOCUMENTED SHELL COMMAND
+python -c "from pathlib import Path; import sys; Path(sys.argv[1]).parent.mkdir(parents=True, exist_ok=True); Path(sys.argv[2]).mkdir(parents=True, exist_ok=True)" "$LIVENESS_DATA" "$LIVENESS_REVIEW"
+python -c "import shutil, sys; from pathlib import Path
+for value in sys.argv[1:]:
+    p=Path(value).resolve()
+    p=p if p.exists() else p.parent
+    print(p,shutil.disk_usage(p))" "$LIVENESS_DATA" "$LIVENESS_REVIEW"
+/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/data/raw/liveness/celeba-spoof-full usage(total=306272645120, used=282106572800, free=8533065728)
+/tmp/review shell paths o689zeu6/review outputs usage(total=306272645120, used=282106572800, free=8533065728)
+DOCUMENTED SHELL COMMAND
+python -c "import hashlib, json, sys; from pathlib import Path; d=json.loads((Path(sys.argv[1])/'validation-subjects.json').read_text(encoding='utf-8-sig')); ids=sorted(d['validation_subjects']); print(len(ids)); print(hashlib.sha256(json.dumps(ids,separators=(',',':')).encode('ascii')).hexdigest())" "$LIVENESS_DATA"
+821
+ce7f612210a5ef3e1f085012bfb979fc75ef53f15324b89d2c8d9400188b552f
+DOCUMENTED SHELL COMMAND
+python -c "import sys, torch; b=torch.load(sys.argv[1],weights_only=True); print(b['images'].shape,b['images'].dtype,b['targets'].dtype); print(list(zip(b['relative_paths'],b['targets'].tolist())))" "$LIVENESS_REVIEW/final/train.pt"
+torch.Size([8, 3, 224, 224]) torch.float32 torch.int64
+[('Data/train/1/live/000184.jpg', 0), ('Data/train/1/spoof/000390.jpg', 1), ('Data/train/1/spoof/160943.jpg', 1), ('Data/train/1016/spoof/006929.jpg', 1), ('Data/train/2056/spoof/013217.jpg', 1), ('Data/train/7151/spoof/005177.jpg', 1), ('Data/train/8151/spoof/001518.jpg', 1), ('Data/train/1/live/032887.jpg', 0)]
+DOCUMENTED SHELL COMMAND
+python -c "import sys; sys.path.insert(0,'src')
+from pathlib import Path
+from torch.utils.data import DataLoader
+from facial_attendance.liveness.data_loader import LivenessImages
+from facial_attendance.recognition.data_loader import image_transform
+dataset=LivenessImages(Path(sys.argv[1]),Path(sys.argv[2]),'train',transform=image_transform(224))
+images,targets=next(iter(DataLoader(dataset,batch_size=8,shuffle=False)))
+print(images.shape,images.dtype,targets.shape,targets.dtype)
+print(dataset.samples[0].relative_path)" "$LIVENESS_DATA" "$LIVENESS_REVIEW/final/inventory.csv"
+torch.Size([8, 3, 224, 224]) torch.float32 torch.Size([8]) torch.int64
+Data/train/1/live/000184.jpg
+PASS: exact documented bash snippets run with active project Python, quoted paths containing spaces, original saved batches and a real loader batch. No full image audit repeated.
