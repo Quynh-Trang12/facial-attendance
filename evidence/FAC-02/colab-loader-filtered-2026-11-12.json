@@ -1,0 +1,226 @@
+{
+  "timestamp_utc": "2026-11-12T15:00:58.332386+00:00",
+  "task": "FAC-01.2",
+  "status": "PASS",
+  "competition": "11-785-fall-20-homework-2-part-2",
+  "source": "kaggle_api",
+  "kagglehub_version": "1.0.2",
+  "configuration": {
+    "file": "/content/facial-attendance/configs/project.toml",
+    "face_data": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+    "kaggle_cache": "/content/facial-attendance/data/.kagglehub"
+  },
+  "dataset_root": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+  "images_excluded_by_list": 8945,
+  "data_loading_device": "cpu",
+  "class_count": 4000,
+  "identity_mapping_sha256": "4ce1e17377c40652c0d41cf302a17e1a938797be15f7a56b40aad7b8e8c8ce91",
+  "identity_mapping_preview": {
+    "n000003": 0,
+    "n000010": 1,
+    "n000011": 2,
+    "n000013": 3,
+    "n000015": 4
+  },
+  "classification": {
+    "train_data": {
+      "images": 372057,
+      "images_dropped_by_exclusions": 8581,
+      "identities_present": 4000,
+      "batch_shape": [
+        4,
+        3,
+        64,
+        64
+      ],
+      "targets": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    },
+    "val_data": {
+      "images": 7804,
+      "images_dropped_by_exclusions": 196,
+      "identities_present": 3998,
+      "batch_shape": [
+        4,
+        3,
+        64,
+        64
+      ],
+      "targets": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    },
+    "test_data": {
+      "images": 7832,
+      "images_dropped_by_exclusions": 168,
+      "identities_present": 3998,
+      "batch_shape": [
+        4,
+        3,
+        64,
+        64
+      ],
+      "targets": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "dtype": "torch.float32",
+      "finite": true
+    }
+  },
+  "verification": {
+    "trials": 8805,
+    "label_counts": {
+      "0": 4490,
+      "1": 4315
+    },
+    "left_batch_shape": [
+      4,
+      3,
+      64,
+      64
+    ],
+    "right_batch_shape": [
+      4,
+      3,
+      64,
+      64
+    ],
+    "batch_labels": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "pairs_file_sha256": "55ecf1495188024f414e3b0faac2b7f4cc374000a809e3b98579ecd8f4f25fdd",
+    "trial_preview": [
+      {
+        "left": "verification_data/00041961.jpg",
+        "right": "verification_data/00044353.jpg",
+        "label": 0
+      },
+      {
+        "left": "verification_data/00007133.jpg",
+        "right": "verification_data/00060449.jpg",
+        "label": 1
+      },
+      {
+        "left": "verification_data/00041961.jpg",
+        "right": "verification_data/00020166.jpg",
+        "label": 0
+      }
+    ]
+  },
+  "sampled_training_pairs": [
+    {
+      "left": "classification_data/train_data/n001357/0035_02.jpg",
+      "right": "classification_data/train_data/n001357/0252_01.jpg",
+      "label": 1
+    },
+    {
+      "left": "classification_data/train_data/n002243/0397_01.jpg",
+      "right": "classification_data/train_data/n004845/0009_01.jpg",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/n006112/0007_41.jpg",
+      "right": "classification_data/train_data/n006112/0007_15.jpg",
+      "label": 1
+    },
+    {
+      "left": "classification_data/train_data/n000826/0276_01.jpg",
+      "right": "classification_data/train_data/n005682/0023_02.jpg",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/n007046/0177_02.jpg",
+      "right": "classification_data/train_data/n002694/0085_01.jpg",
+      "label": 0
+    },
+    {
+      "left": "classification_data/train_data/n000297/0043_01.jpg",
+      "right": "classification_data/train_data/n000297/0154_01.jpg",
+      "label": 1
+    }
+  ],
+  "sampling_seed": 42,
+  "training_pair_batch": {
+    "left_shape": [
+      4,
+      3,
+      64,
+      64
+    ],
+    "right_shape": [
+      4,
+      3,
+      64,
+      64
+    ],
+    "labels": [
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "triplet_batch": {
+    "seed": 42,
+    "identities_per_batch": 64,
+    "images_per_identity": 4,
+    "batches_per_epoch": 1453,
+    "batch_shape": [
+      256,
+      3,
+      64,
+      64
+    ],
+    "identities": [
+      "n000279",
+      "n000358",
+      "n000563",
+      "n000892",
+      "n000929"
+    ],
+    "first_identity_paths": [
+      "classification_data/train_data/n000929/0039_02.jpg",
+      "classification_data/train_data/n000929/0060_01.jpg",
+      "classification_data/train_data/n000929/0009_01.jpg",
+      "classification_data/train_data/n000929/0056_03.jpg"
+    ]
+  },
+  "checks": {
+    "shared_identity_mapping": true,
+    "classification_batches": true,
+    "verification_paths_and_labels": true,
+    "verification_batch": true,
+    "sampling_identity_rules": true,
+    "sampling_reproducible": true,
+    "sampled_pair_batch": true,
+    "triplet_batch_identity_rules": true
+  },
+  "limits": "First decoded batches only; the full image, duplicate and leakage audit is scripts/audit_face_data.py; no model evaluation.",
+  "source_sha256": {
+    "scripts/check_face_data.py": "993a181d101946707b457a48905c276ddb5d33d70052846f7be6c31ee215d2d8",
+    "src/facial_attendance/config.py": "5b4115e53b723499dd5f72f749d5f5a9009abca91fd8489a816910d3123e2475",
+    "src/facial_attendance/recognition/data_loader.py": "d3939ad12272eb479cacd5e08cd7cde248fdccd3e5e8ddcde69870f81df586f5",
+    "src/facial_attendance/recognition/download.py": "1fdc286f1222bac079cf39e08a962881e18935a39ef9d06e120f841399eaaafc",
+    "src/facial_attendance/recognition/exclusions.py": "cfbf4f99a8553ce9bd9e8439eea0f8f7afc182ad682e5aadf135863b67465ad2",
+    "src/facial_attendance/recognition/sampling.py": "21dfae1d3304167278f2cac0a4e76d8b3549817fa808b3c0b2d3ecf5d2f3e6db",
+    "configs/project.toml": "4513f0d8e9b65e2a5e5bd56bc272597975a2b33e0d661fdcb0dfea341571b140",
+    "configs/face-exclusions.tsv": "06d4251d77a111f6d98d2d113f4d7c7c2d550bded2f3b5f08cd2525d99dde6c4"
+  }
+}

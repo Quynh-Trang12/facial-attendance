@@ -23,6 +23,12 @@ from facial_attendance.recognition.data_loader import (
     sample_training_pairs,
 )
 from facial_attendance.recognition.download import COMPETITION, download_face_data
+from facial_attendance.recognition.exclusions import DEFAULT_EXCLUSIONS, apply_exclusions
+from facial_attendance.recognition.sampling import (
+    IDENTITIES_PER_BATCH,
+    IMAGES_PER_IDENTITY,
+    IdentityBatchSampler,
+)
 
 
 def first_batch(dataset, batch_size: int):
@@ -53,6 +59,7 @@ def inspect_classification(splits: dict, *, batch_size: int, image_size: int) ->
             raise RuntimeError(f"Invalid classification batch in {split}")
         observations[split] = {
             "images": len(dataset),
+            "images_dropped_by_exclusions": dataset.excluded_count,
             "identities_present": len({s.identity for s in dataset.samples}),
             "batch_shape": list(images.shape),
             "targets": targets.tolist(),
@@ -106,6 +113,49 @@ def inspect_sampling(
     return sampled, batch
 
 
+def inspect_triplet_batch(train, *, image_size: int, seed: int, shape) -> dict:
+    """Decode the first real P×K batch and check identity relationships in it."""
+    import torch
+    from torch.utils.data import DataLoader
+
+    identities_per_batch, images_per_identity = shape
+    sampler = IdentityBatchSampler(
+        train,
+        identities_per_batch=identities_per_batch,
+        images_per_identity=images_per_identity,
+        seed=seed,
+    )
+    indices = next(iter(sampler))
+    images, targets = next(iter(DataLoader(train, batch_sampler=sampler, num_workers=0)))
+    samples = [train.samples[i] for i in indices]
+    per_target = Counter(targets.tolist())
+    if (
+        tuple(images.shape) != (sampler.batch_size, 3, image_size, image_size)
+        or images.dtype != torch.float32
+        or not torch.isfinite(images).all()
+        # Same seed and epoch, so the loader decoded exactly these indices.
+        or targets.tolist() != [s.target for s in samples]
+        or len(per_target) != identities_per_batch
+        or set(per_target.values()) != {images_per_identity}
+        # Distinct files: every anchor–positive pair compares two different images.
+        or len({s.path for s in samples}) != len(samples)
+        or any(s.path in train.layout.excluded for s in samples)
+    ):
+        raise RuntimeError("Invalid P×K triplet batch")
+    return {
+        "seed": seed,
+        "identities_per_batch": identities_per_batch,
+        "images_per_identity": images_per_identity,
+        "batches_per_epoch": len(sampler),
+        "batch_shape": list(images.shape),
+        "identities": sorted({s.identity for s in samples})[:5],
+        "first_identity_paths": [
+            str(s.path.relative_to(train.layout.root))
+            for s in samples[:images_per_identity]
+        ],
+    }
+
+
 def pair_preview(pairs, root: Path) -> list[dict]:
     # Relative paths make reviewer reports comparable across machines/cache roots.
     return [
@@ -119,7 +169,12 @@ def pair_preview(pairs, root: Path) -> list[dict]:
 
 
 def inspect_data(
-    layout: FaceLayout, *, batch_size: int, image_size: int, seed: int
+    layout: FaceLayout,
+    *,
+    batch_size: int,
+    image_size: int,
+    seed: int,
+    triplet_batch=(IDENTITIES_PER_BATCH, IMAGES_PER_IDENTITY),
 ) -> dict:
     """Orchestrate indexing, batch decoding and sampling as distinct checks."""
     transform = image_transform(image_size)
@@ -146,8 +201,12 @@ def inspect_data(
         image_size=image_size,
         seed=seed,
     )
+    triplets = inspect_triplet_batch(
+        train, image_size=image_size, seed=seed, shape=triplet_batch
+    )
     return {
         "dataset_root": str(layout.root),
+        "images_excluded_by_list": len(layout.excluded),
         "data_loading_device": "cpu",
         "class_count": len(train.class_to_idx),
         "identity_mapping_sha256": sha256(
@@ -167,6 +226,7 @@ def inspect_data(
         "sampled_training_pairs": pair_preview(sampled, layout.root),
         "sampling_seed": seed,
         "training_pair_batch": training_batch,
+        "triplet_batch": triplets,
         "checks": {
             "shared_identity_mapping": True,
             "classification_batches": True,
@@ -175,8 +235,9 @@ def inspect_data(
             "sampling_identity_rules": True,
             "sampling_reproducible": True,
             "sampled_pair_batch": True,
+            "triplet_batch_identity_rules": True,
         },
-        "limits": "First decoded batches only; no full image/duplicate/leakage audit or model evaluation.",
+        "limits": "First decoded batches only; the full image, duplicate and leakage audit is scripts/audit_face_data.py; no model evaluation.",
     }
 
 
@@ -204,6 +265,23 @@ def parse_arguments(argv: list[str] | None = None):
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--exclusions",
+        type=Path,
+        default=DEFAULT_EXCLUSIONS,
+        help="Images the loader drops before any check",
+    )
+    parser.add_argument(
+        "--raw", action="store_true", help="Check the data as published, unfiltered"
+    )
+    parser.add_argument(
+        "--triplet-batch",
+        type=int,
+        nargs=2,
+        metavar=("P", "K"),
+        default=(IDENTITIES_PER_BATCH, IMAGES_PER_IDENTITY),
+        help="Identities per batch and images per identity",
+    )
     args = parser.parse_args(argv)
     if args.output.exists() or args.batch_size < 1 or args.image_size < 1:
         parser.error("Choose a new output file and positive batch/image sizes")
@@ -220,6 +298,11 @@ def resolve_layout(args):
     return layout, paths
 
 
+def select_images(layout: FaceLayout, args) -> FaceLayout:
+    """Training checks see the filtered data unless the raw data is asked for by name."""
+    return layout if args.raw else apply_exclusions(layout, args.exclusions)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_arguments(argv)
     report = {
@@ -233,6 +316,7 @@ def main(argv: list[str] | None = None) -> int:
     code = 1
     try:
         layout, paths = resolve_layout(args)
+        layout = select_images(layout, args)
         report["configuration"] = {
             "file": str(args.config.resolve()),
             "face_data": str(paths.face_data),
@@ -244,6 +328,7 @@ def main(argv: list[str] | None = None) -> int:
                 batch_size=args.batch_size,
                 image_size=args.image_size,
                 seed=args.seed,
+                triplet_batch=tuple(args.triplet_batch),
             )
         )
         report["status"] = "PASS"
@@ -261,7 +346,10 @@ def main(argv: list[str] | None = None) -> int:
         ROOT / "src/facial_attendance/config.py",
         ROOT / "src/facial_attendance/recognition/data_loader.py",
         ROOT / "src/facial_attendance/recognition/download.py",
+        ROOT / "src/facial_attendance/recognition/exclusions.py",
+        ROOT / "src/facial_attendance/recognition/sampling.py",
         args.config.resolve(),
+        *([] if args.raw else [args.exclusions.resolve()]),
     ]
     report["source_sha256"] = {
         str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p): sha256(

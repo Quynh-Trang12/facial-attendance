@@ -45,6 +45,18 @@ class DataCliTests(unittest.TestCase):
             self.cli.resolve_layout(args)
         discover.assert_called_once_with(override)
 
+    def test_checks_use_the_committed_list_unless_raw_is_asked(self):
+        args = self.cli.parse_arguments(["--output", self.output])
+        self.assertEqual(args.exclusions, self.cli.DEFAULT_EXCLUSIONS)
+        self.assertEqual(tuple(args.triplet_batch), (64, 4))
+        with patch.object(self.cli, "apply_exclusions", return_value="filtered") as apply:
+            self.assertEqual(self.cli.select_images("layout", args), "filtered")
+        apply.assert_called_once_with("layout", self.cli.DEFAULT_EXCLUSIONS)
+        raw = self.cli.parse_arguments(["--raw", "--output", self.output])
+        with patch.object(self.cli, "apply_exclusions") as apply:
+            self.assertEqual(self.cli.select_images("layout", raw), "layout")
+        apply.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

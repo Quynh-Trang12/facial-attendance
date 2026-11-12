@@ -14,6 +14,9 @@ SPLITS = ("train_data", "val_data", "test_data")
 @dataclass(frozen=True)
 class FaceLayout:
     root: Path
+    # Classification images every dataset built from this layout leaves out; set by
+    # exclusions.apply_exclusions, empty for the data as published.
+    excluded: frozenset[Path] = frozenset()
 
     @classmethod
     def discover(cls, directory: Path) -> "FaceLayout":
@@ -148,7 +151,16 @@ class ClassificationFaces:
         if not identities:
             raise ValueError(f"No identity folders in {folder}")
         self.class_to_idx = _identity_mapping(identities, split, class_to_idx)
-        self.samples = _index_images(folder, identities, self.class_to_idx)
+        indexed = _index_images(folder, identities, self.class_to_idx)
+        # Filtering the index, not single reads, keeps classification batches and every
+        # sampler on the same images.
+        self.samples = tuple(s for s in indexed if s.path not in layout.excluded)
+        self.excluded_count = len(indexed) - len(self.samples)
+        # The mapping keeps every folder, so a class left without training images would
+        # be an untrainable target. A held-out identity may lose its images.
+        emptied = set(identities) - {s.identity for s in self.samples}
+        if split == "train_data" and emptied:
+            raise ValueError(f"Exclusions empty training identities: {sorted(emptied)}")
 
     def __len__(self):
         return len(self.samples)

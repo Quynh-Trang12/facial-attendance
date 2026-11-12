@@ -135,8 +135,10 @@ Implementation: `src/facial_attendance/recognition/data_loader.py`. Identity map
 
 | Interface | Behavior |
 | --- | --- |
-| `FaceLayout.discover(root)` | Require three classification splits, verification directory and trials file at one unambiguous root |
-| `ClassificationFaces(...)` | Return `(RGB image/tensor, integer target)`; sort training identities deterministically and reuse that mapping for validation/test; reject unknown identities |
+| `FaceLayout.discover(root)` | Require three classification splits, verification directory and trials file at one unambiguous root; loads the data as published |
+| `load_face_layout(root)` | Discover the root, then apply `configs/face-exclusions.tsv`; the entry point for training and checks. `exclusions=None` gives the published data |
+| `ClassificationFaces(...)` | Return `(RGB image/tensor, integer target)`; sort training identities deterministically and reuse that mapping for validation/test; reject unknown identities; leave out the layout's excluded images, counted in `excluded_count`; fail if a training identity loses every image |
+| `IdentityBatchSampler(train, seed=42)` | `batch_sampler` for triplet loss: P = 64 identities × K = 4 distinct images per batch from train only; `set_epoch(n)` keeps each epoch reproducible; fails if an identity has fewer than K images |
 | `VerificationPairs(...)` | Return `(left image/tensor, right image/tensor, label)` in official file order; preserve `1=same`, `0=different` |
 | `sample_training_pairs(train, count_per_label=N, seed=42)` | Draw N positives and N negatives from train only, using a local seeded generator |
 | `PairFaces(records, transform=...)` | Load sampled pair records through the same pair-image interface |
@@ -146,7 +148,7 @@ These map-style datasets work with PyTorch `DataLoader`. Without a transform the
 
 For positive pairs, the sampler selects uniformly among identities with at least two images, then selects two distinct images. For negative pairs, it selects two different identities uniformly, then one image per identity. Sampling is with replacement across pairs; repeated pairs are possible. Singleton identities can supply negatives. This is a reproducible baseline, not exhaustive sampling or hard-negative mining. Official verification trials are never resampled.
 
-Verification paths may be bare filenames or prefixed with `verification_data/`. Nonblank/noncomment lines require exactly two paths and label 0/1. Missing files, malformed labels/rows, escaping paths, unknown classification IDs and unreadable sampled images fail explicitly. Full duplicate/leakage audits and model evaluation remain separate tasks.
+Verification paths may be bare filenames or prefixed with `verification_data/`. Nonblank/noncomment lines require exactly two paths and label 0/1. Missing files, malformed labels/rows, escaping paths, unknown classification IDs and unreadable sampled images fail explicitly. An exclusion-list row whose image is missing, outside `classification_data`, has a different content hash, or whose kept copy is missing also fails: the list belongs to other data. `scripts/audit_face_data.py` audits every image and generates the list; the cleaning rule and results are in [FAC-02 evidence](../evidence/FAC-02/README.md). Model evaluation remains a separate task.
 
 ## Observed evidence and acceptance
 

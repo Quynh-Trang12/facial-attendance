@@ -6,6 +6,7 @@ The [Project Tracker](../README.md#project-tracker) is the single source for tas
 | --- | --- |
 | SYS-03 | [Setup, training/inference and independent review](SYS-03/README.md) |
 | FAC-01 | [Loader evidence and protocol findings](FAC-01/README.md) |
+| FAC-02 | [Face data audit, cleaning rule and P×K sampler](FAC-02/README.md) |
 
 Only tasks with supporting files have folders. Subtasks share the parent folder; shared artifacts are linked rather than copied. Other tasks remain indexed in the Project Tracker.
 
