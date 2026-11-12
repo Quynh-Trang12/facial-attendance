@@ -45,17 +45,9 @@ def version_matches(expected: str, installed: str) -> bool:
     )
 
 
-def validate_python(
-    actual: tuple[int, int, int], *, owner_patch: str | None = None
-) -> None:
-    # The team uses one Python minor version. Patch releases may differ between
-    # machines/Colab; only an explicit owner snapshot replay requires its patch.
+def validate_python(actual: tuple[int, int, int]) -> None:
+    # Team machines and Colab may use different Python 3.13 patch releases.
     require(actual[:2] == (3, 13), "Project runtime requires Python 3.13.x")
-    if owner_patch is not None:
-        require(
-            ".".join(map(str, actual)) == owner_patch,
-            "Owner snapshot requires its exact Python patch",
-        )
 
 
 def select_device(requested: str, *, cuda_available: bool) -> str:
@@ -77,15 +69,9 @@ def validate_platform(
     *,
     macos_version: str = "",
     device: str = "cpu",
-    strict_owner: bool = False,
 ) -> None:
     """Reject targets without wheels for the pinned stack before ML imports."""
     x64 = machine.lower() in {"amd64", "x86_64"}
-    if strict_owner:
-        require(
-            system == "Linux" and x64,
-            "--strict-owner is the Linux x86_64 owner snapshot; omit it on Windows/macOS.",
-        )
     if system == "Darwin":
         # Intel and Rosetta Python cannot install the pinned arm64 Torch wheels.
         require(
@@ -139,12 +125,9 @@ def source_hashes(root: Path) -> dict[str, str]:
     }
 
 
-def check_versions(root: Path, *, strict_owner: bool) -> dict:
-    """Separate portable direct pins from the optional Linux/CUDA owner snapshot."""
-    owner_patch = (
-        (root / ".python-version").read_text().strip() if strict_owner else None
-    )
-    validate_python(sys.version_info[:3], owner_patch=owner_patch)
+def check_versions(root: Path) -> dict:
+    """Check shared dependency pins while accepting CPU/CUDA build suffixes."""
+    validate_python(sys.version_info[:3])
     expected = read_pins(root / "requirements.txt")
     installed = {name: version(name) for name in expected}
     mismatches = {
@@ -156,24 +139,14 @@ def check_versions(root: Path, *, strict_owner: bool) -> dict:
         not mismatches, f"Project version mismatch: {mismatches}; expected {expected}"
     )
 
-    # A CPU wheel or Colab session must not be required to install the owner's
-    # NVIDIA transitive packages simply to pass a portable application check.
-    locked = read_pins(root / "requirements.lock") if strict_owner else {}
-    differences = {
-        name: version(name)
-        for name, wanted in locked.items()
-        if version(name) != wanted
-    }
-    require(not differences, f"Owner snapshot differs: {differences}")
     return {
         "versions": installed,
-        "version_policy": "owner_snapshot" if strict_owner else "portable_pins",
-        "locked_distributions_checked": len(locked),
+        "version_policy": "portable_pins",
     }
 
 
 def check_environment(
-    root: Path, *, device: str = "cuda", strict_owner: bool = False
+    root: Path, *, device: str = "cuda"
 ) -> dict:
     """Validate setup in stages; dataset availability is reported, not fabricated."""
     validate_platform(
@@ -181,9 +154,8 @@ def check_environment(
         platform.machine(),
         macos_version=platform.mac_ver()[0],
         device=device,
-        strict_owner=strict_owner,
     )
-    versions = check_versions(root, strict_owner=strict_owner)
+    versions = check_versions(root)
     paths = load_paths(root / "configs/project.toml", root=root)
     # A single lazy boundary keeps --help/policy tests lightweight and lets main()
     # record missing-package/import failures in JSON instead of crashing at startup.
@@ -229,11 +201,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--operator", required=True, help="Self-reported run label")
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cuda")
-    parser.add_argument(
-        "--strict-owner",
-        action="store_true",
-        help="Also enforce the owner's exact Python patch and Linux/CUDA lock",
-    )
     args = parser.parse_args(argv)
     if args.output.exists():
         parser.error("Output exists. Choose a new path to preserve earlier evidence.")
@@ -252,9 +219,7 @@ def main(argv: list[str] | None = None) -> int:
     exit_code = 1
     try:
         result["source_sha256"] = source_hashes(root)
-        result.update(
-            check_environment(root, device=args.device, strict_owner=args.strict_owner)
-        )
+        result.update(check_environment(root, device=args.device))
         result["status"] = "PASS"
         exit_code = 0
     except Exception as error:

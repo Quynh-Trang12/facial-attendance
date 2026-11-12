@@ -1,5 +1,4 @@
 # Linux/Windows x86_64 CPU profile; on macOS arm64 install requirements.txt from PyPI.
-# Never replace the owner's working CUDA build.
 --index-url https://download.pytorch.org/whl/cpu
 torch==2.13.0
 torchvision==0.28.0

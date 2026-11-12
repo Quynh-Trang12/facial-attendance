@@ -82,11 +82,11 @@ jobs:
         id: runtime
         # Preserve runtime evidence even if the independent unit-test step fails.
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
-        run: python scripts/check_environment.py --device cpu --operator github-os-review --output reports/environment/github-os-review.json
+        run: python scripts/check_environment.py --device cpu --operator github-os-review --output evidence/runs/SYS-03/github-os-review.json
       - name: Preserve the environment report
         if: ${{ !cancelled() && (steps.runtime.outcome == 'success' || steps.runtime.outcome == 'failure') }}
         uses: actions/upload-artifact@v7.0.2
         with:
           name: environment-${{ matrix.os }}
-          path: reports/environment/github-os-review.json
+          path: evidence/runs/SYS-03/github-os-review.json
           if-no-files-found: error
