@@ -1,6 +1,6 @@
 # Embedding and enrollment schema
 
-This schema fixes what the face module takes in, what it stores for each registered person and how a webcam face is matched (UI-01.1). It is the face-module part of the SYS-02 interface contract. Data roles, pair rules and score direction come from the [face data protocol](face-data-protocol.md); this document does not repeat them. Values marked **pending** are parameters whose final number is set by the task named in the same row. Code reads them from the checkpoint and never hard-codes them.
+This schema fixes what the face module takes in, what it stores for each registered person and how a webcam face is matched (UI-01.1). It is the face-module part of the SYS-02 interface contract. Data roles, pair rules and score direction come from the [face data protocol](face-data-protocol.md); this document does not repeat them. Values marked **pending** are parameters whose final number is set by the task named in the same row. Code reads `S`, `D` and `τ` from the checkpoint and never hard-codes them. Training settings and selection rules are in [experiment settings](experiment-settings.md).
 
 ## Face input
 
@@ -9,7 +9,7 @@ Every image that reaches the embedding model, whether from the competition data 
 | Step | Rule | Final value set by |
 | --- | --- | --- |
 | Crop | One square face crop. Training images are already face crops and are used whole. A webcam frame is cropped around the detector box, using a square with side `m × max(box width, box height)` around the box centre, clipped to the frame. | `m` **pending**, default 1.2: UI-03 compares webcam crops with training samples |
-| Size | Resize the crop to `S × S` pixels with bilinear interpolation. `S` is the native training image size from the FAC-01.3 audit's size histogram, or the most common size if the images are not all the same size. The loader's 112-pixel resize is for inspection only. | `S` **pending**: FAC-01.3 audit report |
+| Size | Resize the crop to `S × S` pixels with bilinear interpolation. `S = 64`, the size of every image in the [FAC-01.3 audit](../reports/data/colab-audit-2026-11-05.json). The loader's 112-pixel resize is for inspection only. | Fixed |
 | Colour order | RGB. The loader decodes with Pillow in RGB. OpenCV webcam frames are BGR and must be converted before cropping. | Fixed |
 | Scaling | `uint8` to `float32`, divided by 255, giving `[0, 1]` | Fixed |
 | Normalization | Per channel, `(x − mean) / std` with mean `(0.485, 0.456, 0.406)` and std `(0.229, 0.224, 0.225)`. Both approaches use these values, so the UI has one preprocessing path whether a backbone is partially fine-tuned from ImageNet weights or trained from scratch. | Fixed; stored in the checkpoint |
@@ -19,30 +19,38 @@ Every image that reaches the embedding model, whether from the competition data 
 
 The model returns one vector per face. The face module L2-normalizes it, so stored and live embeddings always have length 1 and the dot product is the cosine similarity. For the classification approach, the embedding is the layer before the classification head, not the class logits.
 
-Each registered person has exactly one record:
+The gallery file has a header with `schema_version`, `model_id`, `model_version`, `embedding_dim` and `people`. Each registered person has one record in `people`, holding one averaged template:
 
 | Field | Type | Unit or range | Final value set by |
 | --- | --- | --- | --- |
-| `identity_id` | string | Unique, non-empty, generated at registration (for example `emp-0001`); never derived from the name | UI-01.4 |
+| `person_id` | string | Unique, non-empty, generated at registration (for example `emp-0001`); never derived from the name | UI-01.4 |
 | `name` | string | Display name, UTF-8 (Vietnamese diacritics allowed), 1–64 characters | Entered at registration (UI-01.4) |
-| `embedding` | `float32[D]` | L2 norm `1 ± 1e-3`; each value in `[−1, 1]` | Computed at enrollment |
-| `model_id` | string | `<checkpoint file stem>@<first 12 hex characters of the checkpoint's SHA-256>` | Checkpoint chosen by FAC-05 |
+| `embeddings` | list of `float32[D]` | Exactly one entry after enrollment, the averaged template; L2 norm `1 ± 1e-3`; each value in `[−1, 1]` | Computed at enrollment |
 | `created_at` | string | ISO 8601 UTC timestamp, for example `2026-11-20T03:15:00Z` | Set at enrollment |
-| `n_images` | integer | Number of accepted frames averaged into `embedding`, 3–10 | Set at enrollment |
+| `n_images` | integer | Number of accepted frames averaged into the template, 3–10 | Set at enrollment |
 
-`D` is the embedding length of the model head, **pending** until FAC-03/FAC-04 fix their architectures. The gallery reads it from the checkpoint and rejects any record whose length differs. The gallery file also stores `model_id`, `D` and the input values above once in its header, so it can be checked without loading the model.
+`D = 512`, the embedding length of the model head in the [experiment settings](experiment-settings.md#training-settings). The gallery reads it from the checkpoint and rejects any record whose length differs.
 
-The gallery holds biometric data. It lives under the ignored `artifacts/` directory, next to attendance records, and is never committed. Enrollment frames and face crops are not stored once their embeddings are computed. UI-01.4 chooses the file format. Whatever it chooses must store `float32` values exactly (no rounding to short decimal text) and keep all six fields.
+Two header fields identify the model, so the gallery can be checked against a checkpoint without loading the weights:
+
+| Field | Value | Set by |
+| --- | --- | --- |
+| `model_id` | The training run's `run_id` | Checkpoint chosen by FAC-05 |
+| `model_version` | First 12 hex characters of the SHA-256 of the `state_dict` tensors, in sorted name order | Checkpoint chosen by FAC-05 |
+
+`model_version` hashes the weights, not the checkpoint file. The file also holds `meta`, which stores this value and `τ`, so hashing the file would change the value whenever `meta` is written.
+
+The gallery holds biometric data. It lives under the ignored `artifacts/` directory, next to attendance records, and is never committed. Enrollment frames and face crops are not stored once their embeddings are computed. UI-01.4 chooses the file format. Whatever it chooses must store `float32` values exactly (no rounding to short decimal text) and keep all five record fields.
 
 ## Decision rule
 
 For a live embedding `e` and enrolled templates `g_1 … g_K`:
 
-1. Compute `s_k = e · g_k` (cosine similarity, higher means more likely the same person, as in the protocol).
+1. Compute `s_k = e · g_k` for every template in the gallery (cosine similarity, higher means more likely the same person, as in the protocol).
 2. Take the best match `k* = argmax s_k`.
 3. If `s_k* ≥ τ`, accept: show the identity and record attendance. Otherwise show "unknown" and offer registration. An empty gallery always gives "unknown".
 
-`τ` is a single threshold for the deployed checkpoint. FAC-05 chooses it on the seeded `val_data` pair list defined in the protocol, never on the official trials. It is stored with `model_id` in the checkpoint metadata, so a threshold from one model is never applied to another. The SYS-04 evaluation reports which operating point (for example, the false-accept rate on validation pairs) `τ` corresponds to.
+`τ` is a single threshold for the deployed checkpoint. FAC-05 chooses it on the seeded `val_data` pair list defined in the protocol, never on the official trials. It is stored in the checkpoint metadata, so a threshold from one model is never applied to another. Its operating point, a false-accept rate of at most 1% on those pairs, is defined in the [experiment settings](experiment-settings.md#selection-rules).
 
 Matching runs only on a frame that has passed the liveness check. The rule for frames that liveness rejects is part of LIV-02 (see the gating section below).
 
@@ -59,7 +67,7 @@ Registration (UI-01.4) builds one averaged template per person:
 
 ## Versioning
 
-A gallery is valid only for the `model_id` that built it. Templates from different checkpoints live in different embedding spaces, and the threshold belongs to one checkpoint. On start-up the face module compares the gallery header's `model_id` and `D` with the loaded checkpoint. If they differ, it refuses to match and asks for re-enrollment. Since enrollment images are not stored, re-enrollment is the only way to migrate after a model change. Retraining therefore happens before people register for the demonstration, not after.
+A gallery is valid only for the model that built it. Templates from different checkpoints live in different embedding spaces, and the threshold belongs to one checkpoint. On start-up the face module compares the gallery header's `model_id`, `model_version` and `D` with the loaded checkpoint. If they differ, it refuses to match and asks for re-enrollment. Since enrollment images are not stored, re-enrollment is the only way to migrate after a model change. Retraining therefore happens before people register for the demonstration, not after.
 
 ## Gating requirements (UI-01.3)
 
@@ -76,11 +84,11 @@ These are the face-module entries for the shared interface contract:
 | Item | Value |
 | --- | --- |
 | Input crop | Square around the detector box, side `m × max(w, h)`, `m` default 1.2 (pending UI-03) |
-| Input size | `S × S`, pending the FAC-01.3 audit |
+| Input size | `64 × 64` |
 | Colour order | RGB (convert from OpenCV BGR) |
 | Scaling and normalization | `/255`, then ImageNet mean `(0.485, 0.456, 0.406)` and std `(0.229, 0.224, 0.225)` |
 | Tensor | `float32 [N, 3, S, S]` |
-| Checkpoint format | PyTorch `.pt` file holding `state_dict` plus a `meta` dictionary: `model_id`, `architecture`, `approach` (`classification` or `metric`), `embedding_dim` (`D`), `input_size` (`S`), `mean`, `std`, `threshold` (`τ`) and `threshold_source` |
-| Embedding output | `float32[N, D]`, L2-normalized by the face module |
-| Match output | `identity_id`, `name`, `score` (best cosine similarity), `accepted` (`score ≥ τ`); `identity_id` and `name` are empty when not accepted |
+| Checkpoint format | PyTorch `.pt` file holding `state_dict` plus a `meta` dictionary: `model_id`, `model_version`, `architecture`, `approach` (`classification` or `metric`), `embedding_dim` (`D`), `input_size` (`S`), `mean`, `std`, `threshold` (`τ`) and `threshold_source` |
+| Embedding output | `float32[N, 512]`, L2-normalized by the face module |
+| Match output | `person_id`, `name`, `score` (best cosine similarity), `accepted` (`score ≥ τ`); `person_id` and `name` are empty when not accepted |
 | Failure behaviour | No face, more than one face, a face box smaller than `S`, or a liveness rejection produce no embedding and no match. The UI shows the reason instead of an identity. |
