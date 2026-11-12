@@ -7,7 +7,7 @@ import tomllib
 
 @dataclass(frozen=True)
 class ProjectPaths:
-    """Shared storage locations; only face_data is currently populated."""
+    """Shared storage locations, resolved independently of the working directory."""
 
     kaggle_cache: Path
     face_data: Path
