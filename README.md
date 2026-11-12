@@ -47,6 +47,7 @@ facial-attendance/
     ├── setup.md                   # Setup and device checks
     ├── architecture.md            # Module interfaces
     ├── data-loading.md            # Loader contracts and evidence
+    ├── face-data-protocol.md      # Partition roles, pair rules and score direction
     ├── requirements.md            # Requirements and coverage
     └── reference/project-brief.pdf
 ```
