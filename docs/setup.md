@@ -181,7 +181,10 @@ Passing the suite confirms only the behavior covered by its tests. The device ch
 
 ## 4. Download and check the dataset
 
-Continue with [Download on your own machine](data-loading.md#download-on-your-own-machine), following its steps in order.
+Choose the dataset task:
+
+- **FAC-01 face recognition:** follow [Download on your own machine](data-loading.md#download-on-your-own-machine).
+- **LIV-03 anti-spoofing:** follow [the reviewer starting point](liveness-loader.md#reviewer-starting-point). Check its storage plan before downloading; it uses CelebA-Spoof rather than KaggleHub and needs no GPU for the audit/loader checks. The guide includes external-drive paths and commands that generate the required preparation files on a fresh device.
 
 **For subsequent runs:** open a terminal at the repository root, activate the existing environment and run `python ...`. Environment creation and dependency installation are one-time setup steps.
 
@@ -189,13 +192,15 @@ Platform verification and previous execution results are in the [reference secti
 
 ## Google Colab: CPU or NVIDIA GPU
 
+For LIV-03, complete environment steps 1–3 here, then follow the [Colab data, tests and audit workflow](liveness-loader.md#google-colab-review). That workflow includes its own liveness tests; skip the face-recognition data step for this task.
+
 <details>
 <summary>Using Colab? Expand and follow steps 1–5</summary>
 
 
 **Order:** select runtime → prepare environment → install → check → load data.
 
-Follow these cells in order in one notebook session. They run repository scripts in a separate `.venv` using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. Use the Python 3.13 interpreter supplied by Colab; another Python 3.13 patch release is acceptable. Matching the reference patch does not require a separate Python installation.
+Follow these cells in order in one notebook session. They run repository scripts in an isolated project environment using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. Use the Python 3.13 interpreter supplied by Colab; another Python 3.13 patch release is acceptable. Matching the reference patch does not require a separate Python installation.
 
 ### 1. Put the repository in one directory and select the device
 
@@ -230,7 +235,7 @@ print('Kernel:', sys.version.split()[0], '| device:', device)
 print('Project:', repo, '| evidence:', run_dir)
 ```
 
-Keep a CPU environment and a CUDA environment in different Colab sessions. Each `.venv` uses one wheel profile.
+Keep a CPU environment and a CUDA environment in different Colab sessions. Each project environment uses one wheel profile.
 
 ### 2. Prepare a command runner and the isolated environment
 
@@ -269,7 +274,7 @@ run('install-framework', [python, '-m', 'pip', 'install', '-r', profile])
 run('install-project', [python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
 ```
 
-The CUDA profile uses CUDA 12.6 wheels and needs a compatible NVIDIA driver. If installation or CUDA checks fail, inspect the stage log for the failing command. The archived `requirements.lock` describes a historical Linux/CUDA environment rather than the Colab dependency profile.
+The CUDA profile uses CUDA 12.6 wheels and needs a compatible NVIDIA driver. If installation or CUDA checks fail, inspect the stage log for the failing command. The archived [requirements.lock](../requirements.lock) describes a historical Linux/CUDA environment rather than the Colab dependency profile.
 
 ### 4. Run tests and the selected-device check
 
