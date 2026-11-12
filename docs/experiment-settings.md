@@ -29,7 +29,7 @@ This table has the shape the report needs for its training configuration section
 | Classification CNN | Quế An | SGD | 0.1 | 256 | Up to 30 | Cross-entropy |
 | Metric-learning CNN | Quế An | SGD | 0.05 | 256 | Up to 30 | Triplet, margin 0.2 |
 | Anti-spoofing | Trang | To be filled in by the owner | | | | |
-| Emotion detection | chị Dung | To be filled in by the owner | | | | |
+| Emotion detection | chị Dung | Adam | 0.001 | 256, subject to GPU memory | Up to 30; early stopping after 5 epochs without validation macro F1 improvement | Cross-entropy |
 
 ## Data
 
@@ -53,7 +53,7 @@ These rules are fixed before any comparison. Selection never uses the official t
 
 **Validation pairs.** The list is built once from `val_data` with seed 42 and reused unchanged for every checkpoint of both approaches. It holds one same-identity pair for each identity that still has two images, and an equal number of different-identity pairs drawn uniformly. Before filtering, that is 4,000 of each.
 
-**Liveness and emotion.** Each module selects its checkpoint and threshold on validation data and reports on separate held-out data. The [LIV-01 protocol](https://github.com/Quynh-Trang12/facial-attendance/blob/docs/liv-01-anti-spoofing-protocol/docs/liveness-protocol.md) (under review) defines this for liveness. chị Dung records the same for emotion under EMO-01.
+**Liveness and emotion.** Each module selects its checkpoint and threshold on validation data and reports on separate held-out data. The [LIV-01 protocol](https://github.com/Quynh-Trang12/facial-attendance/blob/docs/liv-01-anti-spoofing-protocol/docs/liveness-protocol.md) (under review) defines this for liveness. For emotion, the checkpoint with the highest validation macro F1 is kept and evaluated once on the held-out test split. These emotion settings are proposed starting values, not yet validated through training.
 
 ## Cosine and Euclidean comparison
 
@@ -66,13 +66,13 @@ This gives four official AUC values, one per approach and measure. Cosine stays 
 
 ## Traceability
 
-Every training run commits a manifest at `reports/runs/<run_id>/manifest.json`, where `run_id` is `YYYYMMDD-<approach>-<short commit>-s<seed>`.
+Every training run commits a manifest at `reports/runs/<run_id>/manifest.json`, where `run_id` is `YYYYMMDD-HHMMSS-<approach>-<short commit>-s<seed>`, using the run's start time in UTC. Two configurations run on the same day, from the same commit and with the same seed therefore still get different IDs.
 
 | Group | Fields |
 | --- | --- |
 | Identity | `run_id`, `module`, `approach`, `git_commit`, `git_dirty`, `seed` |
-| Data | `dataset_manifest_sha256`, `exclusions_sha256`, `pairs_file_sha256`, or the module's equivalents |
-| Settings | Full configuration, any change from this document with its reason, framework versions, GPU model |
+| Data | `dataset_manifest_sha256`, `exclusions_sha256`, `val_pairs_sha256` (the seeded `val_data` pair list, used for selection) and `official_pairs_sha256` (`verification_pairs_val.txt`, used for reporting), or the module's equivalents. The two pair hashes are stored separately to show that results were selected on one list and reported on the other. |
+| Settings | Full configuration, `config_sha256` (SHA-256 of the full configuration, so runs that share a configuration can be matched), any change from this document with its reason, framework versions, GPU model |
 | Selection | `selected_epoch`, selection metric and value, `threshold`, `threshold_source` |
 | Output | `model_id`, `model_version`, checkpoint storage location |
 
