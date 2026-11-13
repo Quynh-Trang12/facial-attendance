@@ -1,0 +1,44 @@
+{
+  "scope": "Owner precheck for SYS-06.3; not an independent reviewer sign-off.",
+  "implementation_commit": "2d14220e912acfbdda8f378e94f81c9bafbbf3a6",
+  "checks": [
+    {
+      "approach": "classification",
+      "score": "cosine",
+      "independent_pairwise_auc": "3/4",
+      "matches_saved_output": true
+    },
+    {
+      "approach": "classification",
+      "score": "negative_euclidean",
+      "independent_pairwise_auc": "3/4",
+      "matches_saved_output": true
+    },
+    {
+      "approach": "metric",
+      "score": "cosine",
+      "independent_pairwise_auc": "1",
+      "matches_saved_output": true
+    },
+    {
+      "approach": "metric",
+      "score": "negative_euclidean",
+      "independent_pairwise_auc": "1",
+      "matches_saved_output": true
+    }
+  ],
+  "emotion_accuracy_expected": "2/3",
+  "emotion_macro_f1_expected": "5/9",
+  "ci_at_check": {
+    "source": "success",
+    "Windows": "success",
+    "macOS": "success"
+  },
+  "limitations": [
+    "Synthetic numeric fixtures only.",
+    "No actual face model inference or official 8,805-trial evaluation.",
+    "Full-data face filtering and liveness policy choices remain separate work."
+  ],
+  "assigned_reviewer": "Qu\u1ebf An",
+  "independent_review_status": "pending"
+}
