@@ -12,11 +12,14 @@ The team's [Google Sheets workbook](https://docs.google.com/spreadsheets/d/1GkZo
 
 ## Start here
 
-1. [Setup](docs/setup.md): select your machine/device, prepare the environment and verify execution.
-2. [Unit tests](docs/setup.md#run-unit-tests): check for regressions after setup or changes to code/configuration.
-3. [Data loading](docs/data-loading.md#download-on-your-own-machine): download and check the dataset after setup passes.
+Choose the execution route for your machine or cloud runtime: Complete the numbered steps within your chosen route in order; continue only after the preceding checks pass.
 
-Follow only the branch for your machine. Verification evidence and current limitations are in [evidence](evidence/README.md); reading them is not required to start setup.
+| Execution route | Steps in order |
+| --- | --- |
+| **Local execution** | 1. From your cloned repository, [prepare the environment and check the device](docs/setup.md#1-open-a-terminal-and-select-the-environment).<br>2. Run the [unit tests](docs/setup.md#run-unit-tests); resolve failures before continuing.<br>3. Choose the module you want to run and follow its [dataset preparation and loader checks](docs/setup.md#4-download-and-check-the-dataset). |
+| **Google Colab execution** | 1. Open [Colab setup](docs/setup.md#google-colab-cpu-or-t4-gpu) and expand the section for the module you want to run.<br>2. Complete that route's prerequisites and environment setup. Anti-spoofing uses the [shared notebook](docs/liveness-loader.md#google-colab-execution); face recognition uses the listed setup cells.<br>3. Run the tests and dataset checks in the order provided; inspect and retain the generated results. |
+
+Both routes run the implemented modules; the attendance UI remains unimplemented. [Execution evidence](evidence/README.md) records tested behavior and limitations.
 
 ## Repository layout
 
@@ -57,5 +60,5 @@ facial-attendance/
 
 [Requirements coverage](docs/requirements.md) maps the brief to the implementation areas. [Task evidence](evidence/README.md) links selected SYS-03, FAC-01 and LIV-03 artifacts. The [test suite](docs/setup.md#run-unit-tests) checks configuration, runtime policy and loader behavior; [data evidence](docs/data-loading.md#observed-evidence-and-acceptance) records authenticated acquisition, actual dataset counts and loader checks separately from fixture tests. Independent setup test results are documented in the [review record](evidence/SYS-03/README.md#sys-03-independent-review). Routine outputs follow the [evidence storage layout](evidence/README.md#scope); selected artifacts are organized by parent task. Keep datasets, credentials, checkpoints and personal attendance records out of Git.
 
-[Anti-spoofing review and reproduction](docs/liveness-loader.md#reviewer-starting-point) covers storage planning, archive/extracted-data locations, external-drive paths, fresh preparation, full audit/loader commands and expected results. [Dataset storage](data/README.md#anti-spoofing-data-liv-03) separates LIV-03 from face-recognition acquisition. Fixture tests and full-data review have different evidence scopes.
+[Anti-spoofing review and reproduction](docs/liveness-loader.md#reproduce-the-results) covers storage planning, archive/extracted-data locations, external-drive paths, fresh preparation, full audit/loader commands and expected results. [Dataset storage](data/README.md#anti-spoofing-data-liv-03) separates LIV-03 from face-recognition acquisition. Fixture tests and full-data review have different evidence scopes.
 

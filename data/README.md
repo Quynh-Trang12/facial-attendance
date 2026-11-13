@@ -64,7 +64,7 @@ face_data = "C:/Datasets/face-data"
 python scripts/check_face_data.py --output evidence/runs/FAC-01/configured-review.json
 ```
 
-`face_data` is a configuration key: it tells the loader where to read existing images. It does not create, move or download the dataset. Absolute paths point to a location on your machine; relative paths are resolved from the repository root. Use forward slashes in Windows TOML paths, as shown above.
+**`face_data`** is a configuration key: it tells the loader where to read existing images. It does not create, move or download the dataset. **Absolute paths** point to a location on your machine; **relative paths** are resolved from the repository root. Use forward slashes in Windows TOML paths, as shown above.
 
 This setting affects local mode. `--download` uses KaggleHub's returned download/cache location instead. A command-line `--data-root` overrides the saved location for that run.
 
@@ -76,13 +76,13 @@ The anti-spoofing dataset has its own [storage and reproduction instructions](#a
 
 ### Local files, API and working directory
 
-- Local mode (no `--download`) reads existing files from `face_data` or `--data-root` and does not invoke the Kaggle download API. Those files can be in the Kaggle cache, a manually extracted folder or a mounted disk.
-- API mode (`--download`) invokes KaggleHub. It reuses a valid cached copy instead of downloading the same archive every time. Cache is storage, not a third loading mode.
+- **Local mode** (no `--download`) reads existing files from `face_data` or `--data-root` and does not invoke the Kaggle download API. Those files can be in the Kaggle cache, a manually extracted folder or a mounted disk.
+- **API mode** (`--download`) invokes KaggleHub. It reuses a valid cached copy instead of downloading the same archive every time. **Cache** is storage, not a third loading mode.
 - The earlier `/tmp` test changed only the terminal working directory. The dataset remained under this repository's `data/` tree. `/tmp` is not a default dataset location.
 
 ## Anti-spoofing data (LIV-03)
 
-Use the [LIV-03 reviewer guide](../docs/liveness-loader.md#reviewer-starting-point) for the complete sequence. The repository supplies code and documentation, not the original CelebA-Spoof images or owner-local preparation files. Download the 74 parts from the author's source and generate project metadata with the preparation command.
+Use the [anti-spoofing data guide](../docs/liveness-loader.md#reproduce-the-results) for the complete sequence. The repository supplies code and documentation, not the original CelebA-Spoof images or owner-local preparation files. Download the 74 parts from the author's source and generate project metadata with the preparation command.
 
 | Item | Default location, relative to the repository root | Purpose |
 | --- | --- | --- |
@@ -97,4 +97,6 @@ Plan about **160 GiB before download** if compressed and extracted data share a 
 
 Follow [fresh reproduction](../docs/liveness-loader.md#fresh-reproduction) to generate metadata from the original annotations, investigate the initial duplicate findings and produce the reviewed data description. With a complete prepared root, go directly to [the final audit and loader check](../docs/liveness-loader.md#5-final-audit-and-loader-check). The loader requires extracted files; it does not stream images from ZIP parts or Google Drive links. Preparation and extraction refuse existing outputs, so select new destinations for a fresh reproduction rather than mixing old and new files.
 
-The [LIV-03 Colab workflow](../docs/liveness-loader.md#google-colab-review) was executed on a standard CPU VM with 107.72 GiB total disk. It reads archive parts from Drive through canonical filename aliases and extracts images onto the VM, avoiding a full local archive copy. Results persist beneath the existing project folder in Drive, following the [Colab output layout](../docs/liveness-loader.md#6-run-the-final-audit-and-inspect-the-batches). The guide checks free space and explains cache overhead, runtime limits and recovery.
+The [anti-spoofing Colab workflow](../docs/liveness-loader.md#google-colab-execution) was executed on a standard CPU VM with 107.72 GiB total disk. It reads archive parts from Drive through canonical filename aliases and extracts images onto the VM, avoiding a full local archive copy. Results persist beneath the existing project folder in Drive, following the [Colab output layout](../docs/liveness-loader.md#6-run-the-final-audit-and-inspect-the-batches). The guide checks free space and explains cache overhead, runtime limits and recovery.
+
+For Colab, open the existing notebook from the [shared Drive project](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB?usp=sharing) and choose **Runtime → Run all** after preparing the [two folder shortcuts](../docs/liveness-loader.md#google-colab-execution). The notebook handles setup and the complete LIV-03 workflow; manual cells and device configuration are unnecessary.

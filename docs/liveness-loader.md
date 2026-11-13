@@ -10,15 +10,15 @@ The recorded full-data Colab execution passed the label/preprocessing/split chec
 
 | LIV-03 requirement | Recorded result | Evidence |
 | --- | --- | --- |
-| Load live/spoof images with correct labels/preprocessing and retain documented partitions | PASS: 561,575 source images decoded; original test assignments preserved; validation fixed by subject | [Generated summary](../evidence/LIV-03/audit-summary.json), selection and preprocessing below |
-| Prevent frames from known common videos leaking across training/evaluation | Controlled known-ID rejection tests PASS; real-data independence UNVERIFIED due to missing source-video IDs | [Colab test log](../evidence/LIV-03/colab-cpu-tests-2026-11-12.log), [scope and limitations](#scope-and-limitations) |
-| Provide aligned sample batches and traceable source/split records | PASS: three batches of 8 images, with alignment and saved readback verified; full inventory retained | [Full outputs and previews](https://drive.google.com/drive/folders/11rMGigAD9uu9WZT5WeqnN-agSvDOxwYd), [artifact checks](../evidence/LIV-03/colab-artifact-checks-2026-11-12.log) |
+| Load live/spoof images with correct labels/preprocessing and retain documented partitions | PASS: 561,575 source images decoded; original test assignments preserved; validation fixed by subject | [Generated summary](../evidence/LIV-03/colab/colab-cpu-2026-11-12/audit-summary.json), selection and preprocessing below |
+| Prevent frames from known common videos leaking across training/evaluation | Controlled known-ID rejection tests PASS; real-data independence UNVERIFIED due to missing source-video IDs | [Colab test log](../evidence/LIV-03/colab/colab-cpu-2026-11-12/colab-cpu-tests-2026-11-12.log), [scope and limitations](#scope-and-limitations) |
+| Provide aligned sample batches and traceable source/split records | PASS: three batches of 8 images, with alignment and saved readback verified; full inventory retained | [Full outputs and previews](https://drive.google.com/drive/folders/11rMGigAD9uu9WZT5WeqnN-agSvDOxwYd), [artifact checks](../evidence/LIV-03/colab/colab-cpu-2026-11-12/colab-artifact-checks-2026-11-12.log) |
 
 ## Evidence and source access
 
 | Resource | What to inspect |
 | --- | --- |
-| [Selected audit summary](../evidence/LIV-03/audit-summary.json) | Counts, requirement results, preprocessing, source/runtime hashes and batch checks |
+| [Selected audit summary](../evidence/LIV-03/colab/colab-cpu-2026-11-12/audit-summary.json) | Counts, requirement results, preprocessing, source/runtime hashes and batch checks |
 | [Full Colab outputs](https://drive.google.com/drive/folders/11rMGigAD9uu9WZT5WeqnN-agSvDOxwYd) | **audit.json**, **inventory.csv**, three tensor batches and their PNG previews |
 | [Complete execution record](https://drive.google.com/drive/folders/1j2gu6F0AhgIFpbY57FXMUCiaKob8B7te) | Initial/final reports, preparation records, source hashes and logs |
 | [Project source on Drive](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB) | 31 individually accessible source/config/test files, including all eight liveness modules; folder structure matches the repository |
@@ -32,7 +32,7 @@ Drive access depends on the folder's existing permissions and the dataset agreem
 
 An **inventory** is a CSV containing one row per source image, as defined in LIV-01. A **data description** is a JSON file recording the archive, source URL, received date, annotation paths, selection rules and fixed validation subject file.
 
-An **original split assignment** is the train/test assignment in the downloaded annotations. A **project split assignment** is the train/validation/test assignment used by the loader after the agreed validation selection and exclusions. The CSV uses `original_split` for original split assignments and `split` for project split assignments. The data description uses `split_annotations` for annotation paths and `split_evidence` for their documented source. Quarantine records excluded images for review; it is not a training or evaluation split.
+An **original split assignment** is the train/test assignment in the downloaded annotations. A **project split assignment** is the train/validation/test assignment used by the loader after the agreed validation selection and exclusions. The CSV uses `original_split` for original split assignments and `split` for project split assignments. The data description uses `split_annotations` for annotation paths and `split_evidence` for their documented source. **Quarantine** records excluded images for review; it is not a training or evaluation split.
 
 The source is [CelebA-Spoof](https://github.com/ZhangYuanhan-AI/CelebA-Spoof#dataset-downloads), subject to the author's research-only agreement and redistribution restrictions. Raw images, crops, tensors and per-image inventories stay out of Git. Retain the archive on its existing local drive or Drive storage; no merged ZIP copy is required.
 
@@ -99,12 +99,12 @@ Exact-file SHA-256 does not detect recompressed or near-duplicate images. Sample
 
 ## Reproduce the results
 
-Use these instructions to verify the recorded results or prepare the loader on another device. Choose the route matching your available inputs; keep the full dataset and agreed split rules unchanged.
+Use these instructions to verify the recorded results or prepare the loader on another device. Choose the route matching your available inputs, then expand **Local execution** or **Google Colab execution** below. A section link may leave its collapse closed; click its title to reveal the steps. Keep the full dataset and agreed split rules unchanged.
 
 | Starting point | Route | Needed before running |
 | --- | --- | --- |
-| Archive in Drive; limited local storage | [Colab](#google-colab-review) | Drive access, Python 3.13 CPU runtime, about 85 GiB free VM disk plus variable Drive cache overhead; at least 1 GiB Drive output space |
-| Archive downloaded to local/external storage | [Local fresh reproduction](#local-execution) | Project environment, all 74 parts, space calculated below and writable extraction/output destinations |
+| Archive downloaded to local/external storage | [Local execution](#local-execution) | Project environment, all 74 parts, space calculated below and writable extraction/output destinations |
+| Archive in Drive | [Google Colab execution](#google-colab-execution) | Drive access, Python 3.13 CPU runtime, about 85 GiB free VM disk plus variable Drive cache overhead; at least 1 GiB Drive output space |
 | Complete prepared dataset | [Final audit](#5-final-audit-and-loader-check) | All source images/boxes, reviewed data description and referenced annotation/findings files; new output directory |
 | Code only | [Fixture tests](#fixture-tests) | Project environment; no dataset download or GPU; does not replace a full-data audit |
 
@@ -118,214 +118,36 @@ Download every archive part from the author's links under [download and extract]
 
 ### Storage plan
 
-Measured archive sizes and the extractor's 4 KiB allocation estimate are:
+The figures below separate archive size, extracted storage and working space. Here, **storage partition** refers to the filesystem or volume whose free space is used; for example, Windows C:\\, a macOS volume mounted at /Volumes/MLData, or a Linux filesystem mounted at / or /mnt/data. Two folders on the same filesystem share its available space. **Google Drive** refers to the cloud service. Values are rounded; the filesystem estimate assumes 4 KiB allocation blocks.
 
-| Storage item | Space |
-| --- | ---: |
-| All 74 compressed parts | 76,999,417,048 bytes; 71.71 GiB |
-| Uncompressed file payload | 78,458,144,960 bytes; 73.07 GiB |
-| Estimated extracted allocation at 4 KiB blocks | 76.38 GiB |
-| Minimum free space checked before extraction, including a 2 GiB reserve | 78.38 GiB |
-| Archive plus extraction estimate and reserve, on one filesystem | 150.09 GiB |
+| Storage item | Approximate space | How to use this figure |
+| --- | ---: | --- |
+| All 74 compressed archive parts | 71.7 GiB | Space on the storage partition holding the download |
+| Uncompressed file contents | 73.1 GiB | Payload only; this excludes filesystem overhead |
+| Extracted files including filesystem overhead | 76.4 GiB | Replaces the payload figure above; do not add the two |
+| Extractor reserve | 2 GiB | Added to the extracted allocation for working/output space |
+| Minimum free space checked before extraction | 78.4 GiB | Extracted allocation plus reserve, when archives are on a different storage partition |
+| Archive, extracted allocation and reserve on one storage partition | 150.1 GiB | Combined requirement before downloading onto that partition |
+| One full audit's generated outputs | About 125 MiB | Inventory, report and sample batches; fresh reproduction runs two audits |
 
-Plan **at least 160 GiB available before downloading** when archive and extraction share a drive, or **at least 85 GiB free on the extraction drive** once the parts are stored elsewhere. These planning allowances exclude environment installation and other datasets. Filesystem allocation can differ from the 4 KiB estimate, especially with many small box files; inspect free space on the actual destination volume. Each full audit adds approximately 125 MiB for its inventory, report and batches. Auditing an existing prepared root needs this output space, not another extracted copy.
+Prepare **at least 160 GiB free before downloading** if the archive and extracted dataset share one storage partition, or **at least 85 GiB free on the partition used for extraction** if the archive is stored elsewhere. These planning allowances provide headroom above the estimates; they exclude environment installation, other datasets and variable Google Drive cache usage. Check the actual destination partition: filesystem allocation can differ, and the extractor calculates its minimum requirement from archive metadata before extraction. Auditing an already prepared dataset needs output space, not another extracted copy.
 
-If the laptop has insufficient space, use [Colab](#google-colab-review) or put the archive and/or extracted dataset on an existing external or mounted volume. Change only the path variables below; the repository and review outputs can remain on the laptop. Copying the dataset into the repository is unnecessary. Preparation needs write access to the extracted root; auditing an already prepared root can read it while writing outputs elsewhere.
+If the laptop has insufficient space, use [Colab](#google-colab-execution) or put the archive and/or extracted dataset on an existing external or mounted storage partition. Change only the path variables below; the repository and review outputs can remain on the laptop. Copying the dataset into the repository is unnecessary. Preparation needs write access to the extracted root; auditing an already prepared root can read it while writing outputs elsewhere.
 
 The 74 parts form **one seekable ZIP**, not 74 independent archives. Keep all parts available until extraction and CRC checks finish. The extractor reads them directly without creating another merged ZIP. It refuses an existing output directory and has no resume mode. Do not rerun extraction into a partial directory; preserve the failure output and choose a new destination with sufficient space. This guide does not require deleting archives or source data.
 
 If no suitable storage is available, run the fixture tests and record the full-data verification limit. Keep the documented full-data selection and split rules unchanged.
 
-<details>
-<summary>Colab: environment, Drive archive and full execution</summary>
-
-### Google Colab review
-
-The [recorded Colab run](../evidence/LIV-03/README.md#full-data-colab-execution--12-november-2026-utc) completed extraction, split preparation, both full image audits and all three loader batches on a standard CPU VM: **2 cores, 12.67 GiB RAM and 107.72 GiB total disk**, using Python 3.13.18. It had **105.79 GiB free before extraction** and **24.27 GiB free after verification**. Initial and final audits took about 66 and 67 minutes; allow roughly three hours including extraction and setup on comparable hardware. Colab Pro can use this CPU workflow; actual allocation and duration can differ.
-
-This route **keeps the 74 archive parts in Drive and extracts onto the VM**. It creates small filename aliases instead of copying the 71.71 GiB archive into VM storage. Google documents [Drive caching and I/O limits](https://research.google.com/colaboratory/faq.html); the [Colab team explains](https://github.com/googlecolab/colabtools/issues/1915) that Drive reads also use local cache. Check free space before extraction; the 85 GiB planning allowance is not a guarantee for every cache/filesystem allocation. The 160 GiB allowance applies when the compressed archive is also copied onto the extraction drive.
-
-The recorded execution used Colab CLI. The notebook cells below call the same project entry points and preserve the same data selection. No GPU is required.
-
-### 1. Prepare the environment and Drive folders
-
-Choose **Runtime → Change runtime type → CPU**. Follow [Colab environment steps 1–3](setup.md#google-colab-cpu-or-nvidia-gpu) to put the project source in the VM and install its isolated environment. Upload the project source without local environments, extracted data or archive parts. These steps define `repo`, `python` and `command_env`. If the default interpreter is no longer Python 3.13, select a compatible [runtime version](https://research.google.com/colaboratory/runtime-version-faq.html); the recorded run used Python 3.13.18. Run project commands through the isolated interpreter defined in setup.
-
-In Drive, make these two folders accessible directly under **My Drive**:
-
-- **CelebA-Spoof-zips**, containing the 74 parts from the [author's download](#1-download-and-extract).
-- **facial-attendance**, the project folder where review results should be saved.
-
-If a folder already exists deeper in Drive, use **Organize → Add shortcut → My Drive** rather than moving its files. Keep the shortcut's name as shown above; [Google's shortcut instructions](https://support.google.com/drive/answer/9700156?hl=en&co=GENIE.Platform%3DDesktop) explain this operation. This gives a direct folder lookup without scanning Drive or printing private parent paths. Confirm the shortcut points to the intended project folder. Mounting requires consent from the reviewer signed into that account.
-
-Create a code cell with **+ Code**, then run:
-
-```python
-from google.colab import drive
-from pathlib import Path
-import json
-import shutil
-
-
-drive.mount("/content/drive")
-drive_root = Path("/content/drive/MyDrive")
-archive = drive_root / "CelebA-Spoof-zips"
-drive_project = drive_root / "facial-attendance"
-assert archive.is_dir(), "Missing archive folder or shortcut in My Drive"
-assert drive_project.is_dir(), "Missing project folder or shortcut in My Drive"
-
-run_name = "reviewer-01"
-parts = repo / "data/raw/liveness/CelebA-Spoof-zips"
-data = repo / "data/raw/liveness/celeba-spoof-full"
-review = repo / "evidence/runs/LIV-03" / run_name
-saved = drive_project / "evidence/runs/LIV-03" / run_name
-
-free_gib = shutil.disk_usage("/content").free / 2**30
-print(f"VM free: {free_gib:.2f} GiB")
-assert free_gib >= 85, "Insufficient extraction space; stop before processing"
-assert not data.exists(), "Extraction needs a new dataset destination"
-data.parent.mkdir(parents=True, exist_ok=True)
-review.mkdir(parents=True, exist_ok=False)
-saved.mkdir(parents=True, exist_ok=False)
-```
-
-Use a new `run_name` for each review. Keep at least 1 GiB available in Drive for reports, inventories, batches and preparation records. Images are extracted into VM storage; reports are saved beneath the existing Drive project folder. The commands do not need the owner's private Drive hierarchy or account email.
-
-### 2. Link the 74 parts without duplicating the archive
-
-The downloaded filenames may have a **Copy of** prefix. This cell reads only the archive folder, checks for exactly one candidate per part and creates canonical VM symlinks. It leaves Drive filenames and contents intact. The extraction command then checks all part sizes and ZIP CRCs.
-
-```python
-files = {path.name: path for path in archive.iterdir() if path.is_file()}
-sources = {}
-for number in range(1, 75):
-    name = f"CelebA_Spoof.zip.{number:03d}"
-    matches = [files[key] for key in (name, "Copy of " + name) if key in files]
-    assert len(matches) == 1, f"Missing or ambiguous archive part: {name}"
-    sources[name] = matches[0]
-
-parts.mkdir(exist_ok=False)
-for name, source in sources.items():
-    (parts / name).symlink_to(source)
-print("Archive path: facial-attendance/" + parts.relative_to(repo).as_posix())
-```
-
-### 3. Prepare a short command runner
-
-The runner displays progress, saves the exit code and duration, and stops on an unexpected result. The separate save function copies evidence and preparation JSON into Drive. Keep both functions in the same notebook session.
-
-```python
-import subprocess
-import time
-
-prepare = repo / "scripts/prepare_liveness_data.py"
-audit = repo / "scripts/check_liveness_data.py"
-
-
-def stage(name, *arguments, expected=0):
-    started = time.monotonic()
-    command = [str(python), "-u", *map(str, arguments)]
-    with (review / f"{name}.log").open("x") as log:
-        with subprocess.Popen(
-            command, cwd=repo, env=command_env,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-        ) as process:
-            for line in process.stdout:
-                print(line, end="")
-                log.write(line)
-                log.flush()
-            code = process.wait()
-        elapsed = time.monotonic() - started
-        log.write(f"\nExit code: {code}; elapsed seconds: {elapsed:.1f}\n")
-    assert code == expected, f"{name}: exit {code}; inspect its log"
-
-
-def save_results():
-    shutil.copytree(review, saved / "outputs", dirs_exist_ok=True)
-    records = saved / "preparation"
-    records.mkdir(exist_ok=True)
-    for source in data.glob("*.json"):
-        shutil.copy2(source, records / source.name)
-    print("Saved: facial-attendance/evidence/runs/LIV-03/" + run_name)
-```
-
-If a stage raises an error, run `save_results()` in a separate cell to preserve its existing log before investigating or ending the runtime. Use a new run name for a retry; existing stage logs are refused.
-
-### 4. Run tests, extraction and split preparation
-
-Run the blocks as separate cells. The fixture tests need no dataset images and should return **OK** with no skipped integration check.
-
-```python
-stage("tests", "-m", "unittest", "discover", "-s", "tests",
-      "-p", "test_liveness_data.py", "-v")
-save_results()
-```
-
-Extract every archive entry and verify CRCs. Expect **1,123,165 extracted files** in the generated **extraction.json** receipt.
-
-```python
-stage("extract", prepare, "--parts-dir", parts, "--output-dir", data, "--full")
-save_results()
-```
-
-Generate the agreed validation selection and project annotations. Expect **821 validation subjects** and the [documented fingerprint](#2-generate-validation-and-project-annotations).
-
-```python
-stage("split", prepare, "--output-dir", data, "--configure-validation", 10)
-save_results()
-```
-
-### 5. Run the initial audit, then resolve its recorded duplicates
-
-This full scan is expected to exit with code 1 for the recorded source. It must find exactly the known 37 byte-duplicate groups, with no blocking image errors or missing attack families, before resolution is allowed.
-
-```python
-stage("initial", audit, "--data-root", data,
-      "--data-description", data / "data-description.json",
-      "--output-dir", review / "initial", "--workers", 2, expected=1)
-save_results()
-
-initial = json.loads((review / "initial/audit.json").read_text())
-assert initial["inventory_rows"] == 561575
-assert len(initial["overlaps"]) == 37
-assert all(row["field"] == "sha256" for row in initial["overlaps"])
-assert not initial["blocking_image_errors"]
-assert not initial["missing_families"]
-```
-
-The one excluded type-4 bounding-box error is documented under [source findings](../evidence/LIV-03/README.md#source-and-protocol-findings). An unrelated failure must be investigated. The next command quarantines all source images from the six training subjects proven to share identical bytes with evaluation; validation and test remain unchanged.
-
-```python
-stage("resolve", prepare, "--output-dir", data,
-      "--resolve-audit", review / "initial/audit.json")
-save_results()
-```
-
-### 6. Run the final audit and inspect the batches
-
-```python
-stage("final", audit, "--data-root", data,
-      "--data-description", data / "reviewed-data-description.json",
-      "--output-dir", review / "final", "--workers", 2)
-save_results()
-```
-
-Compare **summary.json** in the saved final output folder with [the expected results](#inspect-and-compare-the-results). It should record PASS, accepted=true, 561,575 inventory rows, 544 quarantined rows and successful alignment/readback for all three batches. Video independence remains UNVERIFIED; **all_task_requirements_verified** remains false.
-
-Use Colab's Files pane to open **train.png**, **validation.png** and **test.png** beneath the VM's final output folder, or open their saved Drive copies. Match the displayed indices and targets to batch rows in **audit.json** and source rows in **inventory.csv**. The final command already loads and verifies the three tensor batches through the project environment; importing stock-kernel Torch is unnecessary.
-
-The saved Drive run contains both audit folders and stage logs beneath its outputs directory, plus generated JSON in its preparation directory. Verify those files are visible in Drive before disconnecting. VM files are temporary; the original Drive archive and preparation records permit reconstruction. Extraction and audits have no resume mode. After an interrupted extraction, preserve available logs, reset the VM and repeat setup/extraction with a new run name. Google documents [variable runtime limits](https://research.google.com/colaboratory/faq.html); a completed scan and generated evidence establish the result for that execution.
-
-</details>
+<a id="local-execution"></a>
 
 <details>
-<summary>Local: paths, extraction, preparation and full audit</summary>
+<summary>Local execution</summary>
 
-### Local execution
+#### Local prerequisites
 
 Follow the path initialization and fresh/prepared sequence below in one terminal with the project environment active. Use your file manager to create only the dataset parent and output parent directories before extraction; the dataset root itself must not already exist.
 
-### Set review paths
+#### Set review paths
 
 The default layout is:
 
@@ -342,7 +164,7 @@ Project/
     ├── data/raw/liveness/
     │   └── celeba-spoof-full/         created by extraction
     └── evidence/runs/LIV-03/
-        └── reviewer-01/              this review's outputs
+        └── local/reviewer-01/        this run's outputs
 ```
 
 Choose one initialization block. Substitute your actual mounted paths before running it. Paths containing spaces are supported because every command quotes the variables.
@@ -355,7 +177,7 @@ Choose one initialization block. Substitute your actual mounted paths before run
 ```bash
 parts="../CelebA-Spoof-zips"
 data="data/raw/liveness/celeba-spoof-full"
-review="evidence/runs/LIV-03/reviewer-01"
+review="evidence/runs/LIV-03/local/reviewer-01"
 ```
 
 For an external Linux drive, replace the first two assignments, for example:
@@ -384,7 +206,7 @@ Use your actual mounted volume name; these examples do not mount a drive.
 ```powershell
 $parts = "../CelebA-Spoof-zips"
 $data = "data/raw/liveness/celeba-spoof-full"
-$review = "evidence/runs/LIV-03/reviewer-01"
+$review = "evidence/runs/LIV-03/local/reviewer-01"
 ```
 
 For an external drive, replace the first two assignments, using your actual drive letter:
@@ -417,9 +239,9 @@ $audit = "scripts/check_liveness_data.py"
 The path variables control this terminal session. They do not edit [configs/project.toml](../configs/project.toml). Every audit command below passes `--data-root`, so an external dataset does not silently fall back to the repository default.
 
 
-### Fresh reproduction
+#### Fresh reproduction
 
-### 1. Download and extract
+#### 1. Download and extract
 
 Download **CelebA_Spoof.zip.001** through **CelebA_Spoof.zip.074** from the [author's download page](https://github.com/ZhangYuanhan-AI/CelebA-Spoof#dataset-downloads) or its [linked Google Drive folder](https://drive.google.com/drive/folders/1OW_1bawO79pRqdVEVmBzp8HSxdSwln_Z?usp=sharing), subject to the author's dataset agreement. Put the 74 files directly in the archive directory selected above, not in another nested folder. Preserve filenames; browser suffixes such as **(1)** are not accepted. Parts 001–073 must each contain 1,048,576,000 bytes; part 074 must contain 453,369,048 bytes.
 
@@ -429,7 +251,7 @@ python "$prepare" --parts-dir "$parts" --output-dir "$data" --full
 
 The command checks part sizes and destination space before extracting, then checks every file's ZIP CRC. Success writes **extraction.json** with **1,123,165 extracted files**. The archive's top-level **CelebA_Spoof** wrapper is removed by the extractor, so the chosen root directly contains the following:
 
-### Data layout
+#### Data layout
 
 ```text
 celeba-spoof-full/                    data
@@ -448,7 +270,7 @@ celeba-spoof-full/                    data
 
 Do not point `--data-root` at **Data**, **train**, an individual subject, or a parent that still contains the wrapper folder. All paths inside the data description are relative to the extracted root.
 
-### 2. Generate validation and project annotations
+#### 2. Generate validation and project annotations
 
 ```sh
 python "$prepare" --output-dir "$data" --configure-validation 10
@@ -483,7 +305,7 @@ ce7f612210a5ef3e1f085012bfb979fc75ef53f15324b89d2c8d9400188b552f
 
 If this differs, compare source annotation hashes and installed dependency versions before continuing. Do not choose a different fold to force matching counts. This fingerprint hashes only the sorted subject IDs; the audit separately records the actual file checksum.
 
-### 3. Run the initial full audit
+#### 3. Run the initial full audit
 
 ```sh
 python "$audit" --data-root "$data" --data-description "$data/data-description.json" --output-dir "$review/initial"
@@ -495,7 +317,7 @@ For this archive, this first run is expected to return **exit code 1** because i
 
 The one empty type-4 box remains an explicitly excluded error. The **summary.json** file in the initial audit folder records failure; it is not an accepted final result. Windows PowerShell exposes the exit code through `$LASTEXITCODE`; bash/zsh uses `$?` immediately after the command.
 
-### 4. Resolve the recorded duplicate training subjects
+#### 4. Resolve the recorded duplicate training subjects
 
 ```sh
 python "$prepare" --output-dir "$data" --resolve-audit "$review/initial/audit.json"
@@ -503,7 +325,7 @@ python "$prepare" --output-dir "$data" --resolve-audit "$review/initial/audit.js
 
 The command derives affected training subjects from the rejected inventory. For this archive they are **5940, 7141, 7143, 7145, 7312 and 8807**. It records **quality-findings.json**, writes new training/quarantine annotations and **reviewed-data-description.json**, and reuses unchanged validation/test annotations. It excludes all 328 images of these training subjects; source files are preserved. Total quarantine becomes **544 images** including the original train/test subject conflicts.
 
-### 5. Final audit and loader check
+#### 5. Final audit and loader check
 
 ```sh
 python "$audit" --data-root "$data" --data-description "$data/reviewed-data-description.json" --output-dir "$review/final"
@@ -514,6 +336,47 @@ This performs another complete image audit, validates the accepted inventory, lo
 Expect **exit code 0**, **result=PASS** and **accepted=true** for the available automated checks. The common-video requirement remains UNVERIFIED for the downloaded images; **all_task_requirements_verified** remains false.
 
 </details>
+
+<a id="google-colab-review"></a>
+<a id="google-colab-execution"></a>
+
+<details>
+<summary>Google Colab execution</summary>
+
+#### Open and run the notebook
+
+Start from the shared [facial-attendance folder on Drive](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB?usp=sharing). It contains the source files and **colab-liveness.ipynb**; no ZIP, manual source upload or manually added cells are needed.
+
+1. In Drive, add shortcuts named **facial-attendance** and **CelebA-Spoof-zips** directly under **My Drive**. Point the first to the shared project and the second to the author's complete 74-part archive folder you are authorized to use. Shortcuts avoid exposing or configuring private parent paths.
+2. In the shared project folder, open [colab-liveness.ipynb](https://drive.google.com/file/d/1Tp-3M5zgA1m_cuJMdv_2bQ3EH-YcHHhT/view) with **Google Colaboratory**. The same [notebook source](../notebooks/colab-liveness.ipynb) is included in this repository.
+3. Choose **Runtime → Run all** and approve Google's Drive access prompt. The notebook selects CPU packages and the CPU environment check automatically; leave the default runtime/device settings unchanged. Do not copy cells from the general setup guide.
+4. Follow progress in the existing cells. At completion, inspect the displayed batch previews and open the generated run folder beneath the Drive project's evidence/runs/LIV-03/colab directory.
+
+The notebook copies only source/config/test files onto the VM, creates an isolated project environment, runs tests, extracts all archive entries, generates validation, performs the initial audit, resolves proven training duplicates and runs the final audit/loader checks. Each run receives a unique name. Logs, preparation records, reports, inventory and tensor/preview pairs are saved to Drive; the original archive remains unchanged.
+
+**Before Run all:** the project must contain the shared source/config/test folders, the archive must contain all 74 parts, and the account must be able to read both folders and write results inside the project folder. If the shared project is read-only, use a writable copy of its source folders and notebook, with your project shortcut pointing to that copy. Allow at least **85 GiB free VM disk plus variable Drive cache overhead**, **1 GiB Drive output space**, and approximately **three hours** on hardware comparable to the recorded 2-core CPU VM. The notebook checks available VM space and Python 3.13 compatibility before processing; insufficient resources stop execution without changing the dataset or splits.
+
+This notebook runs the implemented setup and LIV-03 data workflow. It does not launch registration, trained face models or a webcam UI, which are not implemented in this repository. The [recorded full-data Colab execution](../evidence/LIV-03/README.md#full-data-colab-execution--12-november-2026-utc) used CLI entry points; the notebook's syntax and runner were checked, but the notebook itself has not been executed end-to-end. Its outputs must be generated by its own run.
+
+<details>
+<summary>Outputs, interruptions and runtime compatibility</summary>
+
+<a id="1-prepare-the-environment-and-drive-folders"></a>
+<a id="6-run-the-final-audit-and-inspect-the-batches"></a>
+
+The notebook saves initial and final outputs beneath each unique run's outputs folder and generated annotation/configuration JSON beneath its preparation folder. Compare the final **summary.json** with [the expected results](#inspect-and-compare-the-results). A final PASS still leaves video independence UNVERIFIED due to missing source-video IDs.
+
+If a cell fails, inspect its saved stage log. Do not continue duplicate resolution after an unrelated initial-audit error. Extraction and image scans have no resume mode; preserve logs and use a fresh runtime for another complete attempt. Verify saved files are visible in Drive before disconnecting and deleting the runtime.
+
+The recorded run used Python 3.13.18, 12.67 GiB RAM and 107.72 GiB total VM disk, with 24.27 GiB free after verification. Google does not guarantee identical allocation in later sessions. If the default Python version changes or VM space is insufficient, use a compatible runtime or the local route above; no device configuration is required for the current notebook workflow. Google documents [runtime versions](https://research.google.com/colaboratory/runtime-version-faq.html), [resource limits and Drive caching](https://research.google.com/colaboratory/faq.html), and [Drive shortcuts](https://support.google.com/drive/answer/9700156?hl=en&co=GENIE.Platform%3DDesktop).
+
+</details>
+
+</details>
+
+### Output routing
+
+Without `--output-dir`, the audit CLI creates a unique UTC run directory under the repository's ignored evidence/runs/LIV-03/local directory. Use `--execution-route colab` on Colab; the notebook sets this automatically and saves beneath the corresponding colab route in Drive. An explicit `--output-dir` remains the exact destination, so the local commands group initial/final stages under one local run. `--summary-output` still selects an explicit summary file; place it under the same route/run to keep evidence together. Selected reports follow the same local/colab/run-name layout in the [evidence index](../evidence/LIV-03/README.md).
 
 ### Inspect and compare the results
 
@@ -548,7 +411,7 @@ Read **summary.json** in the final audit folder for counts, requirements, runtim
 | Alignment / saved readback | `batches.<split>.alignment`, `saved_batch_readback` | PASS for train, validation and test |
 | Original-video/session independence | `requirements.known_common_media` | UNVERIFIED: relationship IDs are unavailable |
 
-Here, the split placeholder means train, validation or test, and the batch fields are inside each split's batch object. In the full **audit.json**, folder disagreements are recorded as a path list rather than the summary's count.
+Here, the **split placeholder** means train, validation or test, and the batch fields are inside each split's batch object. In the full **audit.json**, folder disagreements are recorded as a path list rather than the summary's count.
 
 <details>
 <summary>Inspect saved tensors alongside the PNG previews</summary>
@@ -561,7 +424,7 @@ Run `python`, then enter:
 from pathlib import Path
 import torch
 
-review = Path("evidence/runs/LIV-03/reviewer-01")
+review = Path("evidence/runs/LIV-03/local/reviewer-01")
 batch = torch.load(review / "final/train.pt", weights_only=True)
 print(batch["images"].shape, batch["images"].dtype)
 print(batch["targets"].dtype)
@@ -614,7 +477,7 @@ Expect exit code 0 and **OK**; inspect skipped tests separately. The tensor/CLI 
 
 | Symptom | Check/action |
 | --- | --- |
-| Not enough extraction space | Check free bytes on the volume selected by the data root; use a larger mounted destination and a new root. Keep all 74 parts available. |
+| Not enough extraction space | Check available space on the volume selected by the data root; use a larger mounted destination and a new root. Keep all 74 parts available. |
 | Missing part or unexpected part size | Check exact filenames, the archive directory and the sizes above; finish/retry the affected download before extraction. |
 | Existing directory/file refused | Use a new run name/output path. If the dataset is already prepared, run the final audit rather than repeating preparation. |
 | Missing **Data**/**metas** or unsafe path | Point to the extracted root shown in the layout; keep annotation paths relative to that root. |
@@ -658,7 +521,7 @@ from facial_attendance.liveness.data_loader import LivenessImages
 from facial_attendance.recognition.data_loader import image_transform
 
 root = Path("data/raw/liveness/celeba-spoof-full")
-inventory = Path("evidence/runs/LIV-03/reviewer-01/final/inventory.csv")
+inventory = Path("evidence/runs/LIV-03/local/reviewer-01/final/inventory.csv")
 dataset = LivenessImages(root, inventory, "train", transform=image_transform(224))
 images, targets = next(iter(DataLoader(dataset, batch_size=8)))
 print(images.shape, images.dtype, targets.shape, targets.dtype)
