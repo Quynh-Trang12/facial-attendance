@@ -492,7 +492,7 @@ class LivenessDataTests(unittest.TestCase):
     def test_paths_reject_traversal_and_external_symlink_accept_internal_alias(self):
         path = self.root / "inside.txt"
         path.write_text("okay")
-        self.assertEqual(local_path(self.root, "inside.txt"), path)
+        self.assertEqual(local_path(self.root, "inside.txt"), path.resolve())
         for value in (
             "../outside",
             "folder\\..\\inside.txt",
@@ -506,7 +506,7 @@ class LivenessDataTests(unittest.TestCase):
             (self.root / "escape").symlink_to(Path(__file__).resolve())
         except OSError:
             self.skipTest("Symlink creation unavailable")
-        self.assertEqual(local_path(self.root, "alias"), path)
+        self.assertEqual(local_path(self.root, "alias"), path.resolve())
         with self.assertRaises(ValueError):
             local_path(self.root, "escape")
 
@@ -532,7 +532,9 @@ class LivenessDataTests(unittest.TestCase):
                 ["--data-description", "source.json", "--execution-route", route]
             )
             output = cli.audit_output_directory(args)
-            self.assertEqual(output.parent, self.root / "evidence/runs/LIV-03" / route)
+            self.assertEqual(
+                output.parent, (self.root / "evidence/runs/LIV-03" / route).resolve()
+            )
             self.assertRegex(output.name, r"^\d{8}T\d{12}Z$")
             self.assertFalse(output.exists())
         args = cli.parse_arguments(["--data-description", "source.json"])

@@ -169,7 +169,7 @@ class AuditReport:
             root / "src/facial_attendance/recognition/data_loader.py",
         )
         report["implementation_sha256"] = {
-            str(path.relative_to(root)): file_sha256(path) for path in sources
+            path.relative_to(root).as_posix(): file_sha256(path) for path in sources
         }
 
         audit_file = output / "audit.json"
