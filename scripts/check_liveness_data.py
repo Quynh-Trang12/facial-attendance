@@ -149,7 +149,14 @@ def parse_arguments(argv=None):
     parser.add_argument(
         "--output-dir",
         type=Path,
-        help="New local directory; defaults to DATA_ROOT/audits/<UTC timestamp>",
+        help="Explicit new output directory; overrides the route-based default",
+    )
+
+    parser.add_argument(
+        "--execution-route",
+        choices=("local", "colab"),
+        default="local",
+        help="Execution route for default evidence/runs/LIV-03/<route>/<UTC timestamp> output",
     )
 
     parser.add_argument("--image-size", type=int, default=224)
@@ -162,6 +169,14 @@ def parse_arguments(argv=None):
     )
 
     return parser.parse_args(argv)
+
+
+def audit_output_directory(args):
+    """Keep implicit outputs separated by execution route; honor explicit destinations."""
+    if args.output_dir is not None:
+        return args.output_dir.expanduser().resolve()
+    run_name = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    return (ROOT / "evidence/runs/LIV-03" / args.execution_route / run_name).resolve()
 
 
 def main(argv=None):
@@ -181,12 +196,9 @@ def main(argv=None):
         .expanduser()
         .resolve()
     )
-    output = (
-        args.output_dir
-        or root / "audits" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-    ).resolve()
+    output = audit_output_directory(args)
 
-    # Source images, previews, tensors and per-image records remain local data.
+    # Previews, tensors and per-image records stay outside tracked evidence.
     # Do not overwrite evidence from an earlier run.
     summary_output = args.summary_output or output / "summary.json"
     if summary_output.exists():

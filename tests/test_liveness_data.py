@@ -521,6 +521,40 @@ class LivenessDataTests(unittest.TestCase):
         self.assertEqual(saved["counts"], report.audit["counts"])
         self.assertTrue(report.audit["accepted"])
 
+    def test_audit_output_directories_separate_routes_and_preserve_overrides(self):
+        script = Path(__file__).resolve().parents[1] / "scripts/check_liveness_data.py"
+        spec = importlib.util.spec_from_file_location("liveness_output_cli", script)
+        cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cli)
+        cli.ROOT = self.root
+        for route in ("local", "colab"):
+            args = cli.parse_arguments(
+                ["--data-description", "source.json", "--execution-route", route]
+            )
+            output = cli.audit_output_directory(args)
+            self.assertEqual(output.parent, self.root / "evidence/runs/LIV-03" / route)
+            self.assertRegex(output.name, r"^\d{8}T\d{12}Z$")
+            self.assertFalse(output.exists())
+        args = cli.parse_arguments(["--data-description", "source.json"])
+        self.assertEqual(args.execution_route, "local")
+        custom = self.root / "external output" / "initial"
+        args = cli.parse_arguments(
+            [
+                "--data-description",
+                "source.json",
+                "--execution-route",
+                "colab",
+                "--output-dir",
+                str(custom),
+            ]
+        )
+        self.assertEqual(cli.audit_output_directory(args), custom.resolve())
+        self.assertFalse(custom.exists())
+        with self.assertRaises(SystemExit):
+            cli.parse_arguments(
+                ["--data-description", "source.json", "--execution-route", "other"]
+            )
+
     def test_real_cli_tensor_alignment_and_saved_inventory(self):
         if (
             importlib.util.find_spec("torch") is None
