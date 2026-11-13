@@ -1,0 +1,18 @@
+# Metric-learning face embedding: the settings in docs/experiment-settings.md.
+# A run that changes a value records it, with the reason, in its manifest.
+[metric_training]
+epochs = 30
+# P identities x K images = 256 images per batch.
+identities_per_batch = 64
+images_per_identity = 4
+margin = 0.2
+learning_rate = 0.05
+momentum = 0.9
+weight_decay = 0.0005
+seed = 42
+embedding_dim = 512
+input_size = 64
+# Speed-only settings; a resumed run may change them.
+eval_batch_size = 512
+num_workers = 2
+mixed_precision = true
