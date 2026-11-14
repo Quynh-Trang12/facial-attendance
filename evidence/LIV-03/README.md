@@ -13,6 +13,38 @@ evidence/LIV-03/
 
 Routine generated outputs use the same route/run structure beneath the ignored evidence/runs/LIV-03 directory. Historical timestamps, paths and hashes inside saved JSON/log files remain unchanged when files are relocated.
 
+## Experimental readiness — 14 November 2026
+
+The [experimental summary](local/experimental-2026-11-14/summary.json) records PASS for experimental readiness under direct-pair-quarantine-v2. The public loader accepts its bound receipt without requiring unavailable capture IDs, exhaustive visual confirmation or perfect pHash transformation recovery. Historical full-verification results below remain unchanged. Readiness still checks annotation/source consistency, selected input integrity, subject and supplied-media/session splits, attack-family coverage, exact duplicates, the declared candidate policy and representative tensor batches.
+
+The experimental subset contains train 277,903, validation 31,211 and test 30,811, or 339,925 images. Beyond exact deduplication, it excludes 27 confirmed near duplicates, 20 identical face crops and 63,390 conservatively quarantined candidates. Quarantined images are not claimed to be duplicates. Whole-image candidate constraints and reviewed source relations use direct pairs rather than transitive perceptual components. Crop-only pHash similarity is diagnostic regardless of split. All source files and original split assignments are preserved; metrics on this filtered test subset must be reported separately from the original benchmark.
+
+The complete candidate set has a recorded disposition; no actionable pair remains under the declared scope. Independent signature-aggregate counting verified that result and zero remaining file/pixel/crop duplicate groups. It also records 45,711 retained cross-split crop-similarity occurrences as diagnostic evidence, without asserting that they are duplicates or independent captures. Review queues and direct-anchor previews support optional reinstatement review rather than requiring human adjudication of every perceptual pair.
+
+All 89 configured tests passed. The public dataset API loaded all three splits, and 24 real tensor/target samples passed alignment and saved readback. Regression checks retain rejection of known leakage, rejected annotations, changed images, altered source/selection evidence and failed readiness checks. The 26/28 controlled crop result and unavailable capture provenance remain explicit limitations. This is Linux local evidence; model training, model effectiveness, new Colab/native Windows/macOS execution and independent human review are not recorded. See the [experimental guide](../../docs/liveness-loader.md#experimental-readiness-and-candidate-handling) for commands and scope.
+
+The matching ignored local run is experimental-2026-11-14-v2. It contains the receipt, exclusions, policy, review queues, previews, public loader checks, independent counting and test log. Earlier execution directories retain their own implementation snapshots and results.
+
+## Complete search and content review — 14 November 2026
+
+The [selected summary](local/quality-2026-11-14/summary.json) records complete radius-6 search in both pHash views, reusing the bound full-scan fingerprints. It found 564,712 whole-image and 1,053,782 face-crop candidate pairs without truncation or a neighbor cap. These per-view counts can overlap. The compact graph, complete review CSV, implementation snapshots and review attachments remain in the matching ignored local run directory.
+
+Inspection of 39 natural pairs recorded 27 duplicates, three distinct pairs and nine unresolved related-source pairs. Twenty-two confirmed duplicate pairs cross subject IDs and splits; this demonstrates that subject-disjoint assignments alone do not establish content independence. Confirmed duplicate exclusions leave train 318,230, validation 35,464 and test 49,641. Source files, original split assignments and historical evidence are preserved. A separate inspection confirmed 25 face boxes and supported 13 binary spoof labels among 25 deliberately selected images. These are assistant visual review records, not independent human review or a population accuracy estimate.
+
+All 81 configured tests passed. Three new batches, eight images each, passed source/target alignment and saved readback on the revised subset. Its bound fingerprint index has zero remaining file/pixel duplicate groups. Image and box SHA-256 checks matched the inventory for all 1,775 images used by the scored/reviewed examples. The public loader rejected incomplete evidence. The final assessment remains FAIL because crop controls still miss two of 28 variants, capture relationships are unknown and complete visual coverage is unavailable. No training or new Colab/native Windows/macOS quality execution is recorded. See the [quality guide](../../docs/liveness-loader.md#complete-search-and-recorded-content-review--14-november-2026) for the execution boundary and commands.
+
+## Local quality audit — 13 November 2026
+
+The [selected summary](local/quality-2026-11-13/summary.json) records a full 561,575-image fingerprint scan, exact-duplicate exclusions, near-candidate search, source metadata inspection, visual review queues, quality assessment and three real diagnostic batches. Raw data, the original inventory and historical reports are preserved. The fingerprint source files are retained with hashes captured during the scan; later loader/acceptance revisions have separate tests and real batch checks.
+
+Exact deduplication excludes 2,590 additional images, leaving train 318,256, validation 35,465 and test 49,641 in a cleaned subset. Verification finds zero remaining file/pixel duplicate groups and zero selected image/box errors. These exclusions do not replace the original benchmark assignments.
+
+The overall assessment is FAIL: whole-image fingerprints recovered 28/28 variants for each tested JPEG setting and resize, but only 6/28 crop variants. A supplementary control combining whole-image and face-crop matches with known box-coordinate shifts recovered 26/28 crop variants; two still failed. This ideal-box control does not establish natural-pair recall or real detector consistency. Both views hit the candidate budget, retaining one million candidate rows, and 14,357 queries saturated their neighbor limit. Capture-media/session IDs remain unavailable for all 403,362 selected images. The visual queue contains 7,205 clipped boxes and 2,021 folder/JSON disagreements; no complete visual confirmation or independent reviewer confirmation is recorded.
+
+All 77 configured unit tests passed. Three real cleaned-subset diagnostic batches passed image/target alignment and saved readback; the public loader rejected incomplete historical evidence. These checks establish software behavior, not full visual truth, model performance or completion of LIV-03. The new Colab workflow and native Windows/macOS quality execution were not run.
+
+Complete local outputs remain in the ignored runs directory under the matching local quality run: fingerprints, exclusions, candidate/review tables, previews, source snapshot, assessment, batches and logs. The [quality guide](../../docs/liveness-loader.md#quality-audit-and-evidence-gate) defines reproduction and the evidence gate.
+
 ## Independent reproduction
 
 Use the [reproduction guide](../../docs/liveness-loader.md#reproduce-the-results) to choose fixture checks, a full audit of prepared data, or fresh extraction and preparation. It defines storage allowances, portable paths, the initial expected duplicate failure, resolution and the final audit. These steps generate their own summaries and preserve the owner records.

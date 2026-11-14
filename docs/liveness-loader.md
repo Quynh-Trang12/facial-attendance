@@ -1,18 +1,90 @@
 # LIV-03 — Anti-spoofing audit and loader
 
-Document version: **LIV-03-v1**, created **12 November 2026**. Task owner: **Trang**. Independent reviewer: **chị Dung**. LIV-03 is defined in the [Project Tracker](../README.md#project-tracker), where its updates and records are maintained.
+Document version: **LIV-03-v4**, revised **14 November 2026**. Task owner: **Trang**. Independent reviewer: **chị Dung**. LIV-03 is defined in the [Project Tracker](../README.md#project-tracker), where its updates and records are maintained.
 
-LIV-03 audits all 561,575 CelebA-Spoof images and loads live/print/screen face crops as 224×224 RGB tensors (0=live, 1=spoof). It preserves original test assignments, derives validation from training subjects, checks subject/file leakage and records exclusions. Reproducible commands generate the source/split inventory, audit report and aligned sample batches. Video independence remains unverified due to unavailable source-video IDs.
+LIV-03 audits 561,575 CelebA-Spoof source images, face crops and fixed splits to prepare a reproducible training subset. Commands produce an inventory, candidate decisions, exclusions, checked batches and an experimental-readiness receipt. Missing capture provenance and incomplete visual review remain documented limits. Experimental readiness does not establish model effectiveness.
 
 ## Requirements and recorded results
 
-The recorded full-data Colab execution passed the label/preprocessing/split checks and batch checks. Original-video independence remains unverified; PASS in the generated report covers only the available automated checks.
+The project brief requires a trained anti-spoofing model and integration with face recognition. It does not require exhaustive manual adjudication of perceptual candidates, complete capture-session metadata or visual confirmation of every dataset annotation before training. The public loader accepts a bound experimental-readiness receipt after the checks below pass. Full visual/provenance verification remains a separate assessment; its historical FAIL or INCOMPLETE results are preserved.
+
+The historical Colab execution passed annotation mapping, preprocessing and batch checks under its recorded source hashes. It did not establish complete visual correctness, within-split deduplication, near-duplicate independence or video/session independence. The full-verification route returns INCOMPLETE when its stronger evidence requirements are missing; historical PASS fields remain unchanged.
 
 | LIV-03 requirement | Recorded result | Evidence |
 | --- | --- | --- |
-| Load live/spoof images with correct labels/preprocessing and retain documented partitions | PASS: 561,575 source images decoded; original test assignments preserved; validation fixed by subject | [Generated summary](../evidence/LIV-03/colab/colab-cpu-2026-11-12/audit-summary.json), selection and preprocessing below |
+| Load live/spoof images with correct labels/preprocessing and retain documented partitions | Historical automated checks: 561,575 decoded; original test retained; validation fixed by subject. Complete visual correctness unverified | [Generated summary](../evidence/LIV-03/colab/colab-cpu-2026-11-12/audit-summary.json), selection and preprocessing below |
 | Prevent frames from known common videos leaking across training/evaluation | Controlled known-ID rejection tests PASS; real-data independence UNVERIFIED due to missing source-video IDs | [Colab test log](../evidence/LIV-03/colab/colab-cpu-2026-11-12/colab-cpu-tests-2026-11-12.log), [scope and limitations](#scope-and-limitations) |
 | Provide aligned sample batches and traceable source/split records | PASS: three batches of 8 images, with alignment and saved readback verified; full inventory retained | [Full outputs and previews](https://drive.google.com/drive/folders/11rMGigAD9uu9WZT5WeqnN-agSvDOxwYd), [artifact checks](../evidence/LIV-03/colab/colab-cpu-2026-11-12/colab-artifact-checks-2026-11-12.log) |
+
+## Experimental readiness and candidate handling
+
+The [14 November experimental summary](../evidence/LIV-03/local/experimental-2026-11-14/summary.json) records a loadable subset of 339,925 images under direct-pair-quarantine-v2. Readiness requires source-consistent annotation mapping, valid selected inputs, subject and supplied-media/session split checks, live/print/screen coverage in every split, exact deduplication, completion of the declared candidate policy, and checked tensor/target batches. The receipt binds the inventory, source annotations, exclusions, candidate graph, reviews and relevant preprocessing/selection implementation. The loader rechecks image and box hashes on access. Adding an unrelated model module does not invalidate the receipt.
+
+Published JSON annotations remain the label source. An attributed review that rejects a label or box excludes that image. Empty review rows, unavailable capture IDs and measured pHash misses remain informational limitations; they are not converted into PASS claims or training prohibitions. Known split overlap, altered bound inputs/evidence, missing attack families and unresolved policy constraints still prevent loading.
+
+| Split | After exact deduplication | Experimental subset | Additional exclusions |
+| --- | ---: | ---: | ---: |
+| Train | 318,256 | 277,903 | 40,353 |
+| Validation | 35,465 | 31,211 | 4,254 |
+| Test | 49,641 | 30,811 | 18,830 |
+| Total | 403,362 | 339,925 | 63,437 |
+
+The additional exclusions comprise 27 confirmed near duplicates, 20 identical face crops and 63,390 conservatively quarantined candidates. Quarantine is not a duplicate verdict: some excluded images may be distinct. Original files and original split assignments are preserved, but this filtered test subset is not the unmodified benchmark. Report its metrics separately.
+
+The finite candidate policy handles the recorded 1,618,494 candidate occurrences across both views as follows:
+
+- Confirmed duplicates use deterministic representatives, preferring test, then validation, then train, followed by lexical path order. Contradictory review decisions are rejected. Exact face-crop equality is deduplicated; opposite binary labels on identical crops are quarantined.
+- Unexempted whole-image candidates across splits create direct exclusion constraints. Within a split, unreviewed whole-image candidates of the same source type also create constraints. A priority-ordered selection quarantines an image if a directly related, higher-priority image was retained. It does not merge transitive perceptual components. Reviewed cross-split source relations create constraints even without whole-image hash support.
+- Reviewed distinct pairs are exempt. Reviewed related presentations and different annotated source types remain valid contrasts within the same split. Crop-only pHash similarity is diagnostic in every split: without whole-image support, exact crop equality or an attributed review, it does not justify excluding an image or claiming a duplicate.
+- A second traversal checks that no actionable candidate pair remains in the retained subset. The recorded run passed this check; a separate signature-aggregate verification also passed. Neither establishes recall outside radius 6 or independence of unavailable capture records.
+
+This policy closes candidate handling through explicit disposition and quarantine, without requiring a human verdict on every pair. Human inspection remains useful for reinstating excluded images. The generated review queue records one reason/reference per excluded image; the anchor table groups direct references and prioritizes cross-split cases. These anchors are review aids, not inferred source-media/session IDs. Previewing several members never approves unseen members. Add explicit distinct or related-source decisions to the attributed review JSON and regenerate into a new output directory to reconsider exclusions; other direct constraints may still exclude an image.
+
+<details>
+<summary>Local experimental execution</summary>
+
+Use the existing project environment from [setup](setup.md). The paths below identify the recorded local inputs; substitute your own baseline inventory, exact-stage directory and complete candidate-graph directory for independent reproduction. Reviews are optional: omit their arguments when unavailable, and record that no exemptions were supplied. Outputs reuse existing fingerprints and the compact graph without copying raw data.
+
+```sh
+data="data/raw/liveness/celeba-spoof-full"
+inventory="$data/audits/current-schema-2026-11-12/inventory.csv"
+scan="evidence/runs/LIV-03/local/quality-2026-11-13"
+candidates="evidence/runs/LIV-03/local/quality-2026-11-14"
+experiment="evidence/runs/LIV-03/local/experiment-review-01"
+python scripts/review_liveness_data.py experimental --data-root "$data" --inventory "$inventory" --data-description "$data/reviewed-data-description.json" --output-dir "$scan" --candidate-dir "$candidates" --near-reviews "$candidates/natural-pair-reviews.json" --visual-review "$candidates/visual-review-inspected.csv" --experiment-output "$experiment"
+```
+
+Exit 0 means experimental readiness passed. The output includes **experimental-readiness.json**, **selection.csv**, **candidate-policy.json**, **review-priority.csv**, **review-anchors.csv**, and three tensor/preview pairs. Use a fresh output directory for each revision. Repeatable `--supporting-evidence` arguments bind additional review attachments.
+
+To inspect four examples from the highest-priority direct anchor, run:
+
+```sh
+python scripts/review_liveness_data.py experimental-preview --data-root "$data" --inventory "$inventory" --data-description "$data/reviewed-data-description.json" --output-dir "$experiment" --anchor-index 0 --preview-offset 0 --preview-count 4 --preview-output "$experiment/quarantine-anchor-0.png"
+```
+
+Increase the offset to inspect more members or the anchor index to inspect another group. A JSON sidecar records exactly which examples were displayed; no verdict is generated.
+
+</details>
+
+<details>
+<summary>Google Colab experimental execution</summary>
+
+After the notebook baseline and exact stage, use the existing isolated interpreter and the same peer quality-route variables defined below. Upload current source files; the historical Colab source snapshot predates experimental readiness.
+
+```python
+candidate_dir = review / "candidates-complete"
+stage("complete-candidates", quality_script, "near-complete", *quality_arguments,
+      "--search-output", candidate_dir, expected=2)
+experiment = review / "experiment-01"
+stage("experimental", quality_script, "experimental", *quality_arguments,
+      "--candidate-dir", candidate_dir, "--experiment-output", experiment, expected=0)
+```
+
+Supply the same attributed pair and visual review files with `--near-reviews` and `--visual-review` to reproduce the same exemptions. Without them the policy has no manual exemptions and counts may differ. The new experimental route has been executed locally on Linux; Colab and native Windows/macOS execution remain unrun.
+
+</details>
+
+Pass the receipt through the public API's `audit_file` argument, as shown in the [Dataset API](#dataset-api). For the recorded run, the public API loaded all three splits and verified 24 real tensor/target samples and saved readback. No model training or effectiveness measurement is claimed.
 
 ## Evidence and source access
 
@@ -21,7 +93,7 @@ The recorded full-data Colab execution passed the label/preprocessing/split chec
 | [Selected audit summary](../evidence/LIV-03/colab/colab-cpu-2026-11-12/audit-summary.json) | Counts, requirement results, preprocessing, source/runtime hashes and batch checks |
 | [Full Colab outputs](https://drive.google.com/drive/folders/11rMGigAD9uu9WZT5WeqnN-agSvDOxwYd) | **audit.json**, **inventory.csv**, three tensor batches and their PNG previews |
 | [Complete execution record](https://drive.google.com/drive/folders/1j2gu6F0AhgIFpbY57FXMUCiaKob8B7te) | Initial/final reports, preparation records, source hashes and logs |
-| [Project source on Drive](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB) | 31 individually accessible source/config/test files, including all eight liveness modules; folder structure matches the repository |
+| [Historical Colab source](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB) | 31 files used for the recorded 12 November execution; this snapshot predates the quality workflow |
 | [Execution evidence index](../evidence/LIV-03/README.md) | Runtime, timings, verification scope and earlier Linux evidence |
 
 Drive access depends on the folder's existing permissions and the dataset agreement. Public repository users can use the source in their clone and obtain CelebA-Spoof from the author's download below; the repository does not distribute raw data. A saved report establishes its recorded execution, not a new run on another device.
@@ -83,7 +155,7 @@ The [author's schema](https://github.com/ZhangYuanhan-AI/CelebA-Spoof#annotation
 
 Use identical preprocessing across labels and splits: the supplied single RetinaFace box, RGB conversion, bilinear resize to 224×224, float32 CHW scaled by 1/255 to [0,1]. The loader applies no augmentation or learned normalization. The model and webcam adapter must use consistent preprocessing when implemented under LIV-04 and SYS-02.
 
-The original **&lt;image-stem&gt;_BB.txt** stores the x/y coordinates, width, height and confidence in a 224-coordinate system. Coordinates are scaled to the original dimensions and clipped to image bounds. Nonfinite, nonpositive or empty boxes are reported rather than silently falling back to a full image. No detector runs during loading. A valid supplied box does not independently prove that exactly one face is visible; visual examples support label review, not a census of face count.
+The original **&lt;image-stem&gt;_BB.txt** stores the x/y coordinates, width, height and confidence in a 224-coordinate system. Coordinates are scaled to the original dimensions and clipped to image bounds. Boxes losing over half their area outside the image are rejected; smaller clipping remains visible in quality review records. Nonfinite, nonpositive or empty boxes are reported rather than silently falling back to a full image. No detector runs during loading. A valid supplied box does not independently prove that exactly one face is visible; visual examples support label review, not a census of face count.
 
 <a id="common-video-checks-and-evidence-limits"></a>
 
@@ -331,9 +403,9 @@ The command derives affected training subjects from the rejected inventory. For 
 python "$audit" --data-root "$data" --data-description "$data/reviewed-data-description.json" --output-dir "$review/final"
 ```
 
-This performs another complete image audit, validates the accepted inventory, loads all three sample batches and checks saved tensor readback. Use it directly when a complete dataset already has the current **reviewed-data-description.json**, referenced project annotations, **validation-subjects.json** and **quality-findings.json**. Set the root to that dataset and use a fresh review output directory; extraction and split preparation are unnecessary in that case.
+This performs another complete image audit, validates a candidate inventory, loads three diagnostic sample batches and checks saved tensor readback. Use it directly when a complete dataset already has the current **reviewed-data-description.json**, referenced project annotations, **validation-subjects.json** and **quality-findings.json**. Set the root to that dataset and use a fresh review output directory; extraction and split preparation are unnecessary in that case.
 
-Expect **exit code 0**, **result=PASS** and **accepted=true** for the available automated checks. The common-video requirement remains UNVERIFIED for the downloaded images; **all_task_requirements_verified** remains false.
+Expect **exit code 2**, **result=INCOMPLETE**, **pipeline_completed=true** and **accepted=false** when automated checks finish but required quality evidence remains unavailable. Exit code 1 means execution or an automated integrity check failed. Exit code 0 is reserved for accepted evidence. The historical Colab report used the earlier acceptance semantics.
 
 </details>
 
@@ -490,6 +562,94 @@ Full extraction/audit execution is recorded on owner Linux and Colab CPU using t
 
 </details>
 
+## Quality audit and evidence gate
+
+The baseline scan above produces diagnostic evidence. The [quality entry point](../scripts/review_liveness_data.py) supports the following full-verification stages. Experimental readiness uses their bound fingerprints and candidate graph, then applies the separate criteria above; it does not require every stronger verification claim to pass.
+
+| Step | Work and evidence | Acceptance boundary |
+| --- | --- | --- |
+| 1 | Requirement results in the audit report | Exit 0 means accepted; 1 means failure; 2 means incomplete evidence |
+| 2 | Exact file/pixel/crop fingerprints, duplicate groups and exclusions | All source rows scanned; label conflicts retained for review |
+| 3 | Near-duplicate candidates on whole images and face crops; controlled transformation measurements | Candidate adjudication and observed search limitations remain explicit |
+| 4 | Source metadata inspection and relationship review records | Capture-media/session identities require evidence; unknown remains unknown |
+| 5 | Per-image visual review records and bounded previews | Full visual verification needs every retained row; experimental readiness excludes known rejections and records incomplete coverage |
+| 6 | Quality assessment bound to the inventory, source annotations and review records | Full verification and experimental readiness use separate receipts; altered bound evidence is rejected |
+| 7 | Tests, real-data checks and independent review | Fixture success does not establish full-data visual truth or reviewer confirmation |
+
+The [13 November local summary](../evidence/LIV-03/local/quality-2026-11-13/summary.json) records 2,590 additional exact-duplicate exclusions and zero remaining file/pixel duplicate groups in the cleaned subset. Its fingerprint scan records 561,573 valid face inputs and two errors in already excluded attacks; the historical 561,574 count predates the stricter box guard. The overall assessment fails because controlled crop transformations were missed; source relationships and complete visual correctness remain unverified.
+
+Exact deduplication keeps a deterministic representative, preferring test over validation over train, then lexical path order. Conflicting labels/source types are excluded pending adjudication. The original inventory and original split assignments remain unchanged; the exclusion table defines a cleaned subset. Report results for that subset separately from the original benchmark. Crop equality alone does not trigger exclusion: one source face can appear in distinct genuine and attack presentations.
+
+Near-duplicate discovery uses 64-bit DCT hashes and Hamming radius 6 on whole images and supplied face crops. The current default searches every pair in this hash radius, using four 16-bit blocks and full-distance verification, without a neighbor limit or output cap. A pair within radius 6 must have at least one block differing by at most one bit. The optional diagnostic `--max-pairs` cap leaves the search incomplete and prevents acceptance. The 13 November evidence used approximate LSH and remains attributed to that implementation. Controlled JPEG, resize and crop trials measure their own recovery; natural-pair recall and false-positive rate require separately adjudicated examples. Same identity or similar appearance does not prove duplication or common capture media.
+
+### Complete search and recorded content review — 14 November 2026
+
+The [selected summary](../evidence/LIV-03/local/quality-2026-11-14/summary.json) records a complete radius-6 search on the 403,362 images retained after exact deduplication, reusing the bound 13 November fingerprints: 564,712 whole-image candidate pairs and 1,053,782 face-crop candidate pairs. The two views can contain the same image pair. Neither view was truncated or neighbor-limited. These are candidates, not confirmed duplicates or proof of visual independence outside the chosen hash radius.
+
+Content inspection covered 39 natural pairs: 27 were recorded as duplicates, three as distinct and nine as related portrait/presentation content requiring further adjudication. This deliberately selected diagnostic set does not estimate population precision or recall. One confirmed duplicate joins source training subject 9225 and source test subject 7082, despite their different IDs. The duplicate review excludes the training copy while preserving the test copy. Other reviewed cross-split duplicates also demonstrate that subject IDs alone cannot establish content independence. Duplicate components use confirmed edges only; transitive perceptual candidates must not be merged automatically. The unreviewed candidate graph contains a component with 103,605 images.
+
+The resulting exclusion table removes 27 additional duplicate images, leaving train 318,230, validation 35,464 and test 49,641, or 403,335 images total. Source files, the full inventory and original split assignments are preserved. A separate visual inspection checked 25 selected originals, supplied boxes, crops and resized inputs. All 25 boxes visibly selected the intended face; visible attack evidence supported 13 binary spoof labels. Remaining labels and all uninspected rows remain unconfirmed. These are assistant inspection records, not independent human reviewer confirmation.
+
+Inspection of all ten packaged metadata JSON schemas still found no per-image source-media or capture-session mapping. That full-verification assessment remains FAIL: two of 28 controlled crop variants are missed even with the supplied ideal coordinate shifts. Natural-pair coverage, complete visual review and capture relationships remain unverified. It does not authorize training on its own; the experimental route above generates a separate receipt under its narrower criteria.
+
+The [source paper](https://arxiv.org/html/2007.12342#S1.T1) describes session counts through illumination/environment categories. These categories do not identify individual capture sessions. The provenance stage records the packaged metadata inspected; it never creates capture IDs from filenames or condition labels.
+
+<details>
+<summary>Local quality execution</summary>
+
+Use the existing project environment from [setup](setup.md), with the repository as working directory. For already prepared data, set paths and choose a new quality run directory:
+
+```sh
+data="data/raw/liveness/celeba-spoof-full"
+inventory="$data/audits/current-schema-2026-11-12/inventory.csv"
+description="$data/reviewed-data-description.json"
+quality="evidence/runs/LIV-03/local/quality-review-01"
+python scripts/review_liveness_data.py exact --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality"
+python scripts/review_liveness_data.py near --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality"
+python scripts/review_liveness_data.py provenance --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality"
+python scripts/review_liveness_data.py visual --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality"
+python scripts/review_liveness_data.py preview --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality" --preview-offset 0
+python scripts/review_liveness_data.py assess --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality"
+```
+
+The default near stage writes the complete review CSV. To inspect the same fixed-radius candidates in a compact SQLite graph without expanding dense signature groups, run the following after the exact stage, using another new output directory:
+
+```sh
+python scripts/review_liveness_data.py near-complete --data-root "$data" --inventory "$inventory" --data-description "$description" --output-dir "$quality" --search-output "${quality}-complete"
+```
+
+The compact search returns exit 2 because discovery alone is unverified review evidence. It does not substitute for the review CSV consumed by assessment. After recording decisions, use repeatable `--supporting-evidence /path/to/attachment` arguments on the assess command to bind the reviewed previews and supporting records as well as the review tables. Existing input records and generated queues should be preserved separately from edited review copies.
+
+Use the inventory generated by your own baseline scan when the historical local path is unavailable. Fingerprints and reports need about 1 GiB of free space in addition to existing source data. Existing outputs are refused. Exit 2 from a completed stage means unresolved evidence, not execution failure. Inspect that result before proceeding to the next stage; independent evidence collection can continue while a requirement is unresolved.
+
+</details>
+
+<details>
+<summary>Google Colab quality execution</summary>
+
+Supply the current source/config/test files before this route; the linked historical Drive snapshot predates the new quality modules. The [shared notebook](../notebooks/colab-liveness.ipynb) runs the baseline scan and reports incomplete acceptance. It does not perform the new complete quality workflow automatically. After its baseline scan, use its existing isolated interpreter, data root and output paths in a notebook code cell:
+
+```python
+quality_script = repo / "scripts/review_liveness_data.py"
+quality = review / "quality"
+quality_inventory = review / "final/inventory.csv"
+quality_arguments = ["--data-root", data, "--inventory", quality_inventory,
+                     "--data-description", data / "reviewed-data-description.json",
+                     "--output-dir", quality]
+expected_codes = {"exact": 0, "near": 2, "provenance": 2, "visual": 2, "assess": 1}
+for phase, expected_code in expected_codes.items():
+    stage("quality-" + phase, quality_script, phase, *quality_arguments,
+          expected=expected_code)
+```
+
+These expected codes describe the full-verification reference results: assessment fails because controlled crop variants were missed. Inspect each actual result rather than changing expected codes to suppress a finding. The current default near stage is uncapped; an explicit diagnostic cap is recorded as incomplete coverage. The new Colab quality route has not been executed in the recorded local run. Keep complete outputs with the producing runtime; changing paths requires a new local assessment rather than editing historical hashes.
+
+</details>
+
+Review **near-candidates.csv** with verdict distinct, duplicate or uncertain, plus reviewer and evidence. Candidate identity columns are bound to the search; review columns can be filled without changing them. Confirmed duplicates with matching labels/source types create additional deterministic exclusions during assessment; contradictory decisions remain unresolved. Review **visual-review.csv** using confirmed, incorrect or uncertain for both label and box. Review **relationship-review.csv** with confirmed IDs or evidence-backed not_applicable; an empty ID remains unknown unless its inapplicability is established. The assessment records counts and hashes without authenticating the reviewer or independently establishing ground truth.
+
+For full verification, use a new assessment name with `--review-output` to retain earlier assessments, then pass the resulting quality report to the baseline audit through `--quality-report`. The public loader accepts either a fully accepted audit or an experimental-readiness receipt supplied through `audit_file`; a standalone inventory is not sufficient. It verifies the applicable inventory, source, review and implementation hashes, applies bound exclusions and checks image/box hashes on access. Diagnostic batches alone do not authorize training. Original inventory counts and cleaned-subset counts are reported separately.
+
 ## Implementation reference
 
 ### Code responsibilities
@@ -502,7 +662,14 @@ Full extraction/audit execution is recorded on owner Linux and Colab CPU using t
 | [split_rules.py](../src/facial_attendance/liveness/split_rules.py) | Shared subject assignment rules and overlap/family checks |
 | [image_inventory.py](../src/facial_attendance/liveness/image_inventory.py) | Annotation inventory construction and CSV validation/read/write |
 | [dataset_audit.py](../src/facial_attendance/liveness/dataset_audit.py) | Full image integrity checks and aggregation of audit results |
-| [data_loader.py](../src/facial_attendance/liveness/data_loader.py) | Selected image/target loading with image and box checksum verification |
+| [data_loader.py](../src/facial_attendance/liveness/data_loader.py) | Accepted image/target loading with evidence, image and box checks |
+| [image_fingerprints.py](../src/facial_attendance/liveness/image_fingerprints.py) | Exact RGB fingerprints and perceptual candidate search |
+| [near_search.py](../src/facial_attendance/liveness/near_search.py) | Complete fixed-radius candidate graph with source and implementation bindings |
+| [candidate_policy.py](../src/facial_attendance/liveness/candidate_policy.py) | Direct candidate constraints, explicit review exemptions and conservative exclusions |
+| [experimental_readiness.py](../src/facial_attendance/liveness/experimental_readiness.py) | Experimental subset, readiness checks and a bound training receipt |
+| [sample_batches.py](../src/facial_attendance/liveness/sample_batches.py) | Shared tensor/target alignment, representative batches and saved readback |
+| [quality_audit.py](../src/facial_attendance/liveness/quality_audit.py) | Full source-bound fingerprint scan and exact-duplicate exclusions |
+| [quality_review.py](../src/facial_attendance/liveness/quality_review.py) | Candidate, provenance and visual review evidence; acceptance assessment |
 | [audit_report.py](../src/facial_attendance/liveness/audit_report.py) | Runtime metadata, report models and JSON/summary output |
 
 The loader uses inventory validation and shared image/file functions; it does not import the audit workflow or reporting. Preparation and inventory construction share subject constraints and split assignment logic. Inventory construction reads annotations without decoding images; the audit performs decoding and hashing before the inventory is used for loading.
@@ -512,7 +679,7 @@ The loader uses inventory validation and shared image/file functions; it does no
 
 ### Dataset API
 
-After a successful final audit, run this block in a Python session with the project environment active and the [src directory](../src) on `PYTHONPATH`. Replace both paths for your machine. This optional example shows the API; the final audit already exercises batch loading automatically, including on Colab.
+After experimental readiness passes, run this block with the existing project environment active and the [src directory](../src) on `PYTHONPATH`. Replace the input/output paths for your own run. Fully accepted legacy audits remain supported through the default audit beside their inventory.
 
 ```python
 from pathlib import Path
@@ -521,13 +688,15 @@ from facial_attendance.liveness.data_loader import LivenessImages
 from facial_attendance.recognition.data_loader import image_transform
 
 root = Path("data/raw/liveness/celeba-spoof-full")
-inventory = Path("evidence/runs/LIV-03/local/reviewer-01/final/inventory.csv")
-dataset = LivenessImages(root, inventory, "train", transform=image_transform(224))
+inventory = root / "audits/current-schema-2026-11-12/inventory.csv"
+experiment = Path("evidence/runs/LIV-03/local/experiment-review-01")
+dataset = LivenessImages(root, inventory, "train", transform=image_transform(224),
+                         audit_file=experiment / "experimental-readiness.json")
 images, targets = next(iter(DataLoader(dataset, batch_size=8)))
 print(images.shape, images.dtype, targets.shape, targets.dtype)
 print(dataset.samples[0].relative_path)
 ```
 
-Expected: image shape 8 × 3 × 224 × 224, float32; target shape 8, int64. Without a transform the dataset returns cropped PIL RGB images and integer labels. The loader verifies the inventory and original image/box hashes, applies no augmentation or learned normalization, and excludes quarantine/outside-scope rows.
+Expected: image shape 8 × 3 × 224 × 224, float32; target shape 8, int64. Without a transform the dataset returns cropped PIL RGB images and integer labels. The loader verifies the applicable receipt, source/evidence bindings and original image/box hashes, applies no augmentation or learned normalization, and excludes outside-scope rows and the bound selection. Failed readiness and incomplete full-audit receipts are rejected; diagnostic limitations alone do not invalidate experimental readiness.
 
 </details>

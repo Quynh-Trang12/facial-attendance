@@ -1,0 +1,273 @@
+{
+  "task": "LIV-03",
+  "recorded_at": "2026-11-13T15:30:59.268187+00:00",
+  "execution_scope": "Full Linux CPU source fingerprint scan, exact exclusions, near search, packaged provenance inspection, visual queue, quality assessment and real diagnostic batches; no independent reviewer confirmation",
+  "result": "FAIL",
+  "accepted": false,
+  "requirements": {
+    "exact_deduplication": "PASS",
+    "near_duplicate_review": "FAIL: crop transformations missed in both views",
+    "visual_labels_and_boxes": "UNVERIFIED: visual labels/boxes not confirmed for every selected image",
+    "source_relationship_coverage": "UNVERIFIED: complete evidence-bearing source relationships unavailable",
+    "known_common_media": "UNVERIFIED: source relationship coverage incomplete",
+    "loader_provenance": "PASS",
+    "face_input_integrity": "PASS",
+    "selected_family_coverage": "PASS"
+  },
+  "source_inventory_rows": 561575,
+  "source_inventory_sha256": "b4262e03e92bddbf21e48ce29980506423ca5fbf07aa1e3d728b253dced1b35b",
+  "exact": {
+    "exact_duplicate_groups_by_fingerprint": 4188,
+    "label_conflict_groups_by_fingerprint": 0,
+    "crop_only_review_groups": 2114,
+    "additional_exclusions": 2590,
+    "cleaned_subset_counts": {
+      "test": 49641,
+      "validation": 35465,
+      "train": 318256
+    },
+    "selection_sha256": "537dea15bd54fd92784f7aa2d722b9394ccbf0515e4a7c2c0281b2f403c6e32a",
+    "groups_sha256": "fe1d94a23d591a194bb79200cfc45eb5e307c9ae3c0d42f12b10c0115658ed83",
+    "policy": "Lexicographic representative; prefer test over validation over train; conflicts excluded pending review; original inventory/splits unchanged",
+    "result": "PASS",
+    "file_duplicate_groups": 2094,
+    "pixel_duplicate_groups": 2094
+  },
+  "image_integrity": {
+    "inventory_rows": 561575,
+    "decoded_pixel_rows": 561575,
+    "valid_face_inputs": 561573,
+    "selected_input_errors": 0,
+    "selected_clipped_boxes": 7205,
+    "remaining_duplicate_groups": {
+      "file_hash": 0,
+      "pixel_hash": 0
+    },
+    "different_encoding_equal_pixel_groups": 0,
+    "result": "PASS"
+  },
+  "near": {
+    "result": "UNVERIFIED",
+    "candidate_rows": 1000000,
+    "radius": 6,
+    "index": "OpenCV binary LSH; 12 tables, 16-bit keys, multiprobe 2, 16 neighbors, seed 42",
+    "views_requested": [
+      "full_phash",
+      "crop_phash"
+    ],
+    "views_started": [
+      "full_phash",
+      "crop_phash"
+    ],
+    "view_results": {
+      "full_phash": {
+        "candidate_rows": 500000,
+        "truncated": true,
+        "saturated_queries": 1629
+      },
+      "crop_phash": {
+        "candidate_rows": 500000,
+        "truncated": true,
+        "saturated_queries": 12728
+      }
+    },
+    "saturated_queries": 14357,
+    "truncated": true,
+    "reviewed_candidate_rows": 0,
+    "calibration": "UNVERIFIED: independent real-pair adjudication required",
+    "limitation": "Approximate perceptual search does not establish exhaustive independence or shared media/session. All candidates require content review."
+  },
+  "controlled_transform_trials": {
+    "result": "UNVERIFIED",
+    "source_images": 28,
+    "controlled_variants": 112,
+    "within_radius_6": 90,
+    "by_transform": {
+      "crop_5_percent_each_edge": {
+        "trials": 28,
+        "recovered": 6
+      },
+      "jpeg_65": {
+        "trials": 28,
+        "recovered": 28
+      },
+      "jpeg_90": {
+        "trials": 28,
+        "recovered": 28
+      },
+      "resize_80_percent": {
+        "trials": 28,
+        "recovered": 28
+      }
+    },
+    "index_pairs_in_controlled_set": 6,
+    "index_pairs_recovered": 6,
+    "saturated_queries": 0,
+    "view_scope": "whole-image fingerprint only"
+  },
+  "provenance": {
+    "result": "UNVERIFIED",
+    "selected_rows": 403362,
+    "source_media_known": 0,
+    "source_media_unknown": 403362,
+    "session_known": 0,
+    "session_unknown": 403362,
+    "relationships": null,
+    "condition_definition_source": "https://arxiv.org/html/2007.12342#S1.T1",
+    "condition_limit": "The paper describes session counts by illumination/environment; condition categories are not capture-session identities",
+    "required_evidence": "Verified media/session mapping with provenance, or documented not-applicable evidence for individual still-image sources; filenames and image similarity are not relationship IDs"
+  },
+  "inspected_metadata_files": 15,
+  "visual": {
+    "result": "UNVERIFIED",
+    "selected_rows": 403362,
+    "clipped_box": 7205,
+    "folder_json_disagreement": 2021,
+    "reviewed_rows": 0,
+    "review_sha256": "4c608737509655331d43055270eef7075b339bc3754ce837d3dd7c9d4713f1e8",
+    "scope": "All selected images; inspect original, box overlay, crop and transformed input; label uncertainty requires provenance or exclusion",
+    "limitation": "Geometry and annotations do not independently verify visible face content or live/spoof ground truth"
+  },
+  "diagnostic_batches": {
+    "train": {
+      "saved_batch_readback": "PASS",
+      "shape": [
+        8,
+        3,
+        224,
+        224
+      ],
+      "image_dtype": "torch.float32",
+      "target_dtype": "torch.int64",
+      "range": [
+        0.0,
+        1.0
+      ],
+      "alignment": "PASS",
+      "tensor_sha256": "12bdce367547f92994554fbac5786e9e2e7fcaa77ebf99086e18dc9ed52f3939",
+      "preview_sha256": "3aa686bd0504381fb9ed53000d12e23ac7c4cd1364a92da5c343bed9c3a4c7a7"
+    },
+    "validation": {
+      "saved_batch_readback": "PASS",
+      "shape": [
+        8,
+        3,
+        224,
+        224
+      ],
+      "image_dtype": "torch.float32",
+      "target_dtype": "torch.int64",
+      "range": [
+        0.0,
+        1.0
+      ],
+      "alignment": "PASS",
+      "tensor_sha256": "e7ebdcba36099cf0edb6063223e8f79341e659a66844b283033946f2a5737ba1",
+      "preview_sha256": "5063d10d558833ebac0cb6f2c34ae87b3e5aa3fa26607d11d1b2efcef9d3ae50"
+    },
+    "test": {
+      "saved_batch_readback": "PASS",
+      "shape": [
+        8,
+        3,
+        224,
+        224
+      ],
+      "image_dtype": "torch.float32",
+      "target_dtype": "torch.int64",
+      "range": [
+        0.0,
+        1.0
+      ],
+      "alignment": "PASS",
+      "tensor_sha256": "e1bf72d3b7cbecbbba18335864c6e9ea1847cc11068dfae345264a02937fe88f",
+      "preview_sha256": "baad25b9aee789c39f5c4f7442c87d0a0f156e44f75319c21b88ff7ff2c5f743"
+    }
+  },
+  "public_loader_rejection": "LIV-03 evidence is incomplete; inventory is not accepted for model use",
+  "tests": {
+    "passed": 77,
+    "scope": "Configured unit suite in the existing project environment; synthetic fixtures are not real-data visual/provenance evidence",
+    "log_sha256": "f977e2e5b5b080f5bc15dde69b58468981def265d2d0d7a89c6914569212d991"
+  },
+  "limits": [
+    "Both candidate views hit their output budget and saturated queries. Whole-image crop recovery was 6/28; combined whole-image/face-crop recovery with ideal known box shifts was 26/28.",
+    "Capture-media/session independence is unverified.",
+    "Complete visual label/box correctness and independent review are unverified.",
+    "New Colab quality execution, native Windows/macOS quality execution and webcam/model performance were not established."
+  ],
+  "fingerprint_execution": {
+    "scope": "Fingerprinting source files match the hashes captured during the scan. Later acceptance, loader binding and resource-management revisions have separate tests.",
+    "implementation_sha256": {
+      "quality_audit.py": "a4d7cbeb9647737f2afa46b9e6e6cb349aa5efa4b4e0b13738fb92ce5b700f3e",
+      "image_fingerprints.py": "713edd54957f2ed87e602f27378d0cc9085791f6dfeee7f2fd93f4762d24c3fa",
+      "face_crop.py": "29c33d48cc394791b791a4ba10d58b2114da30195ecda6c7727060e428db415f",
+      "dataset_files.py": "5258994d8e7b862226d30a936dcfb731eff659e57e7be579898e6cee32cb62bc",
+      "image_inventory.py": "ca0241823f2b5f662ba749f027e714201972b68990af441a4dcd17075996b934",
+      "split_rules.py": "003d41d4a641834bdbafaa03a816a9b17a4c059e2e2d9e4682e49ecc117217c8",
+      "data_contract.py": "6b7174d240c6060096b4aba07d91a6e1b4df281893d87787a334c2fc6d7a44c8"
+    }
+  },
+  "quality_implementation_sha256": {
+    "__init__.py": "1e2a0bd89b729058c00f7fabef6cf29bd0210579adf11d40d744b50a21c35b31",
+    "audit_report.py": "a140e67466f752dcf3936c7da4c680b6112ee60d70fa59181f19764ba874785c",
+    "data_contract.py": "9aa908ef0fa5efe744a1600f99a2f47da8c523d66a95e90b328ffecb29894bce",
+    "data_loader.py": "c19ed70cb0bb6f05231b25156f357b40591867c3d1ffd149ab1f33832e3a5ae8",
+    "dataset_audit.py": "dd310b0b0f4da868f47a5822882e5c9959bd988682659fb517740b4300aa5a40",
+    "dataset_files.py": "5258994d8e7b862226d30a936dcfb731eff659e57e7be579898e6cee32cb62bc",
+    "face_crop.py": "29c33d48cc394791b791a4ba10d58b2114da30195ecda6c7727060e428db415f",
+    "image_fingerprints.py": "713edd54957f2ed87e602f27378d0cc9085791f6dfeee7f2fd93f4762d24c3fa",
+    "image_inventory.py": "b9110c481d83d4db8adc22bf7ed10cc81fe21ee484690cafd2648aa2ed8f3748",
+    "quality_audit.py": "4bf58d7054b91eed84d5d8e930258fdf30fb0c326eca408c2a0a77de6cbbbce4",
+    "quality_review.py": "7447a7a092f2ca5667fea8ae44250594e949c0cea20f35d3bb8212dd86ab48f6",
+    "split_rules.py": "003d41d4a641834bdbafaa03a816a9b17a4c059e2e2d9e4682e49ecc117217c8"
+  },
+  "artifact_sha256": {
+    "scan.json": "7829a632a41b6fbfef5462653a0dfae3e76303228957513d1ceabf79b06ccb31",
+    "exact.json": "560cbf2c5b00b2ec6ecbe61f79d4bd13549ade80c5a14f54c3e6c8f0aa798d98",
+    "exact-verification.json": "f0c918536fd60765ee8b77ef8a3ed8bcee43b880e8e5731ce5d8e075cec55892",
+    "near.json": "db3bb409e15bf30776b08a1f3875f6d7b969f651e89e565711087c8a3a3b5279",
+    "calibration.json": "6ec6975486ce38e883238785645bffe8f055c748bf152d2187e2c9dab2d0f336",
+    "provenance.json": "b33d52164eef4d1a265595dec115677addf7b47b7b1c1bfad0ae24ec3a7e5203",
+    "visual.json": "d9ace50c347a33a59eb5f1b3952889d1060299fff5255b65daf98bbad82df882",
+    "quality.json": "f2a2e93e1ce94d4da9e2f3ec46dd353b753b149f5a3f14748f6ca93a4cd55666",
+    "batch-checks.json": "40816809fc7522b9611253e38b25fcf3f995d75d7739e2019d09e6bf4d8980c1",
+    "fingerprint-execution.json": "cafb84384b157c683b38aa5b3694acb463dd8c0cbfa31b628318f55d60e569cd",
+    "quality-final.json": "f8397ae748c4fab2284f78b14c00854e345bbbe8c5c41e56bbafb3363e6fc248",
+    "multiview-crop-control.json": "d63ceae18c7fcb3ac1060f6af256b4bd7d46b53c2ab895ddd224d98887373afb",
+    "batch-revalidation-final.json": "07c4c6e330170fb027ccea0548bb879daf58caca02bf92cf84cef4850e609cec"
+  },
+  "scan_recorded_at": "2026-11-13T15:01:15.780788+00:00",
+  "combined_crop_control": {
+    "scope": "Supplementary 5-percent crop control using known coordinate shifts for the supplied box; this ideal-box control does not establish real detector consistency or natural-pair recall",
+    "trials": 28,
+    "recovered": 26
+  },
+  "controlled_transform_recovery": {
+    "recovered": 110,
+    "trials": 112,
+    "combined_crop_misses": 2,
+    "scope": "Whole-image controls; crop trials use both views only when known-coordinate controls are supplied"
+  },
+  "final_batch_revalidation": {
+    "quality_report_sha256": "f8397ae748c4fab2284f78b14c00854e345bbbe8c5c41e56bbafb3363e6fc248",
+    "checks": {
+      "train": {
+        "images": 8,
+        "image_target_readback": "PASS",
+        "tensor_sha256": "12bdce367547f92994554fbac5786e9e2e7fcaa77ebf99086e18dc9ed52f3939"
+      },
+      "validation": {
+        "images": 8,
+        "image_target_readback": "PASS",
+        "tensor_sha256": "e7ebdcba36099cf0edb6063223e8f79341e659a66844b283033946f2a5737ba1"
+      },
+      "test": {
+        "images": 8,
+        "image_target_readback": "PASS",
+        "tensor_sha256": "e1bf72d3b7cbecbbba18335864c6e9ea1847cc11068dfae345264a02937fe88f"
+      }
+    },
+    "scope": "24 real images reloaded through current diagnostic loader with final bound selection; not accepted model-use evidence"
+  }
+}
