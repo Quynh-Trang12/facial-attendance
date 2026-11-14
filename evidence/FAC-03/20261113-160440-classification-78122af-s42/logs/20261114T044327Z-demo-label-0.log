@@ -1,0 +1,10 @@
+{
+  "model_id": "20261113-160440-classification-78122af-s42",
+  "model_version": "3fd31562478d",
+  "left": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2/verification_data/00041961.jpg",
+  "right": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2/verification_data/00044353.jpg",
+  "embedding_dim": 512,
+  "cosine": 0.3184573240378241,
+  "euclidean_distance": 70.27729002679862,
+  "euclidean_distance_normalized": 1.167512463284376
+}
