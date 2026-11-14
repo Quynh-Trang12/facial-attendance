@@ -1,0 +1,203 @@
+{
+  "run_id": "20261114T164831011550Z-emotion-cnn-f29873b-s42",
+  "config": {
+    "loader": {
+      "config": "configs/emotion.toml",
+      "batch_size": 256,
+      "manifest_sha256": "79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b"
+    },
+    "model": {
+      "channels": [
+        32,
+        64,
+        128
+      ],
+      "dropout": 0.3
+    },
+    "optimizer": {
+      "learning_rate": 0.001,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "epsilon": 1e-08,
+      "weight_decay": 0.0001
+    },
+    "training": {
+      "seed": 42,
+      "max_epochs": 30,
+      "patience": 5
+    }
+  },
+  "dataset_manifest_sha256": "79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b",
+  "counts": {
+    "train": {
+      "positive": 5626,
+      "negative": 10089,
+      "neutral": 3858
+    },
+    "val": {
+      "neutral": 964,
+      "negative": 2521,
+      "positive": 1406
+    },
+    "test": {
+      "negative": 3293,
+      "positive": 1766,
+      "neutral": 1224
+    }
+  },
+  "python": "3.13.9",
+  "torch": "2.13.0+cpu",
+  "device": "cpu",
+  "device_name": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "threads": 2,
+  "git_commit": "f29873b4e7d9d995ba2a0ccb0dda5982ed9c79ce",
+  "git_dirty": true,
+  "source_sha256": {
+    "src/facial_attendance/emotion/model.py": "720cbf2cc536819d545302f801760eb8f09b8a6d46d9c34ddf8e784dc8b6e220",
+    "src/facial_attendance/emotion/training.py": "794f65260b0b263e2955f2c2c4a68cd1fa5748121dd2397de5a5b9e5f57af30d",
+    "src/facial_attendance/emotion/data_loader.py": "4b15e7a06bb0c8f07d7d337d63fcdbd9667d16c2d0fd39df8515725be31e91ff",
+    "src/facial_attendance/emotion/tensor_data.py": "d8382d498589b50d0d2befe7fbf96461463de55d450d6a5a4bc34b4b67f14c85",
+    "scripts/train_emotion.py": "98e7068417791e44025768c823d056c27efb976ed48ecb2f72bdf8bc19ba1efe",
+    "configs/emotion.toml": "9a94565e08f08422787bdafdefa8a25cd6d6d41ecf2ab5aa0c42ed4a09daabb1"
+  },
+  "threshold": null,
+  "threshold_source": "not_applicable_argmax",
+  "resume_from": null,
+  "test_used": false,
+  "training_data_role": "weights",
+  "validation_data_role": "checkpoint selection",
+  "status": "PASS",
+  "scope": "One real train batch and one validation batch, not trained-model performance.",
+  "batch_shape": [
+    256,
+    1,
+    48,
+    48
+  ],
+  "target_shape": [
+    256
+  ],
+  "output_shape": [
+    256,
+    3
+  ],
+  "trainable_parameters": 93283,
+  "optimizer_updated_weights": true,
+  "reload_predictions_identical": true,
+  "train_batch": {
+    "count": 256,
+    "correct": 72,
+    "accuracy": 0.28125,
+    "macro_f1": 0.2661847247935584,
+    "label_order": [
+      0,
+      1,
+      2
+    ],
+    "confusion_matrix": [
+      [
+        32,
+        73,
+        27
+      ],
+      [
+        17,
+        30,
+        14
+      ],
+      [
+        18,
+        35,
+        10
+      ]
+    ],
+    "confusion_axes": "rows=true, columns=predicted",
+    "per_class": [
+      {
+        "id": 0,
+        "name": "Negative",
+        "precision": 0.47761194029850745,
+        "recall": 0.24242424242424243,
+        "f1": 0.32160804020100503,
+        "support": 132
+      },
+      {
+        "id": 1,
+        "name": "Neutral",
+        "precision": 0.21739130434782608,
+        "recall": 0.4918032786885246,
+        "f1": 0.3015075376884422,
+        "support": 61
+      },
+      {
+        "id": 2,
+        "name": "Positive",
+        "precision": 0.19607843137254902,
+        "recall": 0.15873015873015872,
+        "f1": 0.17543859649122806,
+        "support": 63
+      }
+    ],
+    "loss": 1.1769766807556152
+  },
+  "validation_batch": {
+    "count": 256,
+    "correct": 144,
+    "accuracy": 0.5625,
+    "macro_f1": 0.24,
+    "label_order": [
+      0,
+      1,
+      2
+    ],
+    "confusion_matrix": [
+      [
+        144,
+        0,
+        0
+      ],
+      [
+        43,
+        0,
+        0
+      ],
+      [
+        69,
+        0,
+        0
+      ]
+    ],
+    "confusion_axes": "rows=true, columns=predicted",
+    "per_class": [
+      {
+        "id": 0,
+        "name": "Negative",
+        "precision": 0.5625,
+        "recall": 1.0,
+        "f1": 0.72,
+        "support": 144
+      },
+      {
+        "id": 1,
+        "name": "Neutral",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 43
+      },
+      {
+        "id": 2,
+        "name": "Positive",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 69
+      }
+    ],
+    "loss": 1.0868515968322754
+  },
+  "checkpoint_sha256": "ae30caa115a4887700c7fd0220f5639a1a790d36646f4dd86aff11c114ac7812",
+  "cuda_peak_allocated_bytes": null
+}

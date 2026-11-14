@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "tests_run": 74,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "scope": "Published tests plus new emotion training tests; unrelated untracked review tests excluded."
+}

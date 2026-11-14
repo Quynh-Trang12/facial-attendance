@@ -1,0 +1,20 @@
+# Training uses the verified loader preprocessing, with a separate batch-size override.
+[loader]
+config = "configs/emotion.toml"
+batch_size = 256
+manifest_sha256 = "79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b"
+
+[model]
+channels = [32, 64, 128]
+dropout = 0.3
+
+[optimizer]
+learning_rate = 0.001
+betas = [0.9, 0.999]
+epsilon = 0.00000001
+weight_decay = 0.0001
+
+[training]
+seed = 42
+max_epochs = 30
+patience = 5
