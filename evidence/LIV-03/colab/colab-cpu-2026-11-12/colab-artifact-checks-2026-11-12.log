@@ -1,0 +1,96 @@
+{
+  "accepted": true,
+  "result": "PASS",
+  "inventory_rows": 561575,
+  "quarantined_rows": 544,
+  "counts": {
+    "train": {
+      "selected": 320660,
+      "excluded": 123697,
+      "subjects": 7362,
+      "families": {
+        "live": 146007,
+        "print": 88699,
+        "screen": 85954
+      },
+      "source_types": {
+        "0": 146007,
+        "1": 31999,
+        "7": 27908,
+        "10": 36489,
+        "2": 28103,
+        "3": 28597,
+        "4": 30510,
+        "5": 27051,
+        "6": 29647,
+        "8": 29711,
+        "9": 28335
+      }
+    },
+    "validation": {
+      "selected": 35646,
+      "excluded": 13858,
+      "subjects": 821,
+      "families": {
+        "live": 16241,
+        "print": 9845,
+        "screen": 9560
+      },
+      "source_types": {
+        "0": 16241,
+        "10": 4047,
+        "1": 3548,
+        "2": 3118,
+        "7": 3107,
+        "3": 3179,
+        "4": 3137,
+        "5": 3076,
+        "6": 3598,
+        "8": 3301,
+        "9": 3152
+      }
+    },
+    "test": {
+      "selected": 49646,
+      "excluded": 17524,
+      "subjects": 1002,
+      "families": {
+        "live": 19923,
+        "print": 15104,
+        "screen": 14619
+      },
+      "source_types": {
+        "0": 19923,
+        "10": 3610,
+        "7": 6477,
+        "5": 6097,
+        "1": 3600,
+        "2": 5421,
+        "3": 6083,
+        "4": 4287,
+        "6": 3530,
+        "8": 3659,
+        "9": 4483
+      }
+    }
+  },
+  "overlaps": [],
+  "blocking_image_errors": [],
+  "requirements": {
+    "labels_preprocessing_splits": "PASS",
+    "known_common_media": "UNVERIFIED: no known common-media group supplied",
+    "sample_batch_alignment_and_traceability": "PASS"
+  },
+  "known_media_check": "UNVERIFIED: no known common-media group supplied",
+  "image_integrity": {
+    "raw_images_decoded": 561575,
+    "valid_face_inputs": 561574,
+    "invalid_face_inputs": 1
+  }
+}
+All task requirements verified: False
+Stage timings: [{'name': 'split', 'exit_code': 0, 'expected_exit_code': 0, 'elapsed_seconds': 56.116}, {'name': 'initial', 'exit_code': 1, 'expected_exit_code': 1, 'elapsed_seconds': 3936.835}, {'name': 'resolve', 'exit_code': 0, 'expected_exit_code': 0, 'elapsed_seconds': 33.52}, {'name': 'final', 'exit_code': 0, 'expected_exit_code': 0, 'elapsed_seconds': 4042.242}]
+Batch record keys: {'train': ['saved_batch_readback', 'shape', 'image_dtype', 'target_dtype', 'range', 'alignment', 'rows', 'tensor_sha256', 'preview_sha256'], 'validation': ['saved_batch_readback', 'shape', 'image_dtype', 'target_dtype', 'range', 'alignment', 'rows', 'tensor_sha256', 'preview_sha256'], 'test': ['saved_batch_readback', 'shape', 'image_dtype', 'target_dtype', 'range', 'alignment', 'rows', 'tensor_sha256', 'preview_sha256']}
+Final VM free GiB: 24.27
+PASS: final reports, complete inventory and all batch/preview copies match Drive.
+PASS: all 31 uploaded source file hashes remain unchanged.

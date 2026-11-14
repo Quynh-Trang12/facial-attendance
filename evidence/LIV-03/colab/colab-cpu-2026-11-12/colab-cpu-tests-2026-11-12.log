@@ -1,0 +1,32 @@
+test_box_geometry_rgb_and_grayscale (test_liveness_data.LivenessDataTests.test_box_geometry_rgb_and_grayscale) ... ok
+test_changed_image_or_box_after_audit_rejected (test_liveness_data.LivenessDataTests.test_changed_image_or_box_after_audit_rejected) ... ok
+test_corrupt_image_and_box_are_reported_without_silent_removal (test_liveness_data.LivenessDataTests.test_corrupt_image_and_box_are_reported_without_silent_removal) ... ok
+test_cpu_workers_preserve_inventory_order_and_hashes (test_liveness_data.LivenessDataTests.test_cpu_workers_preserve_inventory_order_and_hashes) ... ok
+test_derived_validation_keeps_original_annotations_and_enforces_assignment (test_liveness_data.LivenessDataTests.test_derived_validation_keeps_original_annotations_and_enforces_assignment) ... ok
+test_duplicate_json_paths_are_rejected (test_liveness_data.LivenessDataTests.test_duplicate_json_paths_are_rejected) ... ok
+test_each_overlap_key_is_checked_before_filtering (test_liveness_data.LivenessDataTests.test_each_overlap_key_is_checked_before_filtering) ... ok
+test_empty_box_for_preexcluded_mask_preserves_pixel_integrity_audit (test_liveness_data.LivenessDataTests.test_empty_box_for_preexcluded_mask_preserves_pixel_integrity_audit) ... ok
+test_full_dataset_preparation_reuses_fixed_subjects_with_empty_quarantine (test_liveness_data.LivenessDataTests.test_full_dataset_preparation_reuses_fixed_subjects_with_empty_quarantine) ... {"train": 11, "validation": 11, "test": 11, "quarantine": 0}
+ok
+test_full_inventory_retains_subject_quarantine_but_loader_excludes_it (test_liveness_data.LivenessDataTests.test_full_inventory_retains_subject_quarantine_but_loader_excludes_it) ... ok
+test_inventory_construction_does_not_decode_images (test_liveness_data.LivenessDataTests.test_inventory_construction_does_not_decode_images) ... ok
+test_known_video_frames_leak_even_when_subjects_and_hashes_differ (test_liveness_data.LivenessDataTests.test_known_video_frames_leak_even_when_subjects_and_hashes_differ) ... ok
+test_loader_import_does_not_load_audit_or_reporting (test_liveness_data.LivenessDataTests.test_loader_import_does_not_load_audit_or_reporting) ... ok
+test_mapping_exclusions_and_fixed_splits (test_liveness_data.LivenessDataTests.test_mapping_exclusions_and_fixed_splits) ... ok
+test_missing_project_validation_is_not_invented (test_liveness_data.LivenessDataTests.test_missing_project_validation_is_not_invented) ... ok
+test_multipart_reader_crosses_boundaries_and_seeks (test_liveness_data.LivenessDataTests.test_multipart_reader_crosses_boundaries_and_seeks) ... ok
+test_paths_reject_traversal_and_external_symlink_accept_internal_alias (test_liveness_data.LivenessDataTests.test_paths_reject_traversal_and_external_symlink_accept_internal_alias) ... ok
+test_real_cli_tensor_alignment_and_saved_inventory (test_liveness_data.LivenessDataTests.test_real_cli_tensor_alignment_and_saved_inventory) ... Project train, validation and test annotation files are required; split assignments are never inferred
+ok
+test_renamed_identical_files_across_splits_rejected (test_liveness_data.LivenessDataTests.test_renamed_identical_files_across_splits_rejected) ... ok
+test_report_failure_cannot_inherit_accepted_inventory (test_liveness_data.LivenessDataTests.test_report_failure_cannot_inherit_accepted_inventory) ... ok
+test_rich_json_labels_override_misleading_folder_name (test_liveness_data.LivenessDataTests.test_rich_json_labels_override_misleading_folder_name) ... ok
+test_source_type_and_binary_disagreement_or_unknown_rejected (test_liveness_data.LivenessDataTests.test_source_type_and_binary_disagreement_or_unknown_rejected) ... ok
+test_validation_subject_file_cannot_take_test_subjects (test_liveness_data.LivenessDataTests.test_validation_subject_file_cannot_take_test_subjects) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 4.586s
+
+OK
+PASS: /tmp/liveness-fixture-24j09v1c/audit/audit.json
+FAIL: /tmp/liveness-fixture-24j09v1c/failed-audit/audit.json

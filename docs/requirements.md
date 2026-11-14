@@ -6,7 +6,7 @@ This page maps the supplied [project brief](reference/project-brief.pdf) to repo
 | --- | --- | --- |
 | CNN embeddings using classification-based and metric-learning approaches, with a verification-performance comparison | `recognition/` | Data/pair loaders verified on the assigned competition data; models not trained |
 | ROC/AUC evaluation on `verification_pairs_val.txt` and investigation of similarity metrics | `recognition/` evaluation | Trial loader and all listed paths/labels validated; model evaluation pending |
-| Trained and integrated anti-spoofing for real, printed and screen/replay faces | `liveness/`, `ui/` | Scaffold only |
+| Trained and integrated anti-spoofing for real, printed and screen/replay faces | `liveness/`, `ui/` | [Full-dataset inventory audit and loader](liveness-loader.md); trained model and integration unverified |
 | Emotion recognition trained on public data, with displayed emotion labels/icons | `emotion/`, `ui/` | Scaffold only |
 | Real-time webcam, display registered identity, prompt unknown users and support registration | `ui/`, `recognition/` | Scaffold only |
 | Versioned shared setup and a training/inference check | Dependencies, `environment.py`, setup guide, execution reports | Linux GPU execution and independent Windows 11 / Mac M1 CPU review recorded |

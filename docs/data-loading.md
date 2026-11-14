@@ -63,7 +63,7 @@ Expected: exit code 0 and JSON `status=PASS`. The script prints the dataset root
 <details>
 <summary>Dataset already downloaded at the configured location</summary>
 
-Local mode skips the Kaggle API:
+**Local mode** skips the Kaggle API:
 
 ```bash
 python scripts/check_face_data.py --output evidence/runs/FAC-01/local-review.json
@@ -89,13 +89,13 @@ That root must contain `classification_data/`, `verification_data/` and `verific
 <details>
 <summary>Custom download cache or configuration</summary>
 
-API mode reads `paths.kaggle_cache` from the same config; `--cache-dir` overrides that cache and `--config` selects another TOML file.
+**API mode** reads `paths.kaggle_cache` from the same config; `--cache-dir` overrides that cache and `--config` selects another TOML file.
 
 </details>
 
 ## Download on Google Colab
 
-1. **Prepare Colab:** complete steps 1–4 in [the Colab setup guide](setup.md#google-colab-cpu-or-nvidia-gpu). They define `python`, `run_dir`, `command_env` and `run(...)`.
+1. **Prepare Colab:** open [Google Colab: CPU or T4 GPU in Setup](setup.md#google-colab-cpu-or-t4-gpu), then click **Face recognition** to expand it. Run its steps 1–4 in order: select the runtime, prepare the environment/runner, install dependencies, then run tests and the device check. These steps define `python`, `run_dir`, `command_env` and `run(...)`. Keep that notebook session open; do not run its download cell until the token steps below are complete.
 2. **Add the token:** in Colab's **Secrets** panel (key icon), create `KAGGLE_API_TOKEN`, paste the token as its value and enable notebook access.
 3. **Pass it to the loader:** execute this cell without printing the secret:
 
@@ -106,7 +106,7 @@ from google.colab import userdata
 command_env['KAGGLE_API_TOKEN'] = userdata.get('KAGGLE_API_TOKEN')
 ```
 
-4. **Download:** return to setup step 5 and run the loader cell once. It uses the same competition API and repo-local cache as the local command.
+4. **Download:** return to [Google Colab: CPU or T4 GPU in Setup](setup.md#google-colab-cpu-or-t4-gpu), expand **Face recognition** if closed, and find **5. Run the loader on real competition data**. Run its download cell once. It uses the same competition API and repo-local cache as the local command.
 
 **If the secret cannot be read:** check its spelling and notebook-access switch. No token needs to be embedded in a cell, source file or report.
 
@@ -144,7 +144,7 @@ Implementation: `src/facial_attendance/recognition/data_loader.py`. Identity map
 
 These map-style datasets work with PyTorch `DataLoader`. Without a transform they return PIL RGB images. The inspection CLI explicitly uses a configurable size, default 112, which does not settle final preprocessing under SYS-02.
 
-For positive pairs, the sampler selects uniformly among identities with at least two images, then selects two distinct images. For negative pairs, it selects two different identities uniformly, then one image per identity. Sampling is with replacement across pairs; repeated pairs are possible. Singleton identities can supply negatives. This is a reproducible baseline, not exhaustive sampling or hard-negative mining. Official verification trials are never resampled.
+For **positive pairs**, the sampler selects uniformly among identities with at least two images, then selects two distinct images. For **negative pairs**, it selects two different identities uniformly, then one image per identity. Sampling is with replacement across pairs; repeated pairs are possible. Singleton identities can supply negatives. This is a reproducible baseline, not exhaustive sampling or hard-negative mining. Official verification trials are never resampled.
 
 Verification paths may be bare filenames or prefixed with `verification_data/`. Nonblank/noncomment lines require exactly two paths and label 0/1. Missing files, malformed labels/rows, escaping paths, unknown classification IDs and unreadable sampled images fail explicitly. Full duplicate/leakage audits and model evaluation remain separate tasks.
 

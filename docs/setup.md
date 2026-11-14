@@ -1,8 +1,11 @@
 # Setup
 
-**Local machine:** follow steps 1–4 below, using only the branch for your machine.
+Choose where to run the project. Local and Colab are separate execution routes; follow one route for the module you need. Complete the numbered steps within your chosen route in order; continue only after the preceding checks pass.
 
-**Colab:** skip steps 1–4 and follow the [Colab guide](#google-colab-cpu-or-nvidia-gpu).
+| Execution route | Steps |
+| --- | --- |
+| **Local execution** | 1. From your cloned repository, complete [environment setup and the device check](#1-open-a-terminal-and-select-the-environment) in steps 1–3.<br>2. Run the [unit tests](#run-unit-tests); resolve failures before continuing.<br>3. Choose the module you want to run under [Download and check the dataset](#4-download-and-check-the-dataset), then follow its local instructions. |
+| **Google Colab execution** | 1. Open [Google Colab: CPU or T4 GPU](#google-colab-cpu-or-t4-gpu) and expand the section for the module you want to run.<br>2. Complete its prerequisites and setup: face recognition has numbered cells; anti-spoofing uses the shared notebook.<br>3. Follow that route's test and dataset-check sequence, then inspect and retain its outputs. |
 
 ## 1. Open a terminal and select the environment
 
@@ -181,21 +184,43 @@ Passing the suite confirms only the behavior covered by its tests. The device ch
 
 ## 4. Download and check the dataset
 
-Continue with [Download on your own machine](data-loading.md#download-on-your-own-machine), following its steps in order.
+Choose the module you want to use. Each section links its local and Colab instructions.
+
+<details>
+<summary>Face recognition</summary>
+
+Use [local dataset acquisition and checks](data-loading.md#download-on-your-own-machine), or open [Google Colab: CPU or T4 GPU](#google-colab-cpu-or-t4-gpu), expand **Face recognition**, and follow steps 1–4 before [adding the Kaggle token and downloading](data-loading.md#download-on-google-colab).
+
+</details>
+
+<details>
+<summary>Anti-spoofing (liveness)</summary>
+
+Follow the [data preparation and loader guide](liveness-loader.md#reproduce-the-results), choosing [local execution](liveness-loader.md#local-execution) or [Colab execution](liveness-loader.md#google-colab-execution). It defines dataset links, storage requirements, file locations and audit commands. Read its storage plan before downloading CelebA-Spoof.
+
+</details>
+
+<details>
+<summary>Emotion recognition</summary>
+
+Dataset acquisition and loading are not implemented yet; the module remains a scaffold.
+
+</details>
 
 **For subsequent runs:** open a terminal at the repository root, activate the existing environment and run `python ...`. Environment creation and dependency installation are one-time setup steps.
 
 Platform verification and previous execution results are in the [reference section](#reference).
 
-## Google Colab: CPU or NVIDIA GPU
+## Google Colab: CPU or T4 GPU
+
+Expand the section for the module you want to run: face recognition or anti-spoofing. Face recognition contains numbered setup steps; anti-spoofing links to its existing notebook. Links to these sections may leave them collapsed, so click the module name to reveal the instructions. For local execution, follow steps 1–4 above and the module's linked dataset guide.
 
 <details>
-<summary>Using Colab? Expand and follow steps 1–5</summary>
-
+<summary>Face recognition</summary>
 
 **Order:** select runtime → prepare environment → install → check → load data.
 
-Follow these cells in order in one notebook session. They run repository scripts in a separate `.venv` using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. Use the Python 3.13 interpreter supplied by Colab; another Python 3.13 patch release is acceptable. Matching the reference patch does not require a separate Python installation.
+Follow these cells in order in one notebook session. They run repository scripts in an isolated project environment using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. Use the Python 3.13 interpreter supplied by Colab; another Python 3.13 patch release is acceptable. Matching the reference patch does not require a separate Python installation.
 
 ### 1. Put the repository in one directory and select the device
 
@@ -230,7 +255,7 @@ print('Kernel:', sys.version.split()[0], '| device:', device)
 print('Project:', repo, '| evidence:', run_dir)
 ```
 
-Keep a CPU environment and a CUDA environment in different Colab sessions. Each `.venv` uses one wheel profile.
+Keep a CPU environment and a CUDA environment in different Colab sessions. Each project environment uses one wheel profile.
 
 ### 2. Prepare a command runner and the isolated environment
 
@@ -269,7 +294,7 @@ run('install-framework', [python, '-m', 'pip', 'install', '-r', profile])
 run('install-project', [python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
 ```
 
-The CUDA profile uses CUDA 12.6 wheels and needs a compatible NVIDIA driver. If installation or CUDA checks fail, inspect the stage log for the failing command. The archived `requirements.lock` describes a historical Linux/CUDA environment rather than the Colab dependency profile.
+The CUDA profile uses CUDA 12.6 wheels and needs a compatible NVIDIA driver. If installation or CUDA checks fail, inspect the stage log for the failing command. The archived [requirements.lock](../requirements.lock) describes a historical Linux/CUDA environment rather than the Colab dependency profile.
 
 ### 4. Run tests and the selected-device check
 
@@ -311,6 +336,20 @@ Run this cell instead of the download cell above. That folder must have the [req
 **Expected full-dataset counts:** 380,638 train images, 8,000 validation images, 8,000 classification test images, 4,000 identities, and 8,805 official trials. A deliberately uploaded subset will have smaller counts and must be labelled as such. `status=PASS` checks mappings, finite decoded batches, pair labels/paths and seeded training-pair rules; it does not decode every image or measure recognition accuracy.
 
 Download the `run_dir` directory shown in step 1 before ending the session, then disconnect and delete the runtime in Colab. Runtime files are temporary; keep credentials and raw images out of Git.
+
+</details>
+
+<details>
+<summary>Anti-spoofing (liveness)</summary>
+
+Open the notebook from the [shared Drive project](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB?usp=sharing) and follow the [Colab execution instructions](liveness-loader.md#google-colab-execution). The notebook installs the CPU environment, runs tests and performs data preparation/auditing with existing cells. Use **Runtime → Run all**; no manual device selection or cell creation is needed.
+
+</details>
+
+<details>
+<summary>Emotion recognition</summary>
+
+A runnable Colab workflow is not implemented yet; the module remains a scaffold.
 
 </details>
 

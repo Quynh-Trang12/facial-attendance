@@ -6,6 +6,7 @@ The [Project Tracker](../README.md#project-tracker) is the single source for tas
 | --- | --- |
 | SYS-03 | [Setup, training/inference and independent review](SYS-03/README.md) |
 | FAC-01 | [Loader evidence and protocol findings](FAC-01/README.md) |
+| LIV-03 | [Current data audit, loader checks and limits](LIV-03/README.md) |
 
 Only tasks with supporting files have folders. Subtasks share the parent folder; shared artifacts are linked rather than copied. Other tasks remain indexed in the Project Tracker.
 
@@ -17,4 +18,4 @@ New command outputs go under ignored `evidence/runs/<Task ID>/`. A selected run 
 
 ## Scope
 
-Only selected task evidence is included in this directory. Earlier troubleshooting runs and historical notes are stored outside the repository. Paths embedded in execution artifacts describe their original run locations.
+Only selected task evidence is included in this directory. Earlier troubleshooting runs and historical notes stay in the ignored runs subdirectory of this [evidence directory](./) or in existing external archives. Paths embedded in execution artifacts describe their original run locations.
