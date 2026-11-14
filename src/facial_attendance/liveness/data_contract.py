@@ -16,6 +16,28 @@ FAMILIES = {
     9: "screen",
 }
 EXCLUDED = {4, 5, 6, 10}
+QUALITY_REQUIREMENTS = (
+    "exact_deduplication", "near_duplicate_review", "source_relationship_coverage",
+    "known_common_media", "visual_labels_and_boxes", "loader_provenance",
+    "face_input_integrity", "selected_family_coverage",
+)
+TASK_REQUIREMENTS = ("labels_preprocessing_splits", "sample_batch_alignment_and_traceability", *QUALITY_REQUIREMENTS)
+EXPERIMENT_REQUIREMENTS = (
+    "source_annotation_mapping", "selected_input_integrity", "partition_integrity",
+    "selected_family_coverage", "exact_deduplication", "near_candidate_policy",
+    "sample_batch_alignment_and_traceability",
+)
+EXPERIMENT_IMPLEMENTATION_FILES = (
+    'data_contract.py', 'data_loader.py', 'dataset_files.py', 'image_inventory.py',
+    'face_crop.py', 'split_rules.py', 'dataset_audit.py', 'audit_report.py',
+    'quality_audit.py', 'image_fingerprints.py', 'near_search.py',
+    'candidate_policy.py', 'experimental_readiness.py', 'sample_batches.py',
+)
+SELECTION_REASONS = {
+    "exact_duplicate", "duplicate_label_conflict", "confirmed_near_duplicate",
+    "near_candidate_quarantine", "exact_crop_duplicate", "crop_label_conflict",
+    "visual_review_rejection", "invalid_face_input",
+}
 
 
 @dataclass(frozen=True)

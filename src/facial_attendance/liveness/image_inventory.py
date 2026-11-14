@@ -11,6 +11,11 @@ from facial_attendance.liveness.data_contract import (
     SPLITS,
     LivenessSample,
     label_family,
+    QUALITY_REQUIREMENTS,
+    TASK_REQUIREMENTS,
+    EXPERIMENT_REQUIREMENTS,
+    EXPERIMENT_IMPLEMENTATION_FILES,
+    SELECTION_REASONS,
 )
 from facial_attendance.liveness.split_rules import (
     SubjectSplits,
@@ -26,6 +31,121 @@ class Inventory:
     annotations: dict
     folder_label_disagreements: list[str]
     assignments: SubjectSplits | None
+
+
+def read_quality_report(root: Path, path: Path, inventory_sha256: str) -> dict:
+    """Verify the receipt's input and evidence bindings before using decisions."""
+    report = read_json(path)
+    if not set(QUALITY_REQUIREMENTS) <= set(report.get("requirements", {})):
+        raise ValueError("Quality report is missing required checks")
+    accepted = all(value == "PASS" for value in report["requirements"].values())
+    failed = any(value.startswith("FAIL") for value in report["requirements"].values())
+    result = "PASS" if accepted else "FAIL" if failed else "INCOMPLETE"
+    if report.get("accepted") is not accepted or report.get("result") != result:
+        raise ValueError("Quality result disagrees with its requirement checks")
+    if (Path(report["data_root"]).resolve() != root.resolve()
+            or report["inventory_sha256"] != inventory_sha256):
+        raise ValueError("Quality report belongs to another inventory/data root")
+    if not report.get("source_bindings") or not report.get("evidence_bindings"):
+        raise ValueError("Quality report has no source/evidence bindings")
+    for category in ("source_bindings", "evidence_bindings", "implementation_sha256"):
+        if category == "implementation_sha256" and not report.get(category):
+            raise ValueError("Quality report has no implementation binding")
+        for filename, digest in report[category].items():
+            if file_sha256(Path(filename)) != digest:
+                raise ValueError(f"Quality {category} changed: {filename}")
+    if file_sha256(Path(report["selection_file"])) != report["selection_sha256"]:
+        raise ValueError("Quality selection changed since assessment")
+    return report
+
+
+def read_selection(path: Path, records) -> set[str]:
+    """Apply only explicit exclusions, retaining all original inventory rows."""
+    known = {r.relative_path for r in records if not r.exclusion_reason}
+    excluded = set()
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames != ["relative_path", "exclusion_reason"]:
+            raise ValueError("Unexpected quality selection columns")
+        for row in reader:
+            name = row["relative_path"]
+            if (name not in known or name in excluded or row["exclusion_reason"] not in
+                    SELECTION_REASONS):
+                raise ValueError(f"Invalid quality selection: {name}")
+            excluded.add(name)
+    return excluded
+
+
+def read_experimental_report(root: Path, path: Path, inventory_sha256: str) -> dict:
+    """Authorize a bound training experiment without claiming full visual truth."""
+    report = read_json(path)
+    checks = report.get("readiness_checks", {})
+    if (report.get("report_type") != "experimental_readiness" or report.get("schema_version") != 1
+            or not set(EXPERIMENT_REQUIREMENTS) <= set(checks)
+            or any(value != "PASS" for value in checks.values())
+            or report.get("experimental_ready") is not True or report.get("result") != "PASS"
+            or report.get("pipeline_completed") is not True):
+        raise ValueError("Experimental readiness checks have not passed")
+    if (Path(report["data_root"]).resolve() != root.resolve()
+            or report.get("inventory_sha256") != inventory_sha256):
+        raise ValueError("Experimental readiness belongs to another inventory/data root")
+    for category in ("source_bindings", "evidence_bindings", "implementation_sha256"):
+        if not report.get(category):
+            raise ValueError(f"Experimental readiness has no {category}")
+        for filename, digest in report[category].items():
+            if file_sha256(Path(filename)) != digest:
+                raise ValueError(f"Experimental readiness {category} changed: {filename}")
+    expected = {str((Path(__file__).parent/name).resolve()) for name in EXPERIMENT_IMPLEMENTATION_FILES}
+    expected.add(str((Path(__file__).parent.parent/'recognition/data_loader.py').resolve()))
+    if not expected <= set(report['implementation_sha256']):
+        raise ValueError('Experimental readiness implementation coverage is incomplete')
+    if file_sha256(Path(report['selection_file'])) != report['selection_sha256']:
+        raise ValueError('Experimental selection changed since assessment')
+    policy = report.get('candidate_policy', {})
+    if policy.get('search_complete') is not True or policy.get('remaining_actionable_pairs') != 0:
+        raise ValueError('Experimental candidate policy is unresolved')
+    counts = report.get('cleaned_subset_counts', {})
+    if (set(counts) != set(SPLITS) or any(type(n) is not int or n <= 0 for n in counts.values())
+            or type(report.get('selected_rows')) is not int or sum(counts.values()) != report['selected_rows']):
+        raise ValueError('Experimental selected-row counts are invalid')
+    return report
+
+
+def read_audited_inventory(root: Path, inventory: Path, audit_file: Path):
+    """Load accepted evidence only; standalone CSVs are diagnostic inputs."""
+    if not audit_file.is_file():
+        raise ValueError("LIV-03 audit report required; standalone inventory is diagnostic only")
+    audit = read_json(audit_file)
+    if audit.get('report_type') == 'experimental_readiness':
+        experiment = read_experimental_report(root, audit_file, file_sha256(inventory))
+        records = read_inventory(inventory)
+        excluded = read_selection(Path(experiment['selection_file']), records)
+        counts = {split: sum(r.split == split and not r.exclusion_reason and r.relative_path not in excluded
+                             for r in records) for split in SPLITS}
+        if counts != experiment['cleaned_subset_counts']:
+            raise ValueError('Experimental selected-row coverage differs')
+        return records, excluded
+    requirements = audit.get("requirements", {})
+    if (audit.get("accepted") is not True or audit.get("result") != "PASS"
+            or not audit.get("pipeline_completed") or not set(TASK_REQUIREMENTS) <= set(requirements)
+            or any(value != "PASS" for value in requirements.values())):
+        raise ValueError("LIV-03 evidence is incomplete; inventory is not accepted for model use")
+    digest = file_sha256(inventory)
+    if digest != audit["inventory_sha256"]:
+        raise ValueError("Inventory changed since audit")
+    binding = audit.get("quality_report")
+    if not binding or file_sha256(Path(binding["path"])) != binding["sha256"]:
+        raise ValueError("Missing or changed quality assessment")
+    quality = read_quality_report(root, Path(binding["path"]), digest)
+    if (quality.get("accepted") is not True or quality.get("result") != "PASS"
+            or not quality.get("requirements")
+            or any(value != "PASS" for value in quality["requirements"].values())):
+        raise ValueError("Quality evidence is incomplete")
+    records = read_inventory(inventory)
+    excluded = read_selection(Path(quality["selection_file"]), records)
+    if sum(not r.exclusion_reason and r.relative_path not in excluded for r in records) != quality["selected_rows"]:
+        raise ValueError("Quality selected-row coverage differs")
+    return records, excluded
 
 
 def read_relationships(path: Path | None) -> dict:

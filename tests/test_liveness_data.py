@@ -86,7 +86,7 @@ class LivenessDataTests(unittest.TestCase):
         write_inventory(path, records)
         self.assertEqual(read_inventory(path), records)
         for split in SPLITS:
-            dataset = LivenessImages(self.root, path, split)
+            dataset = LivenessImages._for_audit(self.root, read_inventory(path), split)
             for index, row in enumerate(dataset.samples):
                 image, target = dataset[index]
                 self.assertEqual(target, int(row.source_type != 0))
@@ -256,7 +256,7 @@ class LivenessDataTests(unittest.TestCase):
             name,
             {
                 s.relative_path
-                for s in LivenessImages(self.root, inventory, "train").samples
+                for s in LivenessImages._for_audit(self.root, read_inventory(inventory), "train").samples
             },
         )
         self.assertEqual(
@@ -443,7 +443,7 @@ class LivenessDataTests(unittest.TestCase):
         records, _ = self.inventory()
         inventory = self.root / "inventory.csv"
         write_inventory(inventory, records)
-        dataset = LivenessImages(self.root, inventory, "train")
+        dataset = LivenessImages._for_audit(self.root, read_inventory(inventory), "train")
         image = self.root / dataset.samples[0].relative_path
         image.with_name(image.stem + "_BB.txt").write_text("0 0 20 20 1")
         with self.assertRaisesRegex(ValueError, "changed since audit"):
@@ -468,7 +468,7 @@ class LivenessDataTests(unittest.TestCase):
         )
         inventory = self.root / "inventory.csv"
         write_inventory(inventory, records)
-        self.assertEqual(len(LivenessImages(self.root, inventory, "train")), 7)
+        self.assertEqual(len(LivenessImages._for_audit(self.root, read_inventory(inventory), "train")), 7)
 
     def test_box_geometry_rgb_and_grayscale(self):
         image = self.root / "crop.png"
@@ -591,10 +591,12 @@ class LivenessDataTests(unittest.TestCase):
                     "16",
                 ]
             ),
-            0,
+            2,
         )
         report = json.loads((output / "audit.json").read_text())
-        self.assertTrue(report["accepted"])
+        self.assertFalse(report["accepted"])
+        self.assertTrue(report["pipeline_completed"])
+        self.assertEqual(report["result"], "INCOMPLETE")
         self.assertIn("UNVERIFIED", report["known_media_check"])
         summary_file = output / "summary.json"
         summary = json.loads(summary_file.read_text())

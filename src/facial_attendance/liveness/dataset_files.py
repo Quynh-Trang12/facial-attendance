@@ -1,13 +1,13 @@
 """Read dataset files with consistent path, JSON and checksum validation."""
 
-from hashlib import sha256
+from hashlib import file_digest
 import json
 from pathlib import Path, PurePosixPath
 
 
 def file_sha256(path: Path) -> str:
     with path.open("rb") as handle:
-        return sha256(handle.read()).hexdigest()
+        return file_digest(handle, "sha256").hexdigest()
 
 
 def local_path(root: Path, value: str) -> Path:

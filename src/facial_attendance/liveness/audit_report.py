@@ -8,6 +8,8 @@ from pathlib import Path
 import sys
 
 from facial_attendance.liveness.dataset_files import file_sha256, read_json
+from facial_attendance.liveness.image_inventory import read_quality_report
+from facial_attendance.liveness.data_contract import TASK_REQUIREMENTS
 
 
 @dataclass(frozen=True)
@@ -69,8 +71,10 @@ class AuditReport:
     known_media_check: str | None = None
     requirements: dict[str, str] | None = None
     accepted: bool = False
+    pipeline_completed: bool = False
     result: str = "FAIL"
     error: str | None = None
+    quality_report: dict | None = None
 
     @classmethod
     def start(cls, root: Path, image_size: int, workers: int) -> "AuditReport":
@@ -105,8 +109,8 @@ class AuditReport:
         if "script_sha256" in extraction:
             self.extraction["script_sha256"] = extraction["script_sha256"]
 
-    def complete(self) -> None:
-        """Record completed checks while retaining unknown media relationships."""
+    def complete(self, quality_file: Path | None = None) -> None:
+        """Separate successful execution from evidence for task acceptance."""
         self.known_media_check = (
             "PASS for supplied common-media groups"
             if self.audit["known_common_media_groups"]
@@ -116,14 +120,29 @@ class AuditReport:
             "labels_preprocessing_splits": "PASS",
             "known_common_media": self.known_media_check,
             "sample_batch_alignment_and_traceability": "PASS",
+            "exact_deduplication": "UNVERIFIED: quality audit not supplied",
+            "near_duplicate_review": "UNVERIFIED: quality audit not supplied",
+            "source_relationship_coverage": "UNVERIFIED: provenance review required",
+            "visual_labels_and_boxes": "UNVERIFIED: per-image review required",
+            "loader_provenance": "UNVERIFIED: quality evidence not supplied",
+            "face_input_integrity": "PASS",
+            "selected_family_coverage": "PASS",
         }
-
-        self.accepted = True
-        self.result = "PASS"
+        if quality_file is not None:
+            quality = read_quality_report(self.data_root, quality_file, self.inventory_sha256)
+            self.requirements.update(quality["requirements"])
+            self.known_media_check = quality["requirements"]["known_common_media"]
+            self.quality_report = {"path": str(quality_file.resolve()), "sha256": file_sha256(quality_file)}
+            self.audit["cleaned_subset_counts"] = quality["cleaned_subset_counts"]
+        self.pipeline_completed = True
+        self.accepted = all(value == "PASS" for value in self.requirements.values())
+        failed = any(value.startswith("FAIL") for value in self.requirements.values())
+        self.result = "PASS" if self.accepted else "FAIL" if failed else "INCOMPLETE"
 
     def fail(self, error: Exception) -> None:
         self.accepted = False
         self.result = "FAIL"
+        self.pipeline_completed = False
         self.error = str(error)
 
     def to_dict(self) -> dict:
@@ -139,6 +158,7 @@ class AuditReport:
             **self.audit,
             "accepted": self.accepted,
             "result": self.result,
+            "pipeline_completed": self.pipeline_completed,
         }
 
         for name in (
@@ -148,6 +168,7 @@ class AuditReport:
             "known_media_check",
             "requirements",
             "error",
+            "quality_report",
         ):
             value = getattr(self, name)
             if value is not None:
@@ -202,14 +223,8 @@ def write_summary(audit_file: Path, output_file: Path) -> None:
     summary["all_task_requirements_verified"] = (
         report.get("accepted") is True
         and report.get("result") == "PASS"
-        and all(
-            requirements.get(key, "").startswith("PASS")
-            for key in (
-                "labels_preprocessing_splits",
-                "known_common_media",
-                "sample_batch_alignment_and_traceability",
-            )
-        )
+        and set(TASK_REQUIREMENTS) <= set(requirements)
+        and all(value == "PASS" for value in requirements.values())
     )
 
     with output_file.open("x", encoding="utf-8") as handle:

@@ -1,7 +1,6 @@
 """Audit an acquired CelebA-Spoof dataset and save traceable sample batches."""
 
 import argparse
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
@@ -9,120 +8,18 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from PIL import Image, ImageDraw
-
 from facial_attendance.config import load_paths
 from facial_attendance.liveness.dataset_audit import audit_dataset
 from facial_attendance.liveness.data_loader import LivenessImages
-from facial_attendance.liveness.dataset_files import file_sha256, local_path
-from facial_attendance.liveness.face_crop import bbox_path, read_face
-from facial_attendance.liveness.image_inventory import write_inventory
+from facial_attendance.liveness.image_inventory import write_inventory, read_quality_report, read_selection
 from facial_attendance.liveness.data_contract import SPLITS
 from facial_attendance.liveness.audit_report import (
     AuditReport,
-    BatchEvidence,
     write_summary,
 )
+from facial_attendance.liveness.sample_batches import sample_batch
 from facial_attendance.recognition.data_loader import image_transform
 
-
-def sample_batch(
-    dataset, output: Path, batch_size: int, image_size: int
-) -> BatchEvidence:
-    # This boundary keeps CLI help and annotation failures usable without Torch,
-    # matching the project's Pillow-only source-check job.
-    import torch
-    from torch.utils.data import DataLoader, Subset
-
-    # Include each selected source type that exists, then fill in inventory order.
-    indices, types = [], set()
-    for index, row in enumerate(dataset.samples):
-        if row.source_type not in types:
-            indices.append(index)
-            types.add(row.source_type)
-    if batch_size < len(indices):
-        raise ValueError(f"batch-size must cover {len(indices)} source types")
-    indices += [i for i in range(len(dataset)) if i not in indices][
-        : batch_size - len(indices)
-    ]
-
-    images, targets = next(
-        iter(
-            DataLoader(
-                Subset(dataset, indices),
-                batch_size=len(indices),
-                shuffle=False,
-                num_workers=0,
-            )
-        )
-    )
-
-    if (
-        images.shape != (len(indices), 3, image_size, image_size)
-        or images.dtype != torch.float32
-        or targets.dtype != torch.int64
-        or not torch.isfinite(images).all()
-        or images.min() < 0
-        or images.max() > 1
-    ):
-        raise ValueError(f"Invalid batch in {dataset.split}")
-
-    records = []
-    sheet = Image.new("RGB", (image_size * len(indices), image_size + 64), "white")
-    draw = ImageDraw.Draw(sheet)
-    for position, index in enumerate(indices):
-        row = dataset.samples[index]
-        face = read_face(
-            local_path(dataset.root, row.relative_path),
-            box_file=local_path(dataset.root, str(bbox_path(Path(row.relative_path)))),
-        )
-        expected = dataset.transform(face)
-        if int(targets[position]) != row.binary_label or not torch.equal(
-            images[position], expected
-        ):
-            raise ValueError(f"Image/target alignment failed: {row.relative_path}")
-
-        sheet.paste(
-            face.resize((image_size, image_size), Image.Resampling.BILINEAR),
-            (position * image_size, 0),
-        )
-        draw.text(
-            (position * image_size + 3, image_size + 3),
-            f"index={index} target={row.binary_label}\n{row.split} type={row.source_type}\n{row.attack_family}",
-            fill="black",
-        )
-        records.append({"dataset_index": index, **asdict(row)})
-
-    stem = output / dataset.split
-    sheet.save(stem.with_suffix(".png"))
-    torch.save(
-        {
-            "images": images,
-            "targets": targets,
-            "relative_paths": [r["relative_path"] for r in records],
-        },
-        stem.with_suffix(".pt"),
-    )
-
-    saved = torch.load(stem.with_suffix(".pt"), weights_only=True)
-    if (
-        not torch.equal(saved["images"], images)
-        or not torch.equal(saved["targets"], targets)
-        or saved["relative_paths"] != [r["relative_path"] for r in records]
-    ):
-        raise ValueError(f"Saved batch readback failed: {dataset.split}")
-
-    return BatchEvidence(
-        saved_batch_readback="PASS",
-        shape=list(images.shape),
-        image_dtype=str(images.dtype),
-        target_dtype=str(targets.dtype),
-        range=[images.min().item(), images.max().item()],
-        alignment="PASS",
-        rows=records,
-        tensor_sha256=file_sha256(stem.with_suffix(".pt")),
-        preview_sha256=file_sha256(stem.with_suffix(".png")),
-    )
 
 
 def parse_arguments(argv=None):
@@ -161,6 +58,7 @@ def parse_arguments(argv=None):
 
     parser.add_argument("--image-size", type=int, default=224)
     parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument("--quality-report", type=Path, help="Bound quality assessment from review_liveness_data.py assess")
     parser.add_argument(
         "--workers",
         type=int,
@@ -229,17 +127,21 @@ def main(argv=None):
         # A candidate becomes a loadable accepted inventory only after batch checks.
         inventory = output / "candidate-inventory.csv"
         report.inventory_sha256 = write_inventory(inventory, records)
+        excluded = set()
+        if args.quality_report:
+            quality = read_quality_report(root, args.quality_report, report.inventory_sha256)
+            excluded = read_selection(Path(quality["selection_file"]), records)
 
         transform = image_transform(args.image_size)
         report.batches = {}
         for split in SPLITS:
-            dataset = LivenessImages(root, inventory, split, transform=transform)
+            dataset = LivenessImages._for_audit(root, records, split, transform=transform, excluded=excluded)
             report.batches[split] = sample_batch(
                 dataset, output, args.batch_size, args.image_size
             )
 
         inventory.rename(output / "inventory.csv")
-        report.complete()
+        report.complete(args.quality_report)
     except (OSError, ValueError, RuntimeError, ImportError) as error:
         report.fail(error)
 
@@ -248,7 +150,7 @@ def main(argv=None):
     print(f"{report.result}: {output / 'audit.json'}")
     if report.error:
         print(report.error, file=sys.stderr)
-    return 0 if report.accepted else 1
+    return 0 if report.accepted else 1 if report.result == "FAIL" else 2
 
 
 if __name__ == "__main__":
