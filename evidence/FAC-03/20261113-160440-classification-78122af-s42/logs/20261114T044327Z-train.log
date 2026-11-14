@@ -1,0 +1,42 @@
+Resuming 20261113-160440-classification-78122af-s42 after epoch 25
+epoch 26 step 200/1454 loss 0.4000
+epoch 26 step 400/1454 loss 0.3920
+epoch 26 step 600/1454 loss 0.3953
+epoch 26 step 800/1454 loss 0.3988
+epoch 26 step 1000/1454 loss 0.4008
+epoch 26 step 1200/1454 loss 0.4060
+epoch 26 step 1400/1454 loss 0.4105
+{"epoch": 26, "learning_rate": 0.006698729810778067, "train_loss": 0.4111498074811436, "train_top1": 0.9119086591570646, "train_images_seen": 372057, "val_top1": 0.8062532034853921, "val_loss": 0.9212759801022888, "val_pairs_cosine_auc": 0.9851667541556339, "val_pairs_euclidean_auc": 0.9849002832875269, "seconds": 390.2}
+epoch 27 step 200/1454 loss 0.3174
+epoch 27 step 400/1454 loss 0.3167
+epoch 27 step 600/1454 loss 0.3162
+epoch 27 step 800/1454 loss 0.3206
+epoch 27 step 1000/1454 loss 0.3216
+epoch 27 step 1200/1454 loss 0.3242
+epoch 27 step 1400/1454 loss 0.3265
+{"epoch": 27, "learning_rate": 0.004322727117869953, "train_loss": 0.3263056153876794, "train_top1": 0.9336795168482249, "train_images_seen": 372057, "val_top1": 0.831881086622245, "val_loss": 0.797506650125962, "val_pairs_cosine_auc": 0.9874056617189609, "val_pairs_euclidean_auc": 0.9855857209169138, "seconds": 386.5}
+epoch 28 step 200/1454 loss 0.2607
+epoch 28 step 400/1454 loss 0.2603
+epoch 28 step 600/1454 loss 0.2598
+epoch 28 step 800/1454 loss 0.2591
+epoch 28 step 1000/1454 loss 0.2601
+epoch 28 step 1200/1454 loss 0.2624
+epoch 28 step 1400/1454 loss 0.2642
+{"epoch": 28, "learning_rate": 0.002447174185242324, "train_loss": 0.26427445156860047, "train_top1": 0.9498114536213537, "train_images_seen": 372057, "val_top1": 0.8361096873398257, "val_loss": 0.7615877177885164, "val_pairs_cosine_auc": 0.9876728229261043, "val_pairs_euclidean_auc": 0.9849606189193212, "seconds": 383.2}
+epoch 29 step 200/1454 loss 0.2205
+epoch 29 step 400/1454 loss 0.2211
+epoch 29 step 600/1454 loss 0.2217
+epoch 29 step 800/1454 loss 0.2219
+epoch 29 step 1000/1454 loss 0.2228
+epoch 29 step 1200/1454 loss 0.2232
+epoch 29 step 1400/1454 loss 0.2237
+{"epoch": 29, "learning_rate": 0.0010926199633097158, "train_loss": 0.22400699204072105, "train_top1": 0.9607963295946589, "train_images_seen": 372057, "val_top1": 0.8459764223475141, "val_loss": 0.7351246593794047, "val_pairs_cosine_auc": 0.9882914357367534, "val_pairs_euclidean_auc": 0.9837072393645676, "seconds": 384.3}
+epoch 30 step 200/1454 loss 0.2048
+epoch 30 step 400/1454 loss 0.2043
+epoch 30 step 600/1454 loss 0.2019
+epoch 30 step 800/1454 loss 0.2019
+epoch 30 step 1000/1454 loss 0.2027
+epoch 30 step 1200/1454 loss 0.2038
+epoch 30 step 1400/1454 loss 0.2037
+{"epoch": 30, "learning_rate": 0.00027390523158633, "train_loss": 0.20360382738993674, "train_top1": 0.9661826010530644, "train_images_seen": 372057, "val_top1": 0.849820604818042, "val_loss": 0.7197315190646173, "val_pairs_cosine_auc": 0.9884250853742285, "val_pairs_euclidean_auc": 0.9836272981041356, "seconds": 385.2}
+Done: 20261113-160440-classification-78122af-s42 selected epoch 30 val top-1 0.8498 test top-1 0.8588

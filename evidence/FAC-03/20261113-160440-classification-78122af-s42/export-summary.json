@@ -1,0 +1,26 @@
+{
+  "model_id": "20261113-160440-classification-78122af-s42",
+  "model_version": "3fd31562478d",
+  "official_trials": {
+    "file": "/content/drive/MyDrive/fac-03-runs/20261113-160440-classification-78122af-s42/exports/official-embeddings.npz",
+    "images": 9355,
+    "embedding_dim": 512
+  },
+  "val_pairs": {
+    "file": "/content/drive/MyDrive/fac-03-runs/20261113-160440-classification-78122af-s42/exports/val-pairs-embeddings.npz",
+    "images": 7777,
+    "embedding_dim": 512
+  },
+  "classification": [
+    {
+      "split": "val_data",
+      "images": 7804,
+      "top1": 0.8494361865709892
+    },
+    {
+      "split": "test_data",
+      "images": 7832,
+      "top1": 0.8586567926455567
+    }
+  ]
+}
