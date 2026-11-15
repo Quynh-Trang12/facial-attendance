@@ -1,0 +1,89 @@
+{
+  "run_id": "20261114-125242-metric-74a8657-s42",
+  "module": "face",
+  "approach": "metric",
+  "seed": 42,
+  "architecture": {
+    "name": "resnet18-3x3-stem-no-maxpool",
+    "backbone": "torchvision resnet18, weights=None; conv1 3x3 stride 1; maxpool removed",
+    "embedding": "global average pool (512) -> linear 512; raw output",
+    "head": "none; the triplet loss trains the embedding directly",
+    "parameters": 11431488,
+    "trainable_layers": "all; trained from scratch, no frozen layers, no pre-trained weights"
+  },
+  "initialisation": null,
+  "loss": "triplet loss, margin 0.2, squared Euclidean distance on L2-normalized embeddings; every same-identity pair in a batch is an anchor-positive pair; semi-hard negative mining (closest negative farther than the positive, else the farthest negative); positive and negative identities checked on every batch",
+  "batches": "64 identities x 4 images from IdentityBatchSampler, 1453 batches per epoch",
+  "optimizer": "SGD with momentum, cosine learning-rate decay per epoch",
+  "augmentation": "horizontal flip; 4-pixel pad and random crop; train only",
+  "config": {
+    "epochs": 30,
+    "identities_per_batch": 64,
+    "images_per_identity": 4,
+    "margin": 0.2,
+    "learning_rate": 0.05,
+    "momentum": 0.9,
+    "weight_decay": 0.0005,
+    "seed": 42,
+    "embedding_dim": 512,
+    "input_size": 64,
+    "eval_batch_size": 512,
+    "num_workers": 2,
+    "mixed_precision": true,
+    "max_steps_per_epoch": null,
+    "batch_size": 256
+  },
+  "config_sha256": "efe4189726b599a11be8c1fe688e409a9d541481c3608773771b3d58ce772901",
+  "changes": [],
+  "data": {
+    "root": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2",
+    "exclusions_file": "/content/facial-attendance/configs/face-exclusions.tsv",
+    "exclusions_sha256": "06d4251d77a111f6d98d2d113f4d7c7c2d550bded2f3b5f08cd2525d99dde6c4",
+    "samples_sha256": "0a633b9186e9510ad03d3ba47ed1512404979844c59ce97a1e47733c1cd0f241",
+    "identity_mapping_sha256": "4ce1e17377c40652c0d41cf302a17e1a938797be15f7a56b40aad7b8e8c8ce91",
+    "val_pairs_sha256": "772e998360268c04744d715b25c0feb9a38482a1b7dc1660d2b3bc90a74e8e8d",
+    "official_pairs_sha256": "55ecf1495188024f414e3b0faac2b7f4cc374000a809e3b98579ecd8f4f25fdd",
+    "images": {
+      "train_data": 372057,
+      "val_data": 7804
+    },
+    "identities": 4000
+  },
+  "environment": {
+    "python": "3.13.16",
+    "torch": "2.13.0+cu126",
+    "torchvision": "0.28.0+cu126",
+    "device": "cuda",
+    "gpu": "Tesla T4"
+  },
+  "git_commit": "74a86578f72cff6e11e61e25397804fb27ece135",
+  "git_dirty": false,
+  "status": "complete",
+  "sessions": [
+    {
+      "started_utc": "2026-11-14T12:52:45.868401+00:00",
+      "from_epoch": 0,
+      "git_commit": "74a86578f72cff6e11e61e25397804fb27ece135",
+      "git_dirty": false
+    },
+    {
+      "started_utc": "2026-11-15T02:51:20.769181+00:00",
+      "from_epoch": 20,
+      "git_commit": "74a86578f72cff6e11e61e25397804fb27ece135",
+      "git_dirty": false
+    }
+  ],
+  "epochs_completed": 30,
+  "selection": {
+    "metric": "cosine AUC on val_data pairs",
+    "selected_epoch": 29,
+    "value": 0.9911154746674566,
+    "threshold": null,
+    "threshold_source": "chosen by FAC-05 on the same validation pairs"
+  },
+  "output": {
+    "model_id": "20261114-125242-metric-74a8657-s42",
+    "model_version": "cb38ea47ceff",
+    "checkpoint": "/content/drive/MyDrive/fac-04-runs/20261114-125242-metric-74a8657-s42/best.pt"
+  }
+}
