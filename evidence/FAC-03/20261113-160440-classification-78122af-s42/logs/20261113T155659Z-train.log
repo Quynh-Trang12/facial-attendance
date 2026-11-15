@@ -1,0 +1,200 @@
+epoch 1 step 200/1454 loss 8.2498
+epoch 1 step 400/1454 loss 8.0873
+epoch 1 step 600/1454 loss 7.8944
+epoch 1 step 800/1454 loss 7.6866
+epoch 1 step 1000/1454 loss 7.4714
+epoch 1 step 1200/1454 loss 7.2489
+epoch 1 step 1400/1454 loss 7.0359
+{"epoch": 1, "learning_rate": 0.1, "train_loss": 6.981201237455697, "train_top1": 0.017325302305829484, "train_images_seen": 372057, "val_top1": 0.020502306509482315, "val_loss": 6.54181477572599, "val_pairs_cosine_auc": 0.8842799170157251, "val_pairs_euclidean_auc": 0.8891002783723131, "seconds": 386.4}
+epoch 2 step 200/1454 loss 5.3349
+epoch 2 step 400/1454 loss 5.2217
+epoch 2 step 600/1454 loss 5.1098
+epoch 2 step 800/1454 loss 5.0013
+epoch 2 step 1000/1454 loss 4.9102
+epoch 2 step 1200/1454 loss 4.8235
+epoch 2 step 1400/1454 loss 4.7383
+{"epoch": 2, "learning_rate": 0.09972609476841367, "train_loss": 4.717170145917408, "train_top1": 0.13104174897932305, "train_images_seen": 372057, "val_top1": 0.09405433111225013, "val_loss": 5.365827129291669, "val_pairs_cosine_auc": 0.9175862212746474, "val_pairs_euclidean_auc": 0.906333936597606, "seconds": 377.6}
+epoch 3 step 200/1454 loss 3.9898
+epoch 3 step 400/1454 loss 3.9299
+epoch 3 step 600/1454 loss 3.8714
+epoch 3 step 800/1454 loss 3.8204
+epoch 3 step 1000/1454 loss 3.7754
+epoch 3 step 1200/1454 loss 3.7282
+epoch 3 step 1400/1454 loss 3.6834
+{"epoch": 3, "learning_rate": 0.09890738003669028, "train_loss": 3.6725649839241448, "train_top1": 0.2631102223584021, "train_images_seen": 372057, "val_top1": 0.18195797027165556, "val_loss": 4.3990163016111525, "val_pairs_cosine_auc": 0.9439566892333896, "val_pairs_euclidean_auc": 0.9201342626585398, "seconds": 363.5}
+epoch 4 step 200/1454 loss 3.2469
+epoch 4 step 400/1454 loss 3.2409
+epoch 4 step 600/1454 loss 3.2154
+epoch 4 step 800/1454 loss 3.1950
+epoch 4 step 1000/1454 loss 3.1727
+epoch 4 step 1200/1454 loss 3.1453
+epoch 4 step 1400/1454 loss 3.1225
+{"epoch": 4, "learning_rate": 0.09755282581475767, "train_loss": 3.1151326894974805, "train_top1": 0.3548273517229887, "train_images_seen": 372057, "val_top1": 0.27370579190158895, "val_loss": 3.7608714531410175, "val_pairs_cosine_auc": 0.9470781262210372, "val_pairs_euclidean_auc": 0.9213436330997135, "seconds": 363.8}
+epoch 5 step 200/1454 loss 2.8209
+epoch 5 step 400/1454 loss 2.8261
+epoch 5 step 600/1454 loss 2.8223
+epoch 5 step 800/1454 loss 2.8100
+epoch 5 step 1000/1454 loss 2.7992
+epoch 5 step 1200/1454 loss 2.7812
+epoch 5 step 1400/1454 loss 2.7676
+{"epoch": 5, "learning_rate": 0.09567727288213003, "train_loss": 2.7621523261247436, "train_top1": 0.41792789814463915, "train_images_seen": 372057, "val_top1": 0.2871604305484367, "val_loss": 3.7344567139047284, "val_pairs_cosine_auc": 0.947069980220406, "val_pairs_euclidean_auc": 0.9260088062408858, "seconds": 363.9}
+epoch 6 step 200/1454 loss 2.5272
+epoch 6 step 400/1454 loss 2.5343
+epoch 6 step 600/1454 loss 2.5371
+epoch 6 step 800/1454 loss 2.5302
+epoch 6 step 1000/1454 loss 2.5254
+epoch 6 step 1200/1454 loss 2.5211
+epoch 6 step 1400/1454 loss 2.5134
+{"epoch": 6, "learning_rate": 0.09330127018922194, "train_loss": 2.5100023765554633, "train_top1": 0.46520022469675343, "train_images_seen": 372057, "val_top1": 0.2852383393131727, "val_loss": 3.7779757696686493, "val_pairs_cosine_auc": 0.9517386740906648, "val_pairs_euclidean_auc": 0.9431454718315442, "seconds": 366.1}
+epoch 7 step 200/1454 loss 2.3073
+epoch 7 step 400/1454 loss 2.3381
+epoch 7 step 600/1454 loss 2.3389
+epoch 7 step 800/1454 loss 2.3407
+epoch 7 step 1000/1454 loss 2.3396
+epoch 7 step 1200/1454 loss 2.3431
+epoch 7 step 1400/1454 loss 2.3395
+{"epoch": 7, "learning_rate": 0.09045084971874737, "train_loss": 2.3386775481413076, "train_top1": 0.4973512123142422, "train_images_seen": 372057, "val_top1": 0.3020246027678114, "val_loss": 3.6276394107413865, "val_pairs_cosine_auc": 0.9486214136541881, "val_pairs_euclidean_auc": 0.9331036276211829, "seconds": 363.5}
+epoch 8 step 200/1454 loss 2.1420
+epoch 8 step 400/1454 loss 2.1728
+epoch 8 step 600/1454 loss 2.1903
+epoch 8 step 800/1454 loss 2.1892
+epoch 8 step 1000/1454 loss 2.1905
+epoch 8 step 1200/1454 loss 2.1932
+epoch 8 step 1400/1454 loss 2.1904
+{"epoch": 8, "learning_rate": 0.0871572412738697, "train_loss": 2.189039075896256, "train_top1": 0.5280723115006571, "train_images_seen": 372057, "val_top1": 0.3868528959507945, "val_loss": 3.0331788955133185, "val_pairs_cosine_auc": 0.9592969200661953, "val_pairs_euclidean_auc": 0.9392945190670261, "seconds": 363.0}
+epoch 9 step 200/1454 loss 2.0107
+epoch 9 step 400/1454 loss 2.0322
+epoch 9 step 600/1454 loss 2.0537
+epoch 9 step 800/1454 loss 2.0597
+epoch 9 step 1000/1454 loss 2.0618
+epoch 9 step 1200/1454 loss 2.0651
+epoch 9 step 1400/1454 loss 2.0641
+{"epoch": 9, "learning_rate": 0.0834565303179429, "train_loss": 2.0648990296652214, "train_top1": 0.5522191492163835, "train_images_seen": 372057, "val_top1": 0.4613018964633521, "val_loss": 2.5821153336705334, "val_pairs_cosine_auc": 0.962874049851867, "val_pairs_euclidean_auc": 0.9384290755338599, "seconds": 363.9}
+epoch 10 step 200/1454 loss 1.9048
+epoch 10 step 400/1454 loss 1.9310
+epoch 10 step 600/1454 loss 1.9481
+epoch 10 step 800/1454 loss 1.9559
+epoch 10 step 1000/1454 loss 1.9619
+epoch 10 step 1200/1454 loss 1.9658
+epoch 10 step 1400/1454 loss 1.9704
+{"epoch": 10, "learning_rate": 0.07938926261462365, "train_loss": 1.9703274789553185, "train_top1": 0.5714016938264835, "train_images_seen": 372057, "val_top1": 0.43118913377754997, "val_loss": 2.804935015390495, "val_pairs_cosine_auc": 0.9590595124715269, "val_pairs_euclidean_auc": 0.938949936336934, "seconds": 363.3}
+epoch 11 step 200/1454 loss 1.8146
+epoch 11 step 400/1454 loss 1.8334
+epoch 11 step 600/1454 loss 1.8490
+epoch 11 step 800/1454 loss 1.8633
+epoch 11 step 1000/1454 loss 1.8700
+epoch 11 step 1200/1454 loss 1.8723
+epoch 11 step 1400/1454 loss 1.8767
+{"epoch": 11, "learning_rate": 0.07499999999999998, "train_loss": 1.8786512656400727, "train_top1": 0.5895440752357838, "train_images_seen": 372057, "val_top1": 0.4296514607893388, "val_loss": 2.8016971097366437, "val_pairs_cosine_auc": 0.9586807924760776, "val_pairs_euclidean_auc": 0.9411552243891811, "seconds": 362.9}
+epoch 12 step 200/1454 loss 1.7165
+epoch 12 step 400/1454 loss 1.7509
+epoch 12 step 600/1454 loss 1.7590
+epoch 12 step 800/1454 loss 1.7710
+epoch 12 step 1000/1454 loss 1.7765
+epoch 12 step 1200/1454 loss 1.7834
+epoch 12 step 1400/1454 loss 1.7849
+{"epoch": 12, "learning_rate": 0.07033683215379001, "train_loss": 1.7847012892441672, "train_top1": 0.6085062235087635, "train_images_seen": 372057, "val_top1": 0.47001537672988214, "val_loss": 2.557146554357391, "val_pairs_cosine_auc": 0.96425265690785, "val_pairs_euclidean_auc": 0.9529480100148865, "seconds": 361.0}
+epoch 13 step 200/1454 loss 1.6305
+epoch 13 step 400/1454 loss 1.6456
+epoch 13 step 600/1454 loss 1.6545
+epoch 13 step 800/1454 loss 1.6644
+epoch 13 step 1000/1454 loss 1.6730
+epoch 13 step 1200/1454 loss 1.6795
+epoch 13 step 1400/1454 loss 1.6822
+{"epoch": 13, "learning_rate": 0.06545084971874737, "train_loss": 1.6835255679684566, "train_top1": 0.6282800753647962, "train_images_seen": 372057, "val_top1": 0.49474628395694514, "val_loss": 2.430941692686643, "val_pairs_cosine_auc": 0.959260608232873, "val_pairs_euclidean_auc": 0.9522355456122189, "seconds": 361.5}
+epoch 14 step 200/1454 loss 1.5173
+epoch 14 step 400/1454 loss 1.5386
+epoch 14 step 600/1454 loss 1.5590
+epoch 14 step 800/1454 loss 1.5681
+epoch 14 step 1000/1454 loss 1.5777
+epoch 14 step 1200/1454 loss 1.5842
+epoch 14 step 1400/1454 loss 1.5893
+{"epoch": 14, "learning_rate": 0.06039558454088796, "train_loss": 1.5905510928962596, "train_top1": 0.6480996191443784, "train_images_seen": 372057, "val_top1": 0.4712967708867248, "val_loss": 2.5429460495206286, "val_pairs_cosine_auc": 0.9664629154011601, "val_pairs_euclidean_auc": 0.9558042877785966, "seconds": 362.6}
+epoch 15 step 200/1454 loss 1.4176
+epoch 15 step 400/1454 loss 1.4343
+epoch 15 step 600/1454 loss 1.4550
+epoch 15 step 800/1454 loss 1.4648
+epoch 15 step 1000/1454 loss 1.4743
+epoch 15 step 1200/1454 loss 1.4832
+epoch 15 step 1400/1454 loss 1.4901
+{"epoch": 15, "learning_rate": 0.05522642316338268, "train_loss": 1.4907562469797015, "train_top1": 0.6677820871533126, "train_images_seen": 372057, "val_top1": 0.5020502306509482, "val_loss": 2.350689370347438, "val_pairs_cosine_auc": 0.9691423283037073, "val_pairs_euclidean_auc": 0.960646947086065, "seconds": 363.4}
+epoch 16 step 200/1454 loss 1.3055
+epoch 16 step 400/1454 loss 1.3293
+epoch 16 step 600/1454 loss 1.3492
+epoch 16 step 800/1454 loss 1.3630
+epoch 16 step 1000/1454 loss 1.3729
+epoch 16 step 1200/1454 loss 1.3826
+epoch 16 step 1400/1454 loss 1.3912
+{"epoch": 16, "learning_rate": 0.05000000000000001, "train_loss": 1.3933385771462699, "train_top1": 0.6890503336854299, "train_images_seen": 372057, "val_top1": 0.6000768836494106, "val_loss": 1.8732139376235093, "val_pairs_cosine_auc": 0.9744716075980371, "val_pairs_euclidean_auc": 0.9621400123543075, "seconds": 363.2}
+epoch 17 step 200/1454 loss 1.2267
+epoch 17 step 400/1454 loss 1.2343
+epoch 17 step 600/1454 loss 1.2586
+epoch 17 step 800/1454 loss 1.2777
+epoch 17 step 1000/1454 loss 1.2832
+epoch 17 step 1200/1454 loss 1.2925
+epoch 17 step 1400/1454 loss 1.2994
+{"epoch": 17, "learning_rate": 0.04477357683661733, "train_loss": 1.3005905203932993, "train_top1": 0.708595725923716, "train_images_seen": 372057, "val_top1": 0.5948231676063557, "val_loss": 1.9149517487526428, "val_pairs_cosine_auc": 0.9716908529249251, "val_pairs_euclidean_auc": 0.96409512153971, "seconds": 363.4}
+epoch 18 step 200/1454 loss 1.1279
+epoch 18 step 400/1454 loss 1.1392
+epoch 18 step 600/1454 loss 1.1593
+epoch 18 step 800/1454 loss 1.1724
+epoch 18 step 1000/1454 loss 1.1858
+epoch 18 step 1200/1454 loss 1.1938
+epoch 18 step 1400/1454 loss 1.2027
+{"epoch": 18, "learning_rate": 0.03960441545911203, "train_loss": 1.2057452212996593, "train_top1": 0.7291140873575823, "train_images_seen": 372057, "val_top1": 0.6082778062532035, "val_loss": 1.866542646055158, "val_pairs_cosine_auc": 0.9691721509500861, "val_pairs_euclidean_auc": 0.9677458069497258, "seconds": 360.2}
+epoch 19 step 200/1454 loss 1.0226
+epoch 19 step 400/1454 loss 1.0403
+epoch 19 step 600/1454 loss 1.0560
+epoch 19 step 800/1454 loss 1.0743
+epoch 19 step 1000/1454 loss 1.0882
+epoch 19 step 1200/1454 loss 1.0984
+epoch 19 step 1400/1454 loss 1.1066
+{"epoch": 19, "learning_rate": 0.03454915028125263, "train_loss": 1.1085661045833217, "train_top1": 0.751054273941896, "train_images_seen": 372057, "val_top1": 0.6467196309584828, "val_loss": 1.6451434003946293, "val_pairs_cosine_auc": 0.9760970798934889, "val_pairs_euclidean_auc": 0.9721212102803081, "seconds": 360.9}
+epoch 20 step 200/1454 loss 0.9320
+epoch 20 step 400/1454 loss 0.9436
+epoch 20 step 600/1454 loss 0.9626
+epoch 20 step 800/1454 loss 0.9769
+epoch 20 step 1000/1454 loss 0.9876
+epoch 20 step 1200/1454 loss 1.0004
+epoch 20 step 1400/1454 loss 1.0086
+{"epoch": 20, "learning_rate": 0.02966316784621, "train_loss": 1.0114180069041856, "train_top1": 0.7714006187224001, "train_images_seen": 372057, "val_top1": 0.6711942593541773, "val_loss": 1.5250955793809915, "val_pairs_cosine_auc": 0.9764263716139217, "val_pairs_euclidean_auc": 0.9731146771878018, "seconds": 362.6}
+epoch 21 step 200/1454 loss 0.8561
+epoch 21 step 400/1454 loss 0.8681
+epoch 21 step 600/1454 loss 0.8805
+epoch 21 step 800/1454 loss 0.8915
+epoch 21 step 1000/1454 loss 0.8972
+epoch 21 step 1200/1454 loss 0.9054
+epoch 21 step 1400/1454 loss 0.9130
+{"epoch": 21, "learning_rate": 0.025000000000000012, "train_loss": 0.9148246247097274, "train_top1": 0.7929295779947696, "train_images_seen": 372057, "val_top1": 0.6900307534597643, "val_loss": 1.443455950777571, "val_pairs_cosine_auc": 0.9782773776726131, "val_pairs_euclidean_auc": 0.9774049271982259, "seconds": 361.7}
+epoch 22 step 200/1454 loss 0.7459
+epoch 22 step 400/1454 loss 0.7565
+epoch 22 step 600/1454 loss 0.7711
+epoch 22 step 800/1454 loss 0.7823
+epoch 22 step 1000/1454 loss 0.7931
+epoch 22 step 1200/1454 loss 0.8035
+epoch 22 step 1400/1454 loss 0.8130
+{"epoch": 22, "learning_rate": 0.02061073738537635, "train_loss": 0.8152325612763349, "train_top1": 0.8163023407703658, "train_images_seen": 372057, "val_top1": 0.7219374679651461, "val_loss": 1.2864807809334056, "val_pairs_cosine_auc": 0.9807722284337393, "val_pairs_euclidean_auc": 0.9794945144279479, "seconds": 361.0}
+epoch 23 step 200/1454 loss 0.6552
+epoch 23 step 400/1454 loss 0.6664
+epoch 23 step 600/1454 loss 0.6726
+epoch 23 step 800/1454 loss 0.6815
+epoch 23 step 1000/1454 loss 0.6923
+epoch 23 step 1200/1454 loss 0.7017
+epoch 23 step 1400/1454 loss 0.7086
+{"epoch": 23, "learning_rate": 0.016543469682057107, "train_loss": 0.7102965003235737, "train_top1": 0.8395890952192809, "train_images_seen": 372057, "val_top1": 0.7221937467965146, "val_loss": 1.2901053611954807, "val_pairs_cosine_auc": 0.9779170897294397, "val_pairs_euclidean_auc": 0.9814594954615731, "seconds": 362.2}
+epoch 24 step 200/1454 loss 0.5642
+epoch 24 step 400/1454 loss 0.5737
+epoch 24 step 600/1454 loss 0.5789
+epoch 24 step 800/1454 loss 0.5885
+epoch 24 step 1000/1454 loss 0.5937
+epoch 24 step 1200/1454 loss 0.5987
+epoch 24 step 1400/1454 loss 0.6073
+{"epoch": 24, "learning_rate": 0.012842758726130301, "train_loss": 0.6092940018980719, "train_top1": 0.8635934816439417, "train_images_seen": 372057, "val_top1": 0.7462839569451564, "val_loss": 1.1951674554728045, "val_pairs_cosine_auc": 0.9826490876893498, "val_pairs_euclidean_auc": 0.9837263617558801, "seconds": 361.1}
+epoch 25 step 200/1454 loss 0.4714
+epoch 25 step 400/1454 loss 0.4763
+epoch 25 step 600/1454 loss 0.4829
+epoch 25 step 800/1454 loss 0.4892
+epoch 25 step 1000/1454 loss 0.4952
+epoch 25 step 1200/1454 loss 0.4997
+epoch 25 step 1400/1454 loss 0.5044
+{"epoch": 25, "learning_rate": 0.009549150281252635, "train_loss": 0.506534306971724, "train_top1": 0.8887052252746219, "train_images_seen": 372057, "val_top1": 0.7725525371604306, "val_loss": 1.034629481563441, "val_pairs_cosine_auc": 0.9840668369687048, "val_pairs_euclidean_auc": 0.9844815926618617, "seconds": 362.7}

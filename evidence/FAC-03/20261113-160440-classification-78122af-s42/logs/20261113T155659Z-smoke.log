@@ -1,0 +1,2 @@
+{"epoch": 1, "learning_rate": 0.1, "train_loss": 8.366156514485677, "train_top1": 0.000390625, "train_images_seen": 7680, "val_top1": 0.00025627883136852895, "val_loss": 10.222420947115461, "val_pairs_cosine_auc": 0.53629060539696, "val_pairs_euclidean_auc": 0.5194351148958872, "seconds": 16.5}
+Done: 20261113-160320-classification-78122af-s42 selected epoch 1 val top-1 0.0003 test top-1 0.0003
