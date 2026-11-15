@@ -1,0 +1,82 @@
+Resuming 20261114-125242-metric-74a8657-s42 after epoch 20
+epoch 21 step 200/1453 loss 0.0712
+epoch 21 step 400/1453 loss 0.0704
+epoch 21 step 600/1453 loss 0.0703
+epoch 21 step 800/1453 loss 0.0702
+epoch 21 step 1000/1453 loss 0.0702
+epoch 21 step 1200/1453 loss 0.0701
+epoch 21 step 1400/1453 loss 0.0700
+{"epoch": 21, "learning_rate": 0.012500000000000006, "train_loss": 0.06999012816079468, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 593460, "fallback": 3, "active": 593463, "mean_positive_distance": 0.6933563521461329, "mean_negative_distance": 0.9325324392121821, "embedding_std": 0.04347113972684882}, "val_pairs_cosine_auc": 0.982947038017523, "val_pairs_euclidean_auc": 0.9511131578896502, "seconds": 372.1}
+epoch 22 step 200/1453 loss 0.0668
+epoch 22 step 400/1453 loss 0.0663
+epoch 22 step 600/1453 loss 0.0663
+epoch 22 step 800/1453 loss 0.0663
+epoch 22 step 1000/1453 loss 0.0662
+epoch 22 step 1200/1453 loss 0.0660
+epoch 22 step 1400/1453 loss 0.0659
+{"epoch": 22, "learning_rate": 0.010305368692688175, "train_loss": 0.06593695394207671, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 565788, "fallback": 5, "active": 565793, "mean_positive_distance": 0.6858553986916932, "mean_negative_distance": 0.938944898304739, "embedding_std": 0.04350463285560208}, "val_pairs_cosine_auc": 0.9854642212464818, "val_pairs_euclidean_auc": 0.9522807628191126, "seconds": 367.6}
+epoch 23 step 200/1453 loss 0.0637
+epoch 23 step 400/1453 loss 0.0634
+epoch 23 step 600/1453 loss 0.0628
+epoch 23 step 800/1453 loss 0.0626
+epoch 23 step 1000/1453 loss 0.0623
+epoch 23 step 1200/1453 loss 0.0622
+epoch 23 step 1400/1453 loss 0.0619
+{"epoch": 23, "learning_rate": 0.008271734841028553, "train_loss": 0.061876444888274915, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 537558, "fallback": 0, "active": 537558, "mean_positive_distance": 0.6796524152210968, "mean_negative_distance": 0.9476991852069836, "embedding_std": 0.0435618299296086}, "val_pairs_cosine_auc": 0.9858834641433762, "val_pairs_euclidean_auc": 0.9521965069397021, "seconds": 368.7}
+epoch 24 step 200/1453 loss 0.0588
+epoch 24 step 400/1453 loss 0.0584
+epoch 24 step 600/1453 loss 0.0583
+epoch 24 step 800/1453 loss 0.0581
+epoch 24 step 1000/1453 loss 0.0578
+epoch 24 step 1200/1453 loss 0.0577
+epoch 24 step 1400/1453 loss 0.0576
+{"epoch": 24, "learning_rate": 0.0064213793630651505, "train_loss": 0.057557169929997966, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 508541, "fallback": 0, "active": 508541, "mean_positive_distance": 0.6695001864548149, "mean_negative_distance": 0.9517326441536422, "embedding_std": 0.04360076863028965}, "val_pairs_cosine_auc": 0.9876603277895427, "val_pairs_euclidean_auc": 0.9619859286813501, "seconds": 368.0}
+epoch 25 step 200/1453 loss 0.0546
+epoch 25 step 400/1453 loss 0.0545
+epoch 25 step 600/1453 loss 0.0540
+epoch 25 step 800/1453 loss 0.0538
+epoch 25 step 1000/1453 loss 0.0537
+epoch 25 step 1200/1453 loss 0.0536
+epoch 25 step 1400/1453 loss 0.0533
+{"epoch": 25, "learning_rate": 0.0047745751406263175, "train_loss": 0.05327087167729941, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 476756, "fallback": 0, "active": 476756, "mean_positive_distance": 0.6596678912188378, "mean_negative_distance": 0.9593283519692365, "embedding_std": 0.043658703552778226}, "val_pairs_cosine_auc": 0.9892556322690975, "val_pairs_euclidean_auc": 0.956982903615692, "seconds": 366.4}
+epoch 26 step 200/1453 loss 0.0504
+epoch 26 step 400/1453 loss 0.0498
+epoch 26 step 600/1453 loss 0.0496
+epoch 26 step 800/1453 loss 0.0493
+epoch 26 step 1000/1453 loss 0.0490
+epoch 26 step 1200/1453 loss 0.0490
+epoch 26 step 1400/1453 loss 0.0489
+{"epoch": 26, "learning_rate": 0.0033493649053890334, "train_loss": 0.04883940957219988, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 443907, "fallback": 1, "active": 443908, "mean_positive_distance": 0.6497233845575546, "mean_negative_distance": 0.9666777958725538, "embedding_std": 0.04369221946143809}, "val_pairs_cosine_auc": 0.9903121961645316, "val_pairs_euclidean_auc": 0.9591529153431717, "seconds": 369.3}
+epoch 27 step 200/1453 loss 0.0467
+epoch 27 step 400/1453 loss 0.0461
+epoch 27 step 600/1453 loss 0.0458
+epoch 27 step 800/1453 loss 0.0457
+epoch 27 step 1000/1453 loss 0.0456
+epoch 27 step 1200/1453 loss 0.0454
+epoch 27 step 1400/1453 loss 0.0453
+{"epoch": 27, "learning_rate": 0.0021613635589349763, "train_loss": 0.04527438421338202, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 417034, "fallback": 0, "active": 417034, "mean_positive_distance": 0.640958023415872, "mean_negative_distance": 0.973829014951085, "embedding_std": 0.04374361118969635}, "val_pairs_cosine_auc": 0.9905183314008442, "val_pairs_euclidean_auc": 0.9565251398005584, "seconds": 366.7}
+epoch 28 step 200/1453 loss 0.0432
+epoch 28 step 400/1453 loss 0.0426
+epoch 28 step 600/1453 loss 0.0424
+epoch 28 step 800/1453 loss 0.0421
+epoch 28 step 1000/1453 loss 0.0422
+epoch 28 step 1200/1453 loss 0.0421
+epoch 28 step 1400/1453 loss 0.0420
+{"epoch": 28, "learning_rate": 0.001223587092621162, "train_loss": 0.04199923382506687, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 392615, "fallback": 0, "active": 392615, "mean_positive_distance": 0.6341755210081627, "mean_negative_distance": 0.9815062144175121, "embedding_std": 0.04378884250563502}, "val_pairs_cosine_auc": 0.9902194836319234, "val_pairs_euclidean_auc": 0.955118228844077, "seconds": 367.5}
+epoch 29 step 200/1453 loss 0.0416
+epoch 29 step 400/1453 loss 0.0409
+epoch 29 step 600/1453 loss 0.0404
+epoch 29 step 800/1453 loss 0.0402
+epoch 29 step 1000/1453 loss 0.0401
+epoch 29 step 1200/1453 loss 0.0400
+epoch 29 step 1400/1453 loss 0.0399
+{"epoch": 29, "learning_rate": 0.0005463099816548579, "train_loss": 0.03993288675132121, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 376121, "fallback": 1, "active": 376122, "mean_positive_distance": 0.6283958610877938, "mean_negative_distance": 0.985045796292286, "embedding_std": 0.04381778272457231}, "val_pairs_cosine_auc": 0.9911154746674566, "val_pairs_euclidean_auc": 0.9560559163574178, "seconds": 368.6}
+epoch 30 step 200/1453 loss 0.0392
+epoch 30 step 400/1453 loss 0.0391
+epoch 30 step 600/1453 loss 0.0389
+epoch 30 step 800/1453 loss 0.0387
+epoch 30 step 1000/1453 loss 0.0385
+epoch 30 step 1200/1453 loss 0.0386
+epoch 30 step 1400/1453 loss 0.0386
+{"epoch": 30, "learning_rate": 0.000136952615793165, "train_loss": 0.03850885210924122, "train_batches": 1453, "train_images_seen": 371968, "triplets": {"relationship_check": "passed on all 1453 batches", "anchor_positive_pairs": 1115904, "semi_hard": 365260, "fallback": 0, "active": 365260, "mean_positive_distance": 0.6250222852454871, "mean_negative_distance": 0.988905256687159, "embedding_std": 0.04384975105841982}, "val_pairs_cosine_auc": 0.9911151294979386, "val_pairs_euclidean_auc": 0.9550309009559539, "seconds": 367.5}
+Done: 20261114-125242-metric-74a8657-s42 selected epoch 29 val-pair cosine AUC 0.9911

@@ -1,0 +1,602 @@
+[
+  {
+    "epoch": 1,
+    "learning_rate": 0.05,
+    "train_loss": 0.17719025525321488,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 1100229,
+      "fallback": 304,
+      "active": 1100533,
+      "mean_positive_distance": 0.7505043003469685,
+      "mean_negative_distance": 0.7743636595940311,
+      "embedding_std": 0.03722364897150687
+    },
+    "val_pairs_cosine_auc": 0.9062723238385944,
+    "val_pairs_euclidean_auc": 0.8867977560667684,
+    "seconds": 427.3
+  },
+  {
+    "epoch": 2,
+    "learning_rate": 0.049863047384206834,
+    "train_loss": 0.15039054536647167,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 1033640,
+      "fallback": 10,
+      "active": 1033650,
+      "mean_positive_distance": 0.7409794258808811,
+      "mean_negative_distance": 0.7981585731443994,
+      "embedding_std": 0.04168581389818861
+    },
+    "val_pairs_cosine_auc": 0.9391604552261288,
+    "val_pairs_euclidean_auc": 0.9023050834633702,
+    "seconds": 421.4
+  },
+  {
+    "epoch": 3,
+    "learning_rate": 0.04945369001834514,
+    "train_loss": 0.13637876198341825,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 977144,
+      "fallback": 3,
+      "active": 977147,
+      "mean_positive_distance": 0.7400807764147859,
+      "mean_negative_distance": 0.818953812655628,
+      "embedding_std": 0.04246206911561494
+    },
+    "val_pairs_cosine_auc": 0.9515004380891525,
+    "val_pairs_euclidean_auc": 0.9189331762858047,
+    "seconds": 415.7
+  },
+  {
+    "epoch": 4,
+    "learning_rate": 0.04877641290737884,
+    "train_loss": 0.12690171179427662,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 932844,
+      "fallback": 6,
+      "active": 932850,
+      "mean_positive_distance": 0.7391701418616734,
+      "mean_negative_distance": 0.8347046020436271,
+      "embedding_std": 0.042784563399702616
+    },
+    "val_pairs_cosine_auc": 0.9476548699691197,
+    "val_pairs_euclidean_auc": 0.9141633822636437,
+    "seconds": 419.4
+  },
+  {
+    "epoch": 5,
+    "learning_rate": 0.047838636441065015,
+    "train_loss": 0.11973984329272203,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 894759,
+      "fallback": 4,
+      "active": 894763,
+      "mean_positive_distance": 0.7368889926059117,
+      "mean_negative_distance": 0.8469785105255007,
+      "embedding_std": 0.04297414963779085
+    },
+    "val_pairs_cosine_auc": 0.95410902220655,
+    "val_pairs_euclidean_auc": 0.9057931595133275,
+    "seconds": 406.7
+  },
+  {
+    "epoch": 6,
+    "learning_rate": 0.04665063509461097,
+    "train_loss": 0.1152527760316894,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 871001,
+      "fallback": 9,
+      "active": 871010,
+      "mean_positive_distance": 0.7312840069480707,
+      "mean_negative_distance": 0.8503897792293709,
+      "embedding_std": 0.04299845543663746
+    },
+    "val_pairs_cosine_auc": 0.9649282917229177,
+    "val_pairs_euclidean_auc": 0.9178301180562591,
+    "seconds": 402.1
+  },
+  {
+    "epoch": 7,
+    "learning_rate": 0.045225424859373684,
+    "train_loss": 0.11170402667129442,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 851891,
+      "fallback": 3,
+      "active": 851894,
+      "mean_positive_distance": 0.7285565110788785,
+      "mean_negative_distance": 0.8550174850393638,
+      "embedding_std": 0.04301703429261078
+    },
+    "val_pairs_cosine_auc": 0.9568674789287815,
+    "val_pairs_euclidean_auc": 0.9258671831875382,
+    "seconds": 404.6
+  },
+  {
+    "epoch": 8,
+    "learning_rate": 0.04357862063693485,
+    "train_loss": 0.10922129893212669,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 837138,
+      "fallback": 6,
+      "active": 837144,
+      "mean_positive_distance": 0.7286867706101268,
+      "mean_negative_distance": 0.8612395807208477,
+      "embedding_std": 0.04301569211128163
+    },
+    "val_pairs_cosine_auc": 0.9637774275150914,
+    "val_pairs_euclidean_auc": 0.9369877511764068,
+    "seconds": 407.0
+  },
+  {
+    "epoch": 9,
+    "learning_rate": 0.04172826515897145,
+    "train_loss": 0.10548426593408368,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 815650,
+      "fallback": 11,
+      "active": 815661,
+      "mean_positive_distance": 0.7235494369239702,
+      "mean_negative_distance": 0.8645684935270468,
+      "embedding_std": 0.04302321073931821
+    },
+    "val_pairs_cosine_auc": 0.9652318337972873,
+    "val_pairs_euclidean_auc": 0.9290831966231927,
+    "seconds": 402.2
+  },
+  {
+    "epoch": 10,
+    "learning_rate": 0.03969463130731182,
+    "train_loss": 0.10298764854361908,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 801091,
+      "fallback": 3,
+      "active": 801094,
+      "mean_positive_distance": 0.7246740673298846,
+      "mean_negative_distance": 0.871507778671472,
+      "embedding_std": 0.04305597781847857
+    },
+    "val_pairs_cosine_auc": 0.9697527951137251,
+    "val_pairs_euclidean_auc": 0.9356705842946764,
+    "seconds": 400.6
+  },
+  {
+    "epoch": 11,
+    "learning_rate": 0.03749999999999999,
+    "train_loss": 0.09965788168962135,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 781440,
+      "fallback": 7,
+      "active": 781447,
+      "mean_positive_distance": 0.722231964981318,
+      "mean_negative_distance": 0.8770767883112409,
+      "embedding_std": 0.04309417622988173
+    },
+    "val_pairs_cosine_auc": 0.972157798249245,
+    "val_pairs_euclidean_auc": 0.9360927611324763,
+    "seconds": 400.9
+  },
+  {
+    "epoch": 12,
+    "learning_rate": 0.035168416076895005,
+    "train_loss": 0.0970587424590353,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 765991,
+      "fallback": 7,
+      "active": 765998,
+      "mean_positive_distance": 0.7226208099724913,
+      "mean_negative_distance": 0.8837015902019745,
+      "embedding_std": 0.04312609094826419
+    },
+    "val_pairs_cosine_auc": 0.973116195933682,
+    "val_pairs_euclidean_auc": 0.9418354844757939,
+    "seconds": 402.0
+  },
+  {
+    "epoch": 13,
+    "learning_rate": 0.032725424859373686,
+    "train_loss": 0.09466939120048994,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 751946,
+      "fallback": 1,
+      "active": 751947,
+      "mean_positive_distance": 0.720521442535739,
+      "mean_negative_distance": 0.8878570688402578,
+      "embedding_std": 0.04314635314831878
+    },
+    "val_pairs_cosine_auc": 0.972146614756853,
+    "val_pairs_euclidean_auc": 0.9470714989662863,
+    "seconds": 402.1
+  },
+  {
+    "epoch": 14,
+    "learning_rate": 0.03019779227044398,
+    "train_loss": 0.09187399827236155,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 734337,
+      "fallback": 2,
+      "active": 734339,
+      "mean_positive_distance": 0.720530038731556,
+      "mean_negative_distance": 0.8953271536111668,
+      "embedding_std": 0.04319717037169095
+    },
+    "val_pairs_cosine_auc": 0.9763103946557818,
+    "val_pairs_euclidean_auc": 0.9480840882650925,
+    "seconds": 403.0
+  },
+  {
+    "epoch": 15,
+    "learning_rate": 0.02761321158169134,
+    "train_loss": 0.08892906828945617,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 716657,
+      "fallback": 3,
+      "active": 716660,
+      "mean_positive_distance": 0.7188279998770108,
+      "mean_negative_distance": 0.9014761967652433,
+      "embedding_std": 0.04324244371187826
+    },
+    "val_pairs_cosine_auc": 0.9730539273525857,
+    "val_pairs_euclidean_auc": 0.9398317063883146,
+    "seconds": 403.9
+  },
+  {
+    "epoch": 16,
+    "learning_rate": 0.025000000000000005,
+    "train_loss": 0.0861285893734947,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 698246,
+      "fallback": 3,
+      "active": 698249,
+      "mean_positive_distance": 0.7154777657961074,
+      "mean_negative_distance": 0.9060243098225499,
+      "embedding_std": 0.04325133020856917
+    },
+    "val_pairs_cosine_auc": 0.980334588001521,
+    "val_pairs_euclidean_auc": 0.9501022254045318,
+    "seconds": 401.5
+  },
+  {
+    "epoch": 17,
+    "learning_rate": 0.022386788418308667,
+    "train_loss": 0.08297265555096837,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 678451,
+      "fallback": 1,
+      "active": 678452,
+      "mean_positive_distance": 0.7127551083226739,
+      "mean_negative_distance": 0.9122915035761068,
+      "embedding_std": 0.04330673071838459
+    },
+    "val_pairs_cosine_auc": 0.9801709431329078,
+    "val_pairs_euclidean_auc": 0.9407341175768879,
+    "seconds": 400.4
+  },
+  {
+    "epoch": 18,
+    "learning_rate": 0.019802207729556015,
+    "train_loss": 0.08043089825390785,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 662083,
+      "fallback": 4,
+      "active": 662087,
+      "mean_positive_distance": 0.7097899885893032,
+      "mean_negative_distance": 0.9171317284958821,
+      "embedding_std": 0.04335516351239893
+    },
+    "val_pairs_cosine_auc": 0.9807963557830668,
+    "val_pairs_euclidean_auc": 0.9544492903176637,
+    "seconds": 402.1
+  },
+  {
+    "epoch": 19,
+    "learning_rate": 0.017274575140626316,
+    "train_loss": 0.07687259283678251,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 638632,
+      "fallback": 4,
+      "active": 638636,
+      "mean_positive_distance": 0.7028743563154527,
+      "mean_negative_distance": 0.9207758494106064,
+      "embedding_std": 0.043385663269124845
+    },
+    "val_pairs_cosine_auc": 0.9811850856945459,
+    "val_pairs_euclidean_auc": 0.9343345366402968,
+    "seconds": 403.8
+  },
+  {
+    "epoch": 20,
+    "learning_rate": 0.014831583923105,
+    "train_loss": 0.0736312176096423,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 617989,
+      "fallback": 1,
+      "active": 617990,
+      "mean_positive_distance": 0.6999417634069386,
+      "mean_negative_distance": 0.9277729873647381,
+      "embedding_std": 0.04343396166553599
+    },
+    "val_pairs_cosine_auc": 0.9838072004570596,
+    "val_pairs_euclidean_auc": 0.9555394737241776,
+    "seconds": 403.5
+  },
+  {
+    "epoch": 21,
+    "learning_rate": 0.012500000000000006,
+    "train_loss": 0.06999012816079468,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 593460,
+      "fallback": 3,
+      "active": 593463,
+      "mean_positive_distance": 0.6933563521461329,
+      "mean_negative_distance": 0.9325324392121821,
+      "embedding_std": 0.04347113972684882
+    },
+    "val_pairs_cosine_auc": 0.982947038017523,
+    "val_pairs_euclidean_auc": 0.9511131578896502,
+    "seconds": 372.1
+  },
+  {
+    "epoch": 22,
+    "learning_rate": 0.010305368692688175,
+    "train_loss": 0.06593695394207671,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 565788,
+      "fallback": 5,
+      "active": 565793,
+      "mean_positive_distance": 0.6858553986916932,
+      "mean_negative_distance": 0.938944898304739,
+      "embedding_std": 0.04350463285560208
+    },
+    "val_pairs_cosine_auc": 0.9854642212464818,
+    "val_pairs_euclidean_auc": 0.9522807628191126,
+    "seconds": 367.6
+  },
+  {
+    "epoch": 23,
+    "learning_rate": 0.008271734841028553,
+    "train_loss": 0.061876444888274915,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 537558,
+      "fallback": 0,
+      "active": 537558,
+      "mean_positive_distance": 0.6796524152210968,
+      "mean_negative_distance": 0.9476991852069836,
+      "embedding_std": 0.0435618299296086
+    },
+    "val_pairs_cosine_auc": 0.9858834641433762,
+    "val_pairs_euclidean_auc": 0.9521965069397021,
+    "seconds": 368.7
+  },
+  {
+    "epoch": 24,
+    "learning_rate": 0.0064213793630651505,
+    "train_loss": 0.057557169929997966,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 508541,
+      "fallback": 0,
+      "active": 508541,
+      "mean_positive_distance": 0.6695001864548149,
+      "mean_negative_distance": 0.9517326441536422,
+      "embedding_std": 0.04360076863028965
+    },
+    "val_pairs_cosine_auc": 0.9876603277895427,
+    "val_pairs_euclidean_auc": 0.9619859286813501,
+    "seconds": 368.0
+  },
+  {
+    "epoch": 25,
+    "learning_rate": 0.0047745751406263175,
+    "train_loss": 0.05327087167729941,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 476756,
+      "fallback": 0,
+      "active": 476756,
+      "mean_positive_distance": 0.6596678912188378,
+      "mean_negative_distance": 0.9593283519692365,
+      "embedding_std": 0.043658703552778226
+    },
+    "val_pairs_cosine_auc": 0.9892556322690975,
+    "val_pairs_euclidean_auc": 0.956982903615692,
+    "seconds": 366.4
+  },
+  {
+    "epoch": 26,
+    "learning_rate": 0.0033493649053890334,
+    "train_loss": 0.04883940957219988,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 443907,
+      "fallback": 1,
+      "active": 443908,
+      "mean_positive_distance": 0.6497233845575546,
+      "mean_negative_distance": 0.9666777958725538,
+      "embedding_std": 0.04369221946143809
+    },
+    "val_pairs_cosine_auc": 0.9903121961645316,
+    "val_pairs_euclidean_auc": 0.9591529153431717,
+    "seconds": 369.3
+  },
+  {
+    "epoch": 27,
+    "learning_rate": 0.0021613635589349763,
+    "train_loss": 0.04527438421338202,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 417034,
+      "fallback": 0,
+      "active": 417034,
+      "mean_positive_distance": 0.640958023415872,
+      "mean_negative_distance": 0.973829014951085,
+      "embedding_std": 0.04374361118969635
+    },
+    "val_pairs_cosine_auc": 0.9905183314008442,
+    "val_pairs_euclidean_auc": 0.9565251398005584,
+    "seconds": 366.7
+  },
+  {
+    "epoch": 28,
+    "learning_rate": 0.001223587092621162,
+    "train_loss": 0.04199923382506687,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 392615,
+      "fallback": 0,
+      "active": 392615,
+      "mean_positive_distance": 0.6341755210081627,
+      "mean_negative_distance": 0.9815062144175121,
+      "embedding_std": 0.04378884250563502
+    },
+    "val_pairs_cosine_auc": 0.9902194836319234,
+    "val_pairs_euclidean_auc": 0.955118228844077,
+    "seconds": 367.5
+  },
+  {
+    "epoch": 29,
+    "learning_rate": 0.0005463099816548579,
+    "train_loss": 0.03993288675132121,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 376121,
+      "fallback": 1,
+      "active": 376122,
+      "mean_positive_distance": 0.6283958610877938,
+      "mean_negative_distance": 0.985045796292286,
+      "embedding_std": 0.04381778272457231
+    },
+    "val_pairs_cosine_auc": 0.9911154746674566,
+    "val_pairs_euclidean_auc": 0.9560559163574178,
+    "seconds": 368.6
+  },
+  {
+    "epoch": 30,
+    "learning_rate": 0.000136952615793165,
+    "train_loss": 0.03850885210924122,
+    "train_batches": 1453,
+    "train_images_seen": 371968,
+    "triplets": {
+      "relationship_check": "passed on all 1453 batches",
+      "anchor_positive_pairs": 1115904,
+      "semi_hard": 365260,
+      "fallback": 0,
+      "active": 365260,
+      "mean_positive_distance": 0.6250222852454871,
+      "mean_negative_distance": 0.988905256687159,
+      "embedding_std": 0.04384975105841982
+    },
+    "val_pairs_cosine_auc": 0.9911151294979386,
+    "val_pairs_euclidean_auc": 0.9550309009559539,
+    "seconds": 367.5
+  }
+]
