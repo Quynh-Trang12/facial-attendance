@@ -1,0 +1,110 @@
+{
+  "read_on": "2026-11-16",
+  "source": "https://docs.google.com/spreadsheets/d/1GkZogmafVGGMJrRnzRzTURIFnva_MPgCsVlqgpB9uR8/edit",
+  "ranges": [
+    "Requirements!A39:S49",
+    "WBS!A41:AM51"
+  ],
+  "read_only": true,
+  "requirements": [
+    {
+      "row": 39,
+      "task": "SYS-05",
+      "title": "SYS-05 — Build the webcam-to-GUI prototype with stubs",
+      "criterion": "• Run webcam capture, face-crop handling and the GUI together using clearly identified stub outputs for unfinished models.\n• Stubs follow the agreed module interfaces so trained models can replace them later.\n• Show the working prototype to the reviewer. Stub output does not satisfy the final model-training or integration requirements.",
+      "existing_owner_evidence": "Implemented webcam capture, automatic Haar detection, manual face selection, and SYS-02-compatible recognition, liveness, and emotion stubs. Verified 77 automated tests and physical webcam scenarios on macOS, alongside prior Windows testing. Stub outputs cannot authorize genuine persistence. Haar limitations are documented. Independent review and final handover remain pending.",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 40,
+      "task": "SYS-05.1",
+      "title": "SYS-05.1 — Define webcam flow and stub interfaces",
+      "criterion": "• Define webcam capture, face-crop flow and stub inputs/outputs for verification, liveness and emotion.\n• Agree which sample outputs will demonstrate the shared interfaces before trained models are ready.",
+      "existing_owner_evidence": "Defined webcam capture, source-frame face bounding boxes, crop validation, request context, and replaceable recognition, liveness, and emotion stub interfaces. Documented four deterministic scenarios and SYS-02-compatible result payloads. Implementation is available at commit 39ac3df. Reviewer confirmation of sample outputs remains pending.",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 41,
+      "task": "SYS-05.2",
+      "title": "SYS-05.2 — Connect the webcam, stub modules and GUI",
+      "criterion": "• Run webcam capture through the stub adapters to the user interface.\n• Show inspectable stub identity/liveness/emotion outputs and clearly distinguish them from trained-model results.",
+      "existing_owner_evidence": "Integrated physical webcam capture, automatic Haar detection, manual face selection, and stub results into the Tkinter GUI. Verified inspectable identity, liveness, and emotion outputs on Windows and macOS. Four scenarios passed manual testing on Mac, with genuine persistence disabled. Automatic detection has documented accuracy limitations.",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 42,
+      "task": "SYS-05.3",
+      "title": "SYS-05.3 — Review the prototype against shared interfaces",
+      "criterion": "• Reviewer runs the prototype and compares the data flow and adapter output fields with SYS-02.\n• Record reproducible connection/interface failures and expected behavior.",
+      "existing_owner_evidence": "",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 43,
+      "task": "SYS-05.4",
+      "title": "SYS-05.4 — Fix camera, face-crop and UI-state issues",
+      "criterion": "• Fix the prototype failures found during review and provide the corrected version.\n• Reviewer checks the affected camera/crop/display flow; if no findings exist, record a passing check without inventing changes.",
+      "existing_owner_evidence": "",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 44,
+      "task": "SYS-05.5",
+      "title": "SYS-05.5 — Retest no-face and camera-error handling",
+      "criterion": "• Reviewer reruns the corrected webcam-to-GUI flow and the cases that previously failed.\n• Confirm the prototype is usable for replacing stubs with models; extra camera/multi-face scenarios are not separate completion requirements.",
+      "existing_owner_evidence": "",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 45,
+      "task": "SYS-05.6",
+      "title": "SYS-05.6 — Run prototype smoke tests on the demo machine",
+      "criterion": "• Run the prototype on the intended demo runtime and verify the camera and all stub interfaces still connect.\n• Check remaining reported minor fixes and document unresolved limitations.",
+      "existing_owner_evidence": "Verified SYS-05 on Windows and macOS (commit 39ac3df). All 77 automated tests passed on Mac. Physical webcam tests passed for four stub scenarios, registration, no-face handling, retry, and camera error/relaunch recovery. Stub outputs remained non-persistent (`can_save=false`). Haar detection showed false positives and missed faces; manual selection remains the fallback. Independent review pending.",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 46,
+      "task": "SYS-05.7",
+      "title": "SYS-05.7 — Freeze prototype code and configuration",
+      "criterion": "• Identify and freeze the reviewed prototype source/configuration version.\n• Record how later integration will locate and replace the stubs; this is an internal prototype version, not the final submission.",
+      "existing_owner_evidence": "Prepared the SYS-05 owner review candidate at commit 39ac3df.\nDocumented the reproducible Python/OpenCV Haar setup, Windows launch commands, automated test results, known limitations and adapter replacement points for UI-03/UI-04 integration.\nThe candidate is ready for independent verification. Final acceptance and release freeze remain subject to Trang's review.",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 47,
+      "task": "SYS-05.8",
+      "title": "SYS-05.8 — Check the prototype release candidate",
+      "criterion": "• Reviewer opens the identified prototype release and runs its documented start command.\n• Verify required files are present and the demonstrated stub flow is reproducible.",
+      "existing_owner_evidence": "",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 48,
+      "task": "SYS-05.9",
+      "title": "SYS-05.9 — Demonstrate the prototype and explain data flow",
+      "criterion": "• Demonstrate the prototype and explain capture, crop, adapter calls and displayed outputs.\n• Answer integration questions and identify which outputs still come from stubs.",
+      "existing_owner_evidence": "",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    },
+    {
+      "row": 49,
+      "task": "SYS-05.10",
+      "title": "SYS-05.10 — Hand over the prototype to another member",
+      "criterion": "• Hand over the runnable prototype and its instructions/version to the integrating members.\n• Provide actual execution/handover evidence so trained models can be connected under UI-03/UI-04.",
+      "existing_owner_evidence": "",
+      "existing_reviewer_evidence": "",
+      "reviewer_confirmed": "FALSE"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "command": "/Users/elvyx/Downloads/fa-sys03-mac/artifacts/sys05-clean-runtime-20261116/bin/python -m unittest discover -s tests -v",
+  "environment": {
+    "PYTHONPATH": "src"
+  },
+  "returncode": 0,
+  "total": 131,
+  "elapsed_s": 0.782,
+  "passed": true,
+  "failed": 0,
+  "skipped": 0,
+  "log": "full-tests-clean-runtime.log",
+  "scope": "Fresh venv with only requirements-sys05-gui.txt; current working source"
+}

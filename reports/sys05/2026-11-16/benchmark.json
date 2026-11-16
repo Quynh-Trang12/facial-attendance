@@ -1,0 +1,26 @@
+{
+  "scope": "Synthetic noise / paced fake camera only. No native Tk, physical webcam or glasses accuracy.",
+  "system": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.17",
+  "opencv": "4.13.0",
+  "source": [
+    1920,
+    1080
+  ],
+  "opencv_threads": 1,
+  "warmup": 2,
+  "runs": 8,
+  "median_ms": {
+    "legacy_preview_prepare": 15.488,
+    "resize_first_prepare": 2.771,
+    "haar_1920": 786.463,
+    "haar_640": 76.148,
+    "yunet_640": 13.15
+  },
+  "synthetic_capture_fps": {
+    "legacy_fixed_wait": 13.78,
+    "current": 26.37
+  },
+  "executed_on": "2026-11-16",
+  "command": "PYTHONPATH=src artifacts/sys05-clean-runtime-20261116/bin/python scripts/benchmark_sys05.py --runs 8"
+}

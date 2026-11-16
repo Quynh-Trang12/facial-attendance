@@ -93,16 +93,26 @@ class Envelope:
 
 def frame_size(frame: "NDArray[uint8]") -> tuple[int, int]:
     shape = getattr(frame, "shape", ())
-    if len(shape) != 3 or shape[2] != 3 or min(shape) < 1 or str(frame.dtype) != "uint8":
+    try:
+        valid = (len(shape) == 3 and all(isinstance(n, Integral) and not isinstance(n, bool)
+                                       and n > 0 for n in shape) and shape[2] == 3
+                 and str(getattr(frame, "dtype", None)) == "uint8")
+    except TypeError:
+        valid = False
+    if not valid:
         raise ValueError("Expected a nonempty uint8 BGR frame with shape H×W×3.")
     height, width, _ = shape
     return width, height
 
 
 def box_in_frame(box: Box, width: int, height: int) -> bool:
-    if len(box) != 4 or not all(
-        isinstance(value, Integral) and not isinstance(value, bool) for value in box
-    ):
+    try:
+        valid = len(box) == 4 and all(
+            isinstance(value, Integral) and not isinstance(value, bool) for value in box
+        )
+    except TypeError:
+        valid = False
+    if not valid:
         return False
     x1, y1, x2, y2 = box
     return 0 <= x1 < x2 <= width and 0 <= y1 < y2 <= height
@@ -126,6 +136,8 @@ class PrototypeController:
 
     def reset(self, action: Action | None = None) -> None:
         if action is not None:
+            if not isinstance(action, str) or action not in {"attendance", "registration"}:
+                raise ValueError("Action must be attendance or registration.")
             self.action = action
         self.attempt_id = uuid4().hex
         self.state = Envelope()
@@ -164,25 +176,31 @@ class PrototypeController:
     def receive(self, completion: Completion) -> bool:
         """Apply a current completion, returning False for a stale or aborted one."""
         state = self.state
-        if completion.context != state.context or state.ui_state in {"spoof", "error"}:
+        if (not isinstance(completion, Completion) or state.context is None
+                or completion.context != state.context or state.ui_state in {"spoof", "error"}):
             return False
         result = completion.result
         if isinstance(result, OperationError):
             self._apply_error(result)
         elif isinstance(result, Liveness):
-            if result.source != "stub" or result.status not in {"live", "spoof", "uncertain"}:
+            if (result.source != "stub" or result.status not in ("live", "spoof", "uncertain")
+                    or not isinstance(result.reason, str) or not result.reason.strip()):
                 self._invalid("liveness")
             elif not _valid_score(result.p_spoof):
                 self._invalid("liveness")
             elif result.status == "spoof":
                 self.state = Envelope(context=state.context, liveness=result, ui_state="spoof")
             else:
-                self.state = replace(state, liveness=result, ui_state=result.status)
+                self.state = replace(state, liveness=result, ui_state=result.status,
+                                     recognition=None if result.status == "uncertain" else state.recognition)
         elif isinstance(result, Recognition):
             if (
                 type(result.accepted) is not bool
                 or (result.score is not None and not _valid_score(result.score, -1.0))
-                or (result.accepted and not (result.person_id and result.name and result.score is not None))
+                or (result.accepted and not (
+                    isinstance(result.person_id, str) and result.person_id.strip()
+                    and isinstance(result.name, str) and result.name.strip() and result.score is not None
+                ))
                 or (not result.accepted and (result.person_id is not None or result.name is not None))
             ):
                 self._invalid("recognition")
@@ -198,6 +216,8 @@ class PrototypeController:
                 self._invalid("emotion")
             else:
                 self.state = replace(state, emotion=result)
+        else:
+            self._invalid("adapters")
         return True
 
     def _invalid(self, module: str) -> None:
@@ -206,6 +226,15 @@ class PrototypeController:
         ))
 
     def _apply_error(self, error: OperationError) -> None:
+        module = error.module if isinstance(error.module, str) and error.module.strip() else "adapters"
+        if (not isinstance(error.code, str) or not error.code.strip()
+                or not isinstance(error.message, str) or not error.message.strip()
+                or type(error.blocks_persistence) is not bool):
+            error = OperationError(module, "invalid_input", "Invalid operational error response.", module != "emotion")
+        else:
+            # Failure severity is controller-owned: emotion is display-only;
+            # camera, recognition and liveness failures always block operation.
+            error = replace(error, module=module, blocks_persistence=module != "emotion")
         state = self.state
         errors = (*state.errors, error)
         if error.blocks_persistence:
@@ -251,8 +280,9 @@ class StubAdapters:
 
 def run_stubs(
     controller: PrototypeController, request: FaceRequest, adapters: StubAdapters
-) -> None:
-    """Dispatch current-capture calls serially. Each adapter receives the source and crop."""
+) -> tuple[Completion, ...]:
+    """Dispatch serially and return applied completions with their original contexts."""
+    applied = []
     for module, adapter in (
         ("liveness", adapters.liveness),
         ("recognition", adapters.recognition),
@@ -268,5 +298,18 @@ def run_stubs(
             result = Completion(request.context, OperationError(
                 module, "inference_error", f"The {module} adapter failed.", module != "emotion"
             ))
+        # A stale response retains its original context and is discarded; it
+        # must never be re-labelled as a prediction for the current request.
+        if isinstance(result, Completion) and result.context != request.context:
+            break
+        expected = {"liveness": Liveness, "recognition": Recognition, "emotion": Emotion}[module]
+        if (not isinstance(result, Completion)
+                or not isinstance(result.result, (expected, OperationError))
+                or (isinstance(result.result, OperationError) and result.result.module != module)):
+            result = Completion(request.context, OperationError(
+                module, "invalid_input", f"Invalid {module} adapter response.", module != "emotion"
+            ))
         if not controller.receive(result):
             break
+        applied.append(result)
+    return tuple(applied)

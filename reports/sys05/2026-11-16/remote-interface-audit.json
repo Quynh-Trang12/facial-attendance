@@ -1,0 +1,129 @@
+{
+  "checked_on": "2026-11-16",
+  "repository": "Quynh-Trang12/facial-attendance",
+  "access": "Read-only GitHub connector; no fetch/merge or remote mutation",
+  "heads": [
+    {
+      "name": "ci/commit-attribution",
+      "sha": "72aafddb8487d5ae0a0e462d714814f7f3f319a7"
+    },
+    {
+      "name": "docs/fac-01-face-data-protocol",
+      "sha": "60f264f6a96ddaa7a5dd7cac92c39cb81980ff2c"
+    },
+    {
+      "name": "docs/liv-01-anti-spoofing-protocol",
+      "sha": "ce6a635f8491a3b0f4fc0cff35bcf755b8b2cdff"
+    },
+    {
+      "name": "docs/liv-02-liveness-gating",
+      "sha": "25eafa26091be2f9dcd6b17aeffb75d801448435"
+    },
+    {
+      "name": "docs/sys-04-experiment-settings",
+      "sha": "4725d1121cbb2fffa08960d58f89a8311012856e"
+    },
+    {
+      "name": "docs/ui-01-3-liveness-gating-review",
+      "sha": "d734778621c81a1a4791a9e9d76cd2d89652ae07"
+    },
+    {
+      "name": "docs/ui-01-embedding-schema",
+      "sha": "521b456a3accc80ca2a31d9e9bebe96694aae12f"
+    },
+    {
+      "name": "fac-01/face-data-protocol-audit",
+      "sha": "7fd99d6645b5bc3e759b856323cb4f750d12402c"
+    },
+    {
+      "name": "fac-02/audit-face-data-build-pair",
+      "sha": "1544f01e0b47899faaf7ed59dc2ff1d6310854cb"
+    },
+    {
+      "name": "fac-03/train-classification-based-face-embeddings",
+      "sha": "61bbf2c39b551b8b4f6bc1446e177997c3b7db0e"
+    },
+    {
+      "name": "fac-04/train-metric-learning-face-embeddings",
+      "sha": "5700e02ce42fbe65a316dc578998b47e996926d2"
+    },
+    {
+      "name": "feat/liv-03-anti-spoofing-audit-loader",
+      "sha": "0a21df351792044938f9eb46aa3d5930bb19d0c8"
+    },
+    {
+      "name": "feature/emotion-eda",
+      "sha": "284c48310e0335ed4b9ce4f641389c44b7c6841c"
+    },
+    {
+      "name": "feature/sys-05-webcam-gui-stubs",
+      "sha": "39ac3dfd3c841dd394f96f1ef43aa37ff46bdcac"
+    },
+    {
+      "name": "feature/ui-01-gallery-base",
+      "sha": "82a74f8c1ec8f8b769b541c3e0527dd28ca85c3e"
+    },
+    {
+      "name": "fix/sys-03-runtime",
+      "sha": "57e7905d96591b11c20c4fca769fcf8658565fbb"
+    },
+    {
+      "name": "main",
+      "sha": "9439aea9813423f0aedd0e9930f10bea24fa184d"
+    },
+    {
+      "name": "review/emo-01-03-vy-20261108",
+      "sha": "9b368af0736d71673598ee46b5babe772d16cbbd"
+    }
+  ],
+  "interfaces": [
+    {
+      "branch": "feature/ui-01-gallery-base",
+      "path": "src/facial_attendance/ui/gallery.py",
+      "blob_sha": "959cc9ad896151c454e25b69813e8f6f5f44dda0",
+      "finding": "schema 0.2; one averaged L2-normalized template; 3–10 accepted samples; storage does not own liveness authorization"
+    },
+    {
+      "branch": "docs/sys-04-experiment-settings",
+      "path": "docs/embedding-schema.md",
+      "blob_sha": "60503c8cb6692f9f6e4c06662d650e66186887e6",
+      "finding": "BGR capture to adapter-owned RGB 64x64/ImageNet; 512D normalized matching; margin and selected threshold remain integration-owned"
+    },
+    {
+      "branch": "fac-03/train-classification-based-face-embeddings",
+      "path": "src/facial_attendance/recognition/embeddings.py",
+      "blob_sha": "1a1ed2aa2af6ac796e777d4d41f70d7a34b9cd65",
+      "finding": "embed_paths emits raw float32 vectors; live adapter must normalize and preserve current frame/crop context; no path-based export in GUI"
+    },
+    {
+      "branch": "fac-04/train-metric-learning-face-embeddings",
+      "path": "src/facial_attendance/recognition/model.py",
+      "blob_sha": "e8da876ec154bb4aa2fd252c27465c12318da864",
+      "finding": "64px/512D shared model and checkpoint metadata exist; build_meta leaves threshold unset for FAC-05; no final deployed checkpoint selected by SYS-05"
+    },
+    {
+      "branch": "docs/liv-02-liveness-gating",
+      "path": "docs/liveness-gating.md",
+      "blob_sha": "0b3de2fec5f53f2fea2625b49d4531178762d53f",
+      "finding": "live/spoof/uncertain, original identifiers, versioned policy and final controller authorization; stub never genuine"
+    },
+    {
+      "branch": "feat/liv-03-anti-spoofing-audit-loader",
+      "path": "src/facial_attendance/liveness/face_crop.py",
+      "blob_sha": "6d17386c1ed13f97de87c59cd53531276e8036c5",
+      "finding": "Dataset annotation/crop helper uses a 224-coordinate protocol; it is not a live webcam adapter or detector"
+    },
+    {
+      "branch": "feature/emotion-eda",
+      "path": "configs/emotion.toml",
+      "blob_sha": "2d2a0f099cc3e71551d9df66f8142a25f859e9c2",
+      "finding": "48px grayscale, divide by 255, no augmentation"
+    },
+    {
+      "branch": "feature/emotion-eda",
+      "path": "docs/emotion-display-and-webcam-tests.md",
+      "blob_sha": "82007938b62beab6054104d646c09ae2983a87d6",
+      "finding": "Explicit Negative/Neutral/Positive mapping; no stale display; checkpoint/trained webcam integration not established by this document"
+    }
+  ]
+}

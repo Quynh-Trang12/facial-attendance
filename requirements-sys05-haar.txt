@@ -1,0 +1,5 @@
+# Isolated SYS-05 OpenCV for Haar/YuNet. Compatibility filename retained.
+# Install with --no-deps --target artifacts/sys05-haar.
+# Uses the existing Python 3.13 project environment's NumPy, Pillow and Tk.
+# Does not replace requirements.txt or its OpenCV 5 wheel.
+opencv-python==4.13.0.92
