@@ -2,7 +2,8 @@
 
 Writes into a new directory: raw embeddings for the official trials and for a run's
 validation pairs (NPZ: paths, raw_embeddings), and top-1 predictions on val_data and
-test_data (id,true,predicted CSV plus face_labels.json).
+test_data (id,true,predicted CSV plus face_labels.json). A checkpoint without an identity
+head (metric learning) has no class predictions, so that step is skipped.
 """
 
 import argparse
@@ -55,10 +56,11 @@ def main(argv=None) -> int:
         summary["val_pairs"] = export_trial_embeddings(
             model, meta, layout, args.val_pairs, args.output / "val-pairs-embeddings.npz", device=device
         )
-    summary["classification"] = [
-        export_predictions(model, meta, layout, split, args.output, device=device)
-        for split in ("val_data", "test_data")
-    ]
+    summary["classification"] = (
+        [export_predictions(model, meta, layout, split, args.output, device=device) for split in ("val_data", "test_data")]
+        if meta.get("num_classes")
+        else None
+    )
     (args.output / "export-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
     return 0
