@@ -56,7 +56,7 @@ python scripts/score_face_pair.py --checkpoint best.pt left.jpg right.jpg
 python scripts/export_face_embeddings.py --download --checkpoint best.pt --val-pairs <run>/val-pairs.txt --output <run>/exports
 ```
 
-The export writes `official-embeddings.npz` and `val-pairs-embeddings.npz`, each with `paths` (the exact strings of the trial file) and `raw_embeddings` (float32, before L2 normalization), and `val_data-predictions.csv` / `test_data-predictions.csv` (`id,true,predicted`) with `face_labels.json`. These match the evaluator's verification and classification inputs, so FAC-05 computes ROC/AUC without loading the model. Scoring applies no threshold.
+The export writes `official-embeddings.npz` and `val-pairs-embeddings.npz`, each with `paths` (the exact strings of the trial file) and `raw_embeddings` (float32, before L2 normalization), and `val_data-predictions.csv` / `test_data-predictions.csv` (`id,true,predicted`) with `face_labels.json`. These match the evaluator's verification and classification inputs, so FAC-05 computes ROC/AUC without loading the model. A checkpoint without an identity head, such as the metric-learning model, gets only the two NPZ files; `export-summary.json` then records `"classification": null`. Scoring applies no threshold.
 
 In code, `load_checkpoint(path)` returns the model in eval mode and its `meta`, and refuses weights whose hash differs from `meta["model_version"]`. `eval_transform(meta["input_size"])` is the matching preprocessing.
 

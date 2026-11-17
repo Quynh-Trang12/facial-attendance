@@ -43,7 +43,7 @@ The comparison measures the training approach, so everything else must match. Va
 
 FAC-05.2 checks before scoring that each export names the expected `model_id` and `model_version`, that both NPZ files list exactly the paths of the trial file, and that the trial-file SHA-256 saved by the evaluator equals `55ecf149…`. A mismatch stops the comparison.
 
-`export_face_embeddings.py` also writes `val_data`/`test_data` predictions, which needs an identity head. The metric model has none, so its export must skip that step. Classification accuracy is reported for FAC-03 only, as SYS-06 already states.
+`export_face_embeddings.py` also writes `val_data`/`test_data` predictions, which needs an identity head. The metric model has none, so its export skips that step and records `"classification": null`; the embedding export itself is unchanged. Classification accuracy is reported for FAC-03 only, as SYS-06 already states.
 
 ## Verification score
 
@@ -82,6 +82,8 @@ Higher means more likely the same person. A trial is accepted as the same person
 2. Score both models on the validation pairs. Record both AUCs, the bootstrap interval, the selected approach and `τ` with its validation false-accept and true-accept rates.
 3. Commit that record before step 4.
 4. Score both models once on the official trials with `--mode official`.
+
+[`scripts/compare_face_approaches.py`](../scripts/compare_face_approaches.py) runs steps 1–2 as `validation` and step 4 as `official`. It runs the evaluator unchanged from its own checkout at commit `2d14220` and refuses to continue if that commit, a trial-file hash, a model ID or an export's path list differs. The `official` step also needs the SHA-256 of the committed `selection.json` and refuses an export that changed after validation. Results are in [FAC-05 evidence](../evidence/FAC-05/README.md).
 
 After step 4 only calculation errors may be fixed (FAC-05.4), and the fix must reproduce the step 2 choices unchanged. Any change of model, measure or `τ` after official scoring is disclosed with the step it changed, and the result is not called independent.
 

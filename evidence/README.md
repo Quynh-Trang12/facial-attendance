@@ -8,6 +8,7 @@ The [Project Tracker](../README.md#project-tracker) is the single source for tas
 | FAC-01 | [Loader evidence and protocol findings](FAC-01/README.md) |
 | FAC-02 | [Face data audit, cleaning rule and P×K sampler](FAC-02/README.md) |
 | FAC-04 | [Triplet-loss face embedding, identity check and two-image demo](FAC-04/README.md) |
+| FAC-05 | [Comparison of both face approaches: ROC/AUC, selection and threshold](FAC-05/README.md) |
 
 Only tasks with supporting files have folders. Subtasks share the parent folder; shared artifacts are linked rather than copied. Other tasks remain indexed in the Project Tracker.
 
