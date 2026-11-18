@@ -1,0 +1,65 @@
+Saved verification evaluation to /content/drive/MyDrive/fac-05-runs/official-20261118T030458Z/official-classification
+Saved verification evaluation to /content/drive/MyDrive/fac-05-runs/official-20261118T030458Z/official-metric
+{
+  "auc": {
+    "classification": {
+      "cosine": 0.9618002152330272,
+      "negative_euclidean": 0.9444729242529428
+    },
+    "metric": {
+      "cosine": 0.9686519031606222,
+      "negative_euclidean": 0.9359456188207604
+    }
+  },
+  "bootstrap": {
+    "cosine": {
+      "statistic": "AUC(metric) - AUC(classification)",
+      "observed": 0.0068516879275950515,
+      "low": 0.004036065996426921,
+      "high": 0.009551366738280644,
+      "level": 0.95,
+      "replicates": 2000,
+      "seed": 42,
+      "redrawn_single_class": 0,
+      "excludes_zero": true
+    },
+    "negative_euclidean": {
+      "statistic": "AUC(metric) - AUC(classification)",
+      "observed": -0.008527305432182386,
+      "low": -0.013764965464402082,
+      "high": -0.0029724592562866167,
+      "level": 0.95,
+      "replicates": 2000,
+      "seed": 42,
+      "redrawn_single_class": 0,
+      "excludes_zero": true
+    }
+  },
+  "decision": {
+    "rule": "higher validation-pair cosine AUC",
+    "selected_approach": "metric",
+    "selected_model_id": "20261114-125242-metric-74a8657-s42",
+    "selected_model_version": "cb38ea47ceff",
+    "measure": "cosine similarity of raw embeddings, accept when score >= threshold",
+    "threshold": 0.4619967254593038,
+    "threshold_rule": "lowest validation cosine with FAR <= 1%",
+    "validation_far": 0.009984235417761429,
+    "validation_tar": 0.8796636889122438,
+    "reject_all": false
+  },
+  "operating_point": {
+    "approach": "metric",
+    "threshold": 0.4619967254593038,
+    "false_accepts": 114,
+    "negatives": 4490,
+    "far": 0.025389755011135856,
+    "true_accepts": 3312,
+    "positives": 4315,
+    "tar": 0.7675550405561993,
+    "roc_point": {
+      "fpr": 0.025389755011135856,
+      "tpr": 0.7675550405561993,
+      "threshold": 0.4620609114207087
+    }
+  }
+}
