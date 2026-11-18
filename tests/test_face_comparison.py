@@ -1,12 +1,17 @@
 """Export checks, paired bootstrap, selection and operating point on generated scores."""
 
-import contextlib
 import importlib.util
+import unittest
+
+# The fixture-only CI job installs Pillow alone; the dependency jobs run these tests.
+if importlib.util.find_spec("numpy") is None:
+    raise unittest.SkipTest("numpy is not installed in this environment")
+
+import contextlib
 import io
 import json
 from pathlib import Path
 import tempfile
-import unittest
 
 import numpy as np
 
