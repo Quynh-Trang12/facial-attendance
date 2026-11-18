@@ -4,7 +4,9 @@ Task requirements, assignments and review records: [Project Tracker](../../READM
 
 ## FAC-05.2 — ROC/AUC, cosine and Euclidean scores
 
-**Status.** Steps 1–2 are done and the selection is committed ([`selection.json`](selection.json), SHA-256 `7255986a…`). Step 3, the official trials, is pending.
+**Result.** The metric-learning model (FAC-04) is selected, scored by cosine similarity with threshold **τ = 0.4620**. On all 8,805 official trials its cosine AUC is **0.9687**, against 0.9618 for the classification model (FAC-03); Euclidean AUC is 0.9359 and 0.9445. At the fixed τ it accepts 76.8 % of same-person trials and 2.5 % of different-person trials.
+
+**Status.** All three steps are done. The selection ([`selection.json`](selection.json), SHA-256 `7255986a…`) was committed in `cddc070` before the official trials were scored, and [`official-summary.json`](official-summary.json) confirms the same selection, exports and threshold.
 
 ### How it is run
 
@@ -45,3 +47,47 @@ Both cosine AUCs equal the values the training runs logged at the selected epoch
 | At `τ` on the validation pairs | False-accept rate 0.998 % (38 of 3,806), true-accept rate 87.97 % (3,348 of 3,806) |
 
 The numbers above were checked again outside the notebook: the AUCs recomputed from the saved pair scores with a rank formula match to six decimals, and the next lower observed score would raise the false-accept rate to 1.03 %, so `τ` is the lowest one that meets the rule. For reference only, the classification model's own threshold by the same rule would be 0.4462, with a true-accept rate of 85.37 %.
+
+### Official trials (step 3)
+
+Colab run of 18 Nov 2026 (session `20261118T030458Z`), same runtime and versions. Comparison code `cddc070`, whose code is unchanged from `190657c` (only evidence was added); evaluator `2d14220`; both clean. Unit tests 137 of 137 passed ([log](logs/20261118T030458Z-unit-tests.log)); the run log is [here](logs/20261118T030458Z-official.log).
+
+Before scoring, the script checked that `selection.json` has the committed SHA-256, that all four NPZ files have the hashes recorded at validation, and that the trial file is `verification_pairs_val.txt` (`55ecf149…`). The evaluator ran in `--mode official`, which requires exactly 8,805 trials and allows no threshold selection. Each model was scored once.
+
+**Scores on the 8,805 official trials** (4,315 same-person, 4,490 different-person):
+
+| Approach | Cosine AUC | Euclidean AUC | ROC |
+| --- | --- | --- | --- |
+| Classification (FAC-03) | 0.9618 | 0.9445 | [plot](official/roc-classification.png) |
+| Metric learning (FAC-04), selected | **0.9687** | 0.9359 | [plot](official/roc-metric.png) |
+
+Paired bootstrap of `AUC(metric) − AUC(classification)`, 2,000 replicates, seed 42, reported only:
+
+| Score | Difference | 95 % interval |
+| --- | --- | --- |
+| Cosine | +0.0069 | [+0.0040, +0.0096] |
+| Euclidean | −0.0085 | [−0.0138, −0.0030] |
+
+Both intervals exclude 0. With cosine, the deployed measure, the metric model ranks the official trials better, as it did on the validation pairs. With raw Euclidean distance the order reverses; the triplet loss trained only the direction of the embeddings, not their length, so this does not show a worse embedding space.
+
+**Operating point of the fixed τ = 0.4620** (metric model, cosine, accept when score ≥ τ):
+
+| Data | False-accept rate | True-accept rate |
+| --- | --- | --- |
+| Validation pairs, where τ was chosen | 0.998 % (38 of 3,806) | 87.97 % (3,348 of 3,806) |
+| Official trials | **2.54 %** (114 of 4,490) | **76.76 %** (3,312 of 4,315) |
+
+The official rates were counted from the pair scores and match the evaluator's ROC point at τ exactly. τ was not changed after the official scoring.
+
+### Checks outside the notebook
+
+- The SHA-256 of every `metrics.json` and `pair_scores.csv` matches the summaries, and every evaluator output records commit `2d14220` with a clean tree.
+- AUCs recomputed from the saved pair scores with a rank formula match the evaluator's to six decimals, for both models, both scores and both data sets.
+- Both models scored the same trials in the same order.
+
+### Limits
+
+- The official false-accept rate at τ is 2.5 times the 1 % target. τ was chosen on validation pairs of training identities, which are easier to separate than the official trials (cosine AUC 0.9911 against 0.9687), so it is too permissive here, as the comparison rules warned. SYS-07.6 checks τ on the webcam.
+- The official trials are not shown to be identity-disjoint from training, so their AUC is not a result on unseen people.
+- Trials share images, so the bootstrap intervals are likely too narrow.
+- `val_data` was used to select the metric model too, so the official trials stay out of every choice.
