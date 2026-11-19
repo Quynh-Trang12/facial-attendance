@@ -42,7 +42,7 @@ The team notebook `fac-03-train-classification.ipynb` runs these on a Colab GPU 
 | `history.json` | Per epoch: learning rate, train loss and top-1, `val_data` top-1 and loss, validation-pair cosine and Euclidean AUC, seconds |
 | `manifest.json` | The SYS-04 traceability fields, the architecture, trainable layers, loss, data hashes (exclusion list, used samples, identity mapping, both pair lists), environment, every session's git commit, the selection and the final accuracy |
 | `last.pt` | Resume state; not deployable |
-| `best.pt` | The deployable checkpoint: `state_dict` and `meta` with the embedding-schema keys plus `num_classes`. `threshold` is empty until FAC-05 sets it. |
+| `best.pt` | The deployable checkpoint: `state_dict` and `meta` with the embedding-schema keys plus `num_classes`. `threshold` stays empty; FAC-05 writes it into a copy, `deploy.pt` (see [Deployed model](#deployed-model)). |
 
 `run_id` is `YYYYMMDD-HHMMSS-classification-<commit>-s<seed>` in UTC, and it is also the checkpoint's `model_id`. `model_version` is the first 12 hex digits of SHA-256 over every `state_dict` tensor's name, dtype and bytes, in name order. Checkpoints stay out of git.
 
@@ -59,6 +59,34 @@ python scripts/export_face_embeddings.py --download --checkpoint best.pt --val-p
 The export writes `official-embeddings.npz` and `val-pairs-embeddings.npz`, each with `paths` (the exact strings of the trial file) and `raw_embeddings` (float32, before L2 normalization), and `val_data-predictions.csv` / `test_data-predictions.csv` (`id,true,predicted`) with `face_labels.json`. These match the evaluator's verification and classification inputs, so FAC-05 computes ROC/AUC without loading the model. A checkpoint without an identity head, such as the metric-learning model, gets only the two NPZ files; `export-summary.json` then records `"classification": null`. Scoring applies no threshold.
 
 In code, `load_checkpoint(path)` returns the model in eval mode and its `meta`, and refuses weights whose hash differs from `meta["model_version"]`. `eval_transform(meta["input_size"])` is the matching preprocessing.
+
+## Deployed model
+
+The face comparison (FAC-05) selected the metric-learning model and its cosine threshold on the validation pairs. The GUI uses this one checkpoint; why it was chosen and how well it does are in the [FAC-05 evidence](../evidence/FAC-05/README.md#fac-055--selected-model-and-limitations).
+
+| Item | Value |
+| --- | --- |
+| Approach | Metric learning (triplet loss), FAC-04 |
+| `model_id` | `20261114-125242-metric-74a8657-s42` |
+| `model_version` | `cb38ea47ceff` |
+| File | `MyDrive/fac-04-runs/20261114-125242-metric-74a8657-s42/deploy.pt`: `best.pt` with the threshold written into `meta`, same weights |
+| Input | One RGB face crop, `eval_transform(64)`: resize to 64×64, scale to [0, 1], ImageNet mean and std |
+| Embedding | `model.embed(x)`, `float32[512]`. The metric model's raw vectors are short (median pair distance 0.21), so L2-normalize before storing or comparing, as the embedding schema does. |
+| Score | Cosine similarity, `s = ê · ĝ` on L2-normalized vectors; higher means more likely the same person |
+| Decision | Same person when `s ≥ τ`, otherwise unknown |
+| `τ` | `meta["threshold"]` = **0.4619967254593038**: the lowest validation-pair cosine with a false-accept rate of at most 1 % |
+| `meta["threshold_source"]` | The rule, the validation-pair hash and the SHA-256 of `selection.json` |
+
+Make `deploy.pt` from the selected `best.pt`; the source file is not changed:
+
+```bash
+python scripts/set_face_threshold.py --checkpoint <run>/best.pt \
+    --selection evidence/FAC-05/selection.json --output <run>/deploy.pt
+```
+
+It refuses a checkpoint whose `model_id`, `model_version` or approach differs from the selection, and checks that the written file reloads with the same `model_version` and `τ`. Because `model_version` hashes only the weights, a gallery built with `best.pt` stays valid with `deploy.pt`.
+
+Read `τ` from the loaded checkpoint's `meta`, never from a constant in GUI code, and refuse a gallery whose `model_id` or `model_version` differs from it. Another checkpoint needs its own `τ` from the same rule and a new enrollment.
 
 ## Limits
 
