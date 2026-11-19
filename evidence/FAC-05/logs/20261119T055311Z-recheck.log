@@ -1,0 +1,40 @@
+# commit b548aae, clean=no, python 3.13.0, numpy 2.2.6
+# inputs: Drive MyDrive/fac-05-runs/validation-20261118T025253Z (pair_scores.csv, metrics.json) and official-20261118T030458Z, downloaded
+PASS  validation classification: output files are the recorded ones
+PASS  validation classification: evaluator commit, mode, trial file and model  2d14220, validation, 20261113-160440-classification-78122af-s42
+PASS  validation classification: trial counts  7612 trials, 3806 same, 3806 different
+PASS  validation classification: score direction (cosine in [-1, 1], AUC input is minus the distance)
+PASS  validation classification: cosine AUC  rank formula 0.988423, recorded 0.988423
+PASS  validation classification: negative_euclidean AUC  rank formula 0.983625, recorded 0.983625
+PASS  validation metric: output files are the recorded ones
+PASS  validation metric: evaluator commit, mode, trial file and model  2d14220, validation, 20261114-125242-metric-74a8657-s42
+PASS  validation metric: trial counts  7612 trials, 3806 same, 3806 different
+PASS  validation metric: score direction (cosine in [-1, 1], AUC input is minus the distance)
+PASS  validation metric: cosine AUC  rank formula 0.991114, recorded 0.991114
+PASS  validation metric: negative_euclidean AUC  rank formula 0.956053, recorded 0.956053
+PASS  validation: both approaches scored the same trials in the same order
+PASS  validation: paired bootstrap of the cosine AUC difference  +0.0027 [+0.0014, +0.0040]
+PASS  validation: selected approach has the higher cosine AUC  metric
+PASS  validation classification: threshold is the lowest cosine with FAR <= 1%  tau 0.446218, FAR 0.9984% (38 of 3806), TAR 85.3652%, next lower FAR 1.0247%
+PASS  validation metric: threshold is the lowest cosine with FAR <= 1%  tau 0.461997, FAR 0.9984% (38 of 3806), TAR 87.9664%, next lower FAR 1.0247%
+PASS  official: used the committed selection, decision unchanged  7255986a1cd6
+PASS  official: selection.json was committed before official scoring  in cddc070, validation 2026-11-18T02:54:44+00:00, official 2026-11-18T03:06:08+00:00
+PASS  official classification: output files are the recorded ones
+PASS  official classification: evaluator commit, mode, trial file and model  2d14220, official, 20261113-160440-classification-78122af-s42
+PASS  official classification: trial counts  8805 trials, 4315 same, 4490 different
+PASS  official classification: score direction (cosine in [-1, 1], AUC input is minus the distance)
+PASS  official classification: cosine AUC  rank formula 0.961800, recorded 0.961800
+PASS  official classification: negative_euclidean AUC  rank formula 0.944473, recorded 0.944473
+PASS  official metric: output files are the recorded ones
+PASS  official metric: evaluator commit, mode, trial file and model  2d14220, official, 20261114-125242-metric-74a8657-s42
+PASS  official metric: trial counts  8805 trials, 4315 same, 4490 different
+PASS  official metric: score direction (cosine in [-1, 1], AUC input is minus the distance)
+PASS  official metric: cosine AUC  rank formula 0.968652, recorded 0.968652
+PASS  official metric: negative_euclidean AUC  rank formula 0.935946, recorded 0.935946
+PASS  official: both approaches scored the same trials in the same order
+PASS  official: paired bootstrap of the cosine AUC difference  +0.0069 [+0.0040, +0.0096]
+PASS  official: paired bootstrap of the negative_euclidean AUC difference  -0.0085 [-0.0138, -0.0030]
+PASS  official: operating point of the fixed threshold  FAR 2.5390% (114 of 4490), TAR 76.7555% (3312 of 4315)
+
+35 passed, 0 failed, 0 not checked
+exit 0
