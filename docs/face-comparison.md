@@ -103,6 +103,31 @@ If the interval excludes 0, the report may say one approach scored higher on the
 
 Trials share images: the 8,805 official trials use 9,355 distinct images, and the 7,612 validation pairs use 7,777. Resampling trials treats them as independent, so the interval is likely too narrow. The report states this limit.
 
+## Checking the recorded results
+
+[`scripts/check_face_comparison.py`](../scripts/check_face_comparison.py) rechecks `selection.json` and `official-summary.json` from the evaluator's saved outputs alone, so a reviewer needs neither the models nor the evaluator. For each step it checks:
+
+| Check | How |
+| --- | --- |
+| The outputs are the recorded ones | SHA-256 of every `pair_scores.csv` and `metrics.json` equals the summary |
+| Right evaluator, mode, trial file and model | `metrics.json` names commit `2d14220` with a clean tree, the step's mode and trial hash, and the expected `run_id` and `model_version` |
+| Score direction | Cosine lies in [−1, 1]; the Euclidean AUC input is exactly minus the distance; every AUC is above 0.5 |
+| AUC | Recomputed with the rank (Mann-Whitney) formula, ties counted one half, against both the evaluator and the summary |
+| Same trials | Both approaches scored the same trials in the same order |
+| Bootstrap | The paired bootstrap reproduces with the rank-formula AUC |
+| Selection | The selected approach has the higher validation cosine AUC |
+| Threshold | `τ` is the lowest observed validation cosine with a false-accept rate of at most 1 %, ties moving together, and the next lower score exceeds 1 % |
+| Order | `official-summary.json` used the committed `selection.json`, which is in the commit the official run names, with an unchanged decision |
+| Operating point | The counts at `τ` on the official trials, and the evaluator's ROC point there |
+
+```bash
+python scripts/check_face_comparison.py --selection evidence/FAC-05/selection.json \
+    --validation-dir <validation run> --official-summary evidence/FAC-05/official-summary.json \
+    --official-dir <official run> --output checks.json
+```
+
+Each check prints PASS or FAIL and the exit code is 1 on any failure. The run directories are the ones under `MyDrive/fac-05-runs/` that the summaries name.
+
 ## What the report must disclose
 
 The disclosures in SYS-04 and SYS-06 apply unchanged. For this comparison they mean:

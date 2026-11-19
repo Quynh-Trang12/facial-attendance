@@ -6,7 +6,7 @@ Task requirements, assignments and review records: [Project Tracker](../../READM
 
 **Result.** The metric-learning model (FAC-04) is selected, scored by cosine similarity with threshold **τ = 0.4620**. On all 8,805 official trials its cosine AUC is **0.9687**, against 0.9618 for the classification model (FAC-03); Euclidean AUC is 0.9359 and 0.9445. At the fixed τ it accepts 76.8 % of same-person trials and 2.5 % of different-person trials.
 
-**Status.** All three steps are done. The selection ([`selection.json`](selection.json), SHA-256 `7255986a…`) was committed in `cddc070` before the official trials were scored, and [`official-summary.json`](official-summary.json) confirms the same selection, exports and threshold.
+**Status.** All three steps are done; FAC-05.3 to FAC-05.5 below recheck and record them. The selection ([`selection.json`](selection.json), SHA-256 `7255986a…`) was committed in `cddc070` before the official trials were scored, and [`official-summary.json`](official-summary.json) confirms the same selection, exports and threshold.
 
 ### How it is run
 
@@ -91,3 +91,52 @@ The official rates were counted from the pair scores and match the evaluator's R
 - The official trials are not shown to be identity-disjoint from training, so their AUC is not a result on unseen people.
 - Trials share images, so the bootstrap intervals are likely too narrow.
 - `val_data` was used to select the metric model too, so the official trials stay out of every choice.
+
+## FAC-05.3 — Recheck of the rankings and the threshold
+
+Every recorded number was recomputed from the evaluator's saved outputs with [`check_face_comparison.py`](../../scripts/check_face_comparison.py), without the models or the evaluator; the checks are listed in [face comparison](../../docs/face-comparison.md#checking-the-recorded-results).
+
+| Step | Inputs | Result |
+| --- | --- | --- |
+| Validation | `MyDrive/fac-05-runs/validation-20261118T025253Z/` | **17 of 17 pass**: hashes, evaluator and model identity, AUCs, bootstrap, the selected approach, and `τ` for both models (the next lower score gives a false-accept rate of 1.02 %) |
+| Official | `MyDrive/fac-05-runs/official-20261118T030458Z/` | **18 of 18 pass**; `selection.json` is in `cddc070`, the commit the official run names, and the decision is unchanged |
+
+Run of 19 Nov 2026 on a Mac, Python 3.13.0, numpy 2.2.6, check script at `b548aae` (the only uncommitted change was this README): [log](logs/20261119T055311Z-recheck.log), [all 35 checks](recheck/checks.json).
+
+Points a reviewer may ask about; none is a calculation error:
+
+- The official operating point is read from the ROC point with threshold 0.46206, not 0.46200. That point is the lowest official score at or above `τ`, so it accepts exactly the same trials; `τ` itself is unchanged.
+- The metric model's raw embeddings are short: the median official-pair Euclidean distance is 0.21, against 69.3 for the classification model. The triplet loss trained only the direction, so raw Euclidean distance ranks pairs worse for this model, while cosine does not depend on the length. This is why the Euclidean ranking of the two models reverses.
+
+## FAC-05.4 — Corrections
+
+The recheck found no calculation error, so no result was regenerated and `selection.json`, `official-summary.json` and the ROC plots are unchanged. The reviewer verifies the comparison or records that it passed without changes.
+
+## FAC-05.5 — Selected model and limitations
+
+**Selection.** The metric-learning model `20261114-125242-metric-74a8657-s42` (`model_version` `cb38ea47ceff`), scored by cosine similarity of L2-normalized embeddings, accepting the same person when the score is at least **τ = 0.4620**. The checkpoint, preprocessing and decision rule for the GUI are in [face models](../../docs/face-models.md#deployed-model).
+
+**Reasons, from the recorded results.**
+
+- It has the higher validation-pair cosine AUC, the rule fixed before scoring: 0.9911 against 0.9884, paired bootstrap difference +0.0027 [+0.0014, +0.0040].
+- The official trials, scored once after the selection was committed, rank the models the same way: cosine AUC 0.9687 against 0.9618, difference +0.0069 [+0.0040, +0.0096].
+- Cosine is the geometry the triplet loss trains and the standard measure for softmax-trained face features, and it ignores the vector length, which the metric model never learned. Its cosine AUC is higher than its Euclidean AUC on both data sets.
+- `τ` follows the SYS-06 rule on the validation pairs: false-accept rate 0.998 %, true-accept rate 87.97 %.
+
+**Deployable checkpoint.** `deploy.pt` was written from the selected `best.pt` with [`set_face_threshold.py`](../../scripts/set_face_threshold.py) ([log](logs/20261119T055311Z-set-threshold.log)) and stored beside it in `MyDrive/fac-04-runs/20261114-125242-metric-74a8657-s42/`.
+
+| File | SHA-256 | `meta` |
+| --- | --- | --- |
+| `best.pt` (source, unchanged) | `bc450283…dcbc4f` | `threshold` empty |
+| `deploy.pt` | `76f12338…08145b` | `threshold` 0.4619967254593038, `threshold_source` naming the rule, the validation-pair hash and `selection.json` |
+
+Both files reload with `model_version` `cb38ea47ceff` and give identical embeddings; only the two threshold fields differ.
+
+**Limitations.**
+
+- **Too permissive on harder data.** On the official trials `τ` accepts 2.54 % of different-person pairs, 2.5 times the 1 % target, and 76.8 % of same-person pairs. `τ` was not tuned on the official trials, because they would then no longer be an evaluation. SYS-07.6 checks `τ` on the webcam; if it must be raised, the new value comes from a stated rule on non-evaluation data and is disclosed.
+- **One-to-many matching multiplies false accepts.** The GUI compares a face with every enrolled person. If the comparisons were independent, an unknown person would match someone with probability about `1 − (1 − FAR)^N`: about 10 % for 4 enrolled people and 23 % for 10 at the official rate, or 4 % and 10 % at 1 %. The duplicate guard at enrollment uses the same `τ`.
+- **Pairs, not templates.** `τ` was chosen on single-image pairs; the GUI compares a live frame with an averaged template of several frames, whose score distribution was not measured.
+- **Domain shift.** Both models saw only 64×64 dataset crops. Webcam crops differ in detector, alignment, lighting and camera.
+- **Identities and dependence.** The validation pairs contain training identities and the official trials are not shown to be identity-disjoint, so neither AUC describes unseen people. Trials share images, so the bootstrap intervals are likely too narrow.
+- **One run per approach.** Each approach was trained once, with seed 42. The bootstrap covers trial sampling only, not run-to-run variation, and the AUC difference is small (0.7 points on the official trials), so the report says the metric model scored higher here, not that metric learning is better in general.

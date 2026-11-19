@@ -1,0 +1,12 @@
+# commit b548aae, python 3.13.0, torch 2.13.0
+# source: MyDrive/fac-04-runs/20261114-125242-metric-74a8657-s42/best.pt, sha256 bc4502836f306c886323c444f11d6ddd7fe02515ba40a467d22f486fbfdcbc4f
+{
+  "output": "../fac-05-inputs/deploy.pt",
+  "sha256": "76f123382f8bf4812b0c3db4cf69e0c31aaf1d1f82bec193bc610bd7ba08145b",
+  "model_id": "20261114-125242-metric-74a8657-s42",
+  "model_version": "cb38ea47ceff",
+  "approach": "metric",
+  "threshold": 0.4619967254593038,
+  "threshold_source": "FAC-05 selection.json sha256 7255986a1cd6d059aa9fee70fe7d0a83e8bd5c889a64ce745ac2e42b37fe9e8e: lowest validation cosine with FAR <= 1% on validation pairs 772e99836026 (FAR 0.0100, TAR 0.8797); accept when cosine >= threshold"
+}
+exit 0

@@ -1,4 +1,4 @@
-"""Export checks, paired bootstrap, selection and operating point on generated scores."""
+"""Export checks, paired bootstrap, selection, operating point and the recheck on generated scores."""
 
 import importlib.util
 import unittest
@@ -140,6 +140,155 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(roc_point_at(roc, 0.7)["tpr"], 0.4)
         self.assertEqual(roc_point_at(roc, 0.6)["tpr"], 0.8)
         self.assertEqual(roc_point_at(roc, 0.95)["tpr"], 0.0)
+
+
+def load_script(name):
+    script = Path(__file__).resolve().parents[1] / f"scripts/{name}.py"
+    spec = importlib.util.spec_from_file_location(f"{name}_for_test", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def brute_threshold(labels, scores, target=0.01):
+    """Lowest observed score whose FAR at score >= it is at most the target, by counting."""
+    negatives = [s for s, y in zip(scores, labels) if y == 0]
+    for score in sorted(set(scores)):
+        if sum(n >= score for n in negatives) / len(negatives) <= target:
+            return score
+    return None
+
+
+class RecheckScriptTests(unittest.TestCase):
+    """The recheck passes on consistent records and names the check that a fault breaks."""
+
+    def setUp(self):
+        from facial_attendance.recognition.comparison import (
+            EXPECTED_MODELS, OFFICIAL_TRIALS_SHA256, VAL_PAIRS_SHA256, file_sha256)
+
+        self.check = load_script("check_face_comparison")
+        self.models, self.sha = EXPECTED_MODELS, file_sha256
+        self.trials = {"validation": VAL_PAIRS_SHA256, "official": OFFICIAL_TRIALS_SHA256}
+        directory = tempfile.TemporaryDirectory(prefix="face-recheck-fixture-")
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        rng = np.random.default_rng(1)
+        labels = np.repeat([1, 0], 200)
+        self.scores = {}
+        for step in ("validation", "official"):
+            keys = [(f"{step}/{i}a.jpg", f"{step}/{i}b.jpg") for i in range(len(labels))]
+            for approach, gap in (("classification", 1.2), ("metric", 1.8)):
+                cosine = np.tanh((labels * gap + rng.normal(0, 1, len(labels))) / 3)
+                distance = np.abs(1.5 - labels * gap * 0.5 + rng.normal(0, 0.5, len(labels)))
+                self.scores[step, approach] = (keys, labels, cosine, distance)
+        self.write_records()
+
+    def write_run(self, step, approach):
+        keys, labels, cosine, distance = self.scores[step, approach]
+        folder = self.root / step / f"{step}-{approach}"
+        folder.mkdir(parents=True, exist_ok=True)
+        rows = ["left,right,label,cosine,euclidean_distance,negative_euclidean"]
+        rows += [f"{l},{r},{y},{c!r},{d!r},{-d!r}" for (l, r), y, c, d in
+                 zip(keys, labels.tolist(), cosine.tolist(), distance.tolist())]
+        (folder / "pair_scores.csv").write_text("\n".join(rows) + "\n")
+        roc = [{"fpr": 0.0, "tpr": 0.0, "threshold": None}]
+        for t in sorted(set(cosine.tolist()), reverse=True):
+            point = operating_point(labels, cosine, t)
+            roc.append({"fpr": point["far"], "tpr": point["tar"], "threshold": t})
+        auc = {"cosine": rank_auc(labels, cosine), "negative_euclidean": rank_auc(labels, -distance)}
+        model = self.models[approach]
+        metrics = {"mode": step, "run_id": model["model_id"], "checkpoint_id": model["model_version"],
+                   "git_commit": self.check.EVALUATOR_COMMIT, "git_tracked_dirty": False,
+                   "inputs": {"trials": {"sha256": self.trials[step]}},
+                   "metrics": {"cosine": {"auc": auc["cosine"], "roc": roc},
+                               "negative_euclidean": {"auc": auc["negative_euclidean"]}}}
+        (folder / "metrics.json").write_text(json.dumps(metrics))
+        return {"auc": auc, "count": len(labels), "positive_count": int(labels.sum()),
+                "negative_count": int((labels == 0).sum()), "output": folder.name,
+                "metrics_sha256": self.sha(folder / "metrics.json"),
+                "pair_scores_sha256": self.sha(folder / "pair_scores.csv")}
+
+    def bootstrap(self, step, name):
+        labels = self.scores[step, "classification"][1]
+        column = {"cosine": lambda s: s[2], "negative_euclidean": lambda s: -s[3]}[name]
+        first, second = (column(self.scores[step, a]) for a in ("classification", "metric"))
+        return paired_bootstrap(labels, first, second, rank_auc)
+
+    def write_records(self, threshold_shift=0):
+        validation = {}
+        for approach in ("classification", "metric"):
+            validation[approach] = self.write_run("validation", approach)
+            _, labels, cosine, _ = self.scores["validation", approach]
+            tau = brute_threshold(labels.tolist(), cosine.tolist())
+            point = operating_point(labels, cosine, tau)
+            validation[approach]["threshold_selection"] = {"threshold": tau, "far": point["far"], "tar": point["tar"]}
+        chosen = validation["metric"]["threshold_selection"]
+        candidates = sorted(set(self.scores["validation", "metric"][2].tolist()))
+        tau = candidates[candidates.index(chosen["threshold"]) + threshold_shift]
+        self.selection = {
+            "created_utc": "2026-01-01T00:00:00+00:00", "validation": validation,
+            "bootstrap": {"cosine": self.bootstrap("validation", "cosine")},
+            "decision": {"selected_approach": "metric", "selected_model_id": self.models["metric"]["model_id"],
+                         "selected_model_version": self.models["metric"]["model_version"], "threshold": tau,
+                         "validation_far": chosen["far"], "validation_tar": chosen["tar"], "reject_all": False}}
+        (self.root / "selection.json").write_text(json.dumps(self.selection))
+        official = {a: self.write_run("official", a) for a in ("classification", "metric")}
+        _, labels, cosine, _ = self.scores["official", "metric"]
+        point = operating_point(labels, cosine, tau)
+        summary = {"created_utc": "2026-01-02T00:00:00+00:00", "comparison_code": {"commit": "0" * 40},
+                   "selection_sha256": self.sha(self.root / "selection.json"),
+                   "decision_unchanged": self.selection["decision"], "official": official,
+                   "bootstrap": {n: self.bootstrap("official", n) for n in ("cosine", "negative_euclidean")},
+                   "operating_point": {"approach": "metric", **point}}
+        (self.root / "official-summary.json").write_text(json.dumps(summary))
+
+    def run_check(self):
+        report = self.root / "report.json"
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = self.check.main(["--selection", str(self.root / "selection.json"),
+                                    "--validation-dir", str(self.root / "validation"),
+                                    "--official-summary", str(self.root / "official-summary.json"),
+                                    "--official-dir", str(self.root / "official"), "--output", str(report)])
+        checks = json.loads(report.read_text())["checks"]
+        return code, {c["check"] for c in checks if c["ok"] is False}, checks
+
+    def test_rank_auc_matches_pairwise_count_with_ties(self):
+        labels = np.array([1, 1, 0, 0, 1, 0])
+        scores = np.array([0.9, 0.5, 0.5, 0.1, 0.5, 0.7])
+        self.assertAlmostEqual(self.check.rank_auc(labels, scores), rank_auc(labels, scores))
+
+    def test_far_threshold_moves_tied_scores_together(self):
+        labels = [0] * 99 + [0, 1, 1]
+        scores = [0.1] * 98 + [0.8, 0.8, 0.8, 0.9]
+        rule = self.check.far_threshold(labels, scores)
+        self.assertEqual(rule["threshold"], 0.9)
+        self.assertAlmostEqual(rule["lower_far"], 2 / 100)
+
+    def test_consistent_records_pass(self):
+        code, failed, checks = self.run_check()
+        self.assertEqual((code, failed), (0, set()))
+        self.assertEqual(sum(c["ok"] is None for c in checks), 1)  # the commit order needs the real history
+
+    def test_a_threshold_above_the_rule_fails(self):
+        self.write_records(threshold_shift=1)
+        code, failed, _ = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("validation metric: threshold is the lowest cosine with FAR <= 1%", failed)
+
+    def test_an_edited_score_file_fails_its_hash(self):
+        scores = self.root / "official" / "official-classification" / "pair_scores.csv"
+        scores.write_text(scores.read_text().replace(",1,", ",0,", 1))
+        code, failed, _ = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("official classification: output files are the recorded ones", failed)
+
+    def test_a_distance_passed_without_negation_fails(self):
+        keys, labels, cosine, distance = self.scores["official", "metric"]
+        self.scores["official", "metric"] = (keys, labels, cosine, -distance)
+        self.write_records()
+        code, failed, _ = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("official metric: score direction (cosine in [-1, 1], AUC input is minus the distance)", failed)
 
 
 @unittest.skipUnless(importlib.util.find_spec("torch"), "torch is not installed in this environment")
