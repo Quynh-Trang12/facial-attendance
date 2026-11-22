@@ -1,0 +1,14 @@
+# Quality-gated multi-frame check-in (recognition/quality.py, recognition/probe_fusion.py).
+# Off by default: the group's single-frame attendance rule is unchanged unless enabled.
+[check_in]
+enabled = false
+# Fuse up to k good frames; decide early once k are kept.
+k = 3
+# At the end of the window, decide with at least this many good frames, else ask to retry.
+min_frames = 2
+# Seconds from the first frame of an attempt.
+window_s = 2.0
+
+# [check_in.limits] is added after calibration: offline percentiles on the validation
+# images, then webcam frames. Each value records its source. Enabling the check-in
+# without limits is refused.
