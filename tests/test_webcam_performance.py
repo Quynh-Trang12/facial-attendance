@@ -188,7 +188,7 @@ class SchedulingTests(unittest.TestCase):
             self.packet(sequence)
             app._tick()
             self.assertFalse(app.detector.busy)
-        self.now = 10.31
+        self.now = 10 + app.ANALYSIS_INTERVAL + 0.01
         newest = self.packet(20)
         app._tick()
         self.assertEqual(app.detector.job, ((1, 20), newest.frame))
@@ -231,7 +231,7 @@ class SchedulingTests(unittest.TestCase):
     def test_processing_outline_is_unconfirmed_and_model_results_are_cleared(self):
         self.run_one_face()
         app = self.app
-        self.now += .31
+        self.now += app.ANALYSIS_INTERVAL + 0.01
         self.packet(2)
         app._tick()
         self.assertIsNone(app.controller.state.recognition)

@@ -1,6 +1,6 @@
 """Optional, aggregate-only diagnostics. No pixels or identity data are logged."""
 
-from collections import defaultdict
+from collections import defaultdict, deque
 import json
 import sys
 from threading import Lock
@@ -16,6 +16,7 @@ class Diagnostics:
         self._started = clock()
         self._counts = defaultdict(int)
         self._timings = {}
+        self._samples = defaultdict(lambda: deque(maxlen=256))
 
     def count(self, name, amount=1):
         if self.enabled:
@@ -27,8 +28,9 @@ class Diagnostics:
             with self._lock:
                 count, total, maximum = self._timings.get(name, (0, 0.0, 0.0))
                 self._timings[name] = count + 1, total + seconds, max(maximum, seconds)
+                self._samples[name].append(seconds)
 
-    def snapshot(self, *, force=False):
+    def snapshot(self, *, force=False, reset=True):
         if not self.enabled:
             return None
         with self._lock:
@@ -47,11 +49,21 @@ class Diagnostics:
                            "max": round(maximum * 1000, 3), "n": count}
                     for name, (count, total, maximum) in self._timings.items()
                 },
+                "recent_p95_ms": {
+                    name: round(sorted(values)[min(len(values)-1, int(len(values)*.95))]*1000, 3)
+                    for name, values in self._samples.items() if values
+                },
             }
-            self._started = now
-            self._counts.clear()
-            self._timings.clear()
+            if reset:
+                self._started = now
+                self._counts.clear()
+                self._timings.clear()
+                self._samples.clear()
             return result
+
+    def peek(self):
+        """Read measured counters without consuming the periodic log window."""
+        return self.snapshot(force=True, reset=False)
 
     def report(self, *, force=False):
         result = self.snapshot(force=force)

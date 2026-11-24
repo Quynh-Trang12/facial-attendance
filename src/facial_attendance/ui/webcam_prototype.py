@@ -3,15 +3,17 @@
 from dataclasses import dataclass, field, replace
 from math import isfinite
 from numbers import Integral
+import re
 from typing import TYPE_CHECKING, Literal
 from uuid import uuid4
+
+from ..emotion.model_contracts import LEGACY_LABELS as EMOTION_LABELS, label_order
 
 if TYPE_CHECKING:
     from numpy import uint8
     from numpy.typing import NDArray
 
 CONTRACT_VERSION = "sys02-v1"
-EMOTION_LABELS = ("Negative", "Neutral", "Positive")
 SCENARIOS = ("Live match", "Live unknown", "Spoof", "Uncertain")
 Action = Literal["attendance", "registration"]
 Box = tuple[int, int, int, int]
@@ -46,6 +48,9 @@ class Recognition:
     accepted: bool | None
     model_id: str | None = None
     model_version: str | None = None
+    source: Literal["stub", "model"] = "stub"
+    checkpoint_sha256: str | None = None
+    preprocessing_version: str | None = None
 
 
 @dataclass(frozen=True)
@@ -64,6 +69,12 @@ class Emotion:
     class_id: int
     label: str
     confidence: float | None = None
+    source: Literal["stub", "model"] = "stub"
+    model_id: str | None = None
+    model_version: str | None = None
+    checkpoint_sha256: str | None = None
+    preprocessing_version: str | None = None
+    selected_epoch: int | None = None
 
 
 @dataclass(frozen=True)
@@ -196,6 +207,12 @@ class PrototypeController:
         elif isinstance(result, Recognition):
             if (
                 type(result.accepted) is not bool
+                or result.source not in ("stub", "model")
+                or (result.source == "model" and not (
+                    isinstance(result.model_id, str) and result.model_id.strip()
+                    and isinstance(result.model_version, str) and re.fullmatch(r"[0-9a-f]{12}", result.model_version)
+                    and isinstance(result.checkpoint_sha256, str) and re.fullmatch(r"[0-9a-f]{64}", result.checkpoint_sha256)
+                    and isinstance(result.preprocessing_version, str) and result.preprocessing_version.strip()))
                 or (result.score is not None and not _valid_score(result.score, -1.0))
                 or (result.accepted and not (
                     isinstance(result.person_id, str) and result.person_id.strip()
@@ -207,11 +224,25 @@ class PrototypeController:
             else:
                 self.state = replace(state, recognition=result)
         elif isinstance(result, Emotion):
+            labels = label_order(result.source, result.model_id, result.checkpoint_sha256)
+            model_metadata_valid = (
+                isinstance(result.model_id, str) and bool(result.model_id.strip())
+                and isinstance(result.model_version, str) and re.fullmatch(r"[0-9a-f]{64}", result.model_version)
+                and isinstance(result.checkpoint_sha256, str) and re.fullmatch(r"[0-9a-f]{64}", result.checkpoint_sha256)
+                and isinstance(result.preprocessing_version, str) and bool(result.preprocessing_version.strip())
+                and type(result.selected_epoch) is int and result.selected_epoch > 0
+                and _valid_score(result.confidence)
+            )
             if (
                 type(result.class_id) is not int
-                or not 0 <= result.class_id < len(EMOTION_LABELS)
-                or result.label != EMOTION_LABELS[result.class_id]
+                or not 0 <= result.class_id < len(labels)
+                or result.label != labels[result.class_id]
                 or (result.confidence is not None and not _valid_score(result.confidence))
+                or result.source not in ("stub", "model")
+                or (result.source == "model" and not model_metadata_valid)
+                or (result.source == "stub" and any(value is not None for value in (
+                    result.model_id, result.model_version, result.checkpoint_sha256,
+                    result.preprocessing_version, result.selected_epoch)))
             ):
                 self._invalid("emotion")
             else:
@@ -279,7 +310,8 @@ class StubAdapters:
 
 
 def run_stubs(
-    controller: PrototypeController, request: FaceRequest, adapters: StubAdapters
+    controller: PrototypeController, request: FaceRequest, adapters: StubAdapters, *,
+    include_emotion: bool = True, unverified_preview: bool = False,
 ) -> tuple[Completion, ...]:
     """Dispatch serially and return applied completions with their original contexts."""
     applied = []
@@ -290,7 +322,11 @@ def run_stubs(
     ):
         if controller.state.context != request.context or controller.state.ui_state in {"spoof", "error"}:
             break
-        if module == "recognition" and controller.state.ui_state != "live":
+        if module == "liveness" and unverified_preview:
+            continue
+        if module == "emotion" and not include_emotion:
+            continue
+        if module == "recognition" and not unverified_preview and controller.state.ui_state != "live":
             continue
         try:
             result = adapter(request)

@@ -1,0 +1,4 @@
+# Optional isolated trained Face + Emotion environment, Python 3.13 with Tk.
+# Leave the verified SYS-05 environment unchanged.
+-r requirements-ui04-emotion.txt
+torchvision==0.28.0

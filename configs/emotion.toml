@@ -1,0 +1,12 @@
+# Paths resolve from the repository root. Source images remain under emotion_data.
+[data]
+root = "data/processed/emotion_3class"
+batch_size = 32
+workers = 0
+seed = 42
+
+[preprocessing]
+image_size = 48
+channels = 1
+scale = 255
+augmentation = "none"

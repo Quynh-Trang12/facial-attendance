@@ -128,7 +128,7 @@ class SchedulingAuditTests(unittest.TestCase):
         app.detector.finish([legacy.BOX])
         app._tick()
         old_job = app.inference.job
-        self.now += .31
+        self.now += app.ANALYSIS_INTERVAL + 0.01
         self.packet(2)
         app._tick()  # Next detector starts while previous adapter is busy.
         app.detector.finish([legacy.BOX])

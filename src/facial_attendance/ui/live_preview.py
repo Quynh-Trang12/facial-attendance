@@ -4,14 +4,14 @@ Workers never access Tk or the active controller. Each analysis sample
 supersedes the previous sample; raw preview frames are not inference requests.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from threading import Condition, Event, Lock, Thread
 from time import monotonic
 
 from .face_detection import FaceDetectorUnavailable
 from .diagnostics import Diagnostics
 from .webcam_prototype import (
-    Completion, Envelope, PrototypeController, box_in_frame, frame_size, run_stubs,
+    Completion, Emotion, Envelope, Liveness, OperationError, PrototypeController, box_in_frame, frame_size, run_stubs,
 )
 
 
@@ -150,6 +150,9 @@ class CameraFeed:
                     ok, frame = camera.read()
                     captured_at = monotonic()
                     self.metrics.duration("camera_read", captured_at - cycle_started)
+                    if sequence:
+                        self.metrics.duration("capture_interval", captured_at - previous_capture)
+                    previous_capture = captured_at
                     if not ok:
                         raise OSError("Camera read failed. Reconnect the camera and retry.")
                     frame_size(frame)
@@ -185,25 +188,72 @@ class CameraFeed:
         self.thread.join(timeout=0.1)
 
 
-def evaluate_adapters(request_and_adapters):
+def evaluate_adapters(request_and_adapters, *, unverified_preview=False):
     """Use an isolated controller for worker-side gating; return original contexts."""
-    request, adapters = request_and_adapters
+    request, adapters, *sampling = request_and_adapters
+    include_emotion = not sampling or sampling[0]
     local = PrototypeController()
     local.action = request.context.action
     local.attempt_id = request.context.attempt_id
     local.state = Envelope(context=request.context, ui_state="checking")
-    return run_stubs(local, request, adapters)
+    metrics = getattr(adapters, "diagnostics", None)
+    # Time module boundaries without modifying model inputs or dispatch gating.
+    class MeasuredAdapters:
+        def __getattr__(self, name):
+            method = getattr(adapters, name)
+            def measured(source):
+                started = monotonic()
+                try:
+                    return method(source)
+                finally:
+                    metrics.duration(name, monotonic() - started)
+            return measured
+    measured = MeasuredAdapters() if metrics is not None and metrics.enabled else adapters
+    batch = run_stubs(local, request, measured, include_emotion=include_emotion,
+                      unverified_preview=unverified_preview)
+    # A recognition failure blocks every operation, but is not an Emotion
+    # model failure. Run the independent informational model once, preserving
+    # its original context; the authoritative error envelope remains blocked.
+    if (include_emotion
+            and getattr(adapters, "trained_recognition", False) is True
+            and getattr(adapters, "trained_emotion", False) is True
+            and (unverified_preview or any(isinstance(c.result, Liveness) and c.result.status == "live" for c in batch))
+            and any(error.module == "recognition" for error in local.state.errors)
+            and not any(isinstance(c.result, Emotion) or (
+                isinstance(c.result, OperationError) and c.result.module == "emotion") for c in batch)):
+        try:
+            extra = measured.emotion(request)
+        except Exception:
+            extra = Completion(request.context, OperationError("emotion", "inference_error",
+                               "The emotion adapter failed.", False))
+        if isinstance(extra, Completion) and extra.context == request.context:
+            validator = PrototypeController()
+            validator.state = Envelope(context=request.context, ui_state="checking")
+            if isinstance(extra.result, Emotion) or (
+                    isinstance(extra.result, OperationError) and extra.result.module == "emotion"):
+                validator.receive(extra)
+                if validator.state.emotion is not None:
+                    batch += (extra,)
+                elif validator.state.errors:
+                    batch += (Completion(request.context, validator.state.errors[0]),)
+    return batch
 
 
-def prepare_preview_image(frame):
-    """Resize BGR before RGB conversion/Pillow allocation, on the GUI thread."""
+def prepare_preview_image(frame, *, viewport=None):
+    """Fit the full frame inside the viewport before RGB conversion."""
     import cv2
     from PIL import Image
     width, height = frame_size(frame)
-    scale = min(1.0, 640 / width, 360 / height)
+    if viewport is None:
+        scale = min(1.0, 640 / width, 360 / height)
+    else:
+        view_width, view_height = viewport
+        scale = min(view_width / width, view_height / height)
     size = max(1, round(width * scale)), max(1, round(height * scale))
-    small = frame if size == (width, height) else cv2.resize(frame, size, interpolation=cv2.INTER_AREA)
-    return Image.fromarray(cv2.cvtColor(small, cv2.COLOR_BGR2RGB))
+    if size != (width, height):
+        interpolation = cv2.INTER_LINEAR if scale > 1 else cv2.INTER_AREA
+        frame = cv2.resize(frame, size, interpolation=interpolation)
+    return Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
 
 class BoxStability:
@@ -211,24 +261,37 @@ class BoxStability:
 
     HOLD_SECONDS = 0.45
 
-    def __init__(self):
+    def __init__(self, *, damped=False):
+        self.damped = damped
         self.clear()
 
     def clear(self):
         self.box = self.size = self.time = None
 
     def confirm(self, box, size, timestamp):
-        if self.box is not None and size == self.size and timestamp - self.time <= self.HOLD_SECONDS:
+        if self.box is not None and size == self.size and timestamp - self.time <= self.hold_seconds:
             a, b = self.box, box
             overlap = max(0, min(a[2], b[2]) - max(a[0], b[0])) * max(0, min(a[3], b[3]) - max(a[1], b[1]))
             area_a = (a[2] - a[0]) * (a[3] - a[1])
             area_b = (b[2] - b[0]) * (b[3] - b[1])
             if overlap / (area_a + area_b - overlap) > 0.5:
-                box = tuple(round(0.7 * current + 0.3 * previous) for current, previous in zip(box, a))
+                weight = .7
+                if self.damped:
+                    short_side = min(b[2] - b[0], b[3] - b[1])
+                    offset = max(abs(current - previous) for current, previous in zip(b, a))
+                    if offset <= max(2, .04 * short_side):
+                        weight = 0
+                    elif offset <= .14 * short_side:
+                        weight = .35
+                box = tuple(round(weight * current + (1 - weight) * previous) for current, previous in zip(b, a))
         self.box, self.size, self.time = box, size, timestamp
 
+    @property
+    def hold_seconds(self):
+        return .55 if self.damped else self.HOLD_SECONDS
+
     def visual(self, now):
-        if self.box is None or now - self.time > self.HOLD_SECONDS:
+        if self.box is None or now - self.time > self.hold_seconds:
             return [], None
         return [self.box], self.size
 
@@ -236,9 +299,10 @@ class BoxStability:
 class LiveController:
     """Called exclusively by the GUI thread (also usable without Tk in tests)."""
 
-    def __init__(self):
+    def __init__(self, *, unverified_preview=False):
+        self.unverified_preview = unverified_preview
         self.controller = PrototypeController()
-        self.stability = BoxStability()
+        self.stability = BoxStability(damped=unverified_preview)
         self.reset()
 
     def reset(self):
@@ -250,8 +314,13 @@ class LiveController:
         self.sample_size = None
         self.status = "Idle / opening camera"
 
-    def begin_sample(self, token, captured_at):
-        self.controller.reset("attendance")
+    def begin_sample(self, token, captured_at, action="attendance"):
+        if action == "registration" and self.controller.action == "registration":
+            # One explicit registration attempt can contain multiple captures.
+            # Each begin_capture still creates fresh capture/face identifiers.
+            self.controller.state = Envelope()
+        else:
+            self.controller.reset(action)
         self.token = token
         self.boxes = []
         self.sample_size = None
@@ -289,13 +358,13 @@ class LiveController:
         self.sample_size = width, height
         if len(boxes) == 1:
             self.stability.confirm(boxes[0], self.sample_size, self.sample_time)
-        elif len(boxes) > 1:
+        elif boxes or self.unverified_preview:
             self.stability.clear()
         request = self.controller.begin_capture(frame, boxes)
         self.status = {
             "no_face": "No face detected",
             "multiple_faces": "Multiple faces — show one face only",
-            "checking": "Processing — simulated adapters",
+            "checking": ("Processing — recognition preview" if self.unverified_preview else "Processing — simulated adapters"),
         }.get(self.controller.state.ui_state, "Face input unavailable")
         return request
 
@@ -317,16 +386,27 @@ class LiveController:
                 or not all(isinstance(value, Completion) for value in result.value)):
             self.fail("invalid_input", "Malformed adapter completion batch.", "adapters")
             return False
+        if self.unverified_preview and any(isinstance(value.result, Liveness) for value in result.value):
+            self.fail("invalid_input", "The local workspace does not accept authorization results.", "adapters")
+            return False
         applied = False
         for completion in result.value:
             applied = self.controller.receive(completion) or applied
         state = self.controller.state
+        if applied and self.unverified_preview and state.ui_state == "checking":
+            self.controller.state = replace(state, ui_state="preview")
+            self.status = "Trained recognition preview — UNVERIFIED"
+            return True
         self.status = {
             "live": "One face — SIMULATED results",
             "spoof": "Simulated spoof — attempt blocked",
             "uncertain": "Simulated uncertain liveness — retry / use a fresh frame",
             "error": "Demo adapter error — retry",
         }.get(state.ui_state, self.status)
+        if state.ui_state == "live" and state.emotion is not None and state.emotion.source == "model":
+            self.status = "One face — trained emotion; identity/liveness SIMULATED"
+        if state.ui_state == "live" and state.recognition is not None and state.recognition.source == "model":
+            self.status = "Trained face match — UNVERIFIED; liveness SIMULATED"
         return applied
 
     def expire(self, now, max_age=1.0):

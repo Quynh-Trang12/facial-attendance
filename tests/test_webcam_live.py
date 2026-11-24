@@ -225,6 +225,29 @@ class LiveAppTests(unittest.TestCase):
         app.canvas.create_rectangle.assert_called_with(
             50, 50, 150, 125, outline="#ffce65", width=2, tags="region")
 
+    def test_resizing_refits_the_current_frame_and_outline_without_starting_a_capture(self):
+        import numpy as np
+
+        app = self.app
+        del app._draw_frame
+        app._preview_viewport_size = (640, 360)
+        frame = np.zeros((720, 1280, 3), dtype=np.uint8)
+        app.feed.latest.return_value = replace(self.packet(), frame=frame)
+        with patch("PIL.ImageTk.PhotoImage") as photo:
+            self.run_one_face()
+            context = app.controller.state.context
+            app._resize_preview(SimpleNamespace(width=960, height=680))
+            app._tick()
+            self.assertEqual(photo.call_args.args[0].size, (960, 540))
+            app.canvas.place_configure.assert_called_with(width=960, height=540)
+            app.canvas.create_rectangle.assert_called_with(
+                75, 75, 225, 187.5, outline="#ffce65", width=2, tags="region")
+            self.assertEqual(app.controller.state.context, context)
+            app._resize_preview(SimpleNamespace(width=640, height=420))
+            app._tick()
+            self.assertEqual(photo.call_args.args[0].size, (640, 360))
+            app.canvas.create_image.assert_called_once()
+
     def test_camera_preview_continues_and_work_slots_remain_bounded_while_detection_is_busy(self):
         app = self.app
         app._tick()
@@ -237,6 +260,24 @@ class LiveAppTests(unittest.TestCase):
         self.assertEqual(app._draw_frame.call_count, 29)
         self.assertIsNone(app.inference.job)
 
+    def test_analysis_waits_for_revised_cadence_and_samples_the_latest_packet(self):
+        self.run_one_face()
+        app = self.app
+        self.now += 0.31
+        skipped = self.packet(2)
+        app._tick()
+        self.assertFalse(app.detector.busy)
+        app._draw_frame.assert_called_with(skipped.frame)
+
+        self.now += 0.10
+        latest = self.packet(3)
+        app._tick()
+        self.assertEqual(app.detector.job[0], (1, 3))
+        self.assertIs(app.detector.job[1], latest.frame)
+        self.assertIsNone(app.controller.state.recognition)
+        self.assertIsNone(app.controller.state.liveness)
+        self.assertFalse(app.controller.state.can_save)
+
     def test_next_sample_no_face_and_multiple_faces_clear_display(self):
         app = self.app
         for sequence, boxes, expected in ((2, [], "no_face"),
@@ -244,7 +285,7 @@ class LiveAppTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 if sequence == 2:
                     self.run_one_face()
-                self.now += 0.31
+                self.now += app.ANALYSIS_INTERVAL + 0.01
                 self.packet(sequence)
                 app._tick()
                 self.assertIsNone(app.controller.state.recognition)
@@ -261,7 +302,7 @@ class LiveAppTests(unittest.TestCase):
         app._tick()
         old_job = app.inference.job
         self.assertTrue(app.inference.busy)
-        self.now += 0.31
+        self.now += app.ANALYSIS_INTERVAL + 0.01
         self.packet(2)
         app._tick()
         self.assertTrue(app.detector.busy)
