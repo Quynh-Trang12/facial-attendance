@@ -157,7 +157,9 @@ def best_match(probe, labels, templates, tau) -> Match:
         raise ValueError("Need one (D,) template per label")
     if not labels:
         return Match(None, None, False)
-    scores = templates @ np.asarray(probe, dtype=np.float64)
+    # The model's raw embedding is not unit length; normalise so the score is a cosine.
+    probe = np.asarray(probe, dtype=np.float64)
+    scores = templates @ (probe / np.linalg.norm(probe))
     best = int(np.argmax(scores))
     score = float(scores[best])
     accepted = score >= tau
