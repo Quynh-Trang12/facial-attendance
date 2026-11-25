@@ -57,8 +57,8 @@ def preview_box(box, source_size, preview_size, *, mirrored=False):
     return mapped
 
 
-def fit_text(label, maximum, measure):
-    suffix = ' · UNVERIFIED' if label.known else ''
+def fit_text(label, maximum, measure, *, show_unverified=True):
+    suffix = ' · UNVERIFIED' if label.known and show_unverified else ''
     text = label.text + suffix
     if measure(text) <= maximum:
         return text
@@ -74,20 +74,26 @@ def fit_text(label, maximum, measure):
     return label.text[:low]+'…'+suffix
 
 
-def label_bounds(box, preview_size, text_width, text_height):
+def label_bounds(box, preview_size, text_width, text_height, *, match_box_width=False):
     """Above first, below at a top edge, then a clamped inside-edge fallback."""
     width, height = preview_size
     margin, gap = 4, 3
-    if text_width > width-2*margin or text_height > height-2*margin:
+    if text_height > height-2*margin:
         return None
-    left = max(margin, min(box[0], width-margin-text_width))
+    if match_box_width:
+        left, right = box[0], box[2]
+    else:
+        if text_width > width-2*margin:
+            return None
+        left = max(margin, min(box[0], width-margin-text_width))
+        right = left+text_width
     if box[1]-gap-text_height >= margin:
         top = box[1]-gap-text_height
     elif box[3]+gap+text_height <= height-margin:
         top = box[3]+gap
     else:
         top = max(margin, min(box[1]+gap, height-margin-text_height))
-    return left, top, left+text_width, top+text_height
+    return left, top, right, top+text_height
 
 
 class CanvasIdentityOverlay:
@@ -114,20 +120,22 @@ class CanvasIdentityOverlay:
                 self.canvas.itemconfigure(item, state='hidden')
         self.key = None
 
-    def update(self, label, box, size):
+    def update(self, label, box, size, *, show_unverified=True, match_box_width=False):
         if label is None:
             self.hide()
             return
-        if self._text_key != (label, size[0]):
-            text = fit_text(label, size[0]-20, self.font.measure)
-            self._text_key = label, size[0]
+        max_text_width = int(box[2]-box[0])-12 if match_box_width else size[0]-20
+        text_key = label, max_text_width, show_unverified
+        if self._text_key != text_key:
+            text = fit_text(label, max_text_width, self.font.measure, show_unverified=show_unverified)
+            self._text_key = text_key
             self._text_size = (text, self.font.measure(text)+12 if text else 0, self.font.metrics('linespace')+8)
         text, width, height = self._text_size
-        bounds = label_bounds(box, size, width, height) if text else None
+        bounds = label_bounds(box, size, width, height, match_box_width=match_box_width) if text else None
         if bounds is None:
             self.hide()
             return
-        key = text, bounds
+        key = text, bounds, match_box_width
         if key == self.key:
             return
         if self.items is None:
@@ -138,8 +146,9 @@ class CanvasIdentityOverlay:
             self.items = background, foreground
         background, foreground = self.items
         self.canvas.coords(background, *bounds)
-        self.canvas.coords(foreground, bounds[0]+6, bounds[1]+4)
+        text_x = (bounds[0]+bounds[2])/2 if match_box_width else bounds[0]+6
+        self.canvas.coords(foreground, text_x, bounds[1]+4)
         self.canvas.itemconfigure(background, state='normal')
-        self.canvas.itemconfigure(foreground, text=text, state='normal')
+        self.canvas.itemconfigure(foreground, text=text, state='normal', anchor='n' if match_box_width else 'nw')
         self.canvas.tag_raise(self.TAG)
         self.key = key

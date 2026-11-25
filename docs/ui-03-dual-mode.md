@@ -1,5 +1,7 @@
 # UI-03 / UI-04 dual-mode GUI and diagnostics repair
 
+> Historical UI-03 verification for the earlier simulated-liveness build. See the [current demo guide](attendance-demo.md) for the trained webcam and review interface.
+
 Prepared 18 November 2026 in the existing `feature/ui03-ui04-emotion-integration` worktree. **Owner physical verification is pending.** This implements presentation and diagnostics only. No independent reviewer approval, trained liveness, genuine enrollment or recorded attendance is claimed.
 
 > Diagnostics usability extension: [pause, copy, privacy-safe export and completed snapshots](ui-03-diagnostic-controls.md) documents the current controls. The historical implementation/results below are retained; current diagnostics can freeze independently of the running pipeline and explicitly labels frozen/completed data.

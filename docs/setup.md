@@ -1,5 +1,7 @@
 # Runtime setup and verification
 
+For the trained webcam application, model files and SQLite demo commands, see [Webcam and Attendance demo](attendance-demo.md). Use a Python installation with Tk. Check it with `python -m tkinter` in the environment you will use to launch the GUI.
+
 The owner reference environment is Python 3.13.16 with PyTorch 2.13.0+cu126 on Linux/NVIDIA. It stays unchanged at `~/.local/share/ml-frameworks/.venv`. The team uses Python 3.13.x, with explicit CPU or CUDA execution. Other 3.13 patch releases, such as 3.13.18, are accepted; no patch-version test matrix is required. `.python-version` is the owner's development pin; it is not a command to replace another machine's interpreter.
 
 ## Choose the operating system and runtime first
@@ -9,8 +11,8 @@ Use Python **3.13.x** for the team's common setup. CI reads **3.13.16** from `.p
 | Target | Installation | Execution | Verification status |
 | --- | --- | --- | --- |
 | Linux x86_64 | One CPU/CUDA profile, then shared requirements | `cpu` or NVIDIA `cuda` | Executed locally; Colab evidence is separate |
-| Windows x64 | One CPU/CUDA profile, then shared requirements | `cpu` or NVIDIA `cuda` | CPU dependency resolution passed; native CPU CI configured, pending execution |
-| macOS 14+ on Apple Silicon | Shared requirements from PyPI; native arm64 Python | Explicit `cpu` | Dependency resolution passed; native CPU CI configured, pending execution |
+| Windows x64 | One CPU/CUDA profile, then shared requirements | `cpu` or NVIDIA `cuda` | CPU dependency resolution passed. Current physical webcam demo verification is pending. |
+| macOS 14+ on Apple Silicon | Shared requirements from PyPI; native arm64 Python | Explicit `cpu` | Registration and isolated attendance were exercised on Apple Silicon. See the [tested runtime](attendance-demo.md#verification). |
 | macOS Intel, or Apple Silicon using Rosetta/x86_64 Python | No supported install for the current pins | Unsupported locally | Torch 2.13 has no Intel macOS wheel; requires a separately selected/tested stack |
 | Windows ARM64 / other architectures | Not covered by this setup | Unsupported target | Do not assume that availability of a Torch wheel covers every dependency |
 
@@ -225,7 +227,7 @@ Dataset decoding/collation happens on CPU and does not require GPU access. In Co
 - [Strict owner CUDA check](../reports/environment/cuda-strict-audit-2026-11-04.json): host GPU preflight and current owner snapshot verified.
 - Earlier environment/Keras and data runs remain historical evidence at their recorded source hashes. They are not silently relabelled as runs of current code.
 
-The source/configuration suite contains 46 tests. All CI jobs read `.python-version` and run **3.13.16 only**. The Linux check retains its existing `source-checks (3.13)` name. Windows x64 and macOS Apple Silicon CPU jobs cover the team's actual operating systems, not extra Python versions. Native Windows/macOS execution is pending until the owner publishes the workflow and GitHub runs it.
+All CI jobs use the version in `.python-version` (**3.13.16**). The Linux `source-checks (3.13)` job installs the pinned image and array dependencies used by the fixture suite. The Windows and macOS jobs install the CPU dependencies and record an inference and optimizer smoke test. The local [webcam and attendance checks](attendance-demo.md#verification) are separate from hosted CI.
 
 If the branch ruleset still requires `source-checks (3.12)`, remove that obsolete requirement under Settings → Rules → Rulesets → main-pr-and-ci → required status checks. Keep `source-checks (3.13)`. After successful native runs, the Windows/macOS check names remain `OS compatibility (windows-latest)` and `OS compatibility (macos-15)`.
 

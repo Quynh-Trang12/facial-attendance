@@ -1,5 +1,7 @@
 # UI-04.1 — Trained adapter and GUI contract
 
+> Historical adapter contract and verification notes. See the [current demo guide](attendance-demo.md) for trained liveness, registration and isolated attendance.
+
 Prepared 18 November 2026 against [SYS-02 Final v1.0](https://app.notion.com/p/40d863094ebe80d7a6f9c9ca4f7abc6d), [UI-02](https://app.notion.com/p/412863094ebe80c09ffce13f894f16ae) and Requirements rows 85–87. Design prepared for owner/model-owner agreement; no independent approval or full UI-04.2 completion claimed.
 
 Current extension: the selected Face checkpoint is now integrated alongside Emotion. Its displayed matches are trained but UNVERIFIED, because liveness remains simulated; genuine registration/attendance are blocked. Controlled registration embeds only internally generated fixtures into a separate memory gallery. See [current delivery and tests](ui-03-integration-delivery.md).

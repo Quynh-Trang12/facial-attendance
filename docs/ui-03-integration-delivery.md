@@ -1,5 +1,7 @@
 # UI-03 trained Face + Emotion integration delivery
 
+> Historical Face and Emotion integration evidence. The current app uses trained liveness and supports local registration and isolated attendance. See the [current demo guide](attendance-demo.md).
+
 > Latest GUI extension: [Standard/Developer modes and diagnostics repair](ui-03-dual-mode.md) documents the shared application, visible scrollable inspector, 299 automated tests, 47 native checks and pending owner physical verification. Historical delivery evidence below remains unchanged.
 
 > Current presentation follow-up: the owner physically failed the preceding 254-test presentation change. See [Emotion continuity investigation](ui-03-emotion-continuity.md) for the real-camera measurements, independent informational Emotion display, 284 passing tests, 20 passing native checks and pending physical retest. The 217-test results, 32-file inventory and older source fingerprints below describe the preceding integration delivery.

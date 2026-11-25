@@ -1,13 +1,15 @@
 """Frozen diagnostic views never freeze or authorize the running application."""
 from dataclasses import asdict
 import json
+import os
 from pathlib import Path
 import re
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
 
-from facial_attendance.ui.developer_view import DeveloperDiagnostics
+from facial_attendance.ui.developer_view import DeveloperDiagnostics, review_details
 from facial_attendance.ui.diagnostic_snapshot import CompletedDiagnostic, privacy_safe_snapshot, replace_text
 from facial_attendance.ui.live_preview import WorkResult, evaluate_adapters
 from facial_attendance.ui.webcam_prototype import Emotion, Envelope, StubAdapters
@@ -38,6 +40,7 @@ class Text:
 def panel():
     view=DeveloperDiagnostics.__new__(DeveloperDiagnostics)
     view.visible=True;view.paused=False;view.raw_refresh_requested=False
+    view._technical_visible=True;view._review_values=[]
     view.runtime=Text('{"runtime": true}');view.payload=Text('{"ui_state":"checking","can_save":false}')
     view.completed=Text();view.texts=[view.runtime,view.payload,view.completed]
     view.notebook=Mock();view.notebook.index.side_effect=lambda n:n
@@ -81,6 +84,18 @@ class DiagnosticControlTests(unittest.TestCase):
     def test_copy_works_for_completed_historical_json(self):
         view=panel();view.completed.value='{"ui_state":"live","can_save":false}';view.selected=2
         self.assertTrue(view.copy_json());view.window.clipboard_append.assert_called_once_with(view.completed.value)
+
+    def test_default_export_uses_review_snapshot_even_after_visiting_the_previous_tab(self):
+        view=panel();view._technical_visible=False;view.selected=2
+        view.runtime.value='{"runtime":{"face_count":1}}'
+        view.completed.value='{"ui_state":"live"}'
+        with TemporaryDirectory() as directory:
+            path=Path(directory)/'snapshot.json'
+            with patch('tkinter.filedialog.asksaveasfilename',return_value=str(path)):
+                self.assertTrue(view.export_json())
+            snapshot=json.loads(path.read_text())
+        self.assertEqual(snapshot['snapshot']['source'],'runtime')
+        self.assertFalse(snapshot['snapshot']['historical'])
 
     def test_hidden_copy_export_and_capture_have_no_side_effects(self):
         view=panel();view.visible=False
@@ -172,6 +187,55 @@ class DiagnosticControlTests(unittest.TestCase):
         exported=privacy_safe_snapshot(data,{'source':'/Users/SECRET','timestamp':'SECRET'})
         self.assertIsNone(exported['emotion']['confidence']);self.assertIsNone(exported['snapshot']['source'])
         self.assertNotIn('SECRET',json.dumps(exported,allow_nan=False))
+
+
+class ReviewDetailsTests(unittest.TestCase):
+    def test_summary_uses_current_scores_and_distinguishes_test_attendance(self):
+        report = {
+            "recognition": {"raw": {"score": .95831, "person_id": "private"}, "configured_threshold": .462},
+            "liveness": {"active_source": "AENet-Full preview",
+                         "released_preview": {"frame_status": "spoof", "spoof_score": .617},
+                         "last_completed_scan": {"decision": "live", "valid_frames": 7, "local_time": "14:58:55"}},
+        }
+        test_mode = SimpleNamespace(automatic_record=True, service=SimpleNamespace(session_id="private"))
+        self.assertEqual(review_details(report, test_mode), (
+            "0.958  •  Match threshold 0.462",
+            "Spoof  •  Spoof score 0.617",
+            "Live  •  7 valid frames  •  14:58:55",
+            "Automatic  •  Test data only  •  Session active",
+        ))
+        report["recognition"]["raw"] = None
+        self.assertEqual(review_details(report, None)[0], "No current score  •  Match threshold 0.462")
+        self.assertEqual(review_details(report, None)[-1], "Saving disabled")
+
+    @unittest.skipUnless(os.getenv("FA_NATIVE_ATTENDANCE_TESTS") == "1", "Requires a native Tk desktop session")
+    def test_technical_details_are_collapsed_by_default_and_return_to_overview(self):
+        import tkinter as tk
+        root = tk.Tk()
+        self.addCleanup(root.destroy)
+        root.withdraw()
+        view = DeveloperDiagnostics(root, lambda: None)
+        view.show()
+        root.update_idletasks()
+        self.assertTrue(view.overview.winfo_ismapped())
+        self.assertFalse(view.notebook.winfo_ismapped())
+        self.assertFalse(view.copy_button.winfo_ismapped())
+        view.technical_button.invoke()
+        root.update_idletasks()
+        self.assertFalse(view.overview.winfo_ismapped())
+        self.assertTrue(view.notebook.winfo_ismapped())
+        self.assertTrue(view.copy_button.winfo_ismapped())
+        self.assertEqual(view.notebook.tab(1, "text"), "Current result")
+        view.technical_button.invoke()
+        root.update_idletasks()
+        self.assertTrue(view.overview.winfo_ismapped())
+        self.assertFalse(view.notebook.winfo_ismapped())
+        view.technical_button.invoke()
+        view.hide()
+        view.show()
+        root.update_idletasks()
+        self.assertTrue(view.overview.winfo_ismapped())
+        self.assertFalse(view.notebook.winfo_ismapped())
 
 
 class PausedPipelineTests(unittest.TestCase):

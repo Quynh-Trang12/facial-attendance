@@ -449,8 +449,11 @@ class LiveWebcamApp:
         self._next_debug_update = 0.0
 
         title = "Facial Attendance · Local workspace" if self._local_workspace else "Facial Attendance"
+        automatic_record = attendance_verification is not None and attendance_verification.automatic_record
         if attendance_verification is not None:
             title += " · Attendance test"
+            if automatic_record:
+                title += " · Auto record"
         root.title(title)
         # A model's changing text must not resize the window or move the video.
         root.protocol("WM_DELETE_WINDOW", self.close)
@@ -478,7 +481,10 @@ class LiveWebcamApp:
             retry_attendance = attendance_verification.reset if attendance_verification is not None else None
             self._dashboard = Dashboard(panel, restart_camera=self.retry, switch_mode=self._switch_mode,
                                         trained_liveness=released_liveness is not None, attendance=attendance,
-                                        retry_attendance=retry_attendance)
+                                        retry_attendance=retry_attendance,
+                                        retrying_after_spoof=(attendance_verification.retrying_after_spoof
+                                                              if attendance_verification is not None else None),
+                                        automatic_record=automatic_record)
             camera_parent = self._dashboard.camera_card
             self.source_label.set("Live Camera")
             ttk.Label(camera_parent, textvariable=self.source_label,
@@ -566,9 +572,11 @@ class LiveWebcamApp:
             if self._dashboard:
                 ttk.Label(profile_controls, text="Local profiles", style="Card.TLabel",
                           font=("TkDefaultFont", 12, "bold")).pack(anchor="w", pady=(4, 2))
-                prompt_label = ttk.Label(profile_controls, textvariable=self.registration_prompt, style="CardQuiet.TLabel")
-                prompt_label.pack(fill="x")
-                self._dashboard.wrap_label(prompt_label)
+                prompt_slot, _ = self._dashboard.message_slot(
+                    profile_controls, textvariable=self.registration_prompt, style="CardQuiet.TLabel",
+                )
+                self._dashboard.reserve_message_lines(prompt_slot, 3)
+                prompt_slot.pack(fill="x")
             else:
                 fixed_result_label(profile_controls, 55, textvariable=self.registration_prompt)
             self.registration_button = ttk.Button(profile_controls, text="Registration options…",
@@ -606,7 +614,7 @@ class LiveWebcamApp:
                 command=self._start_test_enrollment, state="normal" if self._controlled_registration else "disabled")
             self.registration_submit.grid(row=3, column=0, columnspan=2, sticky="w")
             self.registration_form.grid_remove()
-        profile_hint = ("Profiles are saved on this device. Identity matches are unverified."
+        profile_hint = ("Profiles are saved on this device."
                         if self._local_workspace else "Test profiles stay in memory. No attendance records."
                         if enable_trial_profiles else "Saving disabled • No attendance or enrollment records")
         profile_label = ttk.Label(profile_controls, text=profile_hint, wraplength=330,
@@ -703,8 +711,10 @@ class LiveWebcamApp:
             "Live Camera" if getattr(self, "_dashboard", None) is not None else
             "Generated test preview" if self._controlled_registration else "Live preview"))
         box_hold_ms = round(self.live.stability.hold_seconds * 1000)
+        preview_hint = ("Show one face to the camera." if getattr(self, "_local_workspace", False) else
+                        "Show one face to the camera. Preview results are unverified.")
         self.hint.set(f"Automatic sampled detection • Previous box ≤{box_hold_ms} ms • Display history ≤800 ms; never authorization."
-                      if developer else "Show one face to the camera. Preview results are unverified.")
+                      if developer else preview_hint)
         self._hint_rendered = True
         if not developer:
             self._close_debug()
@@ -831,6 +841,7 @@ class LiveWebcamApp:
             profiles.invalidate_source()
         attendance_verification = getattr(self, "_attendance_verification", None)
         attendance_paused = False
+        attendance_verified = False
         if attendance_verification is not None:
             attendance_verification.sync_session()
             attendance_paused = bool(profiles and profiles.active) or self._registration_requested
@@ -867,8 +878,8 @@ class LiveWebcamApp:
                 if completed.error is None and self.live.token is None:
                     attendance_verification.invalidate("invalid_verification")
                 else:
-                    attendance_verification.accept(completed.token, source[1], completed.value, prediction,
-                                                   error=completed.error)
+                    attendance_verified = attendance_verification.accept(
+                        completed.token, source[1], completed.value, prediction, error=completed.error)
             if (liveness_preview is not None and source is not None and completed.token == self.live.token
                     and source[0] == completed.token and len(self.live.boxes) == 1
                     and self.controller.state.context == source[1].context):
@@ -994,6 +1005,10 @@ class LiveWebcamApp:
         if getattr(self, "_dashboard", None) is not None:
             from .dashboard import camera_status
             self._dashboard.set_camera(camera_status(usable, packet is not None or now - self._opened_at > 5))
+            if attendance_verified and attendance_verification.automatic_record:
+                receipt = attendance_verification.record_automatically()
+                if receipt is not None:
+                    self._dashboard.attendance_view.show_record_result(receipt)
         self._draw_regions()
         self._render()
         if metrics is not None:
@@ -1098,10 +1113,11 @@ class LiveWebcamApp:
     def _draw_identity_overlay(self, state, view, now):
         from .identity_overlay import CanvasIdentityOverlay, identity_label, preview_box
         boxes, size, unconfirmed = self._display_regions(now)
+        workspace = getattr(self, '_local_workspace', False)
         label = identity_label(state, view, face_count=len(boxes), confirmed=not unconfirmed,
                                processing=self.live.status.startswith('Processing'),
                                trained=getattr(self, '_trained_recognition_enabled', False),
-                               unverified_preview=getattr(self, '_local_workspace', False))
+                               unverified_preview=workspace)
         if label is None or size is None or min(self.preview_size) <= 0:
             if self._identity_overlay is not None:
                 self._identity_overlay.hide()
@@ -1109,7 +1125,8 @@ class LiveWebcamApp:
         if self._identity_overlay is None:
             self._identity_overlay = CanvasIdentityOverlay(self.canvas)
         box = preview_box(boxes[0], size, self.preview_size, mirrored=self._preview_mirrored)
-        self._identity_overlay.update(label, box, self.preview_size)
+        self._identity_overlay.update(label, box, self.preview_size, show_unverified=not workspace,
+                                      match_box_width=workspace)
 
     def _render(self):
         state = self.controller.state
@@ -1273,7 +1290,8 @@ class LiveWebcamApp:
                 self.emotion_display_info.set(text)
                 self._last_emotion_display_info = text
         if not getattr(self, "_hint_rendered", False):
-            self.hint.set("Show one face to the camera. Preview results are unverified."
+            self.hint.set("Show one face to the camera." if workspace else
+                          "Show one face to the camera. Preview results are unverified."
                           if getattr(self, "_mode_supported", False) else
                           "Automatic sampled detection • Dashed grey box = previous detection, unconfirmed "
                           "(maximum 450 ms). Previous-sample text is display-only, at most 800 ms; no authorization.")
@@ -1495,7 +1513,7 @@ def main(argv=None) -> int:
     parser.add_argument("--opencv-threads", type=int, default=1,
                         help="Native OpenCV CPU threads (default 1, avoid oversubscription).")
     parser.add_argument("--emotion-checkpoint", help="Local trained Emotion checkpoint (ResNet-18 or legacy EmotionCNN).")
-    parser.add_argument("--face-checkpoint", help="Selected trained Face checkpoint; liveness/saving remain disabled.")
+    parser.add_argument("--face-checkpoint", help="Selected trained Face recognition checkpoint.")
     liveness_options = parser.add_mutually_exclusive_group()
     liveness_options.add_argument("--liveness-checkpoint", metavar="PATH",
                                  help="AENet-Full epoch 18 checkpoint override for the local workspace. "
@@ -1503,15 +1521,19 @@ def main(argv=None) -> int:
     liveness_options.add_argument("--liveness-trial-checkpoint", action="append", default=[], metavar="PATH",
                         help="Experimental read-only liveness scoring. Pass once per supplied checkpoint.")
     parser.add_argument("--local-workspace", action="store_true",
-                        help="Save consented local recognition profiles; verified attendance remains unavailable.")
+                        help="Open the trained webcam workspace with consented local profile registration.")
     parser.add_argument("--local-profile-db", type=Path, metavar="PATH",
                         help="Select a separate SQLite profile database in the local workspace.")
     parser.add_argument("--attendance", action="store_true",
-                        help="Open manual attendance controls. Approved per-capture verification is pending.")
+                        help="Show attendance controls. Recording requires isolated attendance test mode.")
     parser.add_argument("--attendance-db", type=Path, metavar="PATH",
                         help="Override the separate local SQLite attendance database.")
     parser.add_argument("--attendance-verification-test", action="store_true",
                         help="Enable candidate verification only with explicitly isolated test databases.")
+    parser.add_argument("--attendance-auto-retry-test", action="store_true",
+                        help="In isolated attendance verification, retry once after spoof using fresh samples.")
+    parser.add_argument("--attendance-auto-record-test", action="store_true",
+                        help="Automatically record a stable three-second live match in isolated attendance testing.")
     parser.add_argument("--gallery", help="Read-only compatible schema 0.2 gallery. Never written by the webcam UI.")
     parser.add_argument("--controlled-registration-demo", action="store_true",
                         help="Generated-input test enrollment into isolated memory; requires --demo-camera and --face-checkpoint.")
@@ -1540,6 +1562,10 @@ def main(argv=None) -> int:
         parser.error("--attendance and --local-profile-db require --local-workspace.")
     if args.attendance_db is not None and not args.attendance:
         parser.error("--attendance-db requires --attendance.")
+    if args.attendance_auto_retry_test and not args.attendance_verification_test:
+        parser.error("--attendance-auto-retry-test requires --attendance-verification-test.")
+    if args.attendance_auto_record_test and not args.attendance_verification_test:
+        parser.error("--attendance-auto-record-test requires --attendance-verification-test.")
     if args.attendance_verification_test:
         if not args.attendance or args.local_profile_db is None or args.attendance_db is None:
             parser.error("Candidate verification requires --attendance, --local-profile-db and --attendance-db.")
@@ -1640,7 +1666,8 @@ def main(argv=None) -> int:
         try:
             attendance_verification = AttendanceVerification(
                 store, released_liveness.provenance, adapters.face_inference.provenance, registered_name,
-                max_age_seconds=LiveWebcamApp.MAX_AGE,
+                max_age_seconds=LiveWebcamApp.MAX_AGE, automatic_retry=args.attendance_auto_retry_test,
+                automatic_record=args.attendance_auto_record_test,
             )
         except (ValueError, KeyError) as error:
             parser.error(f"Candidate attendance verification is unavailable: {error}")

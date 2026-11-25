@@ -120,6 +120,41 @@ class OverlayGeometryTests(unittest.TestCase):
         painter.hide();painter.update(IdentityLabel('Checking...'),(40,80,140,180),(640,360))
         canvas.create_text.assert_not_called()
 
+    def test_mode_change_redraws_the_same_name_with_or_without_suffix(self):
+        canvas = Mock()
+        font = Mock()
+        font.measure.side_effect = len
+        font.metrics.return_value = 16
+        with patch('tkinter.font.Font', return_value=font):
+            painter = CanvasIdentityOverlay(canvas)
+        label = IdentityLabel('Generated Person', known=True)
+        box, size = (40, 80, 140, 180), (640, 360)
+
+        for show_unverified, text in ((False, 'Generated Person'),
+                                      (True, 'Generated Person · UNVERIFIED'),
+                                      (False, 'Generated Person')):
+            painter.update(label, box, size, show_unverified=show_unverified,
+                           match_box_width=not show_unverified)
+            canvas.itemconfigure.assert_called_with(painter.items[1], text=text, state='normal',
+                                                   anchor='nw' if show_unverified else 'n')
+            if not show_unverified:
+                canvas.coords.assert_any_call(painter.items[0], 40, 53, 140, 77)
+                canvas.coords.assert_called_with(painter.items[1], 90, 57)
+        canvas.create_text.assert_called_once()
+
+    def test_narrow_outline_ellipsizes_name_and_preserves_exact_width_at_edge(self):
+        canvas = Mock()
+        font = Mock()
+        font.measure.side_effect = len
+        font.metrics.return_value = 16
+        with patch('tkinter.font.Font', return_value=font):
+            painter = CanvasIdentityOverlay(canvas)
+        painter.update(IdentityLabel('Generated Person', known=True), (618, 80, 640, 180), (640, 360),
+                       show_unverified=False, match_box_width=True)
+        canvas.coords.assert_any_call(painter.items[0], 618, 53, 640, 77)
+        canvas.coords.assert_called_with(painter.items[1], 629, 57)
+        canvas.itemconfigure.assert_called_with(painter.items[1], text='Generated…', state='normal', anchor='n')
+
 
 class OverlayPipelineTests(unittest.TestCase):
     setUp=legacy.LiveAppTests.setUp
@@ -180,6 +215,23 @@ class OverlayPipelineTests(unittest.TestCase):
         app._developer_mode=True;app._render()
         self.assertEqual(app._identity_overlay.update.call_args.args[0],label)
         self.assertEqual(asdict(app.controller.state),before);self.assertFalse(app.controller.state.can_save)
+
+    def test_local_workspace_centers_name_without_suffix_in_both_modes(self):
+        app = self.install()
+        app._local_workspace = True
+        app._display_regions = Mock(return_value=([CONTROLLED_BOX], (640, 360), False))
+        request = PrototypeController().begin_capture(self.frame, [CONTROLLED_BOX])
+        state = Envelope(ui_state='preview', context=request.context)
+        view = DisplayResult('Preview', 'Generated Person', 'Neutral', 'live',
+                             source_context=request.context, identity_name='Generated Person')
+        for developer in (False, True, False):
+            app._developer_mode = developer
+            app._draw_identity_overlay(state, view, self.now)
+            call = app._identity_overlay.update.call_args
+            self.assertEqual(call.args[0], IdentityLabel('Generated Person', known=True))
+            self.assertFalse(call.kwargs['show_unverified'])
+            self.assertTrue(call.kwargs['match_box_width'])
+        self.assertFalse(state.can_save)
 
 
 if __name__=='__main__':unittest.main()

@@ -1,6 +1,10 @@
 # Verification evidence
 
-Start with the Python 3.13 policy report and test log for the current SYS-03 implementation. Earlier import-refactor, Colab and dataset reports retain their original source hashes:
+For the current webcam application, see the [Attendance demo verification](../docs/attendance-demo.md#verification) for macOS registration, SQLite and replay results, and the remaining identity-verification issue. Device-local profiles, attendance databases, webcam recordings, and diagnostics stay in ignored `artifacts/`.
+
+## Historical setup and data-loader evidence
+
+The reports below record the SYS-03 setup, policy tests, import refactor, and data checks at their original source revisions.
 
 | Report | What was actually exercised |
 | --- | --- |
@@ -24,7 +28,7 @@ Start with the Python 3.13 policy report and test log for the current SYS-03 imp
 
 Each report includes the source/configuration hashes used by its execution. Earlier runs remain useful history, but their source hashes can differ after a rename or refactor. Read their date/version/input source rather than assuming that every PASS belongs to the current revision. Fixture reports use generated images; they are not competition-data results.
 
-The current unit suite has 46 passing tests locally, including missing-ML-stack and platform-policy failures. Earlier CPU/GPU Colab runs had 39 tests and predate the runtime module split. Run it using the README command to obtain your own results. Full-dataset acquisition/layout inspection was executed locally; current Colab runs used a real-image subset, while earlier Colab reports explicitly used generated fixtures. The first Colab environment check failed on an inherited notebook Matplotlib backend; its [failure report](environment/colab-cpu-first-failure-2026-11-04.json) is retained. Successful repeats explicitly selected the noninteractive Agg backend. Remote GitHub CI and human reviewer acceptance remain unverified.
+The historical SYS-03 unit suite had 46 passing tests locally, including missing-ML-stack and platform-policy failures. Earlier CPU/GPU Colab runs had 39 tests and predate the runtime module split. Run it using the README command to obtain your own results. Full-dataset acquisition/layout inspection was executed locally; current Colab runs used a real-image subset, while earlier Colab reports explicitly used generated fixtures. The first Colab environment check failed on an inherited notebook Matplotlib backend; its [failure report](environment/colab-cpu-first-failure-2026-11-04.json) is retained. Successful repeats explicitly selected the noninteractive Agg backend. Remote GitHub CI and human reviewer acceptance remain unverified.
 
 The [real-image input manifest](data/colab-real-input-2026-11-04.json) identifies the source archive, all 56 original-image hashes and the 16 selected official trials. CPU/GPU acceptance reports contain the same archive hash and report 56 verified image hashes. The loader results validate all selected trial paths/labels and decode first batches, not every image in the competition.
 
@@ -32,6 +36,6 @@ The setup/data-loading review checked step order, interpreter selection, explici
 
 The import refactor moves ML imports/computation into `runtime_checks.py`, retaining one delayed load so CLI failures can still be recorded. The image API check now uses distinct BGR channels and validates RGB tensor values; all-zero pixels could not detect a channel-order error. The current refactor was rerun locally on CPU and host CUDA; it has not been rerun on remote Colab.
 
-Windows/macOS portability work adds explicit setup commands, OS/architecture preflight and two native CPU CI jobs. Foreign-platform resolution checked all transitive dependencies without installing packages or changing the owner runtime. Native Windows/macOS runtime compatibility remains pending until the owner publishes the workflow and its jobs pass; the unspecified reviewer error has not been diagnosed. Mac Intel is explicitly unsupported by the current Torch pins, rather than given an untested downgrade.
+Windows/macOS portability work adds explicit setup commands, OS/architecture preflight and two native CPU CI jobs. Foreign-platform resolution checked all transitive dependencies without installing packages or changing the owner runtime. These setup reports predate the physical macOS webcam demo. Mac Intel is explicitly unsupported by the current Torch pins, rather than given an untested downgrade.
 
 Python policy is now one minor version: 3.13.x. CI uses only `.python-version` (3.13.16); members and Colab may use another 3.13 patch without additional version-matrix testing. Historical 3.12 reports are preserved as past observations, not supported targets or outstanding review work.

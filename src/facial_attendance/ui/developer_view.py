@@ -4,11 +4,12 @@ Neither mode owns inference, gallery state or authorization. Export uses a
 separate scalar allowlist; it never dumps the raw on-screen identity data.
 """
 from dataclasses import asdict
+from datetime import datetime
 import json
 from pathlib import Path
 
 from ..emotion.model_contracts import LEGACY_LABELS
-from .diagnostic_snapshot import privacy_safe_snapshot, replace_text, utc_timestamp
+from .diagnostic_snapshot import number, privacy_safe_snapshot, replace_text, utc_timestamp
 
 
 def standard_fields(state, view, emotion_view):
@@ -124,8 +125,44 @@ def runtime_report(app, now):
     }
 
 
+def review_details(report, attendance):
+    """Use the existing diagnostic snapshot to present the key results in plain text."""
+    recognition = report["recognition"]
+    face_score = number((recognition["raw"] or {}).get("score"))
+    cutoff = number(recognition["configured_threshold"])
+    face_detail = f"{face_score:.3f}" if face_score is not None else "No current score"
+    if cutoff is not None:
+        face_detail += f"  •  Match threshold {cutoff:.3f}"
+
+    liveness = report["liveness"]
+    sample = liveness.get("released_preview") or {}
+    sample_detail = sample.get("frame_status", "Waiting for a sample").capitalize()
+    score = number(sample.get("spoof_score"))
+    if score is not None:
+        sample_detail += f"  •  Spoof score {score:.3f}"
+    if liveness["active_source"] == "stub / SIMULATED":
+        sample_detail = "Simulated"
+    elif liveness["active_source"] == "verified model unavailable":
+        sample_detail = "Liveness unavailable"
+
+    scan = liveness.get("last_completed_scan")
+    if scan is None:
+        scan_detail = "Waiting for a scan" if liveness["active_source"] == "AENet-Full preview" else "Unavailable"
+    else:
+        count = scan["valid_frames"]
+        frames = "frame" if count == 1 else "frames"
+        scan_detail = f"{scan['decision'].capitalize()}  •  {count} valid {frames}  •  {scan['local_time']}"
+
+    attendance_detail = "Saving disabled"
+    if attendance is not None:
+        mode = "Automatic" if attendance.automatic_record else "Manual"
+        session = "Session active" if attendance.service.session_id is not None else "Session inactive"
+        attendance_detail = f"{mode}  •  Test data only  •  {session}"
+    return face_detail, sample_detail, scan_detail, attendance_detail
+
+
 class DeveloperDiagnostics:
-    """One reusable, screen-bounded Toplevel with scrollable read-only tabs."""
+    """One reusable window with a review summary and optional technical data."""
     INTERVAL = .25
 
     def __init__(self, root, on_close, latest_completed=None, *, unverified_workspace=False):
@@ -134,44 +171,48 @@ class DeveloperDiagnostics:
         from tkinter.scrolledtext import ScrolledText
         self.window = tk.Toplevel(root)
         self.window.withdraw()
-        self.window.title("Developer diagnostics | Facial Attendance")
+        self.window.title("Review details · Facial Attendance")
         self.window.protocol("WM_DELETE_WINDOW", on_close)
-        width = min(1000, max(320, root.winfo_screenwidth()-80))
-        height = min(680, max(240, root.winfo_screenheight()-160))
+        width = min(740, max(320, root.winfo_screenwidth()-80))
+        height = min(440, max(240, root.winfo_screenheight()-160))
         self.window.geometry(f"{width}x{height}+40+60")
         self.window.minsize(min(620, width), min(360, height))
         host = ttk.Frame(self.window, padding=12)
         host.pack(fill="both", expand=True)
-        warning = ("Local verification preview • Attendance saving disabled"
-                   if unverified_workspace else "Liveness SIMULATED • Identity UNVERIFIED • Genuine saving disabled")
-        warning_color = "#a04400"
         if unverified_workspace:
-            from .dashboard import ACCENT, BG, CARD, TEXT, TONES
+            from .dashboard import ACCENT, BG, CARD, TEXT
             self.window.configure(background=BG)
-            warning_color = TONES["warning"]
-        ttk.Label(host, text=warning,
-                  foreground=warning_color, wraplength=600).pack(anchor="w")
-        ttk.Label(host, text="Raw current inference and display history are separate. No images or embeddings appear here.",
-                  wraplength=600).pack(anchor="w", pady=(4, 8))
-        controls = ttk.Frame(host)
-        controls.pack(fill="x", pady=(0, 4))
-        self.pause_button = ttk.Button(controls, text="Pause refresh", command=self.toggle_pause)
-        self.pause_button.pack(side="left")
-        self.copy_button = ttk.Button(controls, text="Copy displayed JSON", command=self.copy_json)
-        self.copy_button.pack(side="left", padx=6)
-        self.export_button = ttk.Button(controls, text="Export privacy-safe snapshot", command=self.export_json)
-        self.export_button.pack(side="left")
-        self.completed_button = ttk.Button(host, text="Capture latest completed inference (historical)",
-                                           command=self.capture_completed)
-        self.completed_button.pack(anchor="w", pady=4)
+
         self.status = tk.StringVar()
-        ttk.Label(host, textvariable=self.status, wraplength=560).pack(anchor="w")
+        ttk.Label(host, textvariable=self.status, style="Quiet.TLabel", wraplength=500).pack(anchor="w")
         self.notice = tk.StringVar()
-        ttk.Label(host, textvariable=self.notice, wraplength=560).pack(anchor="w", pady=(0, 4))
-        self.notebook = ttk.Notebook(host)
-        self.notebook.pack(fill="both", expand=True)
+        body = ttk.Frame(host)
+        body.pack(fill="both", expand=True, pady=(12, 8))
+        self.overview = ttk.Frame(body, style="Card.TFrame", padding=(16, 6))
+        self.overview.pack(fill="x")
+        self.overview.columnconfigure(1, weight=1)
+        self._review_values = []
+        for row, caption in enumerate(("Face match score", "Latest liveness sample", "Last 3-second scan", "Attendance")):
+            line = row*2
+            ttk.Label(self.overview, text=caption, style="CardQuiet.TLabel").grid(
+                row=line, column=0, sticky="nw", padx=(0, 20), pady=12)
+            value = tk.StringVar(value="—")
+            self._review_values.append(value)
+            ttk.Label(self.overview, textvariable=value, style="Card.TLabel",
+                      font=("TkDefaultFont", 12, "bold"), wraplength=315, justify="left").grid(
+                row=line, column=1, sticky="nw", pady=12)
+            if row < 3:
+                ttk.Separator(self.overview).grid(row=line+1, column=0, columnspan=2, sticky="ew")
+
+        self.technical_controls = ttk.Frame(body)
+        self.copy_button = ttk.Button(self.technical_controls, text="Copy JSON", command=self.copy_json)
+        self.copy_button.pack(side="left", padx=(0, 6))
+        self.completed_button = ttk.Button(self.technical_controls, text="Show last completed result",
+                                           command=self.capture_completed)
+        self.completed_button.pack(side="left")
+        self.notebook = ttk.Notebook(body)
         self.texts = []
-        for title in ("Runtime and presentation", "Raw current SYS-02", "Completed inference (historical)"):
+        for title in ("Model details", "Current result", "Previous result"):
             page = ttk.Frame(self.notebook)
             self.notebook.add(page, text=title)
             text = ScrolledText(page, width=60, height=15, wrap="none", state="disabled", exportselection=False)
@@ -184,6 +225,16 @@ class DeveloperDiagnostics:
             text.pack(fill="both", expand=True)
             self.texts.append(text)
         self.runtime, self.payload, self.completed = self.texts
+        controls = ttk.Frame(host)
+        controls.pack(fill="x")
+        self.pause_button = ttk.Button(controls, text="Pause updates", command=self.toggle_pause)
+        self.pause_button.pack(side="left", padx=(0, 6))
+        self.export_button = ttk.Button(controls, text="Export snapshot", command=self.export_json)
+        self.export_button.pack(side="left")
+        self.technical_button = ttk.Button(controls, text="Technical details", command=self.toggle_technical)
+        self.technical_button.pack(side="right")
+        ttk.Label(host, textvariable=self.notice, style="Quiet.TLabel", wraplength=530).pack(anchor="w", pady=(4, 0))
+        self._technical_visible = False
         self.visible = False
         self.paused = False
         self.raw_refresh_requested = False
@@ -197,6 +248,8 @@ class DeveloperDiagnostics:
         self._update_status()
 
     def show(self):
+        if self._technical_visible:
+            self.toggle_technical()
         self.visible = True
         self._next_refresh = 0.
         self.raw_refresh_requested = not self.paused
@@ -208,15 +261,41 @@ class DeveloperDiagnostics:
         self.visible = False
         self.window.withdraw()
 
+    def toggle_technical(self):
+        self._technical_visible = not self._technical_visible
+        if self._technical_visible:
+            self.overview.pack_forget()
+            self.technical_controls.pack(fill="x", pady=(0, 8))
+            self.notebook.pack(fill="both", expand=True)
+        else:
+            self.technical_controls.pack_forget()
+            self.notebook.pack_forget()
+            self.overview.pack(fill="x")
+        self.technical_button.configure(text="Back to overview" if self._technical_visible else "Technical details")
+        self.notice.set("")
+        self._update_status()
+
+    def _snapshot_index(self):
+        return self.notebook.index(self.notebook.select()) if self._technical_visible else 0
+
     def refresh(self, app, now):
         if not self.visible or self.paused or now < self._next_refresh:
             return
         self._next_refresh = now + self.INTERVAL
         report = runtime_report(app, now)
+        review_changed = False
+        if self._review_values:
+            fields = review_details(report, getattr(app, "_attendance_verification", None))
+            for variable, value in zip(self._review_values, fields):
+                if variable.get() != value:
+                    variable.set(value)
+                    review_changed = True
         # The separately refreshed raw tab stays accurate; avoid duplicating it.
         report.pop("raw_current_sys02")
         text = json.dumps(report, indent=2, allow_nan=False)
         if text == self._last_runtime:
+            if review_changed:
+                self._stamp(0, "runtime")
             return
         replace_text(self.runtime, text)
         self._stamp(0, "runtime")
@@ -238,8 +317,15 @@ class DeveloperDiagnostics:
         self._update_status()
 
     def _update_status(self):
-        index = self.notebook.index(self.notebook.select())
+        index = self._snapshot_index()
         meta = self._snapshot_meta.get(index)
+        if not self._technical_visible:
+            update = "Updates paused" if self.paused else "Live updates"
+            if meta:
+                stamp = datetime.fromisoformat(meta["timestamp"]).astimezone().strftime("%H:%M:%S")
+                update += f"  •  {stamp}"
+            self.status.set(update)
+            return
         source = ("HISTORICAL completed inference — diagnostic only" if index == 2 else
                   "FROZEN diagnostic snapshot — not current authorization" if self.paused else "current diagnostic snapshot")
         self.status.set(f"{'PAUSED' if self.paused else 'LIVE'} • {source} • Snapshot: "
@@ -249,7 +335,7 @@ class DeveloperDiagnostics:
         if not self.visible:
             return
         self.paused = not self.paused
-        self.pause_button.configure(text="Resume refresh" if self.paused else "Pause refresh")
+        self.pause_button.configure(text="Resume updates" if self.paused else "Pause updates")
         if not self.paused:
             self._next_refresh = 0.
             self.raw_refresh_requested = True
@@ -266,7 +352,7 @@ class DeveloperDiagnostics:
             return False
         replace_text(self.completed, json.dumps(asdict(record.state), indent=2, allow_nan=False))
         self.paused = True
-        self.pause_button.configure(text="Resume refresh")
+        self.pause_button.configure(text="Resume updates")
         self._stamp(2, "completed_inference", record.timestamp)
         self.notebook.select(2)
         self._update_status()
@@ -276,7 +362,7 @@ class DeveloperDiagnostics:
     def copy_json(self):
         if not self.visible:
             return False
-        index = self.notebook.index(self.notebook.select())
+        index = self._snapshot_index()
         text = self.texts[index].get("1.0", "end-1c")
         if not text:
             self.notice.set("No displayed JSON to copy.")
@@ -294,7 +380,7 @@ class DeveloperDiagnostics:
     def export_json(self):
         if not self.visible:
             return False
-        index = self.notebook.index(self.notebook.select())
+        index = self._snapshot_index()
         try:
             data = json.loads(self.texts[index].get("1.0", "end-1c"))
             snapshot = privacy_safe_snapshot(data, self._snapshot_meta.get(index, {}), paused=self.paused)

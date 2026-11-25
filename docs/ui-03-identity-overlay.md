@@ -1,5 +1,7 @@
 # UI-03 identity label above the webcam outline
 
+> Historical verification of the original identity label. Both modes now center the name within a label as wide as the face outline. See the [current interface](../README.md#walk-through-the-app).
+
 Prepared 21 November 2026 on `feature/ui03-ui04-emotion-integration`, in the existing isolated worktree. This is a small display addition; owner physical acceptance and independent review are pending.
 
 ## Existing path and implementation

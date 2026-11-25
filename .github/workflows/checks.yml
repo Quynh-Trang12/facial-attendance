@@ -23,9 +23,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version-file: .python-version
-      - name: Install image-decoding dependency for fixture tests
-        run: python -m pip install Pillow==11.2.1
-      - name: Validate configuration and dataset loaders with generated fixtures
+      - name: Install image and array dependencies for fixture tests
+        run: |
+          grep -E '^(Pillow|numpy|opencv-python)==' requirements.txt > "$RUNNER_TEMP/source-test-requirements.txt"
+          python -m pip install -r "$RUNNER_TEMP/source-test-requirements.txt"
+      - name: Run source and application fixture tests
         run: python -m unittest discover -s tests -v
       - name: Validate Python and TOML syntax
         run: |
@@ -76,7 +78,7 @@ jobs:
           fi
           # macOS uses native arm64 wheels from PyPI, not the CUDA index.
           python -m pip install -r requirements.txt
-      - name: Run configuration and loader tests
+      - name: Run CPU regression tests
         run: python -m unittest discover -s tests -v
       - name: Run a real CPU optimizer/inference step
         id: runtime

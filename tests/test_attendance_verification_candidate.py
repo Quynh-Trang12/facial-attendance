@@ -33,10 +33,14 @@ class CandidateVerificationTests(unittest.TestCase):
         self.people = {PERSON.person_id: PERSON.name, "second": "Second fixture"}
         self.now = 10.0
         self.token = (1, 0)
+        self.setup_verifier()
+
+    def setup_verifier(self, *, automatic_retry=False, automatic_record=False):
         self.verifier = AttendanceVerification(
             AttendanceStore(self.path), REGISTRATION_RELEASE,
             {"checkpoint_sha256": PERSON.checkpoint_sha256, "preprocessing_version": PERSON.preprocessing_version},
-            self.people.get, max_age_seconds=1., clock=lambda: self.now,
+            self.people.get, max_age_seconds=1., automatic_retry=automatic_retry,
+            automatic_record=automatic_record, clock=lambda: self.now,
         )
         self.service = self.verifier.service
         self.session = self.service.start_session()
@@ -65,6 +69,65 @@ class CandidateVerificationTests(unittest.TestCase):
             return []
         with closing(sqlite3.connect(self.path)) as db:
             return db.execute("SELECT person_id, session_id, status FROM attendance ORDER BY recorded_at").fetchall()
+
+    def stable_auto_record(self, *, identity=PERSON):
+        for _ in range(8):
+            self.sample(identity=identity, step=.4)
+            self.assertIsNone(self.verifier.record_automatically())
+        self.assertTrue(self.sample(identity=identity, step=.4))
+        return self.verifier.record_automatically()
+
+    def test_automatic_record_is_delayed_and_writes_once_per_person_per_session(self):
+        self.setup_verifier(automatic_record=True)
+        self.assertEqual(self.stable_auto_record().code, "recorded")
+        for _ in range(5):
+            self.assertTrue(self.sample(step=.4))
+            self.assertIsNone(self.verifier.record_automatically())
+        self.assertEqual(self.records(), [(PERSON.person_id, self.session, "present")])
+
+        self.service.end_session()
+        second_session = self.service.start_session()
+        self.verifier.sync_session()
+        self.assertEqual(self.stable_auto_record().code, "recorded")
+        self.assertEqual(self.records(), [(PERSON.person_id, self.session, "present"),
+                                         (PERSON.person_id, second_session, "present")])
+
+    def test_automatic_record_restarts_delay_after_interruption_or_identity_switch(self):
+        self.setup_verifier(automatic_record=True)
+        for _ in range(8):
+            self.sample(step=.4)
+        self.verifier.invalidate("no_face")
+        self.assertIsNone(self.verifier.record_automatically())
+        unknown = replace(PERSON, person_id=None, name=None, score=.10, accepted=False)
+        for _ in range(9):
+            self.assertFalse(self.sample(identity=unknown, step=.4))
+            self.assertIsNone(self.verifier.record_automatically())
+        for _ in range(8):
+            self.sample(step=.4)
+        self.assertEqual(self.records(), [])
+        switched = replace(PERSON, person_id="second", name="Second fixture")
+        self.assertEqual(self.stable_auto_record(identity=switched).record.person_id, "second")
+
+    def test_automatic_record_rejects_expired_capture_and_handles_sqlite_failure(self):
+        self.setup_verifier(automatic_record=True)
+        for _ in range(9):
+            self.sample(step=.4)
+        self.now += 1.01
+        self.assertIsNone(self.verifier.record_automatically())
+        self.assertEqual(self.records(), [])
+        self.path.mkdir()
+        self.assertEqual(self.stable_auto_record().code, "save_failed")
+        self.path.rmdir()
+        self.assertTrue(self.sample(step=.4))
+        self.assertIsNone(self.verifier.record_automatically())
+        self.assertEqual(self.records(), [])
+        self.verifier.invalidate("no_face")
+        self.assertEqual(self.stable_auto_record().code, "recorded")
+
+    def test_manual_mode_can_verify_without_automatic_recording(self):
+        self.assertIsNone(self.stable_auto_record())
+        self.assertEqual(self.records(), [])
+        self.assertEqual(self.service.record().code, "recorded")
 
     def test_gate_passing_capture_is_bound_to_the_manual_record_and_a_second_session(self):
         for _ in range(4):
@@ -118,6 +181,58 @@ class CandidateVerificationTests(unittest.TestCase):
         self.assertEqual(self.records(), [])
         self.verifier.reset()
         self.five()
+
+    def test_auto_retry_rejects_old_results_and_requires_five_fresh_samples(self):
+        self.setup_verifier(automatic_retry=True)
+        self.five()
+        token, request = self.capture()
+        self.assertFalse(self.verifier.accept(token, request, (Completion(request.context, PERSON),),
+                                              prediction(THRESHOLD)))
+        self.assertEqual(self.service.record().code, "spoof")
+        self.assertTrue(self.verifier.retrying_after_spoof("spoof"))
+
+        queued_token = (1, token[1] + 1)
+        queued_request = PrototypeController().begin_capture(FRAME, [BOX])
+        self.verifier.expect(queued_token, queued_request, self.now - .1)
+        self.assertFalse(self.verifier.accept(queued_token, queued_request,
+                                              (Completion(queued_request.context, PERSON),), prediction()))
+        self.assertEqual(self.service.record().code, "spoof")
+        self.assertTrue(self.verifier.retrying_after_spoof("spoof"))
+        self.token = queued_token
+
+        for _ in range(4):
+            self.assertFalse(self.sample())
+            self.assertTrue(self.verifier.retrying_after_spoof("verification_pending"))
+            self.assertFalse(self.service.state.can_record)
+        self.assertTrue(self.sample())
+        self.assertEqual(self.service.session_id, self.session)
+        self.assertFalse(self.verifier.retrying_after_spoof("verification_pending"))
+        self.assertEqual(self.records(), [])
+        self.assertEqual(self.service.record().code, "recorded")
+        self.assertEqual(self.records(), [(PERSON.person_id, self.session, "present")])
+
+    def test_second_spoof_holds_until_manual_retry_or_a_new_session(self):
+        self.setup_verifier(automatic_retry=True)
+        for _ in range(2):
+            self.assertFalse(self.sample(result=prediction(THRESHOLD)))
+        self.assertFalse(self.verifier.retrying_after_spoof("spoof"))
+        self.verifier.invalidate("no_face")
+        for _ in range(6):
+            self.assertFalse(self.sample())
+        self.assertEqual(self.service.record().code, "spoof")
+        self.assertEqual(self.records(), [])
+
+        self.verifier.reset()
+        self.assertFalse(self.sample(result=prediction(THRESHOLD)))
+        self.assertTrue(self.verifier.retrying_after_spoof("spoof"))
+        self.assertFalse(self.sample(result=prediction(THRESHOLD)))
+        self.assertFalse(self.verifier.retrying_after_spoof("spoof"))
+
+        self.service.end_session()
+        self.service.start_session()
+        self.verifier.sync_session()
+        self.assertFalse(self.sample(result=prediction(THRESHOLD)))
+        self.assertTrue(self.verifier.retrying_after_spoof("spoof"))
 
     def test_unknown_face_loss_and_person_switch_reset_existing_authority(self):
         self.five()
@@ -237,6 +352,28 @@ class CandidateAppTests(unittest.TestCase):
         app._tick()
         verifier.invalidate.assert_called_with("no_face")
 
+    def test_gui_automatically_records_only_after_current_verification(self):
+        app = self.app
+        verifier = Mock(automatic_record=True)
+        verifier.accept.return_value = True
+        app._attendance_verification = verifier
+        app._registration_requested = False
+        app._dashboard = Mock()
+        app._render = Mock()
+        app.liveness_preview = Mock()
+        app._tick()
+        app.detector.finish([webcam.BOX])
+        app._tick()
+        verifier.record_automatically.assert_not_called()
+        args = app.inference.job[1]
+        app.inference.finish((evaluate_adapters(args, unverified_preview=True), prediction()))
+        app._tick()
+        verifier.record_automatically.assert_called_once_with()
+        app._dashboard.attendance_view.show_record_result.assert_called_once_with(
+            verifier.record_automatically.return_value)
+        app._tick()
+        verifier.record_automatically.assert_called_once_with()
+
     def test_cli_candidate_requires_explicit_isolated_databases(self):
         flags = ["--local-workspace", "--face-checkpoint", "face.pt", "--emotion-checkpoint", "emotion.pt",
                  "--attendance", "--attendance-verification-test"]
@@ -250,6 +387,18 @@ class CandidateAppTests(unittest.TestCase):
                     main([*flags, *arguments])
                 self.assertEqual(error.exception.code, 2)
                 self.assertIn(message, stderr.getvalue())
+
+    def test_cli_auto_retry_requires_verification_test_mode(self):
+        with redirect_stderr(StringIO()) as stderr, self.assertRaises(SystemExit) as error:
+            main(["--attendance-auto-retry-test"])
+        self.assertEqual(error.exception.code, 2)
+        self.assertIn("requires --attendance-verification-test", stderr.getvalue())
+
+    def test_cli_auto_record_requires_verification_test_mode(self):
+        with redirect_stderr(StringIO()) as stderr, self.assertRaises(SystemExit) as error:
+            main(["--attendance-auto-record-test"])
+        self.assertEqual(error.exception.code, 2)
+        self.assertIn("requires --attendance-verification-test", stderr.getvalue())
 
     def test_gui_delivers_current_worker_failure_to_attendance(self):
         app = self.app

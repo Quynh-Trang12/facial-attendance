@@ -278,9 +278,69 @@ class AttendanceWidgetTests(unittest.TestCase):
         self.dashboard_type = Dashboard
         self.parent = ttk.Frame(root)
 
-    def dashboard(self, service=None, *, retry_attendance=None):
+    def dashboard(self, service=None, *, retry_attendance=None, retrying_after_spoof=None, automatic_record=False):
         return self.dashboard_type(self.parent, restart_camera=lambda: None, switch_mode=lambda: None,
-                                   trained_liveness=True, attendance=service, retry_attendance=retry_attendance)
+                                   trained_liveness=True, attendance=service, retry_attendance=retry_attendance,
+                                   retrying_after_spoof=retrying_after_spoof, automatic_record=automatic_record)
+
+    def show_inspector(self):
+        self.root.geometry("820x390")
+        self.parent.pack(fill="both", expand=True)
+        self.parent.columnconfigure(0, weight=1)
+        self.parent.columnconfigure(1, minsize=270)
+        self.parent.rowconfigure(2, weight=1)
+        self.root.deiconify()
+        self.root.update()
+
+    def test_inspector_scrolls_in_small_steps_and_keeps_position_on_content_resize(self):
+        from tkinter import ttk
+        from types import SimpleNamespace
+
+        dashboard = self.dashboard()
+        filler = ttk.Frame(dashboard.results, height=300)
+        filler.pack(fill="x")
+        self.show_inspector()
+        area = dashboard._scroll_area
+        self.assertTrue(dashboard._scrollbar.winfo_ismapped())
+        aqua = self.root.tk.call("tk", "windowingsystem") == "aqua"
+        event = SimpleNamespace(widget=dashboard.results, delta=-1 if aqua else -120)
+        self.assertEqual(dashboard._scroll_inspector(event), "break")
+        top = area.canvasy(0)
+        self.assertEqual(top, 8 if aqua else 36)
+
+        filler.configure(height=420)
+        self.root.update()
+        self.assertEqual(area.canvasy(0), top)
+        area.yview_moveto(1)
+        filler.configure(height=300)
+        self.root.update()
+        self.assertEqual(area.yview()[1], 1.0)
+
+    def test_inspector_keeps_registration_button_in_place_as_messages_wrap(self):
+        from tkinter import ttk
+
+        service = AttendanceService(AttendanceStore(self.path), policy=POLICY,
+                                    registered_name={PERSON.person_id: PERSON.name}.get)
+        dashboard = self.dashboard(service, automatic_record=True)
+        panel = dashboard.attendance_view
+        prompt_slot, prompt = dashboard.message_slot(dashboard.results, text="Registration saved.")
+        dashboard.reserve_message_lines(prompt_slot, 3)
+        prompt_slot.pack(fill="x")
+        button = ttk.Button(dashboard.results, text="Register new person")
+        button.pack(anchor="w")
+        self.show_inspector()
+        panel.session.invoke()
+        self.root.update()
+        button_y = button.winfo_y()
+        prompt_height = prompt.winfo_reqheight()
+
+        service.invalidate_capture("spoof")
+        panel.refresh()
+        prompt.configure(text="Waiting for one unregistered face. Ask the new person to face the camera.")
+        self.root.update()
+        self.assertIn("Spoof detected", panel.feedback.cget("text"))
+        self.assertGreater(prompt.winfo_reqheight(), prompt_height)
+        self.assertEqual(button.winfo_y(), button_y)
 
     def test_opt_in_panel_preserves_preview_and_cannot_write_without_adapter(self):
         preview = self.dashboard()
@@ -342,6 +402,60 @@ class AttendanceWidgetTests(unittest.TestCase):
             panel.refresh()
             self.assertEqual(panel.confirm.instate(("!disabled",)), sequence == 5)
         self.assertFalse(self.path.exists())
+
+    def test_widget_shows_spoof_during_auto_retry_and_manual_button_after_second_spoof(self):
+        from facial_attendance.attendance.verification import AttendanceVerification
+        from facial_attendance.ui.trial_profiles import REGISTRATION_RELEASE
+        from facial_attendance.ui.webcam_prototype import PrototypeController
+
+        now = 10.
+        verifier = AttendanceVerification(
+            AttendanceStore(self.path), REGISTRATION_RELEASE,
+            {"checkpoint_sha256": PERSON.checkpoint_sha256, "preprocessing_version": PERSON.preprocessing_version},
+            {PERSON.person_id: PERSON.name}.get, max_age_seconds=1., automatic_retry=True, clock=lambda: now,
+        )
+        panel = self.dashboard(verifier.service, retry_attendance=verifier.reset,
+                               retrying_after_spoof=verifier.retrying_after_spoof).attendance_view
+        panel.session.invoke()
+        verifier.sync_session()
+        spoof = {**REGISTRATION_RELEASE, "status": "spoof", "spoof_score": .8, "allow_attendance": False}
+        for sequence in range(1, 3):
+            now += .3
+            request = PrototypeController().begin_capture(FRAME, [BOX])
+            token = (1, sequence)
+            verifier.expect(token, request, now)
+            verifier.accept(token, request, (Completion(request.context, PERSON),), spoof)
+            panel.refresh(preview_live=True)
+            self.assertIn("spoof", panel.feedback.cget("text").lower())
+            self.assertTrue(panel.confirm.instate(("disabled",)))
+            self.assertEqual(panel.retry_button.winfo_manager(), "" if sequence == 1 else "pack")
+
+        panel.retry_button.invoke()
+        self.assertEqual(verifier.service.state.code, "verification_pending")
+        self.assertFalse(self.path.exists())
+
+    def test_auto_record_panel_stays_stable_between_current_samples(self):
+        service = AttendanceService(AttendanceStore(self.path), policy=POLICY,
+                                    registered_name={PERSON.person_id: PERSON.name}.get, clock=lambda: 10.)
+        panel = self.dashboard(service, automatic_record=True).attendance_view
+        panel.session.invoke()
+        pending = panel.feedback.cget("text")
+        request = service.begin_capture(FRAME, [BOX], 10.)
+        service.complete(Completion(request.context, PERSON), Completion(request.context, LIVE))
+        panel.refresh()
+        self.assertEqual(panel.feedback.cget("text"), pending)
+        self.assertEqual(panel.confirm.winfo_manager(), "")
+        panel.confirm.invoke()
+        self.assertFalse(self.path.exists())
+        panel.show_record_result(service.record())
+        self.assertEqual(panel.feedback.cget("text"), "Attendance recorded")
+        self.assertIn(PERSON.name, panel.history.cget("text"))
+        service.invalidate_capture("verification_pending")
+        panel.refresh()
+        self.assertEqual(panel.feedback.cget("text"), "Attendance recorded")
+        service.invalidate_capture("spoof")
+        panel.refresh()
+        self.assertIn("Spoof", panel.feedback.cget("text"))
 
     def test_widget_reports_persisted_success_and_displays_failure_without_success(self):
         service = AttendanceService(AttendanceStore(self.path), policy=POLICY,

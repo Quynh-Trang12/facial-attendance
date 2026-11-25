@@ -16,6 +16,7 @@ from .service import AttendanceService, VerificationPolicy
 
 
 DECISION_POLICY = "aenet-full-5-live-1s-gap-0.5s-attendance-candidate-v1"
+AUTO_RECORD_SECONDS = 3.0
 
 
 @dataclass(frozen=True)
@@ -29,7 +30,7 @@ class AttendanceVerification:
     """Consume fresh, original-context results on the Tk thread. Never use preview summaries."""
 
     def __init__(self, store, release, recognition, registered_name, *,
-                 max_age_seconds, clock=monotonic):
+                 max_age_seconds, automatic_retry=False, automatic_record=False, clock=monotonic):
         if any(release.get(key) != value for key, value in REGISTRATION_RELEASE.items()):
             raise ValueError("The candidate requires the pinned AENet-Full release.")
         self._policy = VerificationPolicy(release["model_version"], REGISTRATION_PREPROCESSING, DECISION_POLICY,
@@ -40,6 +41,10 @@ class AttendanceVerification:
         self._gate = TemporalLivenessGate()
         self._session_id = None
         self._last_token = None
+        self._automatic_retry = automatic_retry
+        self.automatic_record = automatic_record
+        self._recorded_people = set()
+        self._reset_retry_budget()
         self._clear_attempt()
 
     def _clear_attempt(self):
@@ -49,19 +54,33 @@ class AttendanceVerification:
         self._started_at = self._clock()
         self._person_id = None
         self._region = None
+        self._auto_write_failed = False
 
     def sync_session(self):
         session_id = self.service.session_id
         if session_id != self._session_id:
             self._session_id = session_id
+            self._recorded_people.clear()
+            self._reset_retry_budget()
             self._clear_attempt()
 
     def reset(self):
-        """An explicit camera retry starts a fresh attempt, including after spoof."""
+        """An explicit retry starts a fresh attempt and restores the retry budget."""
+        self._reset_retry_budget()
         self._clear_attempt()
         self.service.reset()
 
+    def _reset_retry_budget(self):
+        self._auto_retry_available = self._automatic_retry
+        self._auto_retry_in_progress = False
+
+    def retrying_after_spoof(self, state_code):
+        return ((state_code == "spoof" and self._auto_retry_available)
+                or (state_code == "verification_pending" and self._auto_retry_in_progress))
+
     def invalidate(self, code="verification_pending"):
+        if code == "spoof":
+            self._auto_retry_in_progress = False
         self._clear_attempt()
         self.service.invalidate_capture(code)
 
@@ -73,7 +92,10 @@ class AttendanceVerification:
 
     def expect(self, token, request, captured_at):
         """Register just the current detector result whose existing inference job was submitted."""
-        if not self._session_id or self.service.state.code == "spoof":
+        if not self._session_id:
+            return
+        retry_after_spoof = self.service.state.code == "spoof"
+        if retry_after_spoof and not self._auto_retry_available:
             return
         if self._last_token is not None and token <= self._last_token:
             return
@@ -93,6 +115,13 @@ class AttendanceVerification:
         if not self._fresh(captured_at):
             self.invalidate("stale")
             return
+
+        if retry_after_spoof:
+            # The spoof already discarded the old attempt. Only a fresh capture
+            # can spend the one retry and clear the service's spoof block.
+            self._auto_retry_available = False
+            self._auto_retry_in_progress = True
+            self.service.reset()
 
         if self._region is not None:
             generation, box, dimensions, previous_at = self._region
@@ -150,7 +179,26 @@ class AttendanceVerification:
             return False
         evidence = Liveness("live", "accepted_live", gated["spoof_score"], self._policy.liveness_model,
                             self._policy.liveness_preprocessing, self._policy.liveness_decision, "model")
-        return self.service.complete(Completion(context, identity), Completion(context, evidence))
+        verified = self.service.complete(Completion(context, identity), Completion(context, evidence))
+        if verified:
+            self._auto_retry_in_progress = False
+        return verified
+
+    def record_automatically(self):
+        """Write through the service only on a current, sustained live match."""
+        if (not self.automatic_record or self._session_id is None or self._session_id != self.service.session_id
+                or self._person_id is None or self._person_id in self._recorded_people
+                or self._auto_write_failed or self._gate.started is None or not self.service.state.can_record):
+            return None
+        # The existing gate measures capture time and is reset on a break in continuity.
+        if self._gate.last_time - self._gate.started < AUTO_RECORD_SECONDS:
+            return None
+        result = self.service.record()
+        if result.code in {"recorded", "already_recorded"}:
+            self._recorded_people.add(self._person_id)
+        elif result.code == "save_failed":
+            self._auto_write_failed = True
+        return result
 
     def _fresh(self, captured_at):
         return (type(captured_at) in (int, float) and self._started_at <= captured_at

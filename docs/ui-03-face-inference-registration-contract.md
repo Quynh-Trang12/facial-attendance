@@ -1,5 +1,7 @@
 # UI-03.1 — Face inference and registration contract
 
+> Historical evidence for the Face integration and controlled registration. See [current registration and attendance](attendance-demo.md#how-verification-works).
+
 Prepared 18 November 2026 on `feature/ui03-ui04-emotion-integration`, based on verified SYS-05 `798f2e7b9484a682e50c70b0b4689cd2fde316dc`. The trained Face preview and controlled generated-input registration mechanics are now implemented; genuine live enrollment/attendance remain blocked by missing trained liveness. See [current implementation and verification](ui-03-integration-delivery.md). Owner/reviewer agreement is pending.
 
 ## Sources and selected decision

@@ -56,7 +56,7 @@ def preview_results(state, view, emotion, *, scan, trained_liveness, trained_emo
             "idle": "Waiting for camera", "no_face": "No face detected", "multiple_faces": "Multiple faces",
         }[phase], "Show one face to the camera.")
     elif view is not None and view.identity_name:
-        identity = Result(view.identity_name, "Identity match · Unverified", "info")
+        identity = Result(view.identity_name, "Preview match", "info")
     elif view is not None and view.identity == "Unknown":
         identity = Result("Unknown", "Open Developer Mode to register.", "warning")
     elif any(error.module == "recognition" for error in state.errors):
@@ -147,7 +147,7 @@ def apply_theme(root):
 
 class Dashboard:
     def __init__(self, parent, *, restart_camera, switch_mode, trained_liveness, attendance=None,
-                 retry_attendance=None):
+                 retry_attendance=None, retrying_after_spoof=None, automatic_record=False):
         import tkinter as tk
         from tkinter import font, ttk
 
@@ -174,7 +174,8 @@ class Dashboard:
         self.inspector.rowconfigure(1, weight=1)
         ttk.Label(self.inspector, text="Analysis results", style="Card.TLabel",
                   font=("TkDefaultFont", 14, "bold")).grid(row=0, column=0, sticky="w", pady=(0, 9))
-        self._scroll_area = tk.Canvas(self.inspector, width=1, height=1, background=CARD, highlightthickness=0)
+        self._scroll_area = tk.Canvas(self.inspector, width=1, height=1, background=CARD,
+                                      highlightthickness=0, yscrollincrement=1)
         self._scroll_area.grid(row=1, column=0, sticky="nsew")
         self._scrollbar = ttk.Scrollbar(self.inspector, orient="vertical", command=self._scroll_area.yview)
         self.inspector.columnconfigure(1, minsize=self._scrollbar.winfo_reqwidth() + 3)
@@ -184,6 +185,12 @@ class Dashboard:
         self.results = ttk.Frame(self._scroll_area, style="Card.TFrame")
         self._inspector_window = self._scroll_area.create_window(0, 0, window=self.results, anchor="nw")
         self._wrapped_labels = []
+        self._inspector_width = None
+        self._scroll_bounds = None
+        self._scrollbar_visible = False
+        self._scroll_update_pending = False
+        self._aqua = parent.tk.call("tk", "windowingsystem") == "aqua"
+        self._message_line_height = font.nametofont("TkDefaultFont", root=parent).metrics("linespace")
         self.results.bind("<Configure>", self._update_scroll_region)
         self._scroll_area.bind("<Configure>", self._fit_inspector)
         parent.winfo_toplevel().bind("<MouseWheel>", self._scroll_inspector, add="+")
@@ -222,7 +229,9 @@ class Dashboard:
         self.attendance_view = None
         if attendance is not None:
             from .attendance_view import AttendanceView
-            self.attendance_view = AttendanceView(self, attendance, retry_verification=retry_attendance)
+            self.attendance_view = AttendanceView(self, attendance, retry_verification=retry_attendance,
+                                                  retrying_after_spoof=retrying_after_spoof,
+                                                  automatic_record=automatic_record)
         self._camera_state = None
         self._results = None
         self._preview_phase = "idle"
@@ -232,26 +241,63 @@ class Dashboard:
         self._wrapped_labels.append(label)
         label.configure(wraplength=max(160, self._scroll_area.winfo_width() - 4))
 
+    def message_slot(self, parent, **label_options):
+        from tkinter import ttk
+
+        slot = ttk.Frame(parent, style="Card.TFrame")
+        slot.columnconfigure(0, weight=1)
+        label = ttk.Label(slot, justify="left", **label_options)
+        label.grid(row=0, column=0, sticky="new")
+        self.wrap_label(label)
+        return slot, label
+
+    def reserve_message_lines(self, slot, lines):
+        slot.rowconfigure(0, minsize=self._message_line_height * lines + 4 if lines else 0)
+
     def _fit_inspector(self, event):
-        self._scroll_area.itemconfigure(self._inspector_window, width=event.width)
-        for label in self._wrapped_labels:
-            label.configure(wraplength=max(1, event.width - 4))
+        if event.width != self._inspector_width:
+            self._inspector_width = event.width
+            self._scroll_area.itemconfigure(self._inspector_window, width=event.width)
+            for label in self._wrapped_labels:
+                label.configure(wraplength=max(1, event.width - 4))
         self._update_scroll_region()
 
     def _update_scroll_region(self, _event=None):
-        self._scroll_area.configure(scrollregion=self._scroll_area.bbox(self._inspector_window))
-        if self.results.winfo_reqheight() > self._scroll_area.winfo_height():
-            self._scrollbar.grid()
-        else:
-            self._scrollbar.grid_remove()
-            self._scroll_area.yview_moveto(0)
+        if not self._scroll_update_pending:
+            self._scroll_update_pending = True
+            self._scroll_area.after_idle(self._sync_scroll_region)
+
+    def _sync_scroll_region(self):
+        self._scroll_update_pending = False
+        bounds = self._scroll_area.bbox(self._inspector_window)
+        if bounds is None:
+            return
+        _, top, _, bottom = bounds
+        viewport_height = self._scroll_area.winfo_height()
+        if bounds != self._scroll_bounds:
+            # Keep the same pixel at the top when content below it changes size.
+            scroll_top = self._scroll_area.canvasy(0)
+            self._scroll_area.configure(scrollregion=bounds)
+            self._scroll_bounds = bounds
+            target = min(max(top, scroll_top), max(top, bottom - viewport_height))
+            if bottom > top and self._scroll_area.canvasy(0) != target:
+                self._scroll_area.yview_moveto((target - top) / (bottom - top))
+        visible = bottom - top > viewport_height
+        if visible != self._scrollbar_visible:
+            self._scrollbar_visible = visible
+            if visible:
+                self._scrollbar.grid()
+            else:
+                self._scrollbar.grid_remove()
 
     def _scroll_inspector(self, event):
         widget = event.widget
         while widget is not None and widget is not self.inspector:
             widget = widget.master
         if widget is self.inspector and event.delta and self._scrollbar.winfo_ismapped():
-            self._scroll_area.yview_scroll(-1 if event.delta > 0 else 1, "units")
+            pixels = abs(event.delta) * (8 if self._aqua else 36 / 120)
+            step = max(1, min(64, round(pixels)))
+            self._scroll_area.yview_scroll(-step if event.delta > 0 else step, "units")
             return "break"
 
     def set_camera(self, status):

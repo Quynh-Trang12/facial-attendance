@@ -53,7 +53,7 @@ class StandardFieldsTests(unittest.TestCase):
                 identity, liveness, emotion = preview_results(Envelope(ui_state="preview"), view, self.emotion,
                                                                scan=scan, trained_liveness=True, trained_emotion=True)
                 self.assertEqual(identity.value, "Vỹ")
-                self.assertIn("Unverified", identity.detail)
+                self.assertEqual(identity.detail, "Preview match")
                 self.assertEqual(liveness.value, decision)
                 self.assertEqual(liveness.detail, "Last scan at 17:14:31")
                 self.assertIn("Neutral", emotion.value)
@@ -199,6 +199,7 @@ class ModesTests(unittest.TestCase):
         panel=DeveloperDiagnostics.__new__(DeveloperDiagnostics)
         panel.visible=False;panel._next_refresh=0;panel.runtime=Mock();panel.refresh_count=0;panel._last_runtime=None
         panel.paused=False;panel._snapshot_meta={};panel.status=Mock();panel.notebook=Mock()
+        panel._technical_visible=True;panel._review_values=[]
         panel.notebook.index.return_value=0
         panel.runtime.yview.return_value=(0.,.5)
         panel.runtime.xview.return_value=(0.,1.);panel.runtime.tag_ranges.return_value=()

@@ -1,5 +1,7 @@
 # Developer diagnostics: pause, copy and privacy-safe snapshots
 
+> Historical verification of the original diagnostic tabs. The current Dev window opens a review summary with optional technical details. See the [current walkthrough](attendance-demo.md#reviewer-walkthrough).
+
 This extension stays in the existing UI-03/UI-04 worktree and changes diagnostics only. All controls are inside the Developer-only window. Standard Mode still hides the diagnostics window and button; the mode switch and mixed-demo warnings remain available. The launch command is unchanged; see the [README](../README.md).
 
 ## Why inspection was difficult
