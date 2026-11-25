@@ -364,7 +364,7 @@ class CheckInTests(unittest.TestCase):
         return embed
 
     def test_single_mode_decides_on_the_first_face_frame(self):
-        check_in = CheckIn("single", self.gallery, self.embed_as(unit(1, 0.2, 0)))
+        check_in = CheckIn("single", self.gallery, self.embed_as(unit(1, 0.2, 0)), margin=0.0)
         self.assertEqual(check_in.step(frame(), [FACE], 0.0).prompt, "Press SPACE to check in")
         check_in.start(1.0)
         self.assertEqual(check_in.step(frame(), [], 1.1).prompt, "No face found")
@@ -374,7 +374,7 @@ class CheckInTests(unittest.TestCase):
         self.assertFalse(check_in.active)
 
     def test_fused_mode_skips_bad_frames_without_embedding_them(self):
-        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(1, 0.2, 0)), settings=SETTINGS)
+        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(1, 0.2, 0)), margin=0.0, settings=SETTINGS)
         check_in.start(0.0)
         self.assertEqual(check_in.step(frame(blur=True), [FACE], 0.1).prompt, "Hold still")
         self.assertEqual(self.calls, 0)
@@ -397,23 +397,23 @@ class CheckInTests(unittest.TestCase):
         image = np.zeros((300, 300, 3), dtype=np.uint8)
         image[60:220, 60:220] = frame()
         face = Face((80, 80, 200, 200), FRONTAL + 80, (80.0, 80.0, 120.0, 120.0))
-        single = CheckIn("single", gallery, embed)
+        single = CheckIn("single", gallery, embed, margin=0.0)
         single.start(0.0)
         self.assertEqual(single.step(image, [face], 0.1).decision.label, "An")
         self.assertEqual(shapes, [(144, 144)])
-        fused = CheckIn("fused", gallery, embed, settings=SETTINGS)
+        fused = CheckIn("fused", gallery, embed, margin=0.0, settings=SETTINGS)
         fused.start(0.0)
         self.assertEqual(fused.step(image, [face], 0.1).kept, 1)
         self.assertEqual(shapes[-1], (144, 144))
 
     def test_turned_head_is_refused_and_named(self):
-        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(1, 0, 0)), settings=SETTINGS)
+        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(1, 0, 0)), margin=0.0, settings=SETTINGS)
         check_in.start(0.0)
         turned = Face(FACE.box, FACE.landmarks + np.array([[0, 0], [0, 0], [20, 0], [0, 0], [0, 0]]))
         self.assertEqual(check_in.step(frame(), [turned], 0.1).prompt, "Face the camera")
 
     def test_unknown_person_is_not_recognised(self):
-        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(0, 0, 1)), settings=SETTINGS)
+        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(0, 0, 1)), margin=0.0, settings=SETTINGS)
         check_in.start(0.0)
         for moment in (0.1, 0.2):
             check_in.step(frame(), [FACE], moment)
@@ -421,7 +421,8 @@ class CheckInTests(unittest.TestCase):
         self.assertEqual((decision.label, decision.accepted, decision.end), (None, False, "unknown"))
 
     def test_retry_continues_until_the_attempt_times_out(self):
-        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(1, 0, 0)), settings=SETTINGS, timeout_s=5.0)
+        check_in = CheckIn("fused", self.gallery, self.embed_as(unit(1, 0, 0)), margin=0.0, settings=SETTINGS,
+                           timeout_s=5.0)
         check_in.start(0.0)
         check_in.step(frame(blur=True), [FACE], 0.0)
         self.assertEqual(check_in.step(frame(blur=True), [FACE], 2.0).prompt, "Hold still")
@@ -429,19 +430,47 @@ class CheckInTests(unittest.TestCase):
         decision = check_in.step(frame(), [FACE], 5.0).decision
         self.assertEqual((decision.end, decision.retries), ("timeout", 1))
 
-    def test_decision_keeps_the_runner_up_score_for_a_margin_rule(self):
-        check_in = CheckIn("single", self.gallery, self.embed_as(unit(1, 0.5, 0)))
+    def decide_once(self, mode, direction, margin, gallery=None):
+        check_in = CheckIn(mode, gallery or self.gallery, self.embed_as(direction), margin=margin,
+                           settings=SETTINGS)
         check_in.start(0.0)
-        decision = check_in.step(frame(), [FACE], 0.1).decision
-        self.assertAlmostEqual(decision.score, float(unit(1, 0.5, 0)[0]))
-        self.assertAlmostEqual(decision.runner_up, float(unit(1, 0.5, 0)[1]))
-        alone = CheckIn("single", gallery_with(("An", unit(1, 0, 0))), self.embed_as(unit(1, 0, 0)))
-        alone.start(0.0)
-        self.assertIsNone(alone.step(frame(), [FACE], 0.1).decision.runner_up)
+        for moment in (0.1, 0.2, 0.3):
+            display = check_in.step(frame(), [FACE], moment)
+            if display.decision:
+                return display.decision
+        raise AssertionError("no decision")
+
+    def test_a_clear_winner_is_named_and_the_runner_up_kept(self):
+        for mode in ("single", "fused"):
+            decision = self.decide_once(mode, unit(1, 0.5, 0), 0.15)
+            self.assertEqual((decision.label, decision.accepted, decision.best_label, decision.margin),
+                             ("An", True, "An", 0.15))
+            self.assertAlmostEqual(decision.score, float(unit(1, 0.5, 0)[0]))
+            self.assertAlmostEqual(decision.runner_up, float(unit(1, 0.5, 0)[1]))
+
+    def test_a_close_runner_up_makes_the_face_unknown_in_both_modes(self):
+        # An 0.781, Vy 0.625: above tau, but only 0.156 apart.
+        probe = unit(1, 0.8, 0)
+        for mode in ("single", "fused"):
+            self.assertTrue(self.decide_once(mode, probe, 0.15).accepted)
+            decision = self.decide_once(mode, probe, 0.20)
+            self.assertEqual((decision.label, decision.accepted, decision.end, decision.best_label),
+                             (None, False, "unknown", "An"))
+
+    def test_one_enrolled_person_needs_tau_plus_the_margin(self):
+        alone = gallery_with(("An", unit(1, 0, 0)))
+        probe = unit(1, 1.5, 0)  # cosine 0.555: above tau 0.462, below tau + 0.15
+        self.assertTrue(self.decide_once("single", probe, 0.0, alone).accepted)
+        decision = self.decide_once("single", probe, 0.15, alone)
+        self.assertEqual((decision.accepted, decision.best_label, decision.runner_up), (False, "An", None))
+
+    def test_a_negative_margin_is_refused(self):
+        with self.assertRaises(ValueError):
+            CheckIn("single", self.gallery, self.embed_as(unit(1, 0, 0)), margin=-0.1)
 
     def test_fused_mode_needs_limits(self):
         with self.assertRaises(ValueError):
-            CheckIn("fused", self.gallery, self.embed_as(unit(1, 0, 0)),
+            CheckIn("fused", self.gallery, self.embed_as(unit(1, 0, 0)), margin=0.0,
                     settings=CheckInSettings(False, 3, 2, 2.0, None))
 
 
@@ -453,7 +482,7 @@ class LogTests(unittest.TestCase):
         gallery = gallery_with(("An", unit(1, 0, 0)))
         for mode, person, direction in (("single", "An", unit(1, 0, 0)), ("single", "An", unit(0, 1, 0)),
                                         ("single", "impostor", unit(1, 0.1, 0)), ("fused", "An", unit(1, 0, 0))):
-            check_in = CheckIn("single", gallery, lambda _crop, d=direction: d)
+            check_in = CheckIn("single", gallery, lambda _crop, d=direction: d, margin=0.0)
             check_in.start(0.0)
             decision = check_in.step(frame(), [FACE], 0.5).decision
             append_log(path, person, decision.__class__(**{**decision.__dict__, "mode": mode}))
@@ -462,6 +491,8 @@ class LogTests(unittest.TestCase):
         self.assertEqual(len(rows), 4)
         # One registered person: there is no runner-up to log.
         self.assertEqual({row["runner_up"] for row in rows}, {""})
+        self.assertEqual([row["best_label"] for row in rows], ["An"] * 4)
+        self.assertEqual({row["margin"] for row in rows}, {"0"})
         summary = summarize(rows)
         self.assertEqual(summary["single"]["genuine_accept_rate"], 0.5)
         self.assertEqual(summary["single"]["impostor_accept_rate"], 1.0)
@@ -491,7 +522,7 @@ class PairedTraceTests(unittest.TestCase):
         self.assertEqual((empty["faces"], empty["own_score"], empty["sharpness"]), (0, "", ""))
 
     def test_paired_log_needs_its_own_file(self):
-        decision = CheckIn("single", self.gallery, lambda _crop: unit(1, 0, 0))
+        decision = CheckIn("single", self.gallery, lambda _crop: unit(1, 0, 0), margin=0.0)
         decision.start(0.0)
         result = decision.step(frame(), [FACE], 0.1).decision
         plain, paired = self.root / "plain.csv", self.root / "paired.csv"
@@ -515,7 +546,7 @@ class PairedTraceTests(unittest.TestCase):
         log_file = self.root / "paired.csv"
         for attempt, single, fused in (("a1", unit(1, 0, 0), unit(1, 0.1, 0)), ("a2", unit(0, 1, 0), unit(1, 0, 0))):
             for mode, direction in (("single", single), ("fused", fused)):
-                check_in = CheckIn("single", self.gallery, lambda _crop, d=direction: d)
+                check_in = CheckIn("single", self.gallery, lambda _crop, d=direction: d, margin=0.0)
                 check_in.start(0.0)
                 decision = check_in.step(frame(), [FACE], 0.2).decision
                 append_log(log_file, "An", decision.__class__(**{**decision.__dict__, "mode": mode}), attempt)

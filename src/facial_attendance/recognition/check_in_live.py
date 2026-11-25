@@ -16,15 +16,17 @@ from pathlib import Path
 
 import numpy as np
 
+from .decision import decide
 from .probe_fusion import ProbeCollector, Ready, Retry, best_match, fuse
 from .quality import REASONS, FaceQuality, QualityLimits, check, measure, prompt
 
 ENROLL_FRAMES = 5
 ATTEMPT_TIMEOUT_S = 10.0
-# runner_up is the second-best template score of the deciding probe, so a margin rule
-# (best minus runner-up) can be applied to logged decisions afterwards.
+# score is the best person's cosine and runner_up the best other person's (empty with one
+# person enrolled). With best_label and the margin the attempt was decided under, the same
+# attempts can be re-decided under another margin afterwards.
 LOG_COLUMNS = ("mode", "person", "label", "accepted", "score", "frames_used", "retries", "elapsed_ms", "end",
-               "runner_up")
+               "runner_up", "best_label", "margin")
 
 
 @dataclass(frozen=True)
@@ -289,7 +291,9 @@ class Decision:
     retries: int
     elapsed_s: float
     end: str  # "match", "unknown" or "timeout"
-    runner_up: float | None = None  # second-best template score; None with fewer than two people
+    runner_up: float | None = None  # best other person's score; None with fewer than two people
+    best_label: str | None = None  # the best match, named or not
+    margin: float | None = None  # the margin this decision was made under
 
 
 @dataclass(frozen=True)
@@ -308,14 +312,19 @@ class CheckIn:
     frames go to a ProbeCollector, and its fused probe is matched. A Retry (too few
     good frames or inconsistent frames) shows its reason and collection continues
     until the attempt times out.
+
+    Both modes name a face by the same rule, decide() in decision.py: the best score
+    must reach the gallery's tau and beat every other enrolled person by margin.
     """
 
-    def __init__(self, mode, gallery: Gallery, embed, *, settings=None, timeout_s=ATTEMPT_TIMEOUT_S):
+    def __init__(self, mode, gallery: Gallery, embed, *, margin, settings=None, timeout_s=ATTEMPT_TIMEOUT_S):
         if mode not in ("single", "fused"):
             raise ValueError("mode is 'single' or 'fused'")
         if mode == "fused" and (settings is None or settings.limits is None):
             raise ValueError("The fused mode needs calibrated [check_in.limits]")
         self.mode, self.gallery, self.embed, self.settings, self.timeout_s = mode, gallery, embed, settings, timeout_s
+        self.margin = margin
+        decide([], [], gallery.tau, margin)  # refuse a negative or non-numeric margin now
         self.collector = (ProbeCollector(tau=gallery.tau, k=settings.k, min_frames=settings.min_frames,
                                          window_s=settings.window_s) if mode == "fused" else None)
         self.started = None
@@ -330,19 +339,20 @@ class CheckIn:
             self.collector.reset()
 
     def _decide(self, probe, frames_used, now):
-        match = self.gallery.match(probe)
-        scores = np.sort(_scores(self.gallery, probe)) if len(self.gallery.labels) >= 2 else None
-        decision = Decision(self.mode, match.label, match.accepted, match.score, frames_used, self.retries,
-                            now - self.started, "match" if match.accepted else "unknown",
-                            None if scores is None else float(scores[-2]))
+        labels = self.gallery.labels
+        rule = decide(labels, _scores(self.gallery, probe) if labels else [], self.gallery.tau, self.margin)
+        decision = Decision(self.mode, rule.label, rule.accepted, rule.best_score, frames_used, self.retries,
+                            now - self.started, "match" if rule.accepted else "unknown",
+                            rule.runner_up_score if len(set(labels)) >= 2 else None, rule.best_label, self.margin)
         self.started = None
-        return Display("Welcome" if match.accepted else "Not recognised", decision=decision)
+        return Display("Welcome" if rule.accepted else "Not recognised", decision=decision)
 
     def step(self, frame_rgb, faces, now) -> Display:
         if not self.active:
             return Display("Press SPACE to check in")
         if now - self.started >= self.timeout_s:
-            decision = Decision(self.mode, None, False, None, 0, self.retries, now - self.started, "timeout")
+            decision = Decision(self.mode, None, False, None, 0, self.retries, now - self.started, "timeout",
+                                margin=self.margin)
             self.started = None
             return Display("Timed out, please try again", decision=decision)
         if len(faces) != 1:
@@ -386,7 +396,8 @@ def append_log(path: Path, person: str, decision: Decision, attempt: str | None 
         row = [decision.mode, person, decision.label or "", int(decision.accepted),
                "" if decision.score is None else f"{decision.score:.6f}", decision.frames_used,
                decision.retries, round(1000 * decision.elapsed_s), decision.end,
-               "" if decision.runner_up is None else f"{decision.runner_up:.6f}"]
+               "" if decision.runner_up is None else f"{decision.runner_up:.6f}", decision.best_label or "",
+               "" if decision.margin is None else f"{decision.margin:g}"]
         writer.writerow(row if attempt is None else [*row, attempt])
 
 

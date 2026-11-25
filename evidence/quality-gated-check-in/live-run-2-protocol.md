@@ -14,7 +14,7 @@ validation images (`calibration.json`).
 | Galleries, logs, trace | `artifacts/check-in-demo/live-2/` (new and empty; git-ignored) |
 | Deciding crop | `box`, the bare detector box. The trace still scores every frame under all four crop rules. |
 | Quality limits | `configs/check-in-quality.toml`, from `calibration.json` |
-| Decision rule | Best score at least τ from the checkpoint. Each decision also logs the runner-up score, so a margin rule can be applied to the same attempts afterwards. |
+| Decision rule | Both modes: the best score reaches τ from the checkpoint and beats every other enrolled person by the margin in `configs/recognition.toml` (0.15; τ + 0.15 with one person enrolled). Each decision logs the best label, the runner-up score and the margin, so the same attempts can be re-decided under another margin. |
 
 Everyone at the camera agrees to take part. Only templates, scores and quality
 numbers are saved, never frames.
@@ -75,4 +75,4 @@ CKPT=../fac-05-inputs/deploy.pt G=artifacts/check-in-demo/live-2; export CKPT G
   impostor accepts, attempts with no decision, decision time.
 - How many frames the gate refuses under these limits, and whether the refused
   frames score lower.
-- With the runner-up score: the same decisions under τ plus a margin.
+- Under the margin: how many attempts become unknown, and, re-decided from the log, how margin 0.15 compares with 0.20 and with τ alone.
