@@ -146,7 +146,8 @@ def apply_theme(root):
 
 
 class Dashboard:
-    def __init__(self, parent, *, restart_camera, switch_mode, trained_liveness, attendance=None):
+    def __init__(self, parent, *, restart_camera, switch_mode, trained_liveness, attendance=None,
+                 retry_attendance=None):
         import tkinter as tk
         from tkinter import font, ttk
 
@@ -218,9 +219,10 @@ class Dashboard:
                       font=("TkDefaultFont", 11, "bold")).pack(anchor="w", pady=(9, 2))
         ttk.Label(self.results, text="Trained liveness enabled" if trained_liveness else "Liveness model unavailable",
                   style="CardQuiet.TLabel").pack(anchor="w", pady=(0, 8))
+        self.attendance_view = None
         if attendance is not None:
             from .attendance_view import AttendanceView
-            self.attendance_view = AttendanceView(self, attendance)
+            self.attendance_view = AttendanceView(self, attendance, retry_verification=retry_attendance)
         self._camera_state = None
         self._results = None
         self._preview_phase = "idle"
@@ -268,7 +270,10 @@ class Dashboard:
 
     def update_preview(self, state, view, emotion, *, detecting, scan, trained_liveness, trained_emotion, score_error):
         self._preview_phase = preview_phase(state.ui_state, detecting, self._preview_phase)
-        self.set_results(preview_results(
+        results = preview_results(
             state, view, emotion, scan=scan, trained_liveness=trained_liveness, trained_emotion=trained_emotion,
             score_error=score_error, phase=self._preview_phase,
-        ))
+        )
+        self.set_results(results)
+        if self.attendance_view is not None:
+            self.attendance_view.refresh(preview_live=results[1].value == "live")

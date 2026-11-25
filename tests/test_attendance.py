@@ -278,9 +278,9 @@ class AttendanceWidgetTests(unittest.TestCase):
         self.dashboard_type = Dashboard
         self.parent = ttk.Frame(root)
 
-    def dashboard(self, service=None):
+    def dashboard(self, service=None, *, retry_attendance=None):
         return self.dashboard_type(self.parent, restart_camera=lambda: None, switch_mode=lambda: None,
-                                   trained_liveness=True, attendance=service)
+                                   trained_liveness=True, attendance=service, retry_attendance=retry_attendance)
 
     def test_opt_in_panel_preserves_preview_and_cannot_write_without_adapter(self):
         preview = self.dashboard()
@@ -288,6 +288,7 @@ class AttendanceWidgetTests(unittest.TestCase):
         self.assertIn("Attendance saving disabled", labels)
         service = AttendanceService(AttendanceStore(self.path))
         panel = self.dashboard(service).attendance_view
+        self.assertIsNone(panel.retry_button)
         self.assertTrue(panel.confirm.instate(("disabled",)))
         panel.session.invoke()
         self.assertIsNotNone(service.session_id)
@@ -298,6 +299,49 @@ class AttendanceWidgetTests(unittest.TestCase):
         panel.session.invoke()
         self.assertIsNone(service.session_id)
         self.assertIn("inactive", panel.session_status.cget("text"))
+
+    def test_retry_verification_starts_fresh_in_same_session_despite_live_preview(self):
+        from facial_attendance.attendance.verification import AttendanceVerification
+        from facial_attendance.ui.liveness_preview import LastLivenessCheck
+        from facial_attendance.ui.trial_profiles import REGISTRATION_RELEASE
+        from facial_attendance.ui.webcam_prototype import Envelope, PrototypeController
+
+        now = 10.0
+        verifier = AttendanceVerification(
+            AttendanceStore(self.path), REGISTRATION_RELEASE,
+            {"checkpoint_sha256": PERSON.checkpoint_sha256, "preprocessing_version": PERSON.preprocessing_version},
+            {PERSON.person_id: PERSON.name}.get, max_age_seconds=1., clock=lambda: now,
+        )
+        dashboard = self.dashboard(verifier.service, retry_attendance=verifier.reset)
+        panel = dashboard.attendance_view
+        panel.session.invoke()
+        verifier.sync_session()
+        session_id = verifier.service.session_id
+        verifier.invalidate("spoof")
+        dashboard.update_preview(Envelope(ui_state="preview"), None, None, detecting=False,
+                                 scan=LastLivenessCheck("live", .1, 7, "12:00:00"),
+                                 trained_liveness=True, trained_emotion=False, score_error=False)
+        self.assertEqual(panel.retry_button.winfo_manager(), "pack")
+        self.assertIn("Live preview", panel.feedback.cget("text"))
+        self.assertTrue(panel.confirm.instate(("disabled",)))
+
+        panel.retry_button.invoke()
+        self.assertEqual(verifier.service.session_id, session_id)
+        self.assertEqual(verifier.service.state.code, "verification_pending")
+        self.assertEqual(panel.retry_button.winfo_manager(), "")
+        self.assertTrue(panel.confirm.instate(("disabled",)))
+        self.assertFalse(self.path.exists())
+
+        prediction = {**REGISTRATION_RELEASE, "status": "live", "spoof_score": .1, "allow_attendance": True}
+        for sequence in range(1, 6):
+            now += .3
+            request = PrototypeController().begin_capture(FRAME, [BOX])
+            token = (1, sequence)
+            verifier.expect(token, request, now)
+            verifier.accept(token, request, (Completion(request.context, PERSON),), prediction)
+            panel.refresh()
+            self.assertEqual(panel.confirm.instate(("!disabled",)), sequence == 5)
+        self.assertFalse(self.path.exists())
 
     def test_widget_reports_persisted_success_and_displays_failure_without_success(self):
         service = AttendanceService(AttendanceStore(self.path), policy=POLICY,

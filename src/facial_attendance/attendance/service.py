@@ -91,7 +91,21 @@ class AttendanceService:
         with self._lock:
             self._clear(self._waiting_status() if self._session_id else "session_inactive")
 
-    def begin_capture(self, frame, boxes, captured_at):
+    def invalidate_capture(self, code):
+        """Revoke current evidence while preserving a spoof abort until explicit retry."""
+        if code not in {"verification_pending", "invalid_verification", "capture_error", "stale",
+                        "inference_error", "model_unavailable", "no_face", "multiple_faces",
+                        "unknown", "spoof", "uncertain"}:
+            raise ValueError("Invalid attendance rejection state.")
+        with self._lock:
+            if self._session_id and self._state.code != "spoof":
+                self._clear(code)
+
+    def recognition_status(self, result):
+        with self._lock:
+            return self._recognition_status(result) if self._policy is not None else "model_unavailable"
+
+    def begin_capture(self, frame, boxes, captured_at, *, context=None):
         """Start a dedicated attempt and return its original-source model request."""
         with self._lock:
             if not self._session_id or self._policy is None or self._state.code == "spoof":
@@ -114,8 +128,16 @@ class AttendanceService:
             if not self._fresh(captured_at):
                 self._clear("stale")
                 return None
+            if context is None:
+                context = Context(CONTRACT_VERSION, uuid4().hex, "attendance", uuid4().hex, uuid4().hex)
+            elif (not isinstance(context, Context) or context.contract_version != CONTRACT_VERSION
+                    or context.action != "attendance"
+                    or not all(isinstance(value, str) and value.strip()
+                               for value in (context.attempt_id, context.capture_id, context.face_id))):
+                self._clear("invalid_verification")
+                return None
             self._captured_at = captured_at
-            self._context = Context(CONTRACT_VERSION, uuid4().hex, "attendance", uuid4().hex, uuid4().hex)
+            self._context = context
             return FaceRequest(self._context, tuple(int(value) for value in boxes[0]), frame)
 
     def complete(self, recognition: Completion, liveness: Completion):

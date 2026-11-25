@@ -45,9 +45,11 @@ The workspace keeps names, test IDs and averaged recognition templates in the ig
 
 Add `--attendance` to the Local workspace command to show the manual Attendance panel. Start or end a local session from this panel. Sessions have unique IDs and last until ended or until the app closes. The verification status and confirmation control come from the dedicated attendance service.
 
-Recording is currently blocked pending an approved, versioned liveness decision for the same capture and face as recognition. The three-second AENet-Full preview continues to run. Its scan result carries no attendance authorization.
+With `--attendance` alone, recording stays disabled. To test the candidate, add `--attendance-verification-test` and pass `--local-profile-db PATH` and `--attendance-db PATH` with two separate files under `artifacts/attendance-verification-test/`. Use a test gallery with a consented profile. The window title displays **Attendance test**.
 
-The attendance writer uses `artifacts/attendance/attendance.sqlite3` by default, with one record per person per session and timestamps in UTC. For isolated testing, use both `--local-profile-db PATH` and `--attendance-db PATH` with separate test files. A count of recent saved records appears after a successful write. The database is created on the first authorized write.
+Start a session and show a single enrolled face. When five consecutive live samples span at least one second with no gap over 0.5 seconds, the candidate checks the matched identity from the exact capture that passed the gate. Select **Record attendance** when available. The SQLite file is created on the first authorized manual save and keeps one record per person per session. Repeat in the same session to check duplicate prevention, then start a new session to check a second write.
+
+The three-second AENet-Full preview remains informational for attendance. During a test session, an unknown or lost face, a person switch, or an uncertain sample cancels the current authorization. A spoof aborts the attempt. Select **Retry verification** in the Attendance section to start a fresh attempt within the same session while the camera keeps running.
 
 ## Three-model webcam trial
 
