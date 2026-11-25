@@ -1,0 +1,50 @@
+{
+  "face_frames": 154,
+  "own_score_gate_passed": {
+    "n": 81,
+    "mean": 0.6829791234567901,
+    "median": 0.684998
+  },
+  "own_score_gate_failed": {
+    "n": 73,
+    "mean": 0.4409099863013698,
+    "median": 0.443727
+  },
+  "own_score_by_reason": {
+    "bright": {
+      "n": 73,
+      "mean": 0.4409099863013698,
+      "median": 0.443727
+    }
+  },
+  "spearman_measure_vs_own_score": {
+    "sharpness": -0.5185194312329038,
+    "brightness": -0.8201072804488365,
+    "contrast": 0.09683990898412152,
+    "size": 0.796022573252175,
+    "abs_yaw": -0.49161553184323586,
+    "abs_roll": 0.15739996878516804
+  },
+  "per_person": {
+    "An": {
+      "face_frames": 154,
+      "gate_pass_rate": 0.525974025974026,
+      "failed_by": {
+        "bright": 73
+      }
+    }
+  },
+  "paired_attempts": 23,
+  "paired_genuine_outcomes": {
+    "both_correct": 14,
+    "only_single": 2,
+    "only_fused": 1,
+    "neither": 6
+  },
+  "paired_scores_when_both_correct": {
+    "n": 14,
+    "single_mean": 0.760042,
+    "fused_mean": 0.775487642857143
+  },
+  "impostor_paired": []
+}

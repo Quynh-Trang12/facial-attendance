@@ -1,0 +1,44 @@
+{
+  "rule": "sharpness and contrast at least the validation images' p5, brightness within their p5..p95, face at least the model input size, fixed head pose limits",
+  "limits": {
+    "min_sharpness": 760.1446364879608,
+    "min_brightness": 55.853125,
+    "max_brightness": 163.80024414062498,
+    "min_contrast": 38.79935735865016,
+    "min_size": 64,
+    "max_yaw": 0.35,
+    "max_roll": 15.0
+  },
+  "dataset_file": "evidence/quality-gated-check-in/dataset-quality-validation.json",
+  "dataset_file_sha256": "12fb50aef3b0e82315ecd6192d9dce00210272b33246c9f391aa93bd5fa737da",
+  "webcam_check": {
+    "good": {
+      "frames": 60,
+      "pass_rate": 1.0,
+      "rejected_by": {
+        "small": 0,
+        "turned": 0,
+        "tilted": 0,
+        "blur": 0,
+        "dark": 0,
+        "bright": 0,
+        "low_contrast": 0
+      }
+    },
+    "bad": {
+      "frames": 20,
+      "pass_rate": 0.0,
+      "rejected_by": {
+        "small": 0,
+        "turned": 0,
+        "tilted": 0,
+        "blur": 20,
+        "dark": 0,
+        "bright": 0,
+        "low_contrast": 1
+      }
+    }
+  },
+  "good_file_sha256": "4e5fc245dbaad72029abd0c35b1e834b5339e267e02b1fe205284fa332d46b6d",
+  "bad_file_sha256": "42a4074eafd435e46a8549043f904c39b32e84aec00bba265266ba381ae87af4"
+}

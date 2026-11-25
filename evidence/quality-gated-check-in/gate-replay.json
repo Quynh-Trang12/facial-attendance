@@ -1,0 +1,142 @@
+{
+  "config": "configs/check-in-quality.toml",
+  "limits": {
+    "min_sharpness": 760.145,
+    "min_brightness": 55.8531,
+    "max_brightness": 163.8,
+    "min_contrast": 38.7994,
+    "min_size": 64,
+    "max_yaw": 0.35,
+    "max_roll": 15.0
+  },
+  "traces": {
+    "artifacts/check-in-demo/trace.csv": {
+      "face_frames": 154,
+      "note": "kept frames are replayed with one shared vector, so neither the consistency check nor the fused score is replayed; this counts decisions, not their correctness",
+      "recorded_gate": {
+        "frames": {
+          "pass_rate": 0.525974025974026,
+          "rejected_by": {
+            "small": 0,
+            "turned": 0,
+            "tilted": 0,
+            "blur": 0,
+            "dark": 0,
+            "bright": 73,
+            "low_contrast": 0
+          },
+          "own_score_kept": {
+            "n": 81,
+            "mean": 0.6829791234567901,
+            "median": 0.684998
+          },
+          "own_score_rejected": {
+            "n": 73,
+            "mean": 0.4409099863013698,
+            "median": 0.443727
+          }
+        },
+        "attempts": {
+          "attempts": 23,
+          "decided": 22,
+          "no_decision": 1,
+          "median_decision_s": 0.2815,
+          "mean_frames_used": 3.0
+        }
+      },
+      "new_gate": {
+        "frames": {
+          "pass_rate": 1.0,
+          "rejected_by": {
+            "small": 0,
+            "turned": 0,
+            "tilted": 0,
+            "blur": 0,
+            "dark": 0,
+            "bright": 0,
+            "low_contrast": 0
+          },
+          "own_score_kept": {
+            "n": 154,
+            "mean": 0.568232064935065,
+            "median": 0.5286295
+          },
+          "own_score_rejected": {
+            "n": 0
+          }
+        },
+        "attempts": {
+          "attempts": 23,
+          "decided": 23,
+          "no_decision": 0,
+          "median_decision_s": 0.29,
+          "mean_frames_used": 3.0
+        }
+      }
+    },
+    "artifacts/check-in-demo/crop-study/trace.csv": {
+      "face_frames": 252,
+      "note": "kept frames are replayed with one shared vector, so neither the consistency check nor the fused score is replayed; this counts decisions, not their correctness",
+      "recorded_gate": {
+        "frames": {
+          "pass_rate": 0.30952380952380953,
+          "rejected_by": {
+            "small": 0,
+            "turned": 6,
+            "tilted": 9,
+            "blur": 0,
+            "dark": 6,
+            "bright": 168,
+            "low_contrast": 0
+          },
+          "own_score_kept": {
+            "n": 78,
+            "mean": 0.8932051025641025,
+            "median": 0.9189525000000001
+          },
+          "own_score_rejected": {
+            "n": 174,
+            "mean": 0.8095730977011495,
+            "median": 0.8073755
+          }
+        },
+        "attempts": {
+          "attempts": 22,
+          "decided": 20,
+          "no_decision": 2,
+          "median_decision_s": 0.341,
+          "mean_frames_used": 3.0
+        }
+      },
+      "new_gate": {
+        "frames": {
+          "pass_rate": 1.0,
+          "rejected_by": {
+            "small": 0,
+            "turned": 0,
+            "tilted": 0,
+            "blur": 0,
+            "dark": 0,
+            "bright": 0,
+            "low_contrast": 0
+          },
+          "own_score_kept": {
+            "n": 252,
+            "mean": 0.8354591944444444,
+            "median": 0.81879
+          },
+          "own_score_rejected": {
+            "n": 0
+          }
+        },
+        "attempts": {
+          "attempts": 22,
+          "decided": 21,
+          "no_decision": 1,
+          "median_decision_s": 0.334,
+          "mean_frames_used": 3.0
+        }
+      }
+    }
+  }
+}
