@@ -1,0 +1,46 @@
+{
+  "version": "emotion-resnet18-v1",
+  "checkpoint": "best.pt",
+  "checkpoint_sha256": "0dcecbdbc7195bfb8cfd4529e0aa287d9b40c43da323311ad3803d687fcbfd24",
+  "architecture": "ResNet-18 with fc = Sequential(Dropout(0.3), Linear(512,3))",
+  "selected_epoch": 10,
+  "class_ids": {
+    "0": "Sad",
+    "1": "Happy",
+    "2": "Neutral"
+  },
+  "input": "One already detected and cropped human face. Explicit RGB or BGR; uint8 0..255.",
+  "preprocessing": {
+    "grayscale_channels": 3,
+    "resize": [
+      224,
+      224
+    ],
+    "interpolation": "bilinear",
+    "scale": "ToTensor: divide uint8 values by 255",
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "inference": {
+    "model_eval": true,
+    "softmax_dimension": 1,
+    "prediction_interval_seconds": 3.0,
+    "confidence_threshold": null
+  },
+  "tested_environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cpu",
+    "torchvision": "0.28.0+cpu",
+    "pillow": "11.2.1",
+    "numpy": "2.2.6"
+  },
+  "integration": "Face detection, liveness, identity and face-quality checks are supplied by the host UI. Clear expression scores when no valid single face is available."
+}

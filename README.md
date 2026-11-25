@@ -1,5 +1,9 @@
 # Facial Attendance
 
+## Final emotion model on Emotion-finalized
+
+The tested final model uses **Sad=0, Happy=1, Neutral=2**, ResNet-18 and 224x224 input. Start with [the canonical final evidence](docs/emotion-finalized.md), [executed results](notebooks/emotion_final_results.ipynb), and [integration instructions](docs/emotion-final-integration.md). Older aggregate-label guides and baseline notebooks are retained as historical evidence and are not the contract for this checkpoint. Independent review and shared-GUI testing must be confirmed separately.
+
 Facial recognition with emotion and liveness for COS30082.
 
 COS30082 group project combining face verification, anti-spoofing and emotion recognition. The first required application is webcam attendance with employee registration. The feature modules can later support workplace sentiment analysis or mental-health monitoring workflows.
