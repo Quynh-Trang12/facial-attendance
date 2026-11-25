@@ -1,0 +1,12 @@
+{
+  "checkpoint_sha256": "0dcecbdbc7195bfb8cfd4529e0aa287d9b40c43da323311ad3803d687fcbfd24",
+  "checks_passed": [
+    "Three-class predictions reproduce saved validation probabilities",
+    "RGB and BGR inputs agree",
+    "Invalid float input rejected",
+    "Three-second cadence verified with controlled clock",
+    "No-face and changed-face stale results discarded"
+  ],
+  "included_face_images": 0,
+  "new_training": false
+}
