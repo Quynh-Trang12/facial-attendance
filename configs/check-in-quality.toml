@@ -9,6 +9,18 @@ min_frames = 2
 # Seconds from the first frame of an attempt.
 window_s = 2.0
 
-# [check_in.limits] is added after calibration: offline percentiles on the validation
-# images, then webcam frames. Each value records its source. Enabling the check-in
-# without limits is refused.
+# [check_in.limits] is written by `scripts/run_check_in_demo.py limits --write-config`
+# from the quality range of the validation images; the good and bad webcam recordings
+# only check it. Enabling the check-in without limits is refused.
+
+[check_in.limits]
+# From evidence/quality-gated-check-in/calibration.json: the quality range of the validation images the model was checked on
+# (p5 of sharpness and contrast, p5..p95 of brightness); min_size is the model input size;
+# max_yaw and max_roll are fixed in check_in_live.py. Webcam recordings only check these limits.
+min_sharpness = 760.145
+min_brightness = 55.8531
+max_brightness = 163.8
+min_contrast = 38.7994
+min_size = 64
+max_yaw = 0.35
+max_roll = 15

@@ -1,19 +1,31 @@
 """Webcam runner for the quality-gated multi-frame check-in (individual innovative feature).
 
-  enroll     register a person: 5 good frames averaged into one template
-  run        check in with --mode single (one frame, today's rule) or --mode fused
-             (quality gate + multi-frame fusion), logging one row per attempt
+  enroll     register a person from 5 good webcam frames, or from photos (--images);
+             one template per crop rule (bare box, square 1.0, 1.2, 1.4) from the
+             same frames, each in its own gallery file
+  run        check in with --mode single (one frame, today's rule), --mode fused
+             (quality gate + multi-frame fusion) or --mode both (both decide on the
+             same frames, and every frame's quality and score under every crop rule
+             is traced); --crop picks the gallery that decides
+  probe      score held-out photos of an enrolled person, or of someone never
+             enrolled (--impostor), under every crop rule
   calibrate  record quality numbers of good or bad frames, no images
-  limits     turn the calibration recordings into [check_in.limits]
+  limits     set [check_in.limits] from the validation images' quality range, and
+             check them on the good and bad webcam recordings
+  replay     replay recorded attempts through the recorded gate and the current
+             limits: how many frames pass and how many attempts reach a decision
   summarize  turn the attempt log into the before/after summary
+  diagnose   from a --mode both run and probes: does the gate help, and which crop
+             rule separates the enrolled people best?
 
-Keys: SPACE starts an attempt or a capture, Q or Esc quits. The gallery, logs and
+Keys: SPACE starts an attempt or a capture, Q or Esc quits. The galleries, logs and
 calibration recordings go to the git-ignored artifacts/check-in-demo/ folder; frames
-are never written to disk.
+are never written to disk. Photos are read where they are and never copied.
 """
 
 import argparse
 import csv
+from dataclasses import asdict
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -25,20 +37,39 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from facial_attendance.recognition.check_in_live import (  # noqa: E402
     ENROLL_FRAMES,
+    SCHEMA_RULE,
+    STUDY_RULES,
     CheckIn,
-    Gallery,
+    TRACE_COLUMNS,
     append_log,
-    calibrate_limits,
+    append_rows,
+    check_limits,
     crop,
+    crop_margin,
+    dataset_limits,
+    diagnose,
+    enroll_study,
     faces_from_yunet,
+    image_paths,
     limits_toml,
+    load_study,
+    photo_samples,
+    replay_gate,
+    study_embeddings,
+    study_path,
     summarize,
+    template_cosines,
+    trace_row,
+    with_limits,
 )
 from facial_attendance.recognition.probe_fusion import load_check_in_settings  # noqa: E402
 from facial_attendance.recognition.quality import MEASURE_SIZE, check, measure, prompt  # noqa: E402
 
 DEMO = ROOT / "artifacts/check-in-demo"
+# The crop study keeps its galleries, logs and trace apart from earlier bare-box runs.
+STUDY = DEMO / "crop-study"
 CONFIG = ROOT / "configs/check-in-quality.toml"
+EVIDENCE = ROOT / "evidence/quality-gated-check-in"
 # Same file, folder and hash as the GUI's SYS-05 YuNet setup, so both share one model.
 YUNET_FILENAME = "face_detection_yunet_2023mar.onnx"
 YUNET_SHA256 = "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
@@ -159,33 +190,38 @@ class Window:
             self.cv2.destroyAllWindows()
 
 
-def run_enroll(args):
-    embed, meta = load_embedder(args.checkpoint)
-    gallery = Gallery.load_or_new(args.gallery, meta)
-    limits = load_check_in_settings(args.config).limits
-    detect, source, window = Detector(detector_file(args.download_detector)), Source(args), Window("Enroll", True)
-    embeddings, capturing, last = [], False, 0.0
+def open_study(args, meta):
     try:
-        while len(embeddings) < ENROLL_FRAMES:
+        return load_study(args.galleries, meta)
+    except ValueError as error:
+        raise SystemExit(str(error))
+
+
+def enroll_from_camera(args, embed, detect):
+    """5 good frames; each frame's crop under every rule is embedded."""
+    limits = None if args.size_only else load_check_in_settings(args.config).limits
+    source, window = Source(args), Window("Enroll", True)
+    samples, capturing, last = [], False, 0.0
+    try:
+        while len(samples) < ENROLL_FRAMES:
             frame_bgr, frame_rgb, now = source.read()
             if frame_bgr is None:
                 raise SystemExit("The video ended before enrollment finished.")
             faces = detect(frame_bgr)
             text = f"Enroll {args.name}: SPACE to capture"
             if capturing and len(faces) == 1 and now - last >= 0.3:
-                face_crop = crop(frame_rgb, faces[0])
-                quality = measure(face_crop, faces[0].landmarks)
+                quality = measure(crop(frame_rgb, faces[0]), faces[0].landmarks)
                 reasons = ("small",) if quality.size < MEASURE_SIZE else ()
-                reasons = check(quality, limits) if limits else reasons
+                reasons = check(quality, limits) if limits and not reasons else reasons
                 if reasons:
                     text = prompt(reasons)
                 else:
-                    embeddings.append(embed(face_crop))
+                    samples.append(study_embeddings(frame_rgb, faces[0], embed))
                     last = now
             elif capturing:
                 text = "One face, please" if faces else "No face found"
             key = window.draw(frame_bgr, faces, [text, "Turn your head slightly between frames"],
-                              len(embeddings), ENROLL_FRAMES)
+                              len(samples), ENROLL_FRAMES)
             if key == ord(" "):
                 capturing = True
             if window.quit(key):
@@ -193,61 +229,208 @@ def run_enroll(args):
     finally:
         source.close()
         window.close()
+    return samples
+
+
+def enroll_from_images(args, embed, detect):
+    """The first 5 usable photos, through the same detection and crops as the webcam."""
     try:
-        gallery.enroll(args.name, embeddings)
+        paths = image_paths(args.images)
     except ValueError as error:
-        raise SystemExit(f"Not registered: {error}")
-    gallery.save(args.gallery)
-    print(f"Registered {args.name}; the gallery now holds {', '.join(gallery.labels)}")
+        raise SystemExit(str(error))
+    samples = []
+    for sample in photo_samples(paths, detect, embed):
+        if len(samples) == ENROLL_FRAMES:
+            print(f"  not used (5 already taken): {sample.path.name}")
+        elif sample.reason:
+            print(f"  skipped {sample.path.name}: {sample.reason}")
+        else:
+            samples.append(sample.embeddings)
+            print(f"  used {sample.path.name}: face {sample.quality.size} px")
+    if len(samples) < ENROLL_FRAMES:
+        raise SystemExit(f"Only {len(samples)} usable photos; enrollment needs {ENROLL_FRAMES}. Nothing saved.")
+    return samples
+
+
+def run_enroll(args):
+    embed, meta = load_embedder(args.checkpoint)
+    galleries = open_study(args, meta)
+    detect = Detector(detector_file(args.download_detector))
+    samples = enroll_from_images(args, embed, detect) if args.images else enroll_from_camera(args, embed, detect)
+    try:
+        closest = enroll_study(galleries, args.name, {rule: [sample[rule] for sample in samples] for rule in galleries},
+                               allow_similar=args.allow_similar)
+    except ValueError as error:
+        hint = "" if args.allow_similar else " (for the crop study, --allow-similar keeps look-alikes)"
+        raise SystemExit(f"Not registered under any crop rule: {error}{hint}")
+    for rule, (label, cosine) in closest.items():
+        if label is not None:
+            flag = "  >= tau: these crops cannot tell them apart" if cosine >= galleries[rule].tau else ""
+            print(f"  {rule}: closest template {label}, cosine {cosine:.3f}{flag}")
+    for rule, gallery in galleries.items():
+        gallery.save(study_path(args.galleries, rule))
+    people = ", ".join(galleries[SCHEMA_RULE].labels)
+    print(f"Registered {args.name} under {', '.join(galleries)}; the galleries now hold {people}")
     return 0
 
 
+def describe(decision, prompt_text):
+    if decision.accepted:
+        return f"{decision.label} ({decision.score:.2f})"
+    return prompt_text if decision.score is None else f"Unknown ({decision.score:.2f})"
+
+
 def run_check_in(args):
-    embed, meta = load_embedder(args.checkpoint)
-    gallery = Gallery.load_or_new(args.gallery, meta)
+    """One mode, or both on the same frames (--mode both) so the comparison is paired."""
+    embed_frame, meta = load_embedder(args.checkpoint)
+    galleries = open_study(args, meta)
+    gallery = galleries[args.crop]
     if not gallery.labels:
-        raise SystemExit("The gallery is empty; register someone with the enroll step first.")
+        raise SystemExit("The galleries are empty; register someone with the enroll step first.")
     settings = load_check_in_settings(args.config)
+    paired = args.mode == "both"
+    log = args.log or args.galleries / ("attempts-paired.csv" if paired else "attempts.csv")
+    trace = args.trace or (args.galleries / "trace.csv" if paired else None)
+    cache = {}
+
+    def embed(face_rgb):
+        # Both modes and the trace see the same crop of a frame; embed it once.
+        key = (face_rgb.__array_interface__["data"][0], face_rgb.shape)
+        if key not in cache:
+            cache[key] = embed_frame(face_rgb)
+        return cache[key]
+
     try:
-        check_in = CheckIn(args.mode, gallery, embed, settings=settings)
+        modes = ("single", "fused") if paired else (args.mode,)
+        check_ins = {mode: CheckIn(mode, gallery, embed, settings=settings) for mode in modes}
     except ValueError as error:
         raise SystemExit(str(error))
+    main = check_ins["fused" if paired else args.mode]
+    if trace:
+        try:
+            append_rows(trace, TRACE_COLUMNS, [])  # refuse an older trace file before the camera opens
+        except ValueError as error:
+            raise SystemExit(str(error))
     detect, source = Detector(detector_file(args.download_detector)), Source(args)
     window = Window(f"Check-in ({args.mode})", not args.no_window)
-    shown, shown_until, count = None, 0.0, 0
+    session = time.strftime("%Y%m%dT%H%M%S")
+    shown, shown_until, count, attempt, started, traced = [], 0.0, 0, None, 0.0, []
     try:
         while True:
             frame_bgr, frame_rgb, now = source.read()
             if frame_bgr is None:
                 break
-            if args.no_window and not check_in.active:
-                check_in.start(now)
+            cache.clear()
+            idle = not any(c.active for c in check_ins.values())
+            if args.no_window and idle:
+                count, attempt, started, shown = count + 1, f"{session}-{count + 1}", now, []
+                for c in check_ins.values():
+                    c.start(now)
             faces = detect(frame_bgr)
-            display = check_in.step(frame_rgb, faces, now)
-            if display.decision:
-                count += 1
-                append_log(args.log, args.person, display.decision)
-                decision = display.decision
-                result = (f"{decision.label} ({decision.score:.2f})" if decision.accepted
-                          else display.prompt if decision.score is None else f"Unknown ({decision.score:.2f})")
-                shown, shown_until = (result, f"{1000 * decision.elapsed_s:.0f} ms, {decision.frames_used} frame(s)",
-                                      GREEN if decision.accepted else RED), now + 2.0
-                print(f"attempt {count}: {result}, {1000 * decision.elapsed_s:.0f} ms, end={decision.end}", flush=True)
-            if shown and now < shown_until:
-                lines, colour, kept, needed = [shown[0], shown[1]], shown[2], 0, 0
+            if trace and any(c.active for c in check_ins.values()):
+                if len(faces) == 1:
+                    quality = measure(crop(frame_rgb, faces[0]), faces[0].landmarks)
+                    reasons = check(quality, settings.limits) if settings.limits else ()
+                    embeddings = study_embeddings(frame_rgb, faces[0], embed)
+                    traced.append(trace_row(attempt, args.person, now - started, 1, quality, reasons, gallery,
+                                            embeddings[args.crop],
+                                            study={rule: (galleries[rule], embeddings[rule]) for rule in galleries}))
+                else:
+                    traced.append(trace_row(attempt, args.person, now - started, len(faces)))
+            displays = {mode: c.step(frame_rgb, faces, now) for mode, c in check_ins.items()}
+            for mode, display in displays.items():
+                if display.decision:
+                    append_log(log, args.person, display.decision, attempt if paired else None)
+                    text = describe(display.decision, display.prompt)
+                    shown.append((f"{mode}: {text}" if paired else text,
+                                  GREEN if display.decision.accepted else RED))
+                    shown_until = now + 2.0
+                    print(f"attempt {count} {mode}: {text}, {1000 * display.decision.elapsed_s:.0f} ms, "
+                          f"{display.decision.frames_used} frame(s), end={display.decision.end}", flush=True)
+            if traced and not any(c.active for c in check_ins.values()):
+                append_rows(trace, TRACE_COLUMNS, traced)
+                traced = []
+            current = displays[main.mode]
+            if main.active or not shown or now >= shown_until:
+                lines = [current.prompt] + [text for text, _ in shown]
+                colour, kept, needed = AMBER if main.active else WHITE, current.kept, current.needed
             else:
-                lines, colour, kept, needed = [display.prompt], AMBER if check_in.active else WHITE, display.kept, display.needed
+                lines, colour, kept, needed = [text for text, _ in shown], shown[-1][1], 0, 0
             key = window.draw(frame_bgr, faces, [f"{args.mode} | {args.person} | attempts {count}", *lines],
                               kept, needed, colour)
-            if key == ord(" ") and not check_in.active:
-                check_in.start(now)
-                shown = None
+            if key == ord(" ") and not any(c.active for c in check_ins.values()):
+                count, attempt, started, shown = count + 1, f"{session}-{count + 1}", now, []
+                for c in check_ins.values():
+                    c.start(now)
             if window.quit(key):
                 break
     finally:
+        if traced:
+            append_rows(trace, TRACE_COLUMNS, traced)
         source.close()
         window.close()
-    print(f"{count} attempts logged to {args.log}")
+    print(f"{count} attempts logged to {log}" + (f"; frames traced to {trace}" if trace else ""))
+    return 0
+
+
+def run_probe(args):
+    """Held-out photos of an enrolled person or an impostor, scored under every crop rule into the trace."""
+    embed, meta = load_embedder(args.checkpoint)
+    galleries = open_study(args, meta)
+    enrolled = args.person in galleries[SCHEMA_RULE].labels
+    if enrolled == args.impostor:
+        raise SystemExit(f"{args.person!r} is enrolled; drop --impostor." if enrolled else
+                         f"{args.person!r} is not enrolled; add --impostor if these are photos of someone never enrolled.")
+    limits = load_check_in_settings(args.config).limits
+    try:
+        paths = image_paths(args.images)
+        append_rows(args.trace, TRACE_COLUMNS, [])
+    except ValueError as error:
+        raise SystemExit(str(error))
+    session, rows = time.strftime("%Y%m%dT%H%M%S"), []
+    for index, sample in enumerate(photo_samples(paths, Detector(detector_file(args.download_detector)), embed), 1):
+        if sample.reason:
+            print(f"  skipped {sample.path.name}: {sample.reason}")
+            continue
+        reasons = check(sample.quality, limits) if limits else ()
+        rows.append(trace_row(f"{session}-photo-{index}", args.person, 0.0, 1, sample.quality, reasons,
+                              galleries[args.crop], sample.embeddings[args.crop],
+                              study={rule: (galleries[rule], sample.embeddings[rule]) for rule in galleries},
+                              source="image"))
+        match = galleries[args.crop].match(sample.embeddings[args.crop])
+        print(f"  {sample.path.name}: {args.crop} -> {match.label or 'unknown'} ({match.score:.2f})")
+    append_rows(args.trace, TRACE_COLUMNS, rows)
+    print(f"{len(rows)} of {len(paths)} photos scored into {args.trace}")
+    return 0
+
+
+def load_saved_study(directory):
+    """The study galleries as saved, for their templates; no checkpoint is loaded."""
+    import numpy as np
+
+    with np.load(study_path(directory, SCHEMA_RULE)) as saved:
+        meta = {"model_id": str(saved["model_id"]), "model_version": str(saved["model_version"]),
+                "threshold": float(saved["tau"])}
+    return load_study(directory, meta)
+
+
+def saved_tau(path):
+    import numpy as np
+
+    with np.load(path) as saved:
+        return float(saved["tau"])
+
+
+def run_diagnose(args):
+    tau = args.tau
+    if tau is None and study_path(args.galleries, SCHEMA_RULE).exists():
+        tau = saved_tau(study_path(args.galleries, SCHEMA_RULE))
+    result = diagnose(read_rows(args.trace), read_rows(args.log) if args.log.exists() else [], tau=tau)
+    if all(study_path(args.galleries, rule).exists() for rule in STUDY_RULES):
+        result["crop_margins"]["template_cosine"] = template_cosines(load_saved_study(args.galleries))
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps(result, indent=2))
     return 0
 
 
@@ -293,20 +476,50 @@ def read_rows(path: Path):
 
 
 def run_limits(args):
-    result = calibrate_limits(read_rows(args.good), read_rows(args.bad), min_size=MEASURE_SIZE)
-    result["good_file_sha256"] = sha256(args.good.read_bytes()).hexdigest()
-    result["bad_file_sha256"] = sha256(args.bad.read_bytes()).hexdigest()
+    """Limits from the dataset's quality range; the webcam recordings only check them."""
+    dataset = json.loads(args.dataset.read_text())
+    if "limits_start" not in dataset:
+        raise SystemExit(f"{args.dataset} has no limits_start; use the discard-validation output")
+    limits = dataset_limits(dataset["limits_start"], min_size=MEASURE_SIZE)
+    result = {
+        "rule": "sharpness and contrast at least the validation images' p5, brightness within their p5..p95, "
+                "face at least the model input size, fixed head pose limits",
+        "limits": limits,
+        "dataset_file": str(args.dataset.relative_to(ROOT) if args.dataset.is_relative_to(ROOT) else args.dataset),
+        "dataset_file_sha256": sha256(args.dataset.read_bytes()).hexdigest(),
+        "webcam_check": check_limits(limits, read_rows(args.good), read_rows(args.bad)),
+        "good_file_sha256": sha256(args.good.read_bytes()).hexdigest(),
+        "bad_file_sha256": sha256(args.bad.read_bytes()).hexdigest(),
+    }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))
     if args.write_config:
-        text = args.config.read_text()
-        if load_check_in_settings(args.config).limits is not None:
-            raise SystemExit(f"{args.config} already has limits; edit them by hand if they must change.")
         source = args.output.relative_to(ROOT) if args.output.is_relative_to(ROOT) else args.output
-        args.config.write_text(text.rstrip("\n") + "\n" + limits_toml(result["limits"], str(source)))
+        table = limits_toml(limits, [
+            f"From {source}: the quality range of the validation images the model was checked on",
+            "(p5 of sharpness and contrast, p5..p95 of brightness); min_size is the model input size;",
+            "max_yaw and max_roll are fixed in check_in_live.py. Webcam recordings only check these limits.",
+        ])
+        args.config.write_text(with_limits(args.config.read_text(), table))
         load_check_in_settings(args.config)
         print(f"Limits written to {args.config}")
+    return 0
+
+
+def run_replay(args):
+    settings = load_check_in_settings(args.config)
+    if settings.limits is None:
+        raise SystemExit(f"{args.config} has no [check_in.limits] to replay")
+    result = {"config": str(args.config.relative_to(ROOT) if args.config.resolve().is_relative_to(ROOT) else args.config),
+              "limits": asdict(settings.limits), "traces": {}}
+    for path in args.trace:
+        name = str(path.relative_to(ROOT) if path.resolve().is_relative_to(ROOT) else path)
+        result["traces"][name] = replay_gate(read_rows(path), settings.limits, k=settings.k,
+                                             min_frames=settings.min_frames, window_s=settings.window_s)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps(result, indent=2))
     return 0
 
 
@@ -323,26 +536,61 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     steps = parser.add_subparsers(dest="command", required=True)
 
+    def crop_rule(value):
+        try:
+            crop_margin(value)
+        except ValueError as error:
+            raise argparse.ArgumentTypeError(str(error))
+        if value not in STUDY_RULES:
+            raise argparse.ArgumentTypeError(f"choose one of the study's rules: {', '.join(STUDY_RULES)}")
+        return value
+
+    def model_options(sub):
+        sub.add_argument("--checkpoint", type=Path, required=True, help="deploy.pt from FAC-05")
+        sub.add_argument("--galleries", type=Path, default=STUDY,
+                         help="folder of the crop study's gallery-<rule>.npz files, logs and trace")
+        sub.add_argument("--config", type=Path, default=CONFIG)
+
     def camera_options(sub, checkpoint=True):
         source = sub.add_mutually_exclusive_group()
         source.add_argument("--camera", type=int, default=0)
         source.add_argument("--video", type=Path, help="a recorded clip instead of the camera")
         sub.add_argument("--download-detector", action="store_true", help="fetch the pinned YuNet file if missing")
         if checkpoint:
-            sub.add_argument("--checkpoint", type=Path, required=True, help="deploy.pt from FAC-05")
-            sub.add_argument("--gallery", type=Path, default=DEMO / "gallery.npz")
-            sub.add_argument("--config", type=Path, default=CONFIG)
+            model_options(sub)
 
-    enroll = steps.add_parser("enroll", help="register a person")
+    enroll = steps.add_parser("enroll", help="register a person under every crop rule")
     camera_options(enroll)
     enroll.add_argument("--name", required=True)
+    enroll.add_argument("--images", type=Path, nargs="+",
+                        help="photos or folders instead of the camera; the first 5 usable photos are used")
+    enroll.add_argument("--allow-similar", action="store_true",
+                        help="crop study: keep a person whose template matches someone else's under a rule")
+    enroll.add_argument("--size-only", action="store_true",
+                        help="webcam: check only the face size, not the calibrated quality limits")
 
     run = steps.add_parser("run", help="check in and log each attempt")
     camera_options(run)
-    run.add_argument("--mode", choices=("single", "fused"), required=True)
+    run.add_argument("--mode", choices=("single", "fused", "both"), required=True,
+                     help="both: single and fused decide on the same frames of each attempt")
     run.add_argument("--person", required=True, help='who is in front of the camera, or "impostor"')
-    run.add_argument("--log", type=Path, default=DEMO / "attempts.csv")
+    run.add_argument("--crop", type=crop_rule, default=SCHEMA_RULE,
+                     help=f"the crop rule whose gallery decides (default {SCHEMA_RULE}, the schema's)")
+    run.add_argument("--log", type=Path,
+                     help="default: attempts.csv, or attempts-paired.csv for both, in the galleries folder")
+    run.add_argument("--trace", type=Path,
+                     help="per-frame quality and scores; default trace.csv in the galleries folder for both")
     run.add_argument("--no-window", action="store_true", help="no display; start attempts automatically")
+
+    probe = steps.add_parser("probe", help="score held-out photos of an enrolled person under every crop rule")
+    model_options(probe)
+    probe.add_argument("--download-detector", action="store_true", help="fetch the pinned YuNet file if missing")
+    probe.add_argument("--images", type=Path, nargs="+", required=True, help="photos or folders")
+    probe.add_argument("--person", required=True, help="who is in the photos")
+    probe.add_argument("--impostor", action="store_true",
+                       help="the person was never enrolled; their photos measure false accepts")
+    probe.add_argument("--crop", type=crop_rule, default=SCHEMA_RULE, help="the crop rule shown on screen")
+    probe.add_argument("--trace", type=Path, help="default: trace.csv in the galleries folder")
 
     calibrate = steps.add_parser("calibrate", help="record quality numbers of good or bad frames")
     camera_options(calibrate, checkpoint=False)
@@ -350,21 +598,41 @@ def main(argv=None) -> int:
     calibrate.add_argument("--frames", type=int, default=60)
     calibrate.add_argument("--output", type=Path)
 
-    limits = steps.add_parser("limits", help="calibrated limits from the recordings")
+    limits = steps.add_parser("limits", help="limits from the dataset's quality range, checked on the recordings")
+    limits.add_argument("--dataset", type=Path, default=EVIDENCE / "dataset-quality-validation.json",
+                        help="discard-validation output of evaluate_check_in_quality.py, with limits_start")
     limits.add_argument("--good", type=Path, default=DEMO / "calibration-good.csv")
     limits.add_argument("--bad", type=Path, default=DEMO / "calibration-bad.csv")
-    limits.add_argument("--output", type=Path, default=ROOT / "evidence/quality-gated-check-in/calibration.json")
+    limits.add_argument("--output", type=Path, default=EVIDENCE / "calibration.json")
     limits.add_argument("--config", type=Path, default=CONFIG)
-    limits.add_argument("--write-config", action="store_true")
+    limits.add_argument("--write-config", action="store_true", help="replace [check_in.limits] in the config")
+
+    replay = steps.add_parser("replay", help="recorded attempts through the recorded gate and the current limits")
+    replay.add_argument("--trace", type=Path, nargs="+", default=[DEMO / "trace.csv", STUDY / "trace.csv"])
+    replay.add_argument("--config", type=Path, default=CONFIG)
+    replay.add_argument("--output", type=Path, default=EVIDENCE / "gate-replay.json")
 
     summary = steps.add_parser("summarize", help="before/after summary of the attempt log")
     summary.add_argument("--log", type=Path, default=DEMO / "attempts.csv")
     summary.add_argument("--impostor", default="impostor")
-    summary.add_argument("--output", type=Path, default=ROOT / "evidence/quality-gated-check-in/live-ab.json")
+    summary.add_argument("--output", type=Path, default=EVIDENCE / "live-ab.json")
+
+    doctor = steps.add_parser("diagnose", help="gate, paired decisions and crop rules, from the trace")
+    doctor.add_argument("--galleries", type=Path, default=STUDY, help="where the trace, log and galleries are")
+    doctor.add_argument("--trace", type=Path, help="default: trace.csv in the galleries folder")
+    doctor.add_argument("--log", type=Path, help="default: attempts-paired.csv in the galleries folder")
+    doctor.add_argument("--tau", type=float, help=f"default: the threshold saved in gallery-{SCHEMA_RULE}.npz")
+    doctor.add_argument("--output", type=Path,
+                        default=EVIDENCE / "crop-study-diagnosis.json")
 
     args = parser.parse_args(argv)
-    handlers = {"enroll": run_enroll, "run": run_check_in, "calibrate": run_calibrate,
-                "limits": run_limits, "summarize": run_summarize}
+    if getattr(args, "galleries", None) is not None:
+        if hasattr(args, "trace") and args.trace is None and args.command in ("probe", "diagnose"):
+            args.trace = args.galleries / "trace.csv"
+        if args.command == "diagnose" and args.log is None:
+            args.log = args.galleries / "attempts-paired.csv"
+    handlers = {"enroll": run_enroll, "run": run_check_in, "probe": run_probe, "calibrate": run_calibrate,
+                "limits": run_limits, "replay": run_replay, "summarize": run_summarize, "diagnose": run_diagnose}
     return handlers[args.command](args)
 
 
