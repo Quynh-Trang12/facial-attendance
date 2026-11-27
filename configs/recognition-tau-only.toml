@@ -1,0 +1,6 @@
+# The original decision rule, for comparison runs: name the best match whenever its cosine
+# score reaches tau from the checkpoint, with no top-1/top-2 margin.
+# Pass it with `scripts/run_check_in_demo.py run --decision configs/recognition-tau-only.toml`.
+# configs/recognition.toml holds the margin the check-in uses by default.
+[decision]
+margin = 0.0

@@ -41,7 +41,7 @@
     "abs_roll": -0.1847299302695111
   },
   "per_person": {
-    "An": {
+    "person-1": {
       "face_frames": 252,
       "gate_pass_rate": 0.30952380952380953,
       "failed_by": {
@@ -70,7 +70,7 @@
     "rules": {
       "box": {
         "per_person": {
-          "An": {
+          "person-1": {
             "frames": 260,
             "correct_identity_rate": 0.9961538461538462,
             "own_minus_other": {
@@ -95,7 +95,7 @@
               "median": 0.44070299999999996
             },
             "confused_with": {
-              "Que": 1
+              "person-2": 1
             },
             "accept_rate": 0.9923076923076923,
             "sources": [
@@ -155,13 +155,13 @@
                   "median": 0.552685
                 },
                 "confused_with": {
-                  "Que": 1
+                  "person-2": 1
                 },
                 "accept_rate": 0.875
               }
             }
           },
-          "Que": {
+          "person-2": {
             "frames": 2,
             "correct_identity_rate": 1.0,
             "own_minus_other": {
@@ -222,7 +222,7 @@
           }
         },
         "impostors": {
-          "Lynn": {
+          "person-3": {
             "frames": 2,
             "sources": [
               "image"
@@ -234,7 +234,7 @@
             },
             "false_accept_rate": 1.0,
             "accepted_as": {
-              "An": 2
+              "person-1": 2
             }
           }
         },
@@ -243,7 +243,7 @@
       },
       "square-1.0": {
         "per_person": {
-          "An": {
+          "person-1": {
             "frames": 260,
             "correct_identity_rate": 0.9730769230769231,
             "own_minus_other": {
@@ -268,7 +268,7 @@
               "median": 0.684383
             },
             "confused_with": {
-              "Que": 7
+              "person-2": 7
             },
             "accept_rate": 0.9730769230769231,
             "sources": [
@@ -301,7 +301,7 @@
                   "median": 0.6807894999999999
                 },
                 "confused_with": {
-                  "Que": 2
+                  "person-2": 2
                 },
                 "accept_rate": 0.9920634920634921
               },
@@ -330,13 +330,13 @@
                   "median": 0.715603
                 },
                 "confused_with": {
-                  "Que": 5
+                  "person-2": 5
                 },
                 "accept_rate": 0.375
               }
             }
           },
-          "Que": {
+          "person-2": {
             "frames": 2,
             "correct_identity_rate": 1.0,
             "own_minus_other": {
@@ -397,7 +397,7 @@
           }
         },
         "impostors": {
-          "Lynn": {
+          "person-3": {
             "frames": 2,
             "sources": [
               "image"
@@ -409,8 +409,8 @@
             },
             "false_accept_rate": 1.0,
             "accepted_as": {
-              "An": 1,
-              "Que": 1
+              "person-1": 1,
+              "person-2": 1
             }
           }
         },
@@ -419,7 +419,7 @@
       },
       "square-1.2": {
         "per_person": {
-          "An": {
+          "person-1": {
             "frames": 260,
             "correct_identity_rate": 0.7884615384615384,
             "own_minus_other": {
@@ -444,7 +444,7 @@
               "median": 0.8081849999999999
             },
             "confused_with": {
-              "Que": 55
+              "person-2": 55
             },
             "accept_rate": 0.7884615384615384,
             "sources": [
@@ -477,7 +477,7 @@
                   "median": 0.810864
                 },
                 "confused_with": {
-                  "Que": 49
+                  "person-2": 49
                 },
                 "accept_rate": 0.8055555555555556
               },
@@ -506,13 +506,13 @@
                   "median": 0.7695475
                 },
                 "confused_with": {
-                  "Que": 6
+                  "person-2": 6
                 },
                 "accept_rate": 0.25
               }
             }
           },
-          "Que": {
+          "person-2": {
             "frames": 2,
             "correct_identity_rate": 1.0,
             "own_minus_other": {
@@ -573,7 +573,7 @@
           }
         },
         "impostors": {
-          "Lynn": {
+          "person-3": {
             "frames": 2,
             "sources": [
               "image"
@@ -585,8 +585,8 @@
             },
             "false_accept_rate": 1.0,
             "accepted_as": {
-              "An": 1,
-              "Que": 1
+              "person-1": 1,
+              "person-2": 1
             }
           }
         },
@@ -595,7 +595,7 @@
       },
       "square-1.4": {
         "per_person": {
-          "An": {
+          "person-1": {
             "frames": 260,
             "correct_identity_rate": 0.8769230769230769,
             "own_minus_other": {
@@ -620,7 +620,7 @@
               "median": 0.7950405
             },
             "confused_with": {
-              "Que": 32
+              "person-2": 32
             },
             "accept_rate": 0.8769230769230769,
             "sources": [
@@ -653,7 +653,7 @@
                   "median": 0.7950405
                 },
                 "confused_with": {
-                  "Que": 32
+                  "person-2": 32
                 },
                 "accept_rate": 0.873015873015873
               },
@@ -686,7 +686,7 @@
               }
             }
           },
-          "Que": {
+          "person-2": {
             "frames": 2,
             "correct_identity_rate": 1.0,
             "own_minus_other": {
@@ -747,7 +747,7 @@
           }
         },
         "impostors": {
-          "Lynn": {
+          "person-3": {
             "frames": 2,
             "sources": [
               "image"
@@ -759,7 +759,7 @@
             },
             "false_accept_rate": 1.0,
             "accepted_as": {
-              "Que": 2
+              "person-2": 2
             }
           }
         },
@@ -775,16 +775,16 @@
     ],
     "template_cosine": {
       "box": {
-        "An / Que": 0.5142531397900016
+        "person-1 / person-2": 0.5142531397900016
       },
       "square-1.0": {
-        "An / Que": 0.7801944628176414
+        "person-1 / person-2": 0.7801944628176414
       },
       "square-1.2": {
-        "An / Que": 0.8824066365513281
+        "person-1 / person-2": 0.8824066365513281
       },
       "square-1.4": {
-        "An / Que": 0.8885965856573063
+        "person-1 / person-2": 0.8885965856573063
       }
     }
   }

@@ -26,7 +26,7 @@
     "abs_roll": 0.15739996878516804
   },
   "per_person": {
-    "An": {
+    "person-1": {
       "face_frames": 154,
       "gate_pass_rate": 0.525974025974026,
       "failed_by": {

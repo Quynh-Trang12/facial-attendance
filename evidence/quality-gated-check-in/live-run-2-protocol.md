@@ -1,7 +1,7 @@
 # Second live run: protocol
 
-The first two live runs had one person at the webcam (An) and one photo-enrolled
-template (Que, a different person), and no attempts by anyone unregistered. This run
+The first two live runs had one person at the webcam (person-1) and one photo-enrolled
+template (person-2, a different person), and no attempts by anyone unregistered. This run
 measures the quality-gated check-in against the single-frame rule with several
 webcam-enrolled people and an unregistered person, under the limits set from the
 validation images (`calibration.json`).
@@ -21,7 +21,7 @@ numbers are saved, never frames.
 
 ## People
 
-- At least three people enrolled **from the webcam**, An included. Photo enrollment is not used in this run.
+- At least three people enrolled **from the webcam**, person-1 included. Photo enrollment is not used in this run.
 - At least one person who is not enrolled, logged as `impostor`.
 
 ## Steps
@@ -36,7 +36,7 @@ CKPT=../fac-05-inputs/deploy.pt G=artifacts/check-in-demo/live-2; export CKPT G
 1. Enroll each person (5 webcam frames, SPACE to capture):
 
    ```bash
-   ../py313-env/bin/python scripts/run_check_in_demo.py enroll --checkpoint "$CKPT" --galleries "$G" --name An
+   ../py313-env/bin/python scripts/run_check_in_demo.py enroll --checkpoint "$CKPT" --galleries "$G" --name person-1
    ```
 
    Do not pass `--allow-similar`. If enrollment refuses someone as a duplicate of an
@@ -46,7 +46,7 @@ CKPT=../fac-05-inputs/deploy.pt G=artifacts/check-in-demo/live-2; export CKPT G
    (head turned about 30°, light behind the head or dimmed, slow movement):
 
    ```bash
-   ../py313-env/bin/python scripts/run_check_in_demo.py run --checkpoint "$CKPT" --galleries "$G" --mode both --crop box --person An
+   ../py313-env/bin/python scripts/run_check_in_demo.py run --checkpoint "$CKPT" --galleries "$G" --mode both --crop box --person person-1
    ```
 
 3. The unregistered person, 15 attempts:
