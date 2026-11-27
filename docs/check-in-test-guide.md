@@ -39,9 +39,11 @@ its single-frame rule unless someone turns it on.
 
 1. Use the group's Python 3.13 environment from [setup](setup.md), opened at the
    repository root on branch `innovation/quality-gated-check-in`.
-2. Get the face checkpoint from the team: FAC-05's `deploy.pt`. It is the same file as the
-   app's `artifacts/models/face-recognition-resnet18.pt` (metric ResNet-18, model version
-   `cb38ea47ceff`, τ 0.4619967). The runner refuses a checkpoint without a threshold.
+2. Use the app's face checkpoint, `artifacts/models/face-recognition-resnet18.pt`, so the
+   results hold for the app. It must have model version `cb38ea47ceff` and τ 0.4619967 in
+   its `meta`. FAC-05's `deploy.pt` has the same model version, but its file and SHA-256
+   differ, so name the file and its SHA-256 when you report results. The runner refuses a
+   checkpoint without a threshold.
 3. Pick a new, empty gallery folder. The runner creates it, and git ignores everything
    under `artifacts/`.
 
@@ -109,32 +111,26 @@ stop after any step that is enough.
 
 ### 3a. Margin rule (fixes the wrong-name fault)
 
-1. Merge PR #21 into `main`, then merge `main` into `feature/ui03-ui04-emotion-integration`.
-   This adds `decision.py`, `configs/recognition.toml` and `tests/test_decision.py`, which
-   are new files with no conflicts.
-2. In `src/facial_attendance/recognition/gallery_matching.py`, have `GalleryMatcher.match`
-   score every person and let `decide()` choose the result:
+This step is done on branch `feat/gui-decision-margin`, a draft PR into
+`feature/ui03-ui04-emotion-integration`. Crop, checkpoint and liveness are unchanged.
 
-   ```python
-   from .decision import decide, load_margin
-
-   # in __init__: self.margin = load_margin("configs/recognition.toml")
-   scores = [cosine(embedding, p.embeddings[0]) for p in self._gallery.people]
-   d = decide([p.person_id for p in self._gallery.people], scores,
-              self.contract.cosine_threshold, self.margin)
-   person = next((p for p in self._gallery.people if p.person_id == d.label), None)
-   return Match(d.label, person.name if person else None, d.best_score, d.accepted)
-   ```
-
-   Resolve the config path from the repository root, as `configs/project.toml` is.
-3. **Keep the duplicate check in registration on τ alone.** `ControlledTestEnrollment.commit`,
-   which the app's registration calls, uses `self.match(template)` to refuse a duplicate.
-   With the margin, a new person who looks like two enrolled people would come back unknown
-   and be saved as a new profile. Give the duplicate check its own plain best-score ≥ τ test.
-4. Add tests in `tests/` like `test_decision.py`. Cover a clear winner that is accepted,
-   a close runner-up that returns unknown, and a single enrolled person who needs ≥ τ + 0.15.
-5. Re-run the "Check rejection" walkthrough in `docs/attendance-demo.md` with an
-   unregistered person.
+1. The branch carries PR #21's `decision.py`, `configs/recognition.toml` and
+   `tests/test_decision.py` as cherry-picks, because merging the PR branch would bring in
+   newer `main` changes. When PR #21 and this branch both reach `main`, the files are
+   identical and do not conflict.
+2. `GalleryMatcher.match` scores every profile and lets `decide()` choose the result. A best
+   score at or above τ with a runner-up inside the margin returns unknown with that score
+   and no identity. With one profile the score must reach τ + 0.15, about 0.612.
+3. Both registration paths keep their duplicate check on τ alone through
+   `GalleryMatcher.match_threshold_only`. These are `RecognitionEvaluation.commit_reference`,
+   the webcam registration, and `ControlledTestEnrollment.commit`, the generated fixtures.
+   A new face close to two profiles is still refused as a duplicate.
+4. `AttendanceService` and the recognition sandbox used to require `accepted == (score ≥ τ)`.
+   They now accept an unknown result whose score is above τ. They still reject an accepted
+   score below τ, and an unknown result that carries an identity.
+5. Tests: `tests/test_recognition_margin.py`. To verify on the app, run the "Check rejection"
+   walkthrough in `docs/attendance-demo.md` with an unregistered person. Do it with one
+   profile and with several, and check both the name shown and the SQLite record count.
 
 ### 3b. Crop rule (only if the team's test supports it)
 
