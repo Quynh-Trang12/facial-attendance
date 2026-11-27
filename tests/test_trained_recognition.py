@@ -65,7 +65,10 @@ class MatchingTests(unittest.TestCase):
     def test_compatible_gallery_and_deterministic_casefold_id_tie(self):
         self.gallery.register("test-B", "Second", unit(), n_images=3)
         self.gallery.register("test-A", "First", unit(), n_images=3)
-        self.assertEqual(self.matcher.match(unit()).person_id, "test-A")
+        # The duplicate check keeps the deterministic tie-break; check-in calls a tie unknown.
+        self.assertEqual(self.matcher.match_threshold_only(unit()).person_id, "test-A")
+        tie = self.matcher.match(unit())
+        self.assertEqual((tie.accepted, tie.person_id, tie.name, tie.score), (False, None, None, 1.0))
         self.gallery.model_version = "different"
         with self.assertRaises(IncompatibleGalleryError): self.matcher.match(unit())
 
@@ -310,7 +313,8 @@ class SuppliedFaceTests(unittest.TestCase):
 
     def test_source_coordinate_square_clipping_and_invalid_boxes(self):
         frame = np.zeros((100,120,3),dtype=np.uint8)
-        self.assertEqual(crop_box(frame,(0,0,80,80)),(0,0,88,88))
+        self.assertEqual(crop_box(frame,(0,0,80,80)),(0,0,80,80))
+        self.assertEqual(crop_box(frame,(10,5,90,95)),(10,5,90,95))
         for bbox in ((-1,0,80,80),(0,0,63,80),(1,1,1,90),(0,0,121,100),(True,0,80,80)):
             with self.assertRaises(ValueError): self.engine.embed(frame,bbox)
 

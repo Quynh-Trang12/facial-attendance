@@ -176,8 +176,10 @@ class RecognitionEvaluation:
             raise ValueError('Recognition model/result does not match the sandbox contract.')
         if rec.score is None:
             if rec.accepted or self.test_ids:raise ValueError('Invalid empty-gallery decision')
-        elif self.policy.accepts_cosine(rec.score)!=rec.accepted:
-            raise ValueError('Recognition decision disagrees with the unchanged threshold.')
+        elif rec.accepted and not self.policy.accepts_cosine(rec.score):
+            raise ValueError('Recognition accepted a score below the threshold.')
+        elif not rec.accepted and (rec.person_id is not None or rec.name is not None):
+            raise ValueError('An unknown recognition result must carry no identity.')
         if rec.accepted and rec.person_id not in self.test_ids:raise ValueError('Result is not from the isolated gallery.')
         decision=SandboxDecision(rec.person_id,rec.name,rec.score,rec.accepted,self.policy.cosine_threshold)
         if job.kind=='evaluation':
@@ -207,7 +209,7 @@ class RecognitionEvaluation:
         if any(not self.policy.accepts_cosine(cosine(v,template)) for v in self.references):
             raise ValueError('References fail the existing consistency rule; discard and recapture.')
         with self.matcher._lock:
-            match = self.matcher.match(template)
+            match = self.matcher.match_threshold_only(template)
             if match.accepted:
                 if save_gallery is not None:
                     raise ValueError(f'Face already matches the local profile “{match.name}”.')

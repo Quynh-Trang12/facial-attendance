@@ -14,7 +14,7 @@ The COS30082 application runs in one Python desktop process. Feature modules own
 ## From webcam to record
 
 1. The webcam delivers source frames. YuNet detects faces on sampled frames while the camera preview continues. The controller rejects stale work and requires a single valid face for verification.
-2. The recognition adapter crops its own square region, converts BGR to RGB, and uses the selected Face transform. Liveness and Emotion use the original detector box from the same source frame. Emotion is informational.
+2. The recognition adapter crops the detector box (clipped to the frame), converts BGR to RGB, and uses the selected Face transform. Liveness and Emotion use the original detector box from the same source frame. Emotion is informational.
 3. The GUI presents recognition as a preview match and shows the last three-second liveness scan. The overlay and review window read presentation state without granting authority.
 4. Registration binds each reference to its current capture and attempt. It requires five accepted live samples and checks for duplicate identities before storing an averaged template.
 5. The Attendance test coordinator consumes the current liveness and recognition results, binds same-frame evidence to an attendance attempt, and reuses the temporal gate. The Attendance Service rechecks the session, current capture, liveness, identity and gallery before writing. Manual and automatic recording share that writer.
