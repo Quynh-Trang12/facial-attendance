@@ -9,7 +9,7 @@ import numpy as np
 from .contracts import FaceInferenceContract
 
 CHECKPOINT_SHA256 = "bc4502836f306c886323c444f11d6ddd7fe02515ba40a467d22f486fbfdcbc4f"
-PREPROCESSING_VERSION = "square1.2-clipped-bgr-rgb64-bilinear-imagenet-v1"
+PREPROCESSING_VERSION = "box-clipped-bgr-rgb64-bilinear-imagenet-v1"
 
 
 class FaceUnavailable(RuntimeError):
@@ -32,10 +32,9 @@ def crop_box(frame, bbox):
     x1, y1, x2, y2 = bbox
     if min(x2 - x1, y2 - y1) < 64:
         raise ValueError("Face box must be at least 64 pixels on its shorter side.")
-    side = 1.2 * max(x2 - x1, y2 - y1)
-    cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
-    return (max(0, math.floor(cx-side/2)), max(0, math.floor(cy-side/2)),
-            min(width, math.ceil(cx+side/2)), min(height, math.ceil(cy+side/2)))
+    # The bare detector box. A square 1.2 x the box took in hair and background, which on one
+    # webcam made different people's templates close; see configs/recognition.toml.
+    return x1, y1, x2, y2
 
 
 def normalized_vector(values):

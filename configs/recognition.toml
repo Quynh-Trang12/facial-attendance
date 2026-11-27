@@ -19,6 +19,13 @@
 #   min_score 0.69, margin 0.10 82.7 %, 0 %,  5.1 %
 # With 3-10 enrolled people the new rule names 0.5-1.4 % of strangers instead of 8-16 %, and
 # 86-90 % of enrolled people instead of 95-98 % (the rest are asked to try again).
-# LFW is not webcam footage and may overlap the training data: re-check on the webcam.
+# LFW is not webcam footage and may overlap the training data.
+#
+# Webcam check (2026-11-27, one room, two enrolled people, labelled frames), same rule, square-1.2
+# crop against the bare detector box that the app now uses:
+#   unregistered people named as someone: app before (square, tau only) 84 %, square 40 %, box 4 %
+#   the two enrolled people's templates: cosine 0.39-0.68 with square, 0.01-0.32 with box
+# The box crop asks enrolled people to retry more often (more unknowns when they move). On LFW press
+# photos the box crop did worse than square-1.2, so re-check both values with more people.
 margin = 0.10
 min_score = 0.69

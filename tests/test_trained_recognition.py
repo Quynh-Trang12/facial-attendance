@@ -313,7 +313,8 @@ class SuppliedFaceTests(unittest.TestCase):
 
     def test_source_coordinate_square_clipping_and_invalid_boxes(self):
         frame = np.zeros((100,120,3),dtype=np.uint8)
-        self.assertEqual(crop_box(frame,(0,0,80,80)),(0,0,88,88))
+        self.assertEqual(crop_box(frame,(0,0,80,80)),(0,0,80,80))
+        self.assertEqual(crop_box(frame,(10,5,90,95)),(10,5,90,95))
         for bbox in ((-1,0,80,80),(0,0,63,80),(1,1,1,90),(0,0,121,100),(True,0,80,80)):
             with self.assertRaises(ValueError): self.engine.embed(frame,bbox)
 

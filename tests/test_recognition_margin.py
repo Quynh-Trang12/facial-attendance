@@ -223,3 +223,31 @@ class AttendanceStatusTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProfileCropTests(unittest.TestCase):
+    """Templates from the square-1.2 crop must not be matched against box-crop probes."""
+
+    def test_store_records_the_crop_and_refuses_files_without_it(self):
+        import json
+        import sqlite3
+        from contextlib import closing
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from facial_attendance.recognition.inference import PREPROCESSING_VERSION
+        from facial_attendance.ui.local_profile_store import LocalProfileStore
+
+        self.assertTrue(PREPROCESSING_VERSION.startswith("box-"))
+        with TemporaryDirectory() as directory:
+            store = LocalProfileStore(Path(directory) / "profiles.sqlite3")
+            gallery = empty_gallery()
+            gallery.register("test-001", "Person A", A, n_images=5)
+            store.save(gallery)
+            self.assertEqual([p.name for p in LocalProfileStore(store.path).load().people], ["Person A"])
+
+            old = Path(directory) / "old.sqlite3"
+            with closing(sqlite3.connect(old)) as db, db:
+                db.execute("CREATE TABLE profiles (id INTEGER PRIMARY KEY, revision INTEGER NOT NULL, gallery TEXT NOT NULL)")
+                db.execute("INSERT INTO profiles VALUES (1, 1, ?)", (json.dumps(gallery.to_dict()),))
+            with self.assertRaisesRegex(ValueError, "register everyone again"):
+                LocalProfileStore(old).load()

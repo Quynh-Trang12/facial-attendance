@@ -6,6 +6,7 @@ from pathlib import Path
 import sqlite3
 
 from ..recognition.gallery_matching import GalleryMatcher, empty_gallery
+from ..recognition.inference import PREPROCESSING_VERSION
 from .gallery import FaceGallery, GalleryError
 
 
@@ -23,13 +24,17 @@ class LocalProfileStore:
         try:
             with closing(sqlite3.connect(f"{self.path.as_uri()}?mode=ro", uri=True, timeout=0)) as db:
                 record = db.execute("SELECT revision, gallery FROM profiles WHERE id = 1").fetchone()
+                crop = _stored_preprocessing(db)
             if record is None:
                 raise ValueError("Missing local profile database record.")
+            if crop != PREPROCESSING_VERSION:
+                raise ValueError("Profiles were enrolled with a different face crop.")
             revision, payload = record
             gallery = FaceGallery.from_dict(json.loads(payload))
             GalleryMatcher(gallery)
         except (ValueError, GalleryError, sqlite3.Error) as error:
-            raise ValueError("The local profile database is unavailable or uses an incompatible recognition model.") from error
+            raise ValueError("The local profile database is unavailable or uses an incompatible recognition model "
+                             "or face crop. Use a new profile file and register everyone again.") from error
         self.revision = revision
         return gallery
 
@@ -50,6 +55,18 @@ class LocalProfileStore:
                 db.execute("INSERT INTO profiles VALUES (1, ?, ?) ON CONFLICT (id) "
                            "DO UPDATE SET revision = excluded.revision, gallery = excluded.gallery",
                            (next_revision, payload))
+                db.execute("CREATE TABLE IF NOT EXISTS profile_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+                db.execute("INSERT INTO profile_meta VALUES ('preprocessing_version', ?) ON CONFLICT (key) "
+                           "DO UPDATE SET value = excluded.value", (PREPROCESSING_VERSION,))
         except (OSError, sqlite3.Error) as error:
             raise ValueError("Could not save local profiles. Check storage access and try again.") from error
         self.revision = next_revision
+
+
+def _stored_preprocessing(db):
+    """The face crop the stored templates were made with; None for files written before it was recorded."""
+    try:
+        row = db.execute("SELECT value FROM profile_meta WHERE key = 'preprocessing_version'").fetchone()
+    except sqlite3.OperationalError:
+        return None
+    return row[0] if row else None
