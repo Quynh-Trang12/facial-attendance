@@ -11,7 +11,7 @@ from threading import RLock
 import numpy as np
 
 from .contracts import EnrollmentContract, FaceInferenceContract
-from .decision import decide, load_margin
+from .decision import decide, load_margin, load_min_score
 from .inference import cosine, normalized_vector
 from ..ui.gallery import FaceGallery, IncompatibleGalleryError
 
@@ -27,12 +27,13 @@ class Match:
 
 
 class GalleryMatcher:
-    def __init__(self, gallery, margin=None):
+    def __init__(self, gallery, margin=None, min_score=None):
         self._gallery = gallery
         self._lock = RLock()
         self.contract = FaceInferenceContract()
-        # Top-1/top-2 margin from configs/recognition.toml unless a test passes one.
+        # Margin and min_score from configs/recognition.toml unless a test passes them.
         self.margin = load_margin(DECISION_CONFIG) if margin is None else margin
+        self.min_score = load_min_score(DECISION_CONFIG) if min_score is None else min_score
         self._validate()
 
     def _validate(self):
@@ -52,18 +53,18 @@ class GalleryMatcher:
         return scored
 
     def match(self, embedding):
-        """Name a person only if the best score reaches tau and beats every other person by the margin.
+        """Name a person only if the best score reaches max(tau, min_score) and beats every
+        other person by the margin.
 
-        A best score at or above tau that is too close to the runner-up is unknown: the
-        result keeps that score but no identity. With one person enrolled tau stands in for
-        the runner-up, so the score must reach tau + margin.
+        Any other result is unknown: it keeps the best score but no identity. With one person
+        enrolled tau stands in for the runner-up, so the score must also reach tau + margin.
         """
         with self._lock:
             scored = self._scores(embedding)
             if not scored:
                 return Match(None, None, None, False)
             decision = decide([person.person_id for _, person in scored], [score for score, _ in scored],
-                              self.contract.cosine_threshold, self.margin)
+                              self.contract.cosine_threshold, self.margin, self.min_score)
             if not decision.accepted:
                 return Match(None, None, decision.best_score, False)
             person = next(person for _, person in scored if person.person_id == decision.label)

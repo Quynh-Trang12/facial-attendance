@@ -11,8 +11,13 @@ several templates never competes with themself. With one person enrolled there i
 s2; tau stands in for it, which means s1 >= tau + margin. Two people tied for the best
 score are always unknown, whatever the margin.
 
-tau comes from the checkpoint's meta["threshold"] and the margin from the config file;
-neither has a default here.
+tau is chosen for comparing one pair of faces. Matching against a whole class gives an
+unregistered person one chance per enrolled person, so the config may also set a higher
+min_score for naming anyone: then s1 >= max(tau, min_score). With one person enrolled
+tau, not min_score, still stands in for s2.
+
+tau comes from the checkpoint's meta["threshold"]; the margin and min_score come from the
+config file. Neither the margin nor tau has a default here.
 """
 
 from dataclasses import dataclass
@@ -52,24 +57,40 @@ def threshold_from_meta(meta) -> float:
     return _number(meta["threshold"], "meta['threshold']")
 
 
-def load_margin(config_file) -> float:
-    """Read [decision] margin; it must be present and >= 0."""
+def _decision_section(config_file) -> dict:
     with open(config_file, "rb") as handle:
         section = tomllib.load(handle).get("decision", {})
-    if set(section) != {"margin"}:
-        raise ValueError("Expected exactly one decision key: margin")
-    margin = _number(section["margin"], "margin")
+    if "margin" not in section or not set(section) <= {"margin", "min_score"}:
+        raise ValueError("Expected [decision] margin, and optionally min_score")
+    return section
+
+
+def load_margin(config_file) -> float:
+    """Read [decision] margin; it must be present and >= 0."""
+    margin = _number(_decision_section(config_file)["margin"], "margin")
     if margin < 0:
         raise ValueError("margin must be >= 0")
     return margin
 
 
-def decide(labels, scores, tau, margin) -> Decision:
+def load_min_score(config_file) -> float | None:
+    """Read [decision] min_score, the lowest score that names anyone; None when absent."""
+    section = _decision_section(config_file)
+    if "min_score" not in section:
+        return None
+    min_score = _number(section["min_score"], "min_score")
+    if not -1 <= min_score <= 1:
+        raise ValueError("min_score must be a cosine in [-1, 1]")
+    return min_score
+
+
+def decide(labels, scores, tau, margin, min_score=None) -> Decision:
     """Apply the rule to one score per gallery template (labels may repeat)."""
     labels = list(labels)
     scores = [_number(score, "score") for score in scores]
     tau = _number(tau, "tau")
     margin = _number(margin, "margin")
+    floor = tau if min_score is None else max(tau, _number(min_score, "min_score"))
     if margin < 0:
         raise ValueError("margin must be >= 0")
     if len(labels) != len(scores):
@@ -85,7 +106,7 @@ def decide(labels, scores, tau, margin) -> Decision:
     best_label, s1 = ranked[0]
     s2 = ranked[1][1] if len(ranked) > 1 else tau
 
-    if s1 < tau:
+    if s1 < floor:
         return Decision(None, False, BELOW_THRESHOLD, best_label, s1, s2)
     if (len(ranked) > 1 and s1 == s2) or s1 - s2 < margin:
         return Decision(None, False, AMBIGUOUS, best_label, s1, s2)

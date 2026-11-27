@@ -1,16 +1,24 @@
 # Decision rule for naming a face from the gallery (src/facial_attendance/recognition/decision.py).
 # The similarity threshold tau is not set here: it is read from the deployed checkpoint's
-# meta["threshold"], where model selection recorded it.
+# meta["threshold"], where model selection recorded it (0.462, chosen for comparing one pair).
 [decision]
-# Accept the best match only if its cosine score s1 >= tau and s1 - s2 >= margin, where s2 is
-# the best score of any other enrolled person (tau itself when only one person is enrolled).
+# Name the best match only if its cosine score s1 >= max(tau, min_score) and s1 - s2 >= margin,
+# where s2 is the best score of any other enrolled person (tau itself with one person enrolled).
 #
-# Source: measured on 2026-11-25 with the deployed metric model (tau 0.462) on 3 people's
-# lab photos plus 190 webcam frames of one of them, through the GUI's YuNet crop pipeline.
-# Unregistered real faces of a similar look scored a mean cosine of 0.44-0.51 against the
-# gallery, so tau alone wrongly accepted 6.8 % of webcam frames from people not enrolled.
-#   margin 0.15: 98.9 % of enrolled frames named correctly, 1.6 % of not-enrolled accepted
-#   margin 0.20: 96.3 % correct, 0 % accepted
-# Lab photos (19 probes) still had 16-21 % wrongly accepted, so this reduces the error and
-# does not remove it. Three people and one session only: re-measure with more people.
-margin = 0.15
+# Why min_score: tau lets 1 % of different-person pairs through, but check-in compares a face
+# with every enrolled person, so an unregistered person gets one chance per person. On LFW
+# with 50 enrolled people, tau alone named 72.5 % of unregistered people.
+#
+# Source (2026-11-27): the deployed metric model with the GUI's square-1.2 crop, LFW press
+# photos, one averaged template from 3 photos per person. The pair was chosen on one class of
+# 50 people and 2015 unregistered people: the fewest strangers named while naming enrolled
+# people at least as often as tau with margin 0.15, and no more wrong names. Measured on a
+# second class of 50 other people and 2015 other unregistered people:
+#   tau only                    97.6 % named correctly, 1.6 % wrong name, 72.5 % of strangers named
+#   tau, margin 0.15            81.5 %, 0 %, 14.0 %
+#   min_score 0.69, margin 0.10 82.7 %, 0 %,  5.1 %
+# With 3-10 enrolled people the new rule names 0.5-1.4 % of strangers instead of 8-16 %, and
+# 86-90 % of enrolled people instead of 95-98 % (the rest are asked to try again).
+# LFW is not webcam footage and may overlap the training data: re-check on the webcam.
+margin = 0.10
+min_score = 0.69

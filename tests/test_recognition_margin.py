@@ -1,6 +1,6 @@
-"""The top-1/top-2 margin in the GUI: check-in names a face only past the margin,
-registration still refuses duplicates on tau alone, and attendance treats a close
-runner-up as unknown rather than as a broken result."""
+"""The decision rule in the GUI: check-in names a face only past min_score and the
+top-1/top-2 margin, registration still refuses duplicates on tau alone, and attendance
+treats a close runner-up as unknown rather than as a broken result."""
 
 import math
 import unittest
@@ -12,7 +12,7 @@ from facial_attendance.attendance.store import AttendanceStore
 from facial_attendance.recognition.contracts import (
     SELECTED_COSINE_THRESHOLD, SELECTED_MODEL_ID, SELECTED_MODEL_VERSION, FaceInferenceContract,
 )
-from facial_attendance.recognition.decision import load_margin
+from facial_attendance.recognition.decision import load_margin, load_min_score
 from facial_attendance.recognition.evaluation import RecognitionEvaluation, SandboxInference
 from facial_attendance.recognition.gallery_matching import (
     DECISION_CONFIG, ControlledTestEnrollment, GalleryMatcher, PreparedTestEnrollment, empty_gallery,
@@ -43,11 +43,13 @@ NEAR_BOTH = at_angle(33)
 class MatcherMarginTests(unittest.TestCase):
     def setUp(self):
         self.gallery = empty_gallery()
-        self.matcher = GalleryMatcher(self.gallery, margin=MARGIN)
+        # min_score = tau isolates the margin; MinScoreTests covers min_score.
+        self.matcher = GalleryMatcher(self.gallery, margin=MARGIN, min_score=TAU)
 
-    def test_default_margin_comes_from_the_recognition_config(self):
-        self.assertEqual(GalleryMatcher(empty_gallery()).margin, load_margin(DECISION_CONFIG))
-        self.assertEqual(load_margin(DECISION_CONFIG), 0.15)
+    def test_defaults_come_from_the_recognition_config(self):
+        matcher = GalleryMatcher(empty_gallery())
+        self.assertEqual((matcher.margin, matcher.min_score), (0.10, 0.69))
+        self.assertEqual((load_margin(DECISION_CONFIG), load_min_score(DECISION_CONFIG)), (0.10, 0.69))
 
     def test_clear_winner_is_named(self):
         self.gallery.register("test-A", "Person A", A, n_images=5)
@@ -81,7 +83,35 @@ class MatcherMarginTests(unittest.TestCase):
     def test_negative_margin_is_refused(self):
         self.gallery.register("test-A", "Person A", A, n_images=5)
         with self.assertRaises(ValueError):
-            GalleryMatcher(self.gallery, margin=-0.1).match(A)
+            GalleryMatcher(self.gallery, margin=-0.1, min_score=TAU).match(A)
+
+
+class MinScoreTests(unittest.TestCase):
+    """The configured rule: s1 >= max(tau, 0.69) and s1 - s2 >= 0.10."""
+
+    def setUp(self):
+        self.gallery = empty_gallery()
+        self.matcher = GalleryMatcher(self.gallery)
+
+    def test_a_clear_best_match_below_min_score_is_unknown(self):
+        self.gallery.register("test-A", "Person A", A, n_images=5)
+        self.gallery.register("test-B", "Person B", at_angle(-90), n_images=5)
+        below = self.matcher.match(with_cosine(0.68))
+        self.assertEqual((below.accepted, below.person_id, below.name), (False, None, None))
+        self.assertAlmostEqual(below.score, 0.68)
+        above = self.matcher.match(with_cosine(0.70))
+        self.assertEqual((above.accepted, above.person_id), (True, "test-A"))
+
+    def test_one_profile_needs_min_score_not_more(self):
+        # tau + margin (0.56) is below min_score, so min_score decides alone.
+        self.gallery.register("test-A", "Person A", A, n_images=5)
+        self.assertFalse(self.matcher.match(with_cosine(0.68)).accepted)
+        self.assertTrue(self.matcher.match(with_cosine(0.70)).accepted)
+
+    def test_duplicate_check_ignores_min_score(self):
+        self.gallery.register("test-A", "Person A", A, n_images=5)
+        duplicate = self.matcher.match_threshold_only(with_cosine(0.60))
+        self.assertEqual((duplicate.accepted, duplicate.person_id), (True, "test-A"))
 
 
 class FixedInference:
