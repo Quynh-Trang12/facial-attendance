@@ -266,10 +266,11 @@ class AttendanceService:
             accepted = self._recognition_contract.accepts_cosine(result.score)
         except (ValueError, OverflowError):
             return "invalid_verification"
-        if accepted != result.accepted:
-            return "invalid_verification"
-        if not accepted:
+        if not result.accepted:
+            # A score at or above tau can still be unknown when the runner-up is within the margin.
             return "unknown" if result.person_id is None and result.name is None else "invalid_verification"
+        if not accepted:
+            return "invalid_verification"
         if any(not isinstance(value, str) or not value.strip() or value != value.strip()
                for value in (result.person_id, result.name)):
             return "invalid_verification"

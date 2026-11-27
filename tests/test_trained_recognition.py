@@ -65,7 +65,10 @@ class MatchingTests(unittest.TestCase):
     def test_compatible_gallery_and_deterministic_casefold_id_tie(self):
         self.gallery.register("test-B", "Second", unit(), n_images=3)
         self.gallery.register("test-A", "First", unit(), n_images=3)
-        self.assertEqual(self.matcher.match(unit()).person_id, "test-A")
+        # The duplicate check keeps the deterministic tie-break; check-in calls a tie unknown.
+        self.assertEqual(self.matcher.match_threshold_only(unit()).person_id, "test-A")
+        tie = self.matcher.match(unit())
+        self.assertEqual((tie.accepted, tie.person_id, tie.name, tie.score), (False, None, None, 1.0))
         self.gallery.model_version = "different"
         with self.assertRaises(IncompatibleGalleryError): self.matcher.match(unit())
 
