@@ -55,6 +55,22 @@ class LocalProfileTests(unittest.TestCase):
             stale.save(empty_gallery())
         self.assertEqual(LocalProfileStore(self.path).load().people[0].name, "Example")
 
+    def test_profile_databases_reject_the_other_crop_without_overwriting_profiles(self):
+        for tight in (False, True):
+            with self.subTest(crop_to_detector_box=tight):
+                path = self.path.with_name("box.sqlite3") if tight else self.path
+                store = LocalProfileStore(path, crop_to_detector_box=tight)
+                gallery = store.load()
+                gallery.register("person", "Example", unit(0), n_images=5)
+                store.save(gallery)
+                incompatible = LocalProfileStore(path, crop_to_detector_box=not tight)
+                with self.assertRaisesRegex(ValueError, "different face crop"):
+                    incompatible.load()
+                with self.assertRaisesRegex(ValueError, "different face crop"):
+                    incompatible.save(empty_gallery())
+                reopened = LocalProfileStore(path, crop_to_detector_box=tight)
+                self.assertEqual(reopened.load().people[0].name, "Example")
+
     def test_failed_save_keeps_draft_and_does_not_activate_the_profile(self):
         session = RecognitionEvaluation()
         session.set_consent(True)
@@ -183,17 +199,25 @@ class GuidedRegistrationTests(unittest.TestCase):
         self.assertIsNone(self.profiles.save_notice)
 
     def test_five_individually_live_references_survive_reload_and_do_not_record_attendance(self):
-        for score in (.2, .21, .44, .39):
+        directions = (None, (-1, 0), (1, 0), (0, -1), (0, 1))
+        for count, score in enumerate((.2, .21, .44, .39)):
+            view = self.profiles.guidance()
+            self.assertEqual((view.captured, view.total, view.pose.direction), (count, 5, directions[count]))
             self.capture(score)
+            self.assertEqual(self.profiles.guidance().feedback, "accepted")
         self.assertTrue(self.profiles.status.get().startswith("4/5"))
+        self.assertEqual(self.profiles.guidance().pose.direction, directions[-1])
         self.assert_no_saved_profile()
         self.capture(.2)
         self.assertTrue(self.profiles.status.get().startswith("5/5 · Registration ready"))
+        self.assertEqual(self.profiles.guidance().captured, 5)
+        self.assertIsNone(self.profiles.guidance().pose)
         self.profiles.save_button.configure.assert_called_with(state="normal")
         self.assertEqual(len({context.capture_id for context, _ in self.profiles._accepted_liveness}), 5)
         self.assert_no_attendance_file()
         self.profiles.save()
         self.assertFalse(self.profiles.active)
+        self.assertIsNone(self.profiles.guidance())
         self.assertIn("Registration saved", self.profiles.save_notice)
         reloaded = LocalProfileStore(self.store.path).load()
         self.assertEqual(reloaded.people[0].n_images, 5)
@@ -274,21 +298,30 @@ class GuidedRegistrationTests(unittest.TestCase):
         self.assertFalse(self.profiles.worker.busy)
         self.profiles.observe_liveness(*old)
         self.assertIsNone(self.profiles._attempt_id)
+        guidance = self.profiles.guidance()
+        self.assertEqual((guidance.feedback, guidance.captured, guidance.pose), ("spoof", 0, None))
         self.profiles.change_consent()
         self.assertIsNone(self.profiles._attempt_id)
         self.profiles.poll()
         self.profiles.observe_liveness(*old)
         self.assertTrue(self.profiles.status.get().startswith("0/5 · Selected photo was flagged as spoof. Registration aborted."))
         self.profiles.discard()
+        self.assertEqual(self.profiles.guidance().pose, TrialProfiles.POSES[0])
+        self.assertEqual(self.profiles.guidance().feedback, "guidance")
         self.profiles.observe_liveness(*old)
         self.assert_no_saved_profile()
         self.assertFalse(self.profiles.session.references)
+        self.profiles.cancel()
+        self.assertIsNone(self.profiles.guidance())
 
     def test_uncertain_requires_fresh_capture_preserving_live_references(self):
         self.capture(.2)
+        pose = self.profiles.guidance().pose
         token, request, prediction = self.observe(None, uncertain=True)
         self.profiles.capture()
         self.assertTrue(self.profiles.status.get().startswith("1/5 · Uncertain"))
+        self.assertEqual(self.profiles.guidance().pose, pose)
+        self.assertEqual(self.profiles.guidance().feedback, "retry")
         self.profiles.observe_liveness(token, request, {**prediction, "status": "live",
                                                         "spoof_score": .2, "allow_attendance": True})
         self.profiles.capture()

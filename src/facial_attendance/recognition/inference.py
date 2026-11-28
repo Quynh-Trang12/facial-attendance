@@ -10,6 +10,7 @@ from .contracts import FaceInferenceContract
 
 CHECKPOINT_SHA256 = "bc4502836f306c886323c444f11d6ddd7fe02515ba40a467d22f486fbfdcbc4f"
 PREPROCESSING_VERSION = "square1.2-clipped-bgr-rgb64-bilinear-imagenet-v1"
+BOX_PREPROCESSING_VERSION = "box-clipped-bgr-rgb64-bilinear-imagenet-v1"
 
 
 class FaceUnavailable(RuntimeError):
@@ -24,7 +25,7 @@ class FaceInferenceError(RuntimeError):
     pass
 
 
-def crop_box(frame, bbox):
+def crop_box(frame, bbox, *, tight=False):
     from ..ui.webcam_prototype import box_in_frame, frame_size
     width, height = frame_size(frame)
     if not isinstance(frame, np.ndarray) or not box_in_frame(bbox, width, height):
@@ -32,6 +33,8 @@ def crop_box(frame, bbox):
     x1, y1, x2, y2 = bbox
     if min(x2 - x1, y2 - y1) < 64:
         raise ValueError("Face box must be at least 64 pixels on its shorter side.")
+    if tight:
+        return (x1, y1, x2, y2)
     side = 1.2 * max(x2 - x1, y2 - y1)
     cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
     return (max(0, math.floor(cx-side/2)), max(0, math.floor(cy-side/2)),
@@ -60,9 +63,10 @@ def cosine(left, right):
 class FaceInference:
     """Load once before Tk construction; all subsequent forwards run on workers."""
 
-    def __init__(self, checkpoint, *, expected_sha256=CHECKPOINT_SHA256):
+    def __init__(self, checkpoint, *, expected_sha256=CHECKPOINT_SHA256, crop_to_detector_box=False):
         self.checkpoint = Path(checkpoint)
         self.expected_sha256 = expected_sha256
+        self._crop_to_detector_box = crop_to_detector_box
         self.model = self.transform = self.provenance = None
         self.contract = FaceInferenceContract()
 
@@ -97,16 +101,17 @@ class FaceInference:
         except Exception as error:
             raise FaceCheckpointMismatch(f"Incompatible selected Face checkpoint: {error}") from error
         self.model, self.transform = model, transform
+        preprocessing = BOX_PREPROCESSING_VERSION if self._crop_to_detector_box else PREPROCESSING_VERSION
         self.provenance = {"source": "model", "model_id": meta["model_id"], "model_version": meta["model_version"],
                            "checkpoint_sha256": before, "architecture": meta["architecture"],
-                           "preprocessing_version": PREPROCESSING_VERSION, "threshold": self.contract.cosine_threshold,
+                           "preprocessing_version": preprocessing, "threshold": self.contract.cosine_threshold,
                            "checkpoint_epoch": None, "epoch_note": "Deployable checkpoint contains no epoch field; reported selection epoch 29 is not independently verified from this file."}
         return self
 
     def preprocess(self, frame, bbox):
         from PIL import Image
         self.load()
-        x1, y1, x2, y2 = crop_box(frame, bbox)
+        x1, y1, x2, y2 = crop_box(frame, bbox, tight=self._crop_to_detector_box)
         rgb = np.array(frame[y1:y2, x1:x2, ::-1], copy=True)
         return self.transform(Image.fromarray(rgb)).unsqueeze(0)
 

@@ -183,6 +183,15 @@ class OverlayPipelineTests(unittest.TestCase):
         self.assertIsNone(app.controller.state.recognition);self.assertFalse(app.controller.state.can_save)
         self.complete();self.assertTrue(app._identity_overlay.update.call_args.args[0].known)
 
+    def test_mirrored_label_reads_normally_and_uses_the_mirrored_box(self):
+        app = self.install()
+        app._preview_mirrored = True
+        app._tick()
+        self.complete()
+        label, coordinates, size = app._identity_overlay.update.call_args.args
+        self.assertEqual(label, IdentityLabel("Generated Person", known=True))
+        self.assertEqual(coordinates, preview_box(CONTROLLED_BOX, (640, 360), size, mirrored=True))
+
     def test_pixel_replacement_hides_old_name_before_next_detection(self):
         app=self.install();app._tick();self.complete();app._identity_overlay.hide.reset_mock()
         self.now+=.04;self.packet(2,255-self.frame);app._tick()

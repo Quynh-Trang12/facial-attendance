@@ -17,7 +17,7 @@ import numpy as np
 
 from facial_attendance.recognition.contracts import FaceInferenceContract, SELECTED_COSINE_THRESHOLD
 from facial_attendance.recognition.inference import (
-    CHECKPOINT_SHA256, FaceCheckpointMismatch, FaceInference, FaceInferenceError,
+    BOX_PREPROCESSING_VERSION, CHECKPOINT_SHA256, FaceCheckpointMismatch, FaceInference, FaceInferenceError,
     FaceUnavailable, cosine, crop_box, normalized_vector,
 )
 from facial_attendance.recognition.gallery_matching import (
@@ -65,7 +65,10 @@ class MatchingTests(unittest.TestCase):
     def test_compatible_gallery_and_deterministic_casefold_id_tie(self):
         self.gallery.register("test-B", "Second", unit(), n_images=3)
         self.gallery.register("test-A", "First", unit(), n_images=3)
-        self.assertEqual(self.matcher.match(unit()).person_id, "test-A")
+        # The duplicate check keeps the deterministic tie-break; check-in calls a tie unknown.
+        self.assertEqual(self.matcher.match_threshold_only(unit()).person_id, "test-A")
+        tie = self.matcher.match(unit())
+        self.assertEqual((tie.accepted, tie.person_id, tie.name, tie.score), (False, None, None, 1.0))
         self.gallery.model_version = "different"
         with self.assertRaises(IncompatibleGalleryError): self.matcher.match(unit())
 
@@ -313,6 +316,21 @@ class SuppliedFaceTests(unittest.TestCase):
         self.assertEqual(crop_box(frame,(0,0,80,80)),(0,0,88,88))
         for bbox in ((-1,0,80,80),(0,0,63,80),(1,1,1,90),(0,0,121,100),(True,0,80,80)):
             with self.assertRaises(ValueError): self.engine.embed(frame,bbox)
+
+    def test_box_recognition_uses_detector_pixels_and_reports_its_preprocessing(self):
+        from PIL import Image
+
+        adapters = TrainedPreviewAdapters(self.path, crop_to_detector_box=True)
+        engine = adapters.face_inference
+        frame = np.full((180, 180, 3), (30, 60, 90), dtype=np.uint8)
+        bbox = (36, 42, 120, 132)
+        frame[42:132, 36:120] = (8, 16, 24)
+        frame.flags.writeable = False
+        expected = engine.transform(Image.new("RGB", (84, 90), (24, 16, 8))).unsqueeze(0)
+        self.assertTrue(self.torch.equal(engine.preprocess(frame, bbox), expected))
+        self.assertFalse(self.torch.equal(self.engine.preprocess(frame, bbox), expected))
+        self.assertEqual(engine.provenance["preprocessing_version"], BOX_PREPROCESSING_VERSION)
+        self.assertEqual(engine.provenance["checkpoint_sha256"], self.engine.provenance["checkpoint_sha256"])
 
     def test_real_512d_embeddings_are_finite_normalized_and_deterministic(self):
         a=self.engine.embed(controlled_frame(),CONTROLLED_BOX)
