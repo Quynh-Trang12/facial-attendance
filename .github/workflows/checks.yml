@@ -19,6 +19,10 @@ jobs:
       PYTHONUTF8: "1"
       MPLBACKEND: Agg
       OMP_NUM_THREADS: "1"
+      # Exercise the inference weights shipped in the source submission.
+      FA_FACE_CHECKPOINT: artifacts/models/recognition/face-recognition-resnet18.pt
+      FA_LIVENESS_RELEASE: artifacts/models/liveness/liveness-inference.pt
+      FA_LIVENESS_YUNET: artifacts/detectors/face_detection_yunet_2023mar.onnx
     steps:
       - uses: actions/checkout@v7
         with:
@@ -80,6 +84,10 @@ jobs:
       PYTHONUTF8: "1"
       MPLBACKEND: Agg
       OMP_NUM_THREADS: "1"
+      # Exercise the inference weights shipped in the source submission.
+      FA_FACE_CHECKPOINT: artifacts/models/recognition/face-recognition-resnet18.pt
+      FA_LIVENESS_RELEASE: artifacts/models/liveness/liveness-inference.pt
+      FA_LIVENESS_YUNET: artifacts/detectors/face_detection_yunet_2023mar.onnx
     steps:
       - uses: actions/checkout@v7
         with:
