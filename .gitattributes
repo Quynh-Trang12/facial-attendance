@@ -1,0 +1,3 @@
+# Source snapshots and saved evidence are bound by byte-level checksums.
+# Preserve committed bytes on every OS, including intentional CSV CRLF endings.
+* -text
