@@ -1,0 +1,34 @@
+[
+  {
+    "trial": 2,
+    "line": "verification_data/00007133.jpg verification_data/00060449.jpg 1",
+    "label": 1,
+    "fac03_cosine": 0.649,
+    "score": {
+      "model_id": "20261114-125242-metric-74a8657-s42",
+      "model_version": "cb38ea47ceff",
+      "left": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2/verification_data/00007133.jpg",
+      "right": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2/verification_data/00060449.jpg",
+      "embedding_dim": 512,
+      "cosine": 0.6316158129603049,
+      "euclidean_distance": 0.11707458225586,
+      "euclidean_distance_normalized": 0.8583521270896869
+    }
+  },
+  {
+    "trial": 1,
+    "line": "verification_data/00041961.jpg verification_data/00044353.jpg 0",
+    "label": 0,
+    "fac03_cosine": 0.318,
+    "score": {
+      "model_id": "20261114-125242-metric-74a8657-s42",
+      "model_version": "cb38ea47ceff",
+      "left": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2/verification_data/00041961.jpg",
+      "right": "/content/facial-attendance/data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2/verification_data/00044353.jpg",
+      "embedding_dim": 512,
+      "cosine": 0.10192077226059537,
+      "euclidean_distance": 0.22966916481871857,
+      "euclidean_distance_normalized": 1.3402083627103696
+    }
+  }
+]

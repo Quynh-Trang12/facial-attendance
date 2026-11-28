@@ -1,0 +1,180 @@
+{
+  "selection_sha256": "7255986a1cd6d059aa9fee70fe7d0a83e8bd5c889a64ce745ac2e42b37fe9e8e",
+  "checks": [
+    {
+      "check": "validation classification: output files are the recorded ones",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "validation classification: evaluator commit, mode, trial file and model",
+      "ok": true,
+      "detail": "2d14220, validation, 20261113-160440-classification-78122af-s42"
+    },
+    {
+      "check": "validation classification: trial counts",
+      "ok": true,
+      "detail": "7612 trials, 3806 same, 3806 different"
+    },
+    {
+      "check": "validation classification: score direction (cosine in [-1, 1], AUC input is minus the distance)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "validation classification: cosine AUC",
+      "ok": true,
+      "detail": "rank formula 0.988423, recorded 0.988423"
+    },
+    {
+      "check": "validation classification: negative_euclidean AUC",
+      "ok": true,
+      "detail": "rank formula 0.983625, recorded 0.983625"
+    },
+    {
+      "check": "validation metric: output files are the recorded ones",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "validation metric: evaluator commit, mode, trial file and model",
+      "ok": true,
+      "detail": "2d14220, validation, 20261114-125242-metric-74a8657-s42"
+    },
+    {
+      "check": "validation metric: trial counts",
+      "ok": true,
+      "detail": "7612 trials, 3806 same, 3806 different"
+    },
+    {
+      "check": "validation metric: score direction (cosine in [-1, 1], AUC input is minus the distance)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "validation metric: cosine AUC",
+      "ok": true,
+      "detail": "rank formula 0.991114, recorded 0.991114"
+    },
+    {
+      "check": "validation metric: negative_euclidean AUC",
+      "ok": true,
+      "detail": "rank formula 0.956053, recorded 0.956053"
+    },
+    {
+      "check": "validation: both approaches scored the same trials in the same order",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "validation: paired bootstrap of the cosine AUC difference",
+      "ok": true,
+      "detail": "+0.0027 [+0.0014, +0.0040]"
+    },
+    {
+      "check": "validation: selected approach has the higher cosine AUC",
+      "ok": true,
+      "detail": "metric"
+    },
+    {
+      "check": "validation classification: threshold is the lowest cosine with FAR <= 1%",
+      "ok": true,
+      "detail": "tau 0.446218, FAR 0.9984% (38 of 3806), TAR 85.3652%, next lower FAR 1.0247%"
+    },
+    {
+      "check": "validation metric: threshold is the lowest cosine with FAR <= 1%",
+      "ok": true,
+      "detail": "tau 0.461997, FAR 0.9984% (38 of 3806), TAR 87.9664%, next lower FAR 1.0247%"
+    },
+    {
+      "check": "official: used the committed selection, decision unchanged",
+      "ok": true,
+      "detail": "7255986a1cd6"
+    },
+    {
+      "check": "official: selection.json was committed before official scoring",
+      "ok": true,
+      "detail": "in cddc070, validation 2026-11-18T02:54:44+00:00, official 2026-11-18T03:06:08+00:00"
+    },
+    {
+      "check": "official classification: output files are the recorded ones",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "official classification: evaluator commit, mode, trial file and model",
+      "ok": true,
+      "detail": "2d14220, official, 20261113-160440-classification-78122af-s42"
+    },
+    {
+      "check": "official classification: trial counts",
+      "ok": true,
+      "detail": "8805 trials, 4315 same, 4490 different"
+    },
+    {
+      "check": "official classification: score direction (cosine in [-1, 1], AUC input is minus the distance)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "official classification: cosine AUC",
+      "ok": true,
+      "detail": "rank formula 0.961800, recorded 0.961800"
+    },
+    {
+      "check": "official classification: negative_euclidean AUC",
+      "ok": true,
+      "detail": "rank formula 0.944473, recorded 0.944473"
+    },
+    {
+      "check": "official metric: output files are the recorded ones",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "official metric: evaluator commit, mode, trial file and model",
+      "ok": true,
+      "detail": "2d14220, official, 20261114-125242-metric-74a8657-s42"
+    },
+    {
+      "check": "official metric: trial counts",
+      "ok": true,
+      "detail": "8805 trials, 4315 same, 4490 different"
+    },
+    {
+      "check": "official metric: score direction (cosine in [-1, 1], AUC input is minus the distance)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "official metric: cosine AUC",
+      "ok": true,
+      "detail": "rank formula 0.968652, recorded 0.968652"
+    },
+    {
+      "check": "official metric: negative_euclidean AUC",
+      "ok": true,
+      "detail": "rank formula 0.935946, recorded 0.935946"
+    },
+    {
+      "check": "official: both approaches scored the same trials in the same order",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "official: paired bootstrap of the cosine AUC difference",
+      "ok": true,
+      "detail": "+0.0069 [+0.0040, +0.0096]"
+    },
+    {
+      "check": "official: paired bootstrap of the negative_euclidean AUC difference",
+      "ok": true,
+      "detail": "-0.0085 [-0.0138, -0.0030]"
+    },
+    {
+      "check": "official: operating point of the fixed threshold",
+      "ok": true,
+      "detail": "FAR 2.5390% (114 of 4490), TAR 76.7555% (3312 of 4315)"
+    }
+  ]
+}

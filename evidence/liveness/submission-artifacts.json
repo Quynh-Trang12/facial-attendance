@@ -4,12 +4,12 @@
   "selected_model": {
     "configuration": "aenet-full",
     "selected_epoch": 18,
-    "local_path": "evidence/liveness/liveness-continuation/aenet-full-resume-20261123T092427Z-4631/liveness-inference.pt",
+    "local_path": "artifacts/models/liveness/liveness-inference.pt",
     "drive_file_id": "1k-l0TXaD4ZgDKDeLgrdWsr8o3I6dyEFP",
     "download_url": "https://drive.google.com/file/d/1k-l0TXaD4ZgDKDeLgrdWsr8o3I6dyEFP/view",
     "bytes": 44801099,
     "sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
-    "git_distribution": "External model artifact; weight files remain ignored by Git"
+    "git_distribution": "Selected inference checkpoint bundled with the source; full training/resume checkpoints remain external"
   },
   "evidence": {
     "comparison_15_epochs": "evidence/liveness/liveness-comparison/model-choice.json",

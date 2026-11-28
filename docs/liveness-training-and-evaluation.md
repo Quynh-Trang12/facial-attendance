@@ -37,8 +37,8 @@ Both commands execute saved-evidence rendering and retain tables/figures in the 
 To try your own input:
 
 1. Complete the OS-specific environment setup above.
-2. Download the selected 44.8 MB checkpoint from the [artifact index](../evidence/liveness/submission-artifacts.json) into its selected_model.local_path, creating the parent folders. Default inference verifies it against the saved model-choice checksum.
-3. For full images or recordings, prepare the pinned face detector; its CLI verifies the downloaded bytes.
+2. Use the bundled 44.8 MB [checkpoint](../artifacts/models/liveness/liveness-inference.pt). The [artifact index](../evidence/liveness/submission-artifacts.json) supplies a download source if it is missing. Default inference verifies the bundled file checksum; an explicit run directory selects its archived validation winner.
+3. For full images or recordings, verify the bundled face detector with the preparation CLI below; it downloads only when the asset is missing.
 4. Use the appropriate image or folder command below. The checkpoint's validation threshold remains fixed.
 
 ```sh

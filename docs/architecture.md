@@ -9,7 +9,7 @@
 - [Configuration](../src/facial_attendance/config.py): Resolve paths from [project.toml](../configs/project.toml), including external storage
 - [Environment checks](../src/facial_attendance/environment.py): Version/device policy; lazy loading of numerical checks keeps help and failed-install reports usable
 
-The attendance flow detects/crops a face, checks liveness and identity, predicts emotion and updates the UI. Only a verified identity with accepted liveness may record attendance. The application owns tracking, registration and the final action; model scores alone do not implement that flow.
+The attendance flow detects/crops a face, checks liveness and identity, predicts emotion and updates the UI. Recognition uses tight detector-box crops in the local workspace; liveness/emotion keep their own training preprocessing. Tagged local profile storage rejects square-crop databases. Preview results are informational; dedicated same-capture temporal verification supplies the attendance policy only in the explicitly isolated test mode. Only a verified identity with accepted liveness may record attendance. The application owns tracking, registration and the final action; model scores alone do not implement that flow.
 
 ## Liveness architecture and code reading route
 
@@ -20,6 +20,8 @@ The attendance flow detects/crops a face, checks liveness and identity, predicts
 - [audit](../src/facial_attendance/liveness/audit/): Integrity, duplicate/crop review and selection checks
 - [evaluation](../src/facial_attendance/liveness/evaluation/): Metrics, saved-score diagnostics and plots
 - [inference](../src/facial_attendance/liveness/inference/): Face/frame predictions and temporal admission
+
+UI, attendance and CLI import the model and detector from models and the adapter and temporal gate from inference. Each component has one implementation; the old root-level duplicates have been removed.
 
 Models do not import datasets/training/experiments; datasets do not import training/experiments; training does not import experiment policy. [dataset_files.py](../src/facial_attendance/liveness/dataset_files.py) shares path, checksum and snapshot helpers. Tests protect these dependency boundaries.
 

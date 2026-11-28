@@ -1,0 +1,19 @@
+{
+  "system": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.17 (v3.13.17:64e080d3815, Oct 21 2026, 07:24:09) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/Users/elvyx/Downloads/fa-sys03-mac/artifacts/sys05-clean-runtime-20261116/bin/python",
+  "tk_version": 8.6,
+  "tcl_version": 8.6,
+  "packages": {
+    "numpy": "2.2.6",
+    "Pillow": "11.2.1",
+    "opencv-python": "4.13.0.92"
+  },
+  "fresh_environment": true,
+  "torch_installed": false,
+  "source_scope": "SYS-05 minimal GUI/test runtime; shared team requirements and existing .venv unchanged",
+  "detector_assets_sha256": {
+    "artifacts/sys05-yunet/LICENSE": "c83b8120c50ccbd4c4f96edf53141bdd566ebb8f8e9227e415326aa1b1aba958",
+    "artifacts/sys05-yunet/face_detection_yunet_2023mar.onnx": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
+  }
+}

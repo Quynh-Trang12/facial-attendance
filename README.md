@@ -1,6 +1,8 @@
 # Facial Attendance
 
-COS30082 group project for face recognition, liveness, emotion and webcam attendance. The modules form the team’s attendance system.
+COS30082 group project integrating CNN face verification, trained anti-spoofing, Sad/Happy/Neutral expression recognition and webcam registration. Classification and metric-learning face models are compared using ROC/AUC. The source includes the selected inference checkpoints and face detector.
+
+The application is a coursework demonstration. Attendance writes require explicitly isolated test databases. Historical replay checks recorded recognition errors; current webcam error rates have not been remeasured. See [requirements, results and remaining verification limits](docs/requirements.md) before assessing submission completeness.
 
 ## Project Tracker
 
@@ -17,7 +19,7 @@ Extract the GitHub source ZIP or clone the repository, then use that folder as t
 
 ### Face recognition
 
-[Acquire and check face data](docs/data-loading.md) with [check_face_data.py](scripts/check_face_data.py). Available checks cover classification images, verification pairs and training-pair sampling.
+[Models and reproduction](docs/face-models.md), [approach comparison](docs/face-comparison.md) and [recorded ROC/AUC results](evidence/FAC-05/README.md). [Acquire and check face data](docs/data-loading.md) for training/evaluation; inference uses the bundled metric-learning checkpoint.
 
 ### Liveness
 
@@ -25,11 +27,72 @@ Extract the GitHub source ZIP or clone the repository, then use that folder as t
 
 ### Emotion
 
-[Emotion module](src/facial_attendance/emotion/).
+[Final model, training and held-out results](docs/emotion-finalized.md), [adapter usage](docs/emotion-final-integration.md) and [saved results notebook](notebooks/emotion_final_results.ipynb). The deployed classes are Sad, Happy and Neutral; the older aggregate and six-class experiments are historical alternatives.
 
 ### Attendance UI
 
-[Attendance UI module](src/facial_attendance/ui/). See the [course requirements](docs/requirements.md) for the project scope.
+[Launch and reviewer walkthrough](docs/attendance-demo.md). The current application uses tight detector-box recognition crops and refuses profile databases created for the earlier square crop.
+
+## Run the demo
+
+From the repository root, activate the Python 3.13 environment described in [setup](docs/setup.md). Tk, camera access and a graphical desktop are required. These files are bundled; inference does not download model weights or require training datasets:
+
+| Component | Bundled file |
+| --- | --- |
+| Face metric ResNet-18 | [Face checkpoint](artifacts/models/recognition/face-recognition-resnet18.pt) |
+| Emotion ResNet-18, epoch 10 | [Emotion checkpoint](artifacts/models/emotion/best.pt) |
+| Liveness AENet-Full, epoch 18 | [Liveness checkpoint](artifacts/models/liveness/liveness-inference.pt) |
+| YuNet auxiliary face locator | [Detector](artifacts/detectors/face_detection_yunet_2023mar.onnx), [MIT license](artifacts/detectors/LICENSE-YuNet.txt) |
+
+Verify the detector locally with `python scripts/setup_sys05_yunet.py`. The adapters verify the selected model checksums when loading. YuNet supplies face locations; the team's trained models supply identity, liveness and expression predictions.
+
+<details>
+<summary>Local execution — Linux/macOS shell</summary>
+
+```sh
+PYTHONPATH=src python -m facial_attendance.ui.webcam_app \
+  --local-workspace --attendance --attendance-verification-test \
+  --attendance-auto-retry-test --attendance-auto-record-test \
+  --camera 0 --detector yunet \
+  --face-checkpoint artifacts/models/recognition/face-recognition-resnet18.pt \
+  --emotion-checkpoint artifacts/models/emotion/best.pt \
+  --local-profile-db artifacts/attendance-verification-test/demo-box/profiles.sqlite3 \
+  --attendance-db artifacts/attendance-verification-test/demo-box/attendance.sqlite3 \
+  --opencv-threads 1
+```
+
+</details>
+
+<details>
+<summary>Local execution — Windows PowerShell</summary>
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m facial_attendance.ui.webcam_app `
+  --local-workspace --attendance --attendance-verification-test `
+  --attendance-auto-retry-test --attendance-auto-record-test `
+  --camera 0 --detector yunet `
+  --face-checkpoint artifacts/models/recognition/face-recognition-resnet18.pt `
+  --emotion-checkpoint artifacts/models/emotion/best.pt `
+  --local-profile-db artifacts/attendance-verification-test/demo-box/profiles.sqlite3 `
+  --attendance-db artifacts/attendance-verification-test/demo-box/attendance.sqlite3 `
+  --opencv-threads 1
+```
+
+</details>
+
+<details>
+<summary>Google Colab execution — models and saved evidence</summary>
+
+Use [Colab setup](docs/setup.md#google-colab-cpu-or-t4-gpu) and the module guides above for training, evaluation and saved-result inspection. The Tk webcam application runs on a local graphical desktop; these Colab routes do not establish a physical webcam GUI test.
+
+</details>
+
+## Walk through the app
+
+Registration is intentionally restricted to **Developer Mode** under the team's role design; **Standard Mode** serves recognition and attendance. Open **Developer Mode**, choose **Register new person**, enter a consenting participant's name and collect the five guided live references. Save the profile, return to **Standard Mode** and confirm its name and sampled expression. Start a session and retain a known live face continuously for automatic test attendance. Unknown, spoof, stale and multiple-face captures must not write a record. Repeated checks of the same person in one session must leave one row.
+
+The [full walkthrough](docs/attendance-demo.md#reviewer-walkthrough) covers rejection, camera interruptions, duplicate prevention and SQLite verification. Treat a wrong-person record as a failed check even if the application displays success. Square-crop profiles cannot be reused in this workspace; use a separate database and register fresh references.
 
 ## Repository layout
 
@@ -40,9 +103,15 @@ facial-attendance/
 ├── notebooks/             # Executable experiments and saved results
 ├── tests/                 # Feature suites and shared infrastructure checks
 ├── configs/               # Project paths and release checksums
+├── artifacts/models/      # Selected inference checkpoints, grouped by module
+├── artifacts/detectors/   # Bundled auxiliary locator and license
 ├── docs/                  # Setup, module guides and architecture
 ├── data/                  # External datasets and caches; guide retained in Git
 └── evidence/              # Selected results and verification records
 ```
 
 The [architecture/code reading route](docs/architecture.md) explains responsibilities and integration boundaries. [Setup review](evidence/SYS-03/README.md#sys-03-independent-review), [face-loader evidence](evidence/FAC-01/README.md) and [liveness data evidence](evidence/LIV-03/README.md) retain their original execution attribution.
+
+## Submission contents
+
+Submit the source code with the bundled inference files, module guides, notebooks and selected evidence. Generated profile/attendance databases, raw datasets, personal recordings, caches, environments and full training checkpoints remain local or separately acquired. The [course coverage](docs/requirements.md#separate-submission-deliverables) lists the group report, demonstration video and individual deliverables required in addition to source code. This README is not the page-limited group report.

@@ -1,0 +1,75 @@
+{
+  "dataset_version": "sad-happy-neutral-geometry-v2-20261121",
+  "selected_epoch": 10,
+  "checkpoint_sha256": "0dcecbdbc7195bfb8cfd4529e0aa287d9b40c43da323311ad3803d687fcbfd24",
+  "dataset_manifest_sha256": "54ac9d2ea037dbb2d879acd9d960f11161bfc353b89f5ca8a0151f221d2ac4ec",
+  "evaluation_source_sha256": "683f3d80f1185b5c1d36dad8699b15a43ecbb75520ce88a225ca4fa3c01edad8",
+  "selection": "Checkpoint fixed by validation Neutral F1 before test evaluation. No training or tuning performed.",
+  "validation_integrity": {
+    "same_confusion_matrix": true,
+    "changed_predictions": 0,
+    "loss_absolute_difference": 1.6378770895109085e-08
+  },
+  "test": {
+    "count": 4133,
+    "accuracy": 0.7757077183643842,
+    "macro_f1": 0.7520353945117907,
+    "loss": 0.5711641215741591,
+    "label_order": [
+      "sad",
+      "happy",
+      "neutral"
+    ],
+    "confusion_matrix": [
+      [
+        715,
+        186,
+        285
+      ],
+      [
+        35,
+        1654,
+        60
+      ],
+      [
+        186,
+        175,
+        837
+      ]
+    ],
+    "confusion_axes": "rows=true, columns=predicted",
+    "per_class": [
+      {
+        "name": "sad",
+        "precision": 0.7638888888888888,
+        "recall": 0.602866779089376,
+        "f1": 0.6738925541941565,
+        "support": 1186
+      },
+      {
+        "name": "happy",
+        "precision": 0.8208436724565756,
+        "recall": 0.9456832475700401,
+        "f1": 0.8788522848034006,
+        "support": 1749
+      },
+      {
+        "name": "neutral",
+        "precision": 0.7081218274111675,
+        "recall": 0.6986644407345576,
+        "f1": 0.7033613445378152,
+        "support": 1198
+      }
+    ]
+  },
+  "predictions_sha256": "a3d9c45b824054e3f276f2889d5b510c8a79597a3d4c5f41dfa261d0893ad55d",
+  "environment": {
+    "device": "cpu",
+    "python": "3.13.9",
+    "torch": "2.13.0+cpu",
+    "torchvision": "0.28.0+cpu",
+    "pillow": "11.2.1"
+  },
+  "limitations": "Quality-filtered FER2013 subset, not the original benchmark. Known content/annotation issues remain. All test images were visually screened for geometry before this evaluation. This is not a real attendance webcam evaluation.",
+  "checkpoint_sha256_after_evaluation": "0dcecbdbc7195bfb8cfd4529e0aa287d9b40c43da323311ad3803d687fcbfd24"
+}

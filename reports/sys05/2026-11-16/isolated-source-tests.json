@@ -1,0 +1,12 @@
+{
+  "scope": "Separate source snapshot without .git or inherited working-tree files; fresh minimal venv",
+  "cwd": "/Users/elvyx/Downloads/fa-sys03-mac/artifacts/sys05-isolated-verification-20261116",
+  "command": "PYTHONPATH=src /Users/elvyx/Downloads/fa-sys03-mac/artifacts/sys05-clean-runtime-20261116/bin/python -m unittest discover -s tests -v",
+  "returncode": 0,
+  "total": 131,
+  "passed": true,
+  "failed": 0,
+  "skipped": 0,
+  "candidate_id": "SYS05-LOCAL-20261116-c00c004fc23a",
+  "protected_file_excluded": true
+}

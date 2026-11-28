@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "tests_run": 71,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "scope": "Tracked existing tests plus SYS-06 evaluation tests; excludes unrelated untracked local review tests.",
+  "modules": [
+    "test_config",
+    "test_data_cli",
+    "test_emotion_aggregation",
+    "test_emotion_loader",
+    "test_emotion_preparation",
+    "test_emotion_sixclass",
+    "test_face_data",
+    "test_runtime",
+    "test_evaluation"
+  ],
+  "known_answer_output_checks": "PASS",
+  "evidence": "Synthetic inputs only; no trained-model evaluation."
+}

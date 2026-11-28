@@ -1,0 +1,15 @@
+{
+  "scope": "Owner handover integrity check; not independent reviewer acceptance or dataset evaluation.",
+  "checkpoint_file_sha256": "323718881b67576a854fe714b2ba136c5aadbadc9b6676e9eb2cf16d2a86cfcd",
+  "epoch": 9,
+  "model_id": "20261114T180653198248Z-emotion-cnn-e161192-s42",
+  "model_version": "546da19237b1ed2549f657c535102071fa0c951d428412746819e71a137b7a20",
+  "configuration_matches_manifest": true,
+  "dataset_manifest_matches": true,
+  "weight_hash_verified_by_loader": true,
+  "synthetic_inference_output_shape": [
+    1,
+    3
+  ],
+  "test_split_used": false
+}

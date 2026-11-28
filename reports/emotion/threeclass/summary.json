@@ -1,0 +1,55 @@
+{
+  "created_utc": "2026-11-06T15:43:51.281912+00:00",
+  "source_images": 35887,
+  "retained_images": 30747,
+  "counts": {
+    "train": {
+      "negative": 10089,
+      "neutral": 3858,
+      "positive": 5626
+    },
+    "val": {
+      "negative": 2521,
+      "neutral": 964,
+      "positive": 1406
+    },
+    "test": {
+      "negative": 3293,
+      "neutral": 1224,
+      "positive": 1766
+    }
+  },
+  "model_ids": {
+    "negative": 0,
+    "neutral": 1,
+    "positive": 2
+  },
+  "emotion_to_class": {
+    "angry": "negative",
+    "disgust": "negative",
+    "fear": "negative",
+    "sad": "negative",
+    "happy": "positive",
+    "neutral": "neutral"
+  },
+  "excluded_class": "surprise",
+  "source_emotion_labels_changed": 0,
+  "excluded_by_reason": {
+    "surprise_class": 4002,
+    "duplicate_copy": 646,
+    "train_test_overlap": 390,
+    "conflicting_labels": 102
+  },
+  "seed": 42,
+  "validation_fraction": 0.2,
+  "split_method": "Per-class SHA256(seed|label|pixel_hash) rank; round(n*fraction), halves up.",
+  "partition_policy": "Preserve verified image membership; validation was stratified by source emotion.",
+  "source_manifest_sha256": "8cda1bd9d0fb7a689004d6da25d4aa828a0e3b9c1968f19a9b24fce4cff6a191",
+  "selection_manifest_sha256": "35501a952f1b65259b5547b1160411e1d2ba7673f6c85052dfb3851f832fd6fc",
+  "selection_implementation_sha256": "8f650a42ae191f18791287002681521caa0b6d5786111356e07d1448d5d9947b",
+  "manifest_sha256": "79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b",
+  "implementation_sha256": "cfae9c550e10ca75ab1ef8b7670634fbe74bc0f8652adbfe7aec1ec21a37262f",
+  "verification": "All source and copied image hashes checked. One retained image per pixel hash; no exact content overlap between splits.",
+  "evaluation_note": "Three aggregated classes derived from FER2013 annotations; not directly comparable to seven-class benchmark scores.",
+  "limitations": "Surprise excluded. Original annotation errors may remain. Groups describe expression categories, not measured mood or mental health."
+}

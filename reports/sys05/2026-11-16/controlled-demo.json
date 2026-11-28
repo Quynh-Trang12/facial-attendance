@@ -1,0 +1,237 @@
+{
+  "scope": "Developer supplied regions on a generated BGR frame; all downstream values simulated",
+  "actual_face_detection": false,
+  "records_written": false,
+  "scenarios": [
+    {
+      "scenario": "Live match",
+      "frame_dtype": "uint8",
+      "frame_shape": [
+        360,
+        640,
+        3
+      ],
+      "bbox_half_open": [
+        160,
+        70,
+        480,
+        300
+      ],
+      "crop_shape": [
+        230,
+        320,
+        3
+      ],
+      "synthetic_bgr_pixel": [
+        11,
+        22,
+        33
+      ],
+      "source_shared_with_crop": true,
+      "demo_identity": "Demo Person",
+      "payload": {
+        "context": {
+          "contract_version": "sys02-v1",
+          "attempt_id": "ed8b3fbdfe9349dab7c3e3a68bc6e891",
+          "action": "attendance",
+          "capture_id": "3939e0c3bf2c45d2a8c2eb3139bb1876",
+          "face_id": "811037bf94f94a238d72fdcb3c829503"
+        },
+        "recognition": {
+          "person_id": "demo-001",
+          "name": "Demo Person",
+          "score": 0.91,
+          "accepted": true,
+          "model_id": null,
+          "model_version": null
+        },
+        "liveness": {
+          "status": "live",
+          "reason": "demo_result",
+          "p_spoof": 0.08,
+          "model_version": null,
+          "preprocessing_version": null,
+          "decision_policy_version": null,
+          "source": "stub"
+        },
+        "emotion": {
+          "class_id": 2,
+          "label": "Positive",
+          "confidence": null
+        },
+        "ui_state": "live",
+        "can_save": false,
+        "errors": []
+      },
+      "stale_rejected_after_reset": true
+    },
+    {
+      "scenario": "Live unknown",
+      "frame_dtype": "uint8",
+      "frame_shape": [
+        360,
+        640,
+        3
+      ],
+      "bbox_half_open": [
+        160,
+        70,
+        480,
+        300
+      ],
+      "crop_shape": [
+        230,
+        320,
+        3
+      ],
+      "synthetic_bgr_pixel": [
+        11,
+        22,
+        33
+      ],
+      "source_shared_with_crop": true,
+      "demo_identity": "Unknown",
+      "payload": {
+        "context": {
+          "contract_version": "sys02-v1",
+          "attempt_id": "bcf20a9954e84206a910591011229260",
+          "action": "attendance",
+          "capture_id": "8ab3ba6d4ffe46a281521b90360e45a8",
+          "face_id": "11703bd02bc24ace9a51d63bbb3cd43e"
+        },
+        "recognition": {
+          "person_id": null,
+          "name": null,
+          "score": null,
+          "accepted": false,
+          "model_id": null,
+          "model_version": null
+        },
+        "liveness": {
+          "status": "live",
+          "reason": "demo_result",
+          "p_spoof": 0.08,
+          "model_version": null,
+          "preprocessing_version": null,
+          "decision_policy_version": null,
+          "source": "stub"
+        },
+        "emotion": {
+          "class_id": 1,
+          "label": "Neutral",
+          "confidence": null
+        },
+        "ui_state": "live",
+        "can_save": false,
+        "errors": []
+      },
+      "stale_rejected_after_reset": true
+    },
+    {
+      "scenario": "Spoof",
+      "frame_dtype": "uint8",
+      "frame_shape": [
+        360,
+        640,
+        3
+      ],
+      "bbox_half_open": [
+        160,
+        70,
+        480,
+        300
+      ],
+      "crop_shape": [
+        230,
+        320,
+        3
+      ],
+      "synthetic_bgr_pixel": [
+        11,
+        22,
+        33
+      ],
+      "source_shared_with_crop": true,
+      "demo_identity": "Unavailable",
+      "payload": {
+        "context": {
+          "contract_version": "sys02-v1",
+          "attempt_id": "78d6c057c4924b3980270cdb71d4dc7d",
+          "action": "attendance",
+          "capture_id": "612d7161c0914cd7a4babf6317e3e8ae",
+          "face_id": "9ce7e85d9c074370b02b693a6858acd8"
+        },
+        "recognition": null,
+        "liveness": {
+          "status": "spoof",
+          "reason": "demo_result",
+          "p_spoof": 0.96,
+          "model_version": null,
+          "preprocessing_version": null,
+          "decision_policy_version": null,
+          "source": "stub"
+        },
+        "emotion": null,
+        "ui_state": "spoof",
+        "can_save": false,
+        "errors": []
+      },
+      "stale_rejected_after_reset": true
+    },
+    {
+      "scenario": "Uncertain",
+      "frame_dtype": "uint8",
+      "frame_shape": [
+        360,
+        640,
+        3
+      ],
+      "bbox_half_open": [
+        160,
+        70,
+        480,
+        300
+      ],
+      "crop_shape": [
+        230,
+        320,
+        3
+      ],
+      "synthetic_bgr_pixel": [
+        11,
+        22,
+        33
+      ],
+      "source_shared_with_crop": true,
+      "demo_identity": "Unavailable",
+      "payload": {
+        "context": {
+          "contract_version": "sys02-v1",
+          "attempt_id": "1929211b09264249884cfb91237a5958",
+          "action": "attendance",
+          "capture_id": "93280d8cf6c44e8c8a2e6aa5974ef9e4",
+          "face_id": "ef6bdb08d4a34756b2287feb0ec5a64d"
+        },
+        "recognition": null,
+        "liveness": {
+          "status": "uncertain",
+          "reason": "demo_result",
+          "p_spoof": 0.45,
+          "model_version": null,
+          "preprocessing_version": null,
+          "decision_policy_version": null,
+          "source": "stub"
+        },
+        "emotion": {
+          "class_id": 0,
+          "label": "Negative",
+          "confidence": null
+        },
+        "ui_state": "uncertain",
+        "can_save": false,
+        "errors": []
+      },
+      "stale_rejected_after_reset": true
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "reported_on": "2026-11-16",
+  "source": "Owner response in this Codex conversation",
+  "platform_reported": "macOS",
+  "detector_reported": "YuNet",
+  "evidence_kind": "Owner-reported physical observations; no screenshots or diagnostic log supplied",
+  "checks": {
+    "face_detection_without_glasses": "PHYSICAL TEST PASS",
+    "face_detection_with_glasses": "PHYSICAL TEST PASS",
+    "normal_indoor_lighting": "PHYSICAL TEST PASS",
+    "movement_and_preview_responsiveness": "PHYSICAL TEST PASS",
+    "leaving_frame_clears_results": "PHYSICAL TEST PASS",
+    "reentering_frame_restores_results": "PHYSICAL TEST PASS",
+    "retry": "PHYSICAL TEST PASS",
+    "camera_error_and_relaunch_recovery": "PHYSICAL TEST PASS"
+  },
+  "owner_observation_verbatim": "di chuyển thì cái khung có hơi khựng nhưng tạm ônr",
+  "interpretation": "Owner reports slight box hesitation during movement but considers it acceptable; retained as a limitation.",
+  "physical_test_exact_start_time": null,
+  "physical_camera_model": null,
+  "physical_camera_resolution": null,
+  "measured_webcam_fps": null,
+  "runtime_source_sha256_captured_in_session": {
+    "src/facial_attendance/ui/__init__.py": "bf73df8d35c08c671b420a8ee52b2e708379d8f1e4144eaa68aa9cf823e0c5d5",
+    "src/facial_attendance/ui/diagnostics.py": "3521d7f97963d3cdb27067344cd34653cf108017ae86d09466739b7049c694b8",
+    "src/facial_attendance/ui/face_detection.py": "8d633c3ec08c44b2d817365d9297183d2a27b841d6a15a5041713b014b04fa6f",
+    "src/facial_attendance/ui/live_preview.py": "7e3c1d0771a79a88199c43c08a08ede854c5def4a512d6dce1e11fbfff31a124",
+    "src/facial_attendance/ui/webcam_app.py": "561ec45f333d7867d3ed8c363fa9c292dba226fe28b0baa22d8e6f6cb0cadd8d",
+    "src/facial_attendance/ui/webcam_prototype.py": "a2310f11fd18b5a1d074f1c26bbdd437ad33bd0e87ee918ac1ee423954ab9b24"
+  },
+  "runtime_digest": "c00c004fc23ad4c4d1bec41c134163ebb30b62bb4b88b0ec3dcab720cf3d5268",
+  "independent_reviewer_approval": false,
+  "not_reported": [
+    "Windows runtime",
+    "bright backlight",
+    "two physically present people",
+    "trained model accuracy"
+  ]
+}

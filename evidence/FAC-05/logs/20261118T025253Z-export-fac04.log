@@ -1,0 +1,15 @@
+{
+  "model_id": "20261114-125242-metric-74a8657-s42",
+  "model_version": "cb38ea47ceff",
+  "official_trials": {
+    "file": "/content/drive/MyDrive/fac-04-runs/20261114-125242-metric-74a8657-s42/exports/official-embeddings.npz",
+    "images": 9355,
+    "embedding_dim": 512
+  },
+  "val_pairs": {
+    "file": "/content/drive/MyDrive/fac-04-runs/20261114-125242-metric-74a8657-s42/exports/val-pairs-embeddings.npz",
+    "images": 7777,
+    "embedding_dim": 512
+  },
+  "classification": null
+}

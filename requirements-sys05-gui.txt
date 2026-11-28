@@ -1,0 +1,5 @@
+# Standalone SYS-05 GUI/test runtime; never install over the shared team environment.
+# Python 3.13 with Tk support. Create a separate venv under artifacts/ first.
+numpy==2.2.6
+Pillow==11.2.1
+opencv-python==4.13.0.92

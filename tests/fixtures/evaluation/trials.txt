@@ -1,0 +1,4 @@
+synthetic/a synthetic/b 0
+synthetic/a synthetic/c 0
+synthetic/a synthetic/d 1
+synthetic/a synthetic/e 1

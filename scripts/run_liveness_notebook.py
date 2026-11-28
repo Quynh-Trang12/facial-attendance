@@ -50,10 +50,20 @@ def infer(args, project):
         )
     if not args.input.exists():
         raise FileNotFoundError(args.input)
-    args.run_dir = args.run_dir or project / "evidence/liveness/liveness-continuation"
     checkpoint = args.checkpoint
     if checkpoint is None:
-        _, checkpoint, _ = selected_checkpoint(args.run_dir)
+        if args.run_dir is not None:
+            _, checkpoint, _ = selected_checkpoint(args.run_dir)
+        else:
+            # Source submissions bundle the validation-selected inference weights;
+            # archived run directories remain an explicit reproduction option.
+            asset = json.loads(
+                (project / "evidence/liveness/submission-artifacts.json").read_text()
+            )["selected_model"]
+            checkpoint = project / asset["local_path"]
+            if file_sha256(checkpoint) != asset["sha256"]:
+                raise ValueError("Bundled liveness checkpoint checksum differs")
+    args.run_dir = args.run_dir or project / "evidence/liveness/liveness-continuation"
     if args.input.is_dir():
         if args.output is not None:
             raise ValueError("Camera folders use --cache, not --output")

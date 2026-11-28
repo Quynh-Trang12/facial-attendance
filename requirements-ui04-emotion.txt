@@ -1,0 +1,6 @@
+# Optional isolated UI-04 Emotion runtime, Python 3.13 with Tk.
+# Never install these over the verified SYS-05 environment.
+torch==2.13.0
+numpy==2.2.6
+Pillow==11.2.1
+opencv-python==4.13.0.92

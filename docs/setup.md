@@ -83,7 +83,23 @@ $env:PYTHONPATH = "src"
 python -m unittest discover -s tests -t . -v
 ```
 
-Expected: OK; failures and skips describe their own scope. The cache-publication fixture checks real disk capacity, so leave more than 2 GiB free. Tests are grouped under [liveness](../tests/liveness/) and [recognition](../tests/recognition/), with shared configuration/runtime tests at the root. A passing suite does not establish dataset truth, accuracy or live webcam integration.
+Expected: OK; failures and skips describe their own scope. The source submission includes the selected model weights and detector. To include the opt-in Face/liveness model tests, set the paths below before the same discovery command.
+
+```sh
+# Linux/macOS; paths are relative to the repository root
+export FA_FACE_CHECKPOINT=artifacts/models/recognition/face-recognition-resnet18.pt
+export FA_LIVENESS_RELEASE=artifacts/models/liveness/liveness-inference.pt
+export FA_LIVENESS_YUNET=artifacts/detectors/face_detection_yunet_2023mar.onnx
+```
+
+```powershell
+# Windows PowerShell
+$env:FA_FACE_CHECKPOINT = "artifacts/models/recognition/face-recognition-resnet18.pt"
+$env:FA_LIVENESS_RELEASE = "artifacts/models/liveness/liveness-inference.pt"
+$env:FA_LIVENESS_YUNET = "artifacts/detectors/face_detection_yunet_2023mar.onnx"
+```
+
+The cache-publication fixture checks real disk capacity, so leave more than 2 GiB free. Tests are grouped under [liveness](../tests/liveness/) and [recognition](../tests/recognition/), with shared configuration/runtime tests at the root. A passing suite does not establish dataset truth, accuracy or live webcam integration.
 
 ## 4. Download and check the dataset
 
