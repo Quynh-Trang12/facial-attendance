@@ -328,5 +328,6 @@ def load_geometric_cache(directory, source):
         raise ValueError("Geometric cache array changed")
     maps = np.load(array_file, mmap_mode="r")
     if maps.shape != (len(source), *MAP_SHAPE) or maps.dtype.str != MAP_DTYPE:
+        maps._mmap.close()
         raise ValueError("Geometric cache shape/dtype mismatch")
     return maps, receipt

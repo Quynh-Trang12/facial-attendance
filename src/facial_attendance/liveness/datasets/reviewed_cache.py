@@ -123,11 +123,12 @@ class ReviewedCacheView:
             raise ValueError(
                 "Unresolved reviewed cases require explicit diagnostic access"
             )
+        # Row indices are small metadata (about 3.4 MiB for the full train
+        # split). Own the array so returned selections do not pin a file open.
         indices = np.load(
             bound_file(
                 directory, record["keep_indices"], record["keep_indices_sha256"]
             ),
-            mmap_mode="r",
             allow_pickle=False,
         )
         if (

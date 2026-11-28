@@ -4,6 +4,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -132,8 +133,8 @@ class CacheCorrectionTests(unittest.TestCase):
                 def bindings(self):
                     return binding
 
-            sparse = DecodedFaces(Source(), args.output / "faces/train")
-            self.assertTrue((np.asarray(sparse[1][0]) == 17).all())
+            with closing(DecodedFaces(Source(), args.output / "faces/train")) as sparse:
+                self.assertTrue((np.asarray(sparse[1][0]) == 17).all())
             self.assertEqual(
                 corrections.file_sha256(args.output / "faces/train/decoded-faces.npy"),
                 base_digest,

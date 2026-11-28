@@ -4,6 +4,7 @@ import hashlib
 import json
 import tempfile
 import unittest
+from contextlib import ExitStack, closing
 from pathlib import Path
 from unittest.mock import patch
 
@@ -42,8 +43,10 @@ class Source:
 class DecodedCacheTests(unittest.TestCase):
     def test_sparse_corrections_preserve_base_and_augmentation_input(self):
         source = Source()
-        with tempfile.TemporaryDirectory() as directory:
-            base = build_decoded_cache(source, directory, workers=2)
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as resources:
+            base = resources.enter_context(
+                closing(build_decoded_cache(source, directory, workers=2))
+            )
             path = Path(directory)
             original = (path / "decoded-faces.npy").read_bytes()
             np.save(path / "row-indices.npy", np.array([1], dtype=np.int64))
@@ -59,7 +62,7 @@ class DecodedCacheTests(unittest.TestCase):
                 },
             }
             (path / "decoded-faces.json").write_text(json.dumps(receipt))
-            corrected = DecodedFaces(source, path)
+            corrected = resources.enter_context(closing(DecodedFaces(source, path)))
             self.assertEqual(corrected[0][0].tobytes(), base[0][0].tobytes())
             self.assertEqual(corrected[1][0].tobytes(), pixels[0].tobytes())
             self.assertEqual((path / "decoded-faces.npy").read_bytes(), original)
@@ -75,6 +78,9 @@ class DecodedCacheTests(unittest.TestCase):
             torch.manual_seed(42)
             actual, _ = transform(corrected[1][0], targets)
             self.assertTrue(torch.equal(actual, expected))
+            mappings = [corrected.images._mmap, corrected.correction_pixels._mmap]
+            corrected.close()
+            self.assertTrue(all(mapping.closed for mapping in mappings))
             with (path / "face-pixels.npy").open("r+b") as stream:
                 stream.seek(-1, 2)
                 stream.write(b"x")
@@ -86,8 +92,10 @@ class DecodedCacheTests(unittest.TestCase):
         transform = GeometricColorAugmentation(
             brightness=0.3, contrast=0.3, saturation=0.2, hue=0.05
         )
-        with tempfile.TemporaryDirectory() as directory:
-            cached = build_decoded_cache(source, directory, workers=2)
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as resources:
+            cached = resources.enter_context(
+                closing(build_decoded_cache(source, directory, workers=2))
+            )
             for index in range(2):
                 image, _ = source[index]
                 restored, _ = cached[index]
@@ -110,7 +118,9 @@ class DecodedCacheTests(unittest.TestCase):
                 "facial_attendance.liveness.datasets.decoded_cache.hashlib.file_digest",
                 side_effect=AssertionError("Unnecessary duplicate SHA"),
             ):
-                reopened = DecodedFaces(source, directory)
+                reopened = resources.enter_context(
+                    closing(DecodedFaces(source, directory))
+                )
                 self.assertEqual(reopened[0][0].tobytes(), cached[0][0].tobytes())
             array = Path(directory) / "decoded-faces.npy"
             with array.open("r+b") as handle:
@@ -118,6 +128,47 @@ class DecodedCacheTests(unittest.TestCase):
                 handle.write(b"\xff")
             with self.assertRaisesRegex(ValueError, "content changed"):
                 DecodedFaces(source, directory)
+
+    def test_close_releases_mappings_before_file_replacement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            cached = build_decoded_cache(Source(), directory, workers=1)
+            mapping = cached.images._mmap
+            cached.close()
+            cached.close()
+            self.assertTrue(mapping.closed)
+            # The reader remains alive while Windows must permit replacement.
+            array = path / "decoded-faces.npy"
+            moved = path / "moved.npy"
+            array.replace(moved)
+            moved.replace(array)
+
+    def test_invalid_cache_closes_mapping_even_when_traceback_is_retained(self):
+        source = Source()
+        with tempfile.TemporaryDirectory() as directory:
+            with closing(build_decoded_cache(source, directory, workers=1)):
+                pass
+            opened = []
+            load = np.load
+
+            def wrong_shape(*args, **kwargs):
+                array = load(*args, **kwargs)
+                opened.append(array)
+                return array[:1]
+
+            failure = None
+            with patch(
+                "facial_attendance.liveness.datasets.decoded_cache.np.load",
+                side_effect=wrong_shape,
+            ):
+                try:
+                    DecodedFaces(source, directory)
+                except ValueError as error:
+                    failure = error
+            self.assertIsNotNone(failure)
+            self.assertIn("shape or dtype", str(failure))
+            self.assertIsNotNone(failure.__traceback__)
+            self.assertTrue(opened[0]._mmap.closed)
 
     def test_partial_cache_is_not_accepted(self):
         with tempfile.TemporaryDirectory() as directory:

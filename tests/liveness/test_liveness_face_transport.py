@@ -3,6 +3,7 @@
 import importlib.util
 import tempfile
 import unittest
+from contextlib import ExitStack, closing
 from pathlib import Path
 from unittest.mock import patch
 
@@ -46,10 +47,12 @@ class Source:
 
 class FaceCacheTransportTests(unittest.TestCase):
     def test_reconstructs_exact_legacy_array_without_accessing_source_images(self):
-        with tempfile.TemporaryDirectory() as temporary:
+        with tempfile.TemporaryDirectory() as temporary, ExitStack() as resources:
             root = Path(temporary)
             source = Source()
-            reference = build_decoded_cache(source, root / "reference", workers=2)
+            reference = resources.enter_context(
+                closing(build_decoded_cache(source, root / "reference", workers=2))
+            )
             expected = transport.sha256(root / "reference/decoded-faces.npy")
             inventory = transport.pack_faces(
                 source,
@@ -67,11 +70,19 @@ class FaceCacheTransportTests(unittest.TestCase):
                 "__getitem__",
                 side_effect=AssertionError("Source image accessed"),
             ):
-                restored = transport.materialize_faces(
-                    relocated, root / "transport", root / "restored"
+                restored = resources.enter_context(
+                    closing(
+                        transport.materialize_faces(
+                            relocated, root / "transport", root / "restored"
+                        )
+                    )
                 )
-                reopened = transport.materialize_faces(
-                    relocated, root / "transport", root / "restored"
+                reopened = resources.enter_context(
+                    closing(
+                        transport.materialize_faces(
+                            relocated, root / "transport", root / "restored"
+                        )
+                    )
                 )
             self.assertEqual(
                 transport.sha256(root / "restored/decoded-faces.npy"), expected

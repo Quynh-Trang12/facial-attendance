@@ -258,6 +258,8 @@ class FullTrainingTests(unittest.TestCase):
             maps, _ = load_geometric_cache(root, Source())
             self.assertEqual(maps.shape, (2, 4, 14, 14))
             self.assertEqual(maps.dtype, np.dtype("float32"))
+            # Release the mapping before overwriting its file on Windows.
+            maps._mmap.close()
             receipt["completed"] = False
             save()
             with self.assertRaisesRegex(ValueError, "incomplete"):

@@ -79,19 +79,22 @@ def build_decoded_cache(source, directory, *, workers=12, progress=None):
         _initialize_builder(source, images)
         pool = ThreadPoolExecutor(max_workers=workers)
 
-    with pool:
-        for first in range(0, len(source), workers * 4):
-            list(
-                pool.map(
-                    _prepare_row, range(first, min(first + workers * 4, len(source)))
+    try:
+        with pool:
+            for first in range(0, len(source), workers * 4):
+                list(
+                    pool.map(
+                        _prepare_row,
+                        range(first, min(first + workers * 4, len(source))),
+                    )
                 )
-            )
-            if progress is not None:
-                progress(min(first + workers * 4, len(source)), len(source))
+                if progress is not None:
+                    progress(min(first + workers * 4, len(source)), len(source))
 
-    images.flush()
-    _initialize_builder(None, None)
-    del images
+        images.flush()
+    finally:
+        _initialize_builder(None, None)
+        images._mmap.close()
 
     with array_path.open("rb") as handle:
         digest = hashlib.file_digest(handle, "sha256").hexdigest()
@@ -146,48 +149,66 @@ class DecodedFaces(Dataset):
         if digest != receipt["sha256"]:
             raise ValueError("Decoded cache content changed")
 
-        self.images = np.load(array_path, mmap_mode="r")
-        if self.images.dtype != np.uint8 or self.images.shape != (
-            len(source),
-            *FACE_SHAPE,
-        ):
-            raise ValueError("Invalid decoded cache shape or dtype")
-
-        self.correction_lookup = {}
-        self.correction_pixels = None
-        correction = receipt.get("corrections")
-        if correction is not None:
-            if correction.get("schema") != "liveness-face-row-corrections-v1":
-                raise ValueError("Unsupported face correction schema")
-            if set(correction.get("files", {})) != {
-                "row-indices.npy",
-                "face-pixels.npy",
-            }:
-                raise ValueError("Face correction needs checksums for rows and pixels")
-            for name, digest in correction["files"].items():
-                if Path(name).name != name:
-                    raise ValueError("Correction filename escapes its cache")
-                with (directory / name).open("rb") as handle:
-                    if hashlib.file_digest(handle, "sha256").hexdigest() != digest:
-                        raise ValueError("Face correction checksum mismatch")
-            indices = np.load(directory / "row-indices.npy")
-            self.correction_pixels = np.load(
-                directory / "face-pixels.npy", mmap_mode="r"
-            )
-            if (
-                indices.ndim != 1
-                or indices.dtype != np.int64
-                or len(indices) != correction["rows"]
-                or len(np.unique(indices)) != len(indices)
-                or np.any(indices < 0)
-                or np.any(indices >= len(source))
-                or self.correction_pixels.shape != (len(indices), *FACE_SHAPE)
-                or self.correction_pixels.dtype != np.uint8
+        self.images = self.correction_pixels = None
+        try:
+            self.images = np.load(array_path, mmap_mode="r")
+            if self.images.dtype != np.uint8 or self.images.shape != (
+                len(source),
+                *FACE_SHAPE,
             ):
-                raise ValueError("Invalid face correction rows or pixels")
-            self.correction_lookup = {
-                int(row): position for position, row in enumerate(indices)
-            }
+                raise ValueError("Invalid decoded cache shape or dtype")
+
+            self.correction_lookup = {}
+            self.correction_pixels = None
+            correction = receipt.get("corrections")
+            if correction is not None:
+                if correction.get("schema") != "liveness-face-row-corrections-v1":
+                    raise ValueError("Unsupported face correction schema")
+                if set(correction.get("files", {})) != {
+                    "row-indices.npy",
+                    "face-pixels.npy",
+                }:
+                    raise ValueError(
+                        "Face correction needs checksums for rows and pixels"
+                    )
+                for name, digest in correction["files"].items():
+                    if Path(name).name != name:
+                        raise ValueError("Correction filename escapes its cache")
+                    with (directory / name).open("rb") as handle:
+                        if hashlib.file_digest(handle, "sha256").hexdigest() != digest:
+                            raise ValueError("Face correction checksum mismatch")
+                indices = np.load(directory / "row-indices.npy")
+                self.correction_pixels = np.load(
+                    directory / "face-pixels.npy", mmap_mode="r"
+                )
+                if (
+                    indices.ndim != 1
+                    or indices.dtype != np.int64
+                    or len(indices) != correction["rows"]
+                    or len(np.unique(indices)) != len(indices)
+                    or np.any(indices < 0)
+                    or np.any(indices >= len(source))
+                    or self.correction_pixels.shape != (len(indices), *FACE_SHAPE)
+                    or self.correction_pixels.dtype != np.uint8
+                ):
+                    raise ValueError("Invalid face correction rows or pixels")
+                self.correction_lookup = {
+                    int(row): position for position, row in enumerate(indices)
+                }
+        except BaseException:
+            self.close()
+            raise
+
+    def close(self):
+        """Release owned mappings before cache replacement or Windows cleanup.
+
+        Call after readers/workers have stopped; repeated calls are harmless.
+        """
+        for name in ("images", "correction_pixels"):
+            array = getattr(self, name, None)
+            if array is not None:
+                array._mmap.close()
+                setattr(self, name, None)
 
     def __len__(self):
         return len(self.source)
