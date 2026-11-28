@@ -1,0 +1,20 @@
+{
+  "contract_version": "sys02-v1",
+  "selection_source": "https://github.com/Quynh-Trang12/facial-attendance/blob/6212d86305f425dc4a4d3ce251966661e6d58bef/evidence/FAC-05/selection.json",
+  "selection_blob_sha": "620d5c1c8df61a451d24a8ba79fbb45cb318d9dc",
+  "rule": "higher validation-pair cosine AUC",
+  "selected_approach": "metric",
+  "selected_model_id": "20261114-125242-metric-74a8657-s42",
+  "selected_model_version": "cb38ea47ceff",
+  "measure": "cosine similarity of raw embeddings, accept when score >= threshold",
+  "threshold": 0.4619967254593038,
+  "threshold_rule": "lowest validation cosine with FAR <= 1%",
+  "validation_far": 0.009984235417761429,
+  "validation_tar": 0.8796636889122438,
+  "reject_all": false,
+  "input_size": 64,
+  "embedding_dim": 512,
+  "architecture": "resnet18-3x3-stem-no-maxpool",
+  "status": "Selected Face checkpoint supplied and integrated for unverified preview. Genuine enrollment/attendance blocked by missing trained liveness; controlled generated-input enrollment uses an isolated memory gallery.",
+  "validation_cosine_auc": 0.9911137488198654
+}

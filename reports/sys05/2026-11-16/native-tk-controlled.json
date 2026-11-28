@@ -1,0 +1,431 @@
+{
+  "started_utc": "2026-11-16T15:38:04.338499+00:00",
+  "system": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.17",
+  "opencv": "4.13.0.92",
+  "scope": "Native Tk with generated input and explicit controlled regions; physical validation separate",
+  "results": [
+    {
+      "name": "real_yunet_no_face",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.233,
+      "states": [
+        "idle",
+        "no_face"
+      ],
+      "ui_state": "no_face",
+      "errors": [
+        {
+          "module": "capture",
+          "code": "no_face",
+          "message": "No face region available.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 6,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "live_match",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.128,
+      "states": [
+        "checking",
+        "idle",
+        "live"
+      ],
+      "ui_state": "live",
+      "errors": [],
+      "can_save": false,
+      "context": {
+        "contract_version": "sys02-v1",
+        "attempt_id": "16a96325f9af41b6ba3ee1cb5c25b24d",
+        "action": "attendance",
+        "capture_id": "443b41225d58469297970f50193626f1",
+        "face_id": "54e758a07423426ea4cb6f11f498568e"
+      },
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 4,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "live_unknown",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.129,
+      "states": [
+        "checking",
+        "idle",
+        "live"
+      ],
+      "ui_state": "live",
+      "errors": [],
+      "can_save": false,
+      "context": {
+        "contract_version": "sys02-v1",
+        "attempt_id": "9ce08dca52db43c390ef5e9857454df4",
+        "action": "attendance",
+        "capture_id": "4a72de2a4f23457c9c27334c476af8ef",
+        "face_id": "c278a93d257a40c192ec8ef7ba3808b3"
+      },
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 4,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "spoof",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.129,
+      "states": [
+        "checking",
+        "idle",
+        "spoof"
+      ],
+      "ui_state": "spoof",
+      "errors": [],
+      "can_save": false,
+      "context": {
+        "contract_version": "sys02-v1",
+        "attempt_id": "577c745de59c4bbfb1d65219b8d85a5b",
+        "action": "attendance",
+        "capture_id": "9ff221428437456ca6b75facdc1624dc",
+        "face_id": "2e4ca1d5b1564a0891ddc03ff5e74b76"
+      },
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 4,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "uncertain",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.129,
+      "states": [
+        "checking",
+        "idle",
+        "uncertain"
+      ],
+      "ui_state": "uncertain",
+      "errors": [],
+      "can_save": false,
+      "context": {
+        "contract_version": "sys02-v1",
+        "attempt_id": "160a7ade565247bc9c13e5e9309dbee8",
+        "action": "attendance",
+        "capture_id": "1faaa26d63a848b2aed5b36b0cf68988",
+        "face_id": "0fc0c4671adc4c4e89724c218a4d6ef2"
+      },
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 4,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "multiple_faces",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.077,
+      "states": [
+        "idle",
+        "multiple_faces"
+      ],
+      "ui_state": "multiple_faces",
+      "errors": [
+        {
+          "module": "capture",
+          "code": "multiple_faces",
+          "message": "Select one face region at a time.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 3,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "no_face",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.077,
+      "states": [
+        "idle",
+        "no_face"
+      ],
+      "ui_state": "no_face",
+      "errors": [
+        {
+          "module": "capture",
+          "code": "no_face",
+          "message": "No face region available.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 3,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "invalid_box",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.077,
+      "states": [
+        "error",
+        "idle"
+      ],
+      "ui_state": "error",
+      "errors": [
+        {
+          "module": "detector",
+          "code": "invalid_input",
+          "message": "Invalid face detection coordinates.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 2,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "detector_unavailable",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.078,
+      "states": [
+        "error",
+        "idle"
+      ],
+      "ui_state": "error",
+      "errors": [
+        {
+          "module": "detector",
+          "code": "model_unavailable",
+          "message": "Detector unavailable: Controlled detector-unavailable fixture",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 3,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "camera_unavailable",
+      "passed": true,
+      "reason": "Expected native GUI state reached with controlled input",
+      "elapsed_s": 0.053,
+      "states": [
+        "error",
+        "idle"
+      ],
+      "ui_state": "error",
+      "errors": [
+        {
+          "module": "capture",
+          "code": "camera_unavailable",
+          "message": "Camera unavailable \u2014 check access and retry.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": null,
+      "frames_observed": 0,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "retry_recovery",
+      "passed": true,
+      "reason": "Native Retry recovered into a fresh simulated result",
+      "elapsed_s": 0.157,
+      "states": [
+        "checking",
+        "error",
+        "idle",
+        "live"
+      ],
+      "ui_state": "live",
+      "errors": [],
+      "can_save": false,
+      "context": {
+        "contract_version": "sys02-v1",
+        "attempt_id": "96232e10e47b48df89620eaa0ab39120",
+        "action": "attendance",
+        "capture_id": "e577681280d64ded8595c6974b96a9f0",
+        "face_id": "1a7fabb97d0f4783b9ba20cdc2aa1c37"
+      },
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 3,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "face_loss",
+      "passed": true,
+      "reason": "Detected scene invalidation cleared all model fields",
+      "elapsed_s": 0.699,
+      "states": [
+        "checking",
+        "idle",
+        "live",
+        "no_face"
+      ],
+      "ui_state": "no_face",
+      "errors": [
+        {
+          "module": "capture",
+          "code": "no_face",
+          "message": "No face region available.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 19,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "multiple_after_live",
+      "passed": true,
+      "reason": "Detected scene invalidation cleared all model fields",
+      "elapsed_s": 0.699,
+      "states": [
+        "checking",
+        "idle",
+        "live",
+        "multiple_faces"
+      ],
+      "ui_state": "multiple_faces",
+      "errors": [
+        {
+          "module": "capture",
+          "code": "multiple_faces",
+          "message": "Select one face region at a time.",
+          "blocks_persistence": true
+        }
+      ],
+      "can_save": false,
+      "context": null,
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 19,
+      "stale_rejected": null,
+      "callback_errors": [],
+      "workers_stopped": true
+    },
+    {
+      "name": "stale_after_reset",
+      "passed": true,
+      "reason": "Native reset rejected the original-context late callback",
+      "elapsed_s": 0.259,
+      "states": [
+        "checking",
+        "idle",
+        "live"
+      ],
+      "ui_state": "live",
+      "errors": [],
+      "can_save": false,
+      "context": {
+        "contract_version": "sys02-v1",
+        "attempt_id": "e4ff56e2498b4c5f887594aafbfafdc4",
+        "action": "attendance",
+        "capture_id": "0363cefddd054979aaff999029232f72",
+        "face_id": "946a29201c524c289df5f5a84537f0aa"
+      },
+      "source_shape": [
+        360,
+        640,
+        3
+      ],
+      "frames_observed": 4,
+      "stale_rejected": true,
+      "callback_errors": [],
+      "workers_stopped": true
+    }
+  ],
+  "passed": true
+}
