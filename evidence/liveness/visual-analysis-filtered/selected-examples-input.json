@@ -1,0 +1,94 @@
+{
+  "selection": "Best available validation-selected checkpoints; unequal 15/25-epoch budgets; SHA-256 path ordering within paired live/spoof error groups",
+  "examples": [
+    "Data/train/1598/live/355373.jpg",
+    "Data/train/1667/live/090689.jpg",
+    "Data/train/6620/spoof/405902.jpg",
+    "Data/train/7150/spoof/348712.jpg",
+    "Data/train/7317/live/474493.jpg",
+    "Data/train/7774/spoof/443565.jpg",
+    "Data/train/7786/spoof/470881.jpg",
+    "Data/train/8194/live/327435.jpg",
+    "Data/train/8200/spoof/138733.jpg"
+  ],
+  "models": {
+    "binary-classification": {
+      "checkpoint": "evidence/liveness/liveness-comparison/binary-classification-epoch-checkpoints/epoch-013-training.pt",
+      "training_sha256": "831beea2ec414bbf418e054331b05c2167bb69dc425c8ddcb52841a5993a9e4e",
+      "inference_sha256": "896525265c0ade477d3331e906ff6b7ff0c04a6cd0521bda03783350745d3ca7",
+      "model_version": "1f422a0011fe44d1",
+      "epoch": 13,
+      "threshold": 0.11257407814264297,
+      "scores": {
+        "Data/train/1598/live/355373.jpg": 0.7465181946754456,
+        "Data/train/1667/live/090689.jpg": 1.728486495267134e-05,
+        "Data/train/6620/spoof/405902.jpg": 0.8528329133987427,
+        "Data/train/7150/spoof/348712.jpg": 0.2030566930770874,
+        "Data/train/7317/live/474493.jpg": 0.0011800166685134172,
+        "Data/train/7774/spoof/443565.jpg": 0.16325964033603668,
+        "Data/train/7786/spoof/470881.jpg": 0.024063752964138985,
+        "Data/train/8194/live/327435.jpg": 0.2190370261669159,
+        "Data/train/8200/spoof/138733.jpg": 0.09102480113506317
+      }
+    },
+    "binary-semantic": {
+      "checkpoint": "evidence/liveness/liveness-continuation/binary-semantic-epoch-checkpoints/epoch-021-training.pt",
+      "training_sha256": "1fd657e63d8d10c718cc3de89329837ad08ea82a297a0e62a942adba7aa2c2ac",
+      "inference_sha256": "32508495cd7527f7bf089914d9d97479c2806b2513a7eb4680fd1663a24896a0",
+      "model_version": "d378843c49fec0c6",
+      "epoch": 21,
+      "threshold": 0.5147386193275452,
+      "scores": {
+        "Data/train/1598/live/355373.jpg": 0.025258908048272133,
+        "Data/train/1667/live/090689.jpg": 0.18156574666500092,
+        "Data/train/6620/spoof/405902.jpg": 0.9999984502792358,
+        "Data/train/7150/spoof/348712.jpg": 0.05300242453813553,
+        "Data/train/7317/live/474493.jpg": 0.7299416661262512,
+        "Data/train/7774/spoof/443565.jpg": 0.5744097828865051,
+        "Data/train/7786/spoof/470881.jpg": 0.9996128678321838,
+        "Data/train/8194/live/327435.jpg": 0.974396288394928,
+        "Data/train/8200/spoof/138733.jpg": 0.0018072573002427816
+      }
+    },
+    "binary-geometric": {
+      "checkpoint": "evidence/liveness/liveness-comparison/binary-geometric-epoch-checkpoints/epoch-011-training.pt",
+      "training_sha256": "a1d98e4d8e166f2d8ad82c687bd0a146bd8a400bc44c9bc9e2617a7cf08e18f4",
+      "inference_sha256": "e749ebd185a286dda051b55e2af0a07f8f243bbf34b4acee0b4acc0b23d54129",
+      "model_version": "5ad06c676c53aa4f",
+      "epoch": 11,
+      "threshold": 0.5738105773925781,
+      "scores": {
+        "Data/train/1598/live/355373.jpg": 0.1315656453371048,
+        "Data/train/1667/live/090689.jpg": 0.6171111464500427,
+        "Data/train/6620/spoof/405902.jpg": 0.46266990900039673,
+        "Data/train/7150/spoof/348712.jpg": 0.19721662998199463,
+        "Data/train/7317/live/474493.jpg": 0.09326491504907608,
+        "Data/train/7774/spoof/443565.jpg": 0.9344192743301392,
+        "Data/train/7786/spoof/470881.jpg": 0.0066168345510959625,
+        "Data/train/8194/live/327435.jpg": 0.9290218949317932,
+        "Data/train/8200/spoof/138733.jpg": 0.8306044936180115
+      }
+    },
+    "aenet-full": {
+      "checkpoint": "evidence/liveness/liveness-continuation/aenet-full-epoch-checkpoints/epoch-018-training.pt",
+      "training_sha256": "48f17ab3efd4557dc96328a7e973f14975f722cfdfacb82d87dc3a2a57292c8c",
+      "inference_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+      "model_version": "f16fbfaf36046f75",
+      "epoch": 18,
+      "threshold": 0.46483826637268066,
+      "scores": {
+        "Data/train/1598/live/355373.jpg": 0.0018166621448472142,
+        "Data/train/1667/live/090689.jpg": 0.17908936738967896,
+        "Data/train/6620/spoof/405902.jpg": 0.9994363188743591,
+        "Data/train/7150/spoof/348712.jpg": 0.00973924994468689,
+        "Data/train/7317/live/474493.jpg": 0.5150469541549683,
+        "Data/train/7774/spoof/443565.jpg": 0.07471852749586105,
+        "Data/train/7786/spoof/470881.jpg": 0.5414804816246033,
+        "Data/train/8194/live/327435.jpg": 0.9087969064712524,
+        "Data/train/8200/spoof/138733.jpg": 0.01024531852453947
+      }
+    }
+  },
+  "cache_view": "evidence/liveness/crop-review/filtered-view-v4-20261126/cache-view.json",
+  "reviewed_cache_view_sha256": "439bc14889c86c445aede82901b18b571157fc735e1f006bc7fe27e7485f622f"
+}

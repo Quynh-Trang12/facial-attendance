@@ -1,0 +1,19 @@
+{
+  "phase": "screening",
+  "arm": "binary-semantic",
+  "completed_epochs": 25,
+  "selected_epoch": 21,
+  "optimizer_updates": 43400,
+  "selected_optimizer_updates": 36456,
+  "selection_key": [
+    0.0019622226122288896,
+    0.007420642629953312
+  ],
+  "checkpoint_sha256": "32508495cd7527f7bf089914d9d97479c2806b2513a7eb4680fd1663a24896a0",
+  "threshold": 0.5147386193275452,
+  "elapsed_seconds_this_execution": 1473.2912509920002,
+  "full_training_completed": false,
+  "screening_completed": true,
+  "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-continuation/binary-semantic-epoch-checkpoints",
+  "test_or_physical_used_for_selection": false
+}

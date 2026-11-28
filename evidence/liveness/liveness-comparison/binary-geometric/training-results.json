@@ -1,0 +1,19 @@
+{
+  "phase": "screening",
+  "arm": "binary-geometric",
+  "completed_epochs": 15,
+  "selected_epoch": 11,
+  "optimizer_updates": 26040,
+  "selected_optimizer_updates": 19096,
+  "selection_key": [
+    0.0026616329163358034,
+    0.009048403580309436
+  ],
+  "checkpoint_sha256": "e749ebd185a286dda051b55e2af0a07f8f243bbf34b4acee0b4acc0b23d54129",
+  "threshold": 0.5738105773925781,
+  "elapsed_seconds_this_execution": 2250.5153632190004,
+  "full_training_completed": false,
+  "screening_completed": true,
+  "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-geometric-epoch-checkpoints",
+  "test_or_physical_used_for_selection": false
+}
