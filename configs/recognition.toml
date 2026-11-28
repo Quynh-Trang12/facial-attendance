@@ -1,0 +1,16 @@
+# Decision rule for naming a face from the gallery (src/facial_attendance/recognition/decision.py).
+# The similarity threshold tau is not set here: it is read from the deployed checkpoint's
+# meta["threshold"], where model selection recorded it.
+[decision]
+# Accept the best match only if its cosine score s1 >= tau and s1 - s2 >= margin, where s2 is
+# the best score of any other enrolled person (tau itself when only one person is enrolled).
+#
+# Source: measured on 2026-11-25 with the deployed metric model (tau 0.462) on 3 people's
+# lab photos plus 190 webcam frames of one of them, through the GUI's YuNet crop pipeline.
+# Unregistered real faces of a similar look scored a mean cosine of 0.44-0.51 against the
+# gallery, so tau alone wrongly accepted 6.8 % of webcam frames from people not enrolled.
+#   margin 0.15: 98.9 % of enrolled frames named correctly, 1.6 % of not-enrolled accepted
+#   margin 0.20: 96.3 % correct, 0 % accepted
+# Lab photos (19 probes) still had 16-21 % wrongly accepted, so this reduces the error and
+# does not remove it. Three people and one session only: re-measure with more people.
+margin = 0.15
