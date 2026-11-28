@@ -586,11 +586,16 @@ class LiveWebcamApp:
             self.registration_button.pack(anchor="w", pady=6)
         if enable_profiles:
             from .trial_profiles import TrialProfiles
+            pose_estimator = None
+            if local_profile_store is not None and released_liveness is not None:
+                from .registration_pose import RegistrationPoseEstimator
+                pose_estimator = RegistrationPoseEstimator(released_liveness.detector.path)
             self._trial_profiles = TrialProfiles(panel, self.adapters, self._trial_gallery_changed,
                                                  store=local_profile_store, loaded_gallery=loaded_gallery,
                                                  liveness_provenance=(released_liveness.provenance
                                                                       if released_liveness is not None else None),
-                                                 liveness_preview=self.liveness_preview)
+                                                 liveness_preview=self.liveness_preview,
+                                                 pose_estimator=pose_estimator)
             if self._local_workspace:
                 from .registration_overlay import RegistrationOverlay
                 self._registration_overlay = RegistrationOverlay(self.canvas)
