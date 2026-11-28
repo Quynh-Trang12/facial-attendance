@@ -1,8 +1,8 @@
 """Find face regions on an immutable SYS-05 source snapshot."""
 
-from numbers import Integral, Real
-from math import ceil, floor, isfinite
 from hashlib import sha256
+from math import ceil, floor, isfinite
+from numbers import Integral, Real
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -19,7 +19,9 @@ class FaceDetectorUnavailable(RuntimeError):
 
 YUNET_FILENAME = "face_detection_yunet_2023mar.onnx"
 YUNET_SHA256 = "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
-YUNET_MODEL = Path("artifacts/sys05-yunet") / YUNET_FILENAME
+YUNET_MODEL = (
+    Path(__file__).resolve().parents[3] / "artifacts/detectors" / YUNET_FILENAME
+)
 
 
 def bounded_size(width, height, max_edge=640):
@@ -35,9 +37,12 @@ def map_box(box, source_size, detected_size):
     if not box_in_frame(box, small_width, small_height):
         raise ValueError("Invalid detector region before coordinate conversion.")
     x1, y1, x2, y2 = map(int, box)
-    mapped = (x1 * width // small_width, y1 * height // small_height,
-              (x2 * width + small_width - 1) // small_width,
-              (y2 * height + small_height - 1) // small_height)
+    mapped = (
+        x1 * width // small_width,
+        y1 * height // small_height,
+        (x2 * width + small_width - 1) // small_width,
+        (y2 * height + small_height - 1) // small_height,
+    )
     if not box_in_frame(mapped, width, height):
         raise ValueError("Invalid source region after coordinate conversion.")
     return mapped
@@ -54,15 +59,19 @@ class ScaledFaceDetector:
 
     def __call__(self, frame):
         import cv2
+
         source_size = frame_size(frame)
         small_size = bounded_size(*source_size, self.max_edge)
-        small = (frame if source_size == small_size else
-                 cv2.resize(frame, small_size, interpolation=cv2.INTER_AREA))
+        small = (
+            frame
+            if source_size == small_size
+            else cv2.resize(frame, small_size, interpolation=cv2.INTER_AREA)
+        )
         return [map_box(box, source_size, small_size) for box in self.detector(small)]
 
 
 class YuNetFaceDetector:
-    """OpenCV 4.x CPU YuNet; local hash-pinned model only, never downloads.
+    """CPU YuNet through the installed OpenCV API; local pinned model, no downloads.
 
     Wrap with ScaledFaceDetector to bound input size. Glasses robustness must
     be physically evaluated; choosing a DNN is not an accuracy claim.
@@ -74,11 +83,14 @@ class YuNetFaceDetector:
 
     def __call__(self, frame):
         import cv2
+
         width, height = frame_size(frame)
         if self._model is None:
             factory = getattr(getattr(cv2, "FaceDetectorYN", None), "create", None)
-            if factory is None or not str(cv2.__version__).startswith("4."):
-                raise FaceDetectorUnavailable("YuNet needs the isolated OpenCV 4.13 CPU API.")
+            if not callable(factory):
+                raise FaceDetectorUnavailable(
+                    "The installed OpenCV runtime lacks the YuNet FaceDetectorYN.create API."
+                )
             try:
                 digest = sha256(self.model_path.read_bytes()).hexdigest()
             except OSError as error:
@@ -86,12 +98,24 @@ class YuNetFaceDetector:
                     "YuNet model missing. Run scripts/setup_sys05_yunet.py --download explicitly."
                 ) from error
             if digest != YUNET_SHA256:
-                raise FaceDetectorUnavailable("YuNet model checksum mismatch; refusing this file.")
+                raise FaceDetectorUnavailable(
+                    "YuNet model checksum mismatch; refusing this file."
+                )
             try:
-                self._model = factory(str(self.model_path), "", (width, height), 0.9, 0.3, 5000,
-                                      cv2.dnn.DNN_BACKEND_OPENCV, cv2.dnn.DNN_TARGET_CPU)
+                self._model = factory(
+                    str(self.model_path),
+                    "",
+                    (width, height),
+                    0.9,
+                    0.3,
+                    5000,
+                    cv2.dnn.DNN_BACKEND_OPENCV,
+                    cv2.dnn.DNN_TARGET_CPU,
+                )
             except cv2.error as error:
-                raise FaceDetectorUnavailable("OpenCV could not load the pinned YuNet model.") from error
+                raise FaceDetectorUnavailable(
+                    "OpenCV could not load the pinned YuNet model."
+                ) from error
         self._model.setInputSize((width, height))
         _, faces = self._model.detect(frame)
         if faces is None:
@@ -99,7 +123,9 @@ class YuNetFaceDetector:
         boxes = []
         for face in faces:
             if len(face) != 15 or not all(
-                isinstance(value, Real) and not isinstance(value, bool) and isfinite(float(value))
+                isinstance(value, Real)
+                and not isinstance(value, bool)
+                and isfinite(float(value))
                 for value in face
             ):
                 raise ValueError("YuNet returned invalid detection values.")
@@ -110,7 +136,12 @@ class YuNetFaceDetector:
             # Neural boxes can legitimately cross an image edge. Clip only
             # intersecting, finite, positive rectangles; reject the whole batch
             # if any region is empty/fully outside. Never invent a region.
-            box = max(0, floor(x)), max(0, floor(y)), min(width, ceil(x + w)), min(height, ceil(y + h))
+            box = (
+                max(0, floor(x)),
+                max(0, floor(y)),
+                min(width, ceil(x + w)),
+                min(height, ceil(y + h)),
+            )
             if not box_in_frame(box, width, height):
                 raise ValueError("YuNet returned an out-of-frame face region.")
             boxes.append(box)
@@ -157,20 +188,30 @@ class HaarFaceDetector:
             factory = getattr(cv2, "CascadeClassifier", None)
             data_dir = getattr(getattr(cv2, "data", None), "haarcascades", None)
             if factory is None or data_dir is None:
-                raise FaceDetectorUnavailable("This OpenCV wheel lacks the bundled Haar detector.")
+                raise FaceDetectorUnavailable(
+                    "This OpenCV wheel lacks the bundled Haar detector."
+                )
             cascade = Path(data_dir) / "haarcascade_frontalface_default.xml"
             if not cascade.is_file():
-                raise FaceDetectorUnavailable("The bundled Haar cascade XML is missing.")
+                raise FaceDetectorUnavailable(
+                    "The bundled Haar cascade XML is missing."
+                )
             try:
                 classifier = factory(str(cascade))
             except cv2.error as error:
-                raise FaceDetectorUnavailable("OpenCV could not load the bundled Haar cascade.") from error
+                raise FaceDetectorUnavailable(
+                    "OpenCV could not load the bundled Haar cascade."
+                ) from error
             if classifier.empty():
-                raise FaceDetectorUnavailable("OpenCV could not load the bundled Haar cascade.")
+                raise FaceDetectorUnavailable(
+                    "OpenCV could not load the bundled Haar cascade."
+                )
             self._classifier = classifier
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        detections = self._classifier.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+        detections = self._classifier.detectMultiScale(
+            gray, scaleFactor=1.1, minNeighbors=5
+        )
         boxes = []
         for rect in detections:
             # Check the raw types before integer conversion and do arithmetic in
@@ -180,12 +221,15 @@ class HaarFaceDetector:
             except (TypeError, ValueError) as error:
                 raise ValueError("Haar returned an invalid face rectangle.") from error
             if not all(
-                isinstance(value, Integral) and not isinstance(value, bool) for value in (x, y, w, h)
+                isinstance(value, Integral) and not isinstance(value, bool)
+                for value in (x, y, w, h)
             ):
                 raise ValueError("Haar returned an invalid face rectangle.")
             x, y, w, h = map(int, (x, y, w, h))
             box = (x, y, x + w, y + h)
             if not box_in_frame(box, width, height):
-                raise ValueError("Haar returned an empty or out-of-frame face rectangle.")
+                raise ValueError(
+                    "Haar returned an empty or out-of-frame face rectangle."
+                )
             boxes.append(box)
         return _suppress_redundant_boxes(boxes)

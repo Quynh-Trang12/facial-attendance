@@ -1,8 +1,8 @@
 """Optional, aggregate-only diagnostics. No pixels or identity data are logged."""
 
-from collections import defaultdict, deque
 import json
 import sys
+from collections import defaultdict, deque
 from threading import Lock
 from time import monotonic
 
@@ -45,13 +45,21 @@ class Diagnostics:
                 "preview_fps": round(counts.get("previewed", 0) / elapsed, 2),
                 "counts": counts,
                 "timings_ms": {
-                    name: {"mean": round(total / count * 1000, 3),
-                           "max": round(maximum * 1000, 3), "n": count}
+                    name: {
+                        "mean": round(total / count * 1000, 3),
+                        "max": round(maximum * 1000, 3),
+                        "n": count,
+                    }
                     for name, (count, total, maximum) in self._timings.items()
                 },
                 "recent_p95_ms": {
-                    name: round(sorted(values)[min(len(values)-1, int(len(values)*.95))]*1000, 3)
-                    for name, values in self._samples.items() if values
+                    name: round(
+                        sorted(values)[min(len(values) - 1, int(len(values) * 0.95))]
+                        * 1000,
+                        3,
+                    )
+                    for name, values in self._samples.items()
+                    if values
                 },
             }
             if reset:

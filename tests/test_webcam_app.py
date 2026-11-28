@@ -1,15 +1,21 @@
 """Exercise webcam GUI state transitions using fake widgets and camera frames."""
 
-from dataclasses import asdict
 import json
 import sys
-from types import SimpleNamespace
 import unittest
+from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
-from facial_attendance.ui.face_detection import FaceDetectorUnavailable, HaarFaceDetector
+from facial_attendance.ui.face_detection import (
+    FaceDetectorUnavailable,
+    HaarFaceDetector,
+)
 from facial_attendance.ui.webcam_app import AUTOMATIC, MANUAL, WebcamApp
-from facial_attendance.ui.webcam_prototype import Completion, PrototypeController, SCENARIOS
+from facial_attendance.ui.webcam_prototype import (
+    SCENARIOS,
+    Completion,
+    PrototypeController,
+)
 
 
 class Frame:
@@ -56,10 +62,20 @@ class WebcamAppTests(unittest.TestCase):
         app.scenario = variable("Live match")
         app.selection_mode = variable(MANUAL)
         app._timer = "timer"
-        for name in ("canvas", "hint", "summary", "payload", "freeze_button", "run_button", "clear_button"):
+        for name in (
+            "canvas",
+            "hint",
+            "summary",
+            "payload",
+            "freeze_button",
+            "run_button",
+            "clear_button",
+        ):
             setattr(app, name, Mock())
         self.cv2_error = type("OpenCVError", (Exception,), {})
-        self.enterContext(patch.dict(sys.modules, {"cv2": SimpleNamespace(error=self.cv2_error)}))
+        self.enterContext(
+            patch.dict(sys.modules, {"cv2": SimpleNamespace(error=self.cv2_error)})
+        )
 
     def test_automatic_uses_frozen_source_and_draws_scaled_overlay(self):
         app = self.app
@@ -90,7 +106,9 @@ class WebcamAppTests(unittest.TestCase):
         cv2.data = SimpleNamespace(haarcascades="bundle")
         cv2.cvtColor = Mock()
         cv2.COLOR_BGR2GRAY = 6
-        self.enterContext(patch("facial_attendance.ui.face_detection.Path.is_file", return_value=True))
+        self.enterContext(
+            patch("facial_attendance.ui.face_detection.Path.is_file", return_value=True)
+        )
 
         face = (100, 100, 200, 200)
         eye = (140, 140, 70, 60)
@@ -112,10 +130,13 @@ class WebcamAppTests(unittest.TestCase):
         classifier.detectMultiScale.return_value = [eye, face, (500, 130, 120, 120)]
         app.freeze()
         self.assertEqual(app.boxes, [(100, 100, 300, 300), (500, 130, 620, 250)])
-        self.assertEqual(app.canvas.create_rectangle.call_args_list, [
-            call(50, 50, 150, 150, outline="#ffce65", width=2, tags="region"),
-            call(250, 65, 310, 125, outline="#ffce65", width=2, tags="region"),
-        ])
+        self.assertEqual(
+            app.canvas.create_rectangle.call_args_list,
+            [
+                call(50, 50, 150, 150, outline="#ffce65", width=2, tags="region"),
+                call(250, 65, 310, 125, outline="#ffce65", width=2, tags="region"),
+            ],
+        )
         app.evaluate()
         self.assertEqual(app.frozen.slices, [])
         self.assertEqual(app.controller.state.ui_state, "multiple_faces")
@@ -135,7 +156,10 @@ class WebcamAppTests(unittest.TestCase):
     def test_automatic_empty_and_multiple_faces_do_not_run_stubs(self):
         app = self.app
         app.selection_mode.get.return_value = AUTOMATIC
-        for boxes, code in (([], "no_face"), ([(0, 0, 40, 40), (200, 200, 300, 300)], "multiple_faces")):
+        for boxes, code in (
+            ([], "no_face"),
+            ([(0, 0, 40, 40), (200, 200, 300, 300)], "multiple_faces"),
+        ):
             with self.subTest(code=code):
                 app.detect_faces.return_value = boxes
                 app.freeze()
@@ -193,7 +217,9 @@ class WebcamAppTests(unittest.TestCase):
         self.assertIsNone(app.controller.state.recognition)
         self.assertIsNone(app.controller.state.context)
         app.evaluate()
-        self.assertNotEqual(app.controller.state.context.attempt_id, old_context.attempt_id)
+        self.assertNotEqual(
+            app.controller.state.context.attempt_id, old_context.attempt_id
+        )
         app.selection_mode.get.return_value = MANUAL
         app._change_selection_mode(None)
         self.assertEqual(app.boxes, [])

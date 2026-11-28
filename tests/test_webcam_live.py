@@ -1,19 +1,24 @@
 """Hardware-free automatic scheduling, invalidation and bounded-worker tests."""
 
-from dataclasses import asdict, replace
 import json
 import sys
+import unittest
+from dataclasses import asdict, replace
 from threading import Event, get_ident
 from types import SimpleNamespace
-import unittest
 from unittest.mock import Mock, patch
 
 from facial_attendance.ui.face_detection import FaceDetectorUnavailable
 from facial_attendance.ui.live_preview import (
-    CameraFeed, CameraPacket, LiveController, SingleWorker, WorkResult, evaluate_adapters,
+    CameraFeed,
+    CameraPacket,
+    LiveController,
+    SingleWorker,
+    WorkResult,
+    evaluate_adapters,
 )
 from facial_attendance.ui.webcam_app import LiveWebcamApp, main
-from facial_attendance.ui.webcam_prototype import Completion, SCENARIOS, StubAdapters
+from facial_attendance.ui.webcam_prototype import SCENARIOS, Completion, StubAdapters
 
 
 class Frame:
@@ -41,7 +46,9 @@ class LiveControllerTests(unittest.TestCase):
 
     def request(self, token=(1, 1), boxes=None):
         self.live.begin_sample(token, 10)
-        return self.live.detected(WorkResult(token, [BOX] if boxes is None else boxes), self.frame)
+        return self.live.detected(
+            WorkResult(token, [BOX] if boxes is None else boxes), self.frame
+        )
 
     def finish(self, request, scenario="Live match"):
         batch = evaluate_adapters((request, StubAdapters(scenario)))
@@ -73,8 +80,11 @@ class LiveControllerTests(unittest.TestCase):
                     self.assertIsNone(state.emotion)
 
     def test_face_loss_multiple_faces_and_invalid_box_clear_all_prior_results(self):
-        for boxes, expected in (([], "no_face"), ([BOX, (400, 50, 500, 150)], "multiple_faces"),
-                                ([(0, 0, 1400, 40)], "error")):
+        for boxes, expected in (
+            ([], "no_face"),
+            ([BOX, (400, 50, 500, 150)], "multiple_faces"),
+            ([(0, 0, 1400, 40)], "error"),
+        ):
             with self.subTest(expected=expected):
                 self.finish(self.request())
                 self.assertIsNone(self.request((1, 2), boxes))
@@ -93,18 +103,26 @@ class LiveControllerTests(unittest.TestCase):
     def test_wrong_capture_face_attempt_action_and_version_cannot_be_relabelled(self):
         request = self.request()
         completion = StubAdapters("Live match").liveness(request)
-        for field, value in (("capture_id", "other"), ("face_id", "other"),
-                             ("attempt_id", "other"), ("action", "registration"),
-                             ("contract_version", "sys02-v2")):
+        for field, value in (
+            ("capture_id", "other"),
+            ("face_id", "other"),
+            ("attempt_id", "other"),
+            ("action", "registration"),
+            ("contract_version", "sys02-v2"),
+        ):
             with self.subTest(field=field):
-                wrong = Completion(replace(request.context, **{field: value}), completion.result)
+                wrong = Completion(
+                    replace(request.context, **{field: value}), completion.result
+                )
                 self.assertFalse(self.live.completed(WorkResult((1, 1), (wrong,))))
                 self.assertIsNone(self.live.controller.state.liveness)
 
     def test_reset_camera_failure_and_expiry_reject_late_results_and_clear_boxes(self):
-        for invalidate in (self.live.reset,
-                           lambda: self.live.fail("camera_unavailable", "Camera unavailable"),
-                           lambda: self.live.expire(11.01)):
+        for invalidate in (
+            self.live.reset,
+            lambda: self.live.fail("camera_unavailable", "Camera unavailable"),
+            lambda: self.live.expire(11.01),
+        ):
             with self.subTest(invalidate=invalidate):
                 request = self.request()
                 batch = evaluate_adapters((request, StubAdapters("Live match")))
@@ -114,15 +132,24 @@ class LiveControllerTests(unittest.TestCase):
                 self.assertEqual(self.live.boxes, [])
                 self.assertFalse(self.live.completed(WorkResult((1, 1), batch)))
 
-    def test_detector_missing_exception_and_invalid_outputs_fail_closed_then_recover(self):
-        for result, code in ((WorkResult((1, 1), error=FaceDetectorUnavailable("missing")), "model_unavailable"),
-                             (WorkResult((1, 1), error=RuntimeError("bad")), "inference_error"),
-                             (WorkResult((1, 1), [(True, 0, 40, 40)]), "invalid_input"),
-                             (WorkResult((1, 1), None), "invalid_input")):
+    def test_detector_missing_exception_and_invalid_outputs_fail_closed_then_recover(
+        self,
+    ):
+        for result, code in (
+            (
+                WorkResult((1, 1), error=FaceDetectorUnavailable("missing")),
+                "model_unavailable",
+            ),
+            (WorkResult((1, 1), error=RuntimeError("bad")), "inference_error"),
+            (WorkResult((1, 1), [(True, 0, 40, 40)]), "invalid_input"),
+            (WorkResult((1, 1), None), "invalid_input"),
+        ):
             with self.subTest(code=code):
                 self.live.begin_sample((1, 1), 10)
                 self.assertIsNone(self.live.detected(result, self.frame))
-                self.assertEqual(self.live.controller.state.errors[0].module, "detector")
+                self.assertEqual(
+                    self.live.controller.state.errors[0].module, "detector"
+                )
                 self.assertEqual(self.live.controller.state.errors[0].code, code)
                 self.assertEqual(self.live.boxes, [])
                 self.assert_cleared()
@@ -137,7 +164,9 @@ class LiveControllerTests(unittest.TestCase):
         self.assertEqual(self.live.controller.demo_identity, "Demo Person")
         self.assertIsNone(self.live.controller.state.emotion)
         self.assertFalse(self.live.controller.state.can_save)
-        self.assertFalse(self.live.completed(WorkResult((1, 1), error=RuntimeError("worker"))))
+        self.assertFalse(
+            self.live.completed(WorkResult((1, 1), error=RuntimeError("worker")))
+        )
         self.assert_cleared()
 
 
@@ -172,7 +201,12 @@ class ManualWorker:
 class LiveAppTests(unittest.TestCase):
     def setUp(self):
         self.now = 10.0
-        self.enterContext(patch("facial_attendance.ui.webcam_app.monotonic", side_effect=lambda: self.now))
+        self.enterContext(
+            patch(
+                "facial_attendance.ui.webcam_app.monotonic",
+                side_effect=lambda: self.now,
+            )
+        )
         app = self.app = LiveWebcamApp.__new__(LiveWebcamApp)
         app.root = Mock()
         app.live = LiveController()
@@ -198,7 +232,9 @@ class LiveAppTests(unittest.TestCase):
         self.packet()
 
     def packet(self, sequence=1, **kwargs):
-        packet = CameraPacket(self.app._generation, sequence, self.now, Frame(), **kwargs)
+        packet = CameraPacket(
+            self.app._generation, sequence, self.now, Frame(), **kwargs
+        )
         self.app.feed.latest.return_value = packet
         return packet
 
@@ -210,7 +246,9 @@ class LiveAppTests(unittest.TestCase):
         app.inference.finish(evaluate_adapters(app.inference.job[1]))
         app._tick()
 
-    def test_default_tick_automatically_detects_evaluates_labels_and_draws_without_controls(self):
+    def test_default_tick_automatically_detects_evaluates_labels_and_draws_without_controls(
+        self,
+    ):
         self.run_one_face()
         app = self.app
         self.assertEqual(app.controller.demo_identity, "Demo Person")
@@ -223,9 +261,12 @@ class LiveAppTests(unittest.TestCase):
         self.assertEqual(payload["liveness"]["source"], "stub")
         self.assertFalse(payload["can_save"])
         app.canvas.create_rectangle.assert_called_with(
-            50, 50, 150, 125, outline="#ffce65", width=2, tags="region")
+            50, 50, 150, 125, outline="#ffce65", width=2, tags="region"
+        )
 
-    def test_resizing_refits_the_current_frame_and_outline_without_starting_a_capture(self):
+    def test_resizing_refits_the_current_frame_and_outline_without_starting_a_capture(
+        self,
+    ):
         import numpy as np
 
         app = self.app
@@ -252,7 +293,8 @@ class LiveAppTests(unittest.TestCase):
             self.assertEqual(image.getpixel((150, 100)), (0, 0, 0))
             app.canvas.place_configure.assert_called_with(width=960, height=540)
             app.canvas.create_rectangle.assert_called_with(
-                735, 75, 885, 187.5, outline="#ffce65", width=2, tags="region")
+                735, 75, 885, 187.5, outline="#ffce65", width=2, tags="region"
+            )
             self.assertEqual(app.controller.state.context, context)
             app._resize_preview(SimpleNamespace(width=640, height=420))
             app._tick()
@@ -267,17 +309,24 @@ class LiveAppTests(unittest.TestCase):
         app._developer_mode = True
         app._render()
         app._registration_overlay.update.assert_called_with(
-            app._trial_profiles.guidance.return_value, app.preview_size, self.now)
+            app._trial_profiles.guidance.return_value, app.preview_size, self.now
+        )
 
         app._developer_mode = False
         app._render()
-        app._registration_overlay.update.assert_called_with(None, app.preview_size, self.now)
+        app._registration_overlay.update.assert_called_with(
+            None, app.preview_size, self.now
+        )
         app._developer_mode = True
         app._preview_item = None
         app._render()
-        app._registration_overlay.update.assert_called_with(None, app.preview_size, self.now)
+        app._registration_overlay.update.assert_called_with(
+            None, app.preview_size, self.now
+        )
 
-    def test_camera_preview_continues_and_work_slots_remain_bounded_while_detection_is_busy(self):
+    def test_camera_preview_continues_and_work_slots_remain_bounded_while_detection_is_busy(
+        self,
+    ):
         app = self.app
         app._tick()
         job = app.detector.job
@@ -309,8 +358,10 @@ class LiveAppTests(unittest.TestCase):
 
     def test_next_sample_no_face_and_multiple_faces_clear_display(self):
         app = self.app
-        for sequence, boxes, expected in ((2, [], "no_face"),
-                                          (3, [BOX, (500, 100, 600, 200)], "multiple_faces")):
+        for sequence, boxes, expected in (
+            (2, [], "no_face"),
+            (3, [BOX, (500, 100, 600, 200)], "multiple_faces"),
+        ):
             with self.subTest(expected=expected):
                 if sequence == 2:
                     self.run_one_face()
@@ -346,7 +397,9 @@ class LiveAppTests(unittest.TestCase):
         self.assertIsNone(app.controller.state.emotion)
         self.assertEqual(app._draw_frame.call_count, 2)
 
-    def test_retry_and_camera_error_do_not_accept_old_detection_or_adapter_completion(self):
+    def test_retry_and_camera_error_do_not_accept_old_detection_or_adapter_completion(
+        self,
+    ):
         app = self.app
         app._tick()
         app.detector.finish([BOX])
@@ -379,7 +432,9 @@ class LiveAppTests(unittest.TestCase):
         self.assertEqual(app.controller.state.errors[0].code, "camera_unavailable")
         self.assertEqual(app.live.boxes, [])
 
-    def test_detector_unavailable_stays_visible_until_retry_and_no_boxes_are_invented(self):
+    def test_detector_unavailable_stays_visible_until_retry_and_no_boxes_are_invented(
+        self,
+    ):
         app = self.app
         app._tick()
         app.detector.finish(error=FaceDetectorUnavailable("missing Haar"))
@@ -408,19 +463,35 @@ class LiveAppTests(unittest.TestCase):
         app.root.destroy.assert_called_once()
         self.assertIsNone(app.controller.state.recognition)
 
-    def test_default_constructor_contains_no_dropdowns_or_manual_evaluation_buttons(self):
+    def test_default_constructor_contains_no_dropdowns_or_manual_evaluation_buttons(
+        self,
+    ):
         widgets = []
+
         def widget(*args, **kwargs):
             obj = Mock()
             widgets.append(kwargs)
             return obj
-        ttk = SimpleNamespace(Frame=widget, Label=widget, Button=widget,
-                              Combobox=Mock(side_effect=AssertionError("No dropdowns")))
+
+        ttk = SimpleNamespace(
+            Frame=widget,
+            Label=widget,
+            Button=widget,
+            Combobox=Mock(side_effect=AssertionError("No dropdowns")),
+        )
         tk = SimpleNamespace(ttk=ttk, Canvas=widget, StringVar=Mock)
-        with patch.dict(sys.modules, {"tkinter": tk, "tkinter.ttk": ttk,
-                                      "tkinter.scrolledtext": SimpleNamespace(ScrolledText=widget)}), \
-                patch("facial_attendance.ui.webcam_app.CameraFeed"), \
-                patch("facial_attendance.ui.webcam_app.SingleWorker"):
+        with (
+            patch.dict(
+                sys.modules,
+                {
+                    "tkinter": tk,
+                    "tkinter.ttk": ttk,
+                    "tkinter.scrolledtext": SimpleNamespace(ScrolledText=widget),
+                },
+            ),
+            patch("facial_attendance.ui.webcam_app.CameraFeed"),
+            patch("facial_attendance.ui.webcam_app.SingleWorker"),
+        ):
             app = LiveWebcamApp(Mock(), Mock(), source_name="Mock webcam")
         ttk.Combobox.assert_not_called()
         texts = [entry.get("text", "") for entry in widgets]
@@ -430,19 +501,34 @@ class LiveAppTests(unittest.TestCase):
         self.assertTrue(app._preview_mirrored)
         self.assertEqual(app.controller.action, "attendance")
 
-    def test_cli_selects_automatic_app_by_default_and_manual_only_by_explicit_flag(self):
+    def test_cli_selects_automatic_app_by_default_and_manual_only_by_explicit_flag(
+        self,
+    ):
         cv2 = SimpleNamespace(VideoCapture=Mock())
         tk = SimpleNamespace(Tk=Mock(), TclError=RuntimeError)
-        with patch.dict(sys.modules, {"cv2": cv2, "tkinter": tk,
-                                      "PIL.ImageTk": Mock()}), \
-                patch("facial_attendance.ui.webcam_app.LiveWebcamApp") as automatic, \
-                patch("facial_attendance.ui.webcam_app.WebcamApp") as manual:
+        with (
+            patch.dict(sys.modules, {"cv2": cv2, "tkinter": tk, "PIL.ImageTk": Mock()}),
+            patch("facial_attendance.ui.webcam_app.LiveWebcamApp") as automatic,
+            patch("facial_attendance.ui.webcam_app.WebcamApp") as manual,
+        ):
             self.assertEqual(main([]), 0)
             automatic.assert_called_once()
             manual.assert_not_called()
-            tk.Tk.return_value.after_idle.assert_called_with(automatic.return_value.start)
-            self.assertEqual(main(["--dev-manual", "--dev-action", "registration",
-                                   "--dev-scenario", "Spoof"]), 0)
+            tk.Tk.return_value.after_idle.assert_called_with(
+                automatic.return_value.start
+            )
+            self.assertEqual(
+                main(
+                    [
+                        "--dev-manual",
+                        "--dev-action",
+                        "registration",
+                        "--dev-scenario",
+                        "Spoof",
+                    ]
+                ),
+                0,
+            )
             self.assertEqual(manual.call_args.kwargs["action"], "registration")
             self.assertEqual(manual.call_args.kwargs["scenario"], "Spoof")
 
@@ -451,11 +537,13 @@ class WorkerTests(unittest.TestCase):
     def test_single_worker_rejects_backlog_and_runs_off_the_caller_thread(self):
         entered, finish = Event(), Event()
         called_on = []
+
         def operation(value):
             called_on.append(get_ident())
             entered.set()
             finish.wait(2)
             return value * 2
+
         worker = SingleWorker(operation, "sys05-test")
         try:
             self.assertTrue(worker.submit((1, 1), 4))
@@ -467,7 +555,11 @@ class WorkerTests(unittest.TestCase):
             finish.set()
             # Condition wait is event-driven and synchronizes publication.
             with worker._condition:
-                self.assertTrue(worker._condition.wait_for(lambda: worker._result is not None, timeout=2))
+                self.assertTrue(
+                    worker._condition.wait_for(
+                        lambda: worker._result is not None, timeout=2
+                    )
+                )
             self.assertEqual(worker.take(), WorkResult((1, 1), 8))
             self.assertFalse(worker.busy)
         finally:
@@ -478,10 +570,12 @@ class WorkerTests(unittest.TestCase):
 
     def test_worker_exception_is_returned_and_shutdown_discards_late_output(self):
         entered, finish = Event(), Event()
+
         def operation(value):
             entered.set()
             finish.wait(2)
             raise ValueError("failure")
+
         worker = SingleWorker(operation, "sys05-test-error")
         try:
             worker.submit((1, 1), None)
@@ -498,11 +592,16 @@ class WorkerTests(unittest.TestCase):
     def test_worker_exception_reaches_the_result_slot(self):
         def broken(value):
             raise ValueError("failure")
+
         worker = SingleWorker(broken, "sys05-test-exception")
         try:
             worker.submit((1, 1), None)
             with worker._condition:
-                self.assertTrue(worker._condition.wait_for(lambda: worker._result is not None, timeout=2))
+                self.assertTrue(
+                    worker._condition.wait_for(
+                        lambda: worker._result is not None, timeout=2
+                    )
+                )
             result = worker.take()
             self.assertEqual(result.token, (1, 1))
             self.assertIsInstance(result.error, ValueError)
@@ -520,10 +619,12 @@ class WorkerTests(unittest.TestCase):
         camera.release.side_effect = lambda: release_thread.append(get_ident())
         feed = CameraFeed(lambda: camera)
         publish = feed._publish
+
         def observe(packet):
             publish(packet)
             published.set()
             continue_read.wait(2)
+
         feed._publish = observe
         try:
             generation = feed.restart()
@@ -550,16 +651,20 @@ class WorkerTests(unittest.TestCase):
         delivered, unblock = Event(), Event()
         camera = Mock()
         camera.isOpened.return_value = True
+
         def read():
             delivered.set()
             unblock.wait(2)
             return True, Frame()
+
         camera.read.side_effect = read
         camera_threads = []
         cameras = iter((failed, camera))
+
         def open_camera():
             camera_threads.append(get_ident())
             return next(cameras)
+
         feed = CameraFeed(open_camera)
         try:
             first = feed.restart()

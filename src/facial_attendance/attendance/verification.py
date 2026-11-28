@@ -5,15 +5,21 @@ from math import isfinite
 from time import monotonic
 from uuid import uuid4
 
-from ..liveness.temporal_liveness import TemporalLivenessGate
+from ..liveness.inference.temporal_liveness import TemporalLivenessGate
 from ..ui.emotion_presentation import geometry
 from ..ui.trial_profiles import REGISTRATION_PREPROCESSING, REGISTRATION_RELEASE
 from ..ui.webcam_prototype import (
-    CONTRACT_VERSION, Completion, Context, FaceRequest, Liveness, OperationError, Recognition,
-    box_in_frame, frame_size,
+    CONTRACT_VERSION,
+    Completion,
+    Context,
+    FaceRequest,
+    Liveness,
+    OperationError,
+    Recognition,
+    box_in_frame,
+    frame_size,
 )
 from .service import AttendanceService, VerificationPolicy
-
 
 DECISION_POLICY = "aenet-full-5-live-1s-gap-0.5s-attendance-candidate-v1"
 AUTO_RECORD_SECONDS = 3.0
@@ -29,14 +35,33 @@ class _Capture:
 class AttendanceVerification:
     """Consume fresh, original-context results on the Tk thread. Never use preview summaries."""
 
-    def __init__(self, store, release, recognition, registered_name, *,
-                 max_age_seconds, automatic_retry=False, automatic_record=False, clock=monotonic):
-        if any(release.get(key) != value for key, value in REGISTRATION_RELEASE.items()):
+    def __init__(
+        self,
+        store,
+        release,
+        recognition,
+        registered_name,
+        *,
+        max_age_seconds,
+        automatic_retry=False,
+        automatic_record=False,
+        clock=monotonic,
+    ):
+        if any(
+            release.get(key) != value for key, value in REGISTRATION_RELEASE.items()
+        ):
             raise ValueError("The candidate requires the pinned AENet-Full release.")
-        self._policy = VerificationPolicy(release["model_version"], REGISTRATION_PREPROCESSING, DECISION_POLICY,
-                                          recognition["checkpoint_sha256"], recognition["preprocessing_version"],
-                                          max_age_seconds)
-        self.service = AttendanceService(store, policy=self._policy, registered_name=registered_name, clock=clock)
+        self._policy = VerificationPolicy(
+            release["model_version"],
+            REGISTRATION_PREPROCESSING,
+            DECISION_POLICY,
+            recognition["checkpoint_sha256"],
+            recognition["preprocessing_version"],
+            max_age_seconds,
+        )
+        self.service = AttendanceService(
+            store, policy=self._policy, registered_name=registered_name, clock=clock
+        )
         self._clock = clock
         self._gate = TemporalLivenessGate()
         self._session_id = None
@@ -75,8 +100,9 @@ class AttendanceVerification:
         self._auto_retry_in_progress = False
 
     def retrying_after_spoof(self, state_code):
-        return ((state_code == "spoof" and self._auto_retry_available)
-                or (state_code == "verification_pending" and self._auto_retry_in_progress))
+        return (state_code == "spoof" and self._auto_retry_available) or (
+            state_code == "verification_pending" and self._auto_retry_in_progress
+        )
 
     def invalidate(self, code="verification_pending"):
         if code == "spoof":
@@ -101,7 +127,9 @@ class AttendanceVerification:
             return
         self._last_token = token
         self.pending_capture()
-        if not isinstance(request, FaceRequest) or not self._valid_context(request.context):
+        if not isinstance(request, FaceRequest) or not self._valid_context(
+            request.context
+        ):
             self.invalidate("invalid_verification")
             return
         try:
@@ -126,8 +154,12 @@ class AttendanceVerification:
         if self._region is not None:
             generation, box, dimensions, previous_at = self._region
             gap = captured_at - previous_at
-            if (token[0] != generation or size != dimensions or not 0 < gap <= self._gate.config.maximum_gap_seconds
-                    or geometry(box, request.bbox)[0] < .20):
+            if (
+                token[0] != generation
+                or size != dimensions
+                or not 0 < gap <= self._gate.config.maximum_gap_seconds
+                or geometry(box, request.bbox)[0] < 0.20
+            ):
                 self.invalidate()
                 self._started_at = captured_at
 
@@ -164,8 +196,15 @@ class AttendanceVerification:
             self.invalidate()
             self._started_at = expected.captured_at
         self._person_id = identity.person_id
-        self._region = (token[0], request.bbox, frame_size(request.frame), expected.captured_at)
-        gated = self._gate.observe(prediction, stream_id=self._attempt_id, timestamp=expected.captured_at)
+        self._region = (
+            token[0],
+            request.bbox,
+            frame_size(request.frame),
+            expected.captured_at,
+        )
+        gated = self._gate.observe(
+            prediction, stream_id=self._attempt_id, timestamp=expected.captured_at
+        )
         if not gated["allow_attendance"]:
             self.service.invalidate_capture("verification_pending")
             return False
@@ -173,22 +212,46 @@ class AttendanceVerification:
         # The original capture and face IDs come from the exact request above.
         # The dedicated attendance attempt spans the gate's consecutive samples.
         source = request.context
-        context = Context(CONTRACT_VERSION, self._attempt_id, "attendance", source.capture_id, source.face_id)
-        sample = self.service.begin_capture(request.frame, [request.bbox], expected.captured_at, context=context)
+        context = Context(
+            CONTRACT_VERSION,
+            self._attempt_id,
+            "attendance",
+            source.capture_id,
+            source.face_id,
+        )
+        sample = self.service.begin_capture(
+            request.frame, [request.bbox], expected.captured_at, context=context
+        )
         if sample is None:
             return False
-        evidence = Liveness("live", "accepted_live", gated["spoof_score"], self._policy.liveness_model,
-                            self._policy.liveness_preprocessing, self._policy.liveness_decision, "model")
-        verified = self.service.complete(Completion(context, identity), Completion(context, evidence))
+        evidence = Liveness(
+            "live",
+            "accepted_live",
+            gated["spoof_score"],
+            self._policy.liveness_model,
+            self._policy.liveness_preprocessing,
+            self._policy.liveness_decision,
+            "model",
+        )
+        verified = self.service.complete(
+            Completion(context, identity), Completion(context, evidence)
+        )
         if verified:
             self._auto_retry_in_progress = False
         return verified
 
     def record_automatically(self):
         """Write through the service only on a current, sustained live match."""
-        if (not self.automatic_record or self._session_id is None or self._session_id != self.service.session_id
-                or self._person_id is None or self._person_id in self._recorded_people
-                or self._auto_write_failed or self._gate.started is None or not self.service.state.can_record):
+        if (
+            not self.automatic_record
+            or self._session_id is None
+            or self._session_id != self.service.session_id
+            or self._person_id is None
+            or self._person_id in self._recorded_people
+            or self._auto_write_failed
+            or self._gate.started is None
+            or not self.service.state.can_record
+        ):
             return None
         # The existing gate measures capture time and is reset on a break in continuity.
         if self._gate.last_time - self._gate.started < AUTO_RECORD_SECONDS:
@@ -201,39 +264,71 @@ class AttendanceVerification:
         return result
 
     def _fresh(self, captured_at):
-        return (type(captured_at) in (int, float) and self._started_at <= captured_at
-                and 0 <= self._clock() - captured_at <= self._policy.max_age_seconds)
+        return (
+            type(captured_at) in (int, float)
+            and self._started_at <= captured_at
+            and 0 <= self._clock() - captured_at <= self._policy.max_age_seconds
+        )
 
     @staticmethod
     def _valid_context(context):
-        return (isinstance(context, Context) and context.contract_version == CONTRACT_VERSION
-                and context.action == "attendance"
-                and all(isinstance(value, str) and value.strip()
-                        for value in (context.attempt_id, context.capture_id, context.face_id)))
+        return (
+            isinstance(context, Context)
+            and context.contract_version == CONTRACT_VERSION
+            and context.action == "attendance"
+            and all(
+                isinstance(value, str) and value.strip()
+                for value in (context.attempt_id, context.capture_id, context.face_id)
+            )
+        )
 
     @staticmethod
     def _valid_prediction(result):
-        if (not isinstance(result, dict) or result.get("source", "model") != "model"
-                or any(result.get(key) != REGISTRATION_RELEASE[key] for key in
-                       ("model_id", "model_version", "threshold", "precision"))):
+        if (
+            not isinstance(result, dict)
+            or result.get("source", "model") != "model"
+            or any(
+                result.get(key) != REGISTRATION_RELEASE[key]
+                for key in ("model_id", "model_version", "threshold", "precision")
+            )
+        ):
             return False
-        status, score, allow = result.get("status"), result.get("spoof_score"), result.get("allow_attendance")
+        status, score, allow = (
+            result.get("status"),
+            result.get("spoof_score"),
+            result.get("allow_attendance"),
+        )
         threshold = REGISTRATION_RELEASE["threshold"]
         if score is None:
             return status == "uncertain" and allow is False
-        if type(score) not in (float, int) or not 0 <= score <= 1 or not isfinite(score):
+        if (
+            type(score) not in (float, int)
+            or not 0 <= score <= 1
+            or not isfinite(score)
+        ):
             return False
         if score >= threshold:
             return status == "spoof" and allow is False
-        return (status == "live" and allow is True) or (status == "uncertain" and allow is False)
+        return (status == "live" and allow is True) or (
+            status == "uncertain" and allow is False
+        )
 
     @staticmethod
     def _recognition_result(batch, context):
         if not isinstance(batch, (tuple, list)):
             return None
-        matches = [item for item in batch if isinstance(item, Completion)
-                   and (isinstance(item.result, Recognition) or
-                        (isinstance(item.result, OperationError) and item.result.module == "recognition"))]
+        matches = [
+            item
+            for item in batch
+            if isinstance(item, Completion)
+            and (
+                isinstance(item.result, Recognition)
+                or (
+                    isinstance(item.result, OperationError)
+                    and item.result.module == "recognition"
+                )
+            )
+        ]
         if len(matches) != 1 or matches[0].context != context:
             return None
         return matches[0].result

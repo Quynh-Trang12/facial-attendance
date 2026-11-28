@@ -4,14 +4,30 @@ from dataclasses import dataclass
 from time import monotonic
 from uuid import uuid4
 
-from ..recognition.evaluation import RecognitionEvaluation, SandboxInference, frame_fingerprint
+from ..recognition.evaluation import (
+    RecognitionEvaluation,
+    SandboxInference,
+    frame_fingerprint,
+)
 from ..recognition.gallery_matching import empty_gallery
 from ..recognition.inference import cosine
 from .emotion_presentation import geometry
 from .live_preview import SingleWorker
-from .liveness_preview import CHECKPOINT_SHA256, EPOCH, MODEL_ID, MODEL_VERSION, THRESHOLD, valid_spoof_score
-from .webcam_prototype import Completion, Context, Liveness, OperationError, CONTRACT_VERSION
-
+from .liveness_preview import (
+    CHECKPOINT_SHA256,
+    EPOCH,
+    MODEL_ID,
+    MODEL_VERSION,
+    THRESHOLD,
+    valid_spoof_score,
+)
+from .webcam_prototype import (
+    CONTRACT_VERSION,
+    Completion,
+    Context,
+    Liveness,
+    OperationError,
+)
 
 REGISTRATION_PREPROCESSING = "aenet-full-yunet-bgr-rgb-bilinear224-div255-fp32-v1"
 REGISTRATION_POLICY = "aenet-full-per-capture-threshold-v1"
@@ -41,12 +57,25 @@ class RegistrationGuidance:
 
 class TrialProfiles:
     # Direction is expressed in the user's mirrored preview coordinates.
-    POSES = (Pose("Look straight ahead"), Pose("Turn slightly left", (-1, 0)),
-             Pose("Turn slightly right", (1, 0)), Pose("Look slightly up", (0, -1)),
-             Pose("Look slightly down", (0, 1)))
+    POSES = (
+        Pose("Look straight ahead"),
+        Pose("Turn slightly left", (-1, 0)),
+        Pose("Turn slightly right", (1, 0)),
+        Pose("Look slightly up", (0, -1)),
+        Pose("Look slightly down", (0, 1)),
+    )
 
-    def __init__(self, parent, adapters, on_gallery_change, *, store=None, loaded_gallery=None,
-                 liveness_provenance=None, liveness_preview=None):
+    def __init__(
+        self,
+        parent,
+        adapters,
+        on_gallery_change,
+        *,
+        store=None,
+        loaded_gallery=None,
+        liveness_provenance=None,
+        liveness_preview=None,
+    ):
         import tkinter as tk
         from tkinter import ttk
 
@@ -54,7 +83,9 @@ class TrialProfiles:
         self.store = store
         self._liveness_provenance = liveness_provenance
         self._liveness_preview = liveness_preview
-        self.liveness_threshold = (liveness_provenance["threshold"] if self._has_liveness_release() else None)
+        self.liveness_threshold = (
+            liveness_provenance["threshold"] if self._has_liveness_release() else None
+        )
         self.active = False
         self._guidance_feedback = "guidance"
         self._control_states = None
@@ -64,9 +95,19 @@ class TrialProfiles:
         adapters.matcher = self.session.matcher
 
         def recognize(request):
-            if self.session.reference_hashes and frame_fingerprint(request.frame) in self.session.reference_hashes:
-                return Completion(request.context, OperationError(
-                    "recognition", "invalid_input", "Wait for a frame distinct from the reference captures.", True))
+            if (
+                self.session.reference_hashes
+                and frame_fingerprint(request.frame) in self.session.reference_hashes
+            ):
+                return Completion(
+                    request.context,
+                    OperationError(
+                        "recognition",
+                        "invalid_input",
+                        "Wait for a frame distinct from the reference captures.",
+                        True,
+                    ),
+                )
             return inference.adapter(request)
 
         adapters.recognition_adapter = recognize
@@ -81,31 +122,61 @@ class TrialProfiles:
         self._capture_request = None
         self._capture_used = False
         self.save_notice = None
-        self.form = ttk.LabelFrame(parent, text="Local profile" if store else "Test profile · this session only", padding=8)
+        self.form = ttk.LabelFrame(
+            parent,
+            text="Local profile" if store else "Test profile · this session only",
+            padding=8,
+        )
         self.form.grid(row=4, column=0, sticky="new", pady=8)
         self.form.grid_remove()
         self.name = tk.StringVar(master=parent)
         self.consent = tk.BooleanVar(master=parent)
-        guidance = ("Enter a name and confirm consent to begin." if store
-                    else "Confirm consent, then capture 3–10 photos of one person.")
+        guidance = (
+            "Enter a name and confirm consent to begin."
+            if store
+            else "Confirm consent, then capture 3–10 photos of one person."
+        )
         self.status = tk.StringVar(master=parent, value=guidance)
-        ttk.Label(self.form, text="Display name (up to 24 characters)" if store else "Display name").grid(
-            row=0, column=0, sticky="w")
-        ttk.Entry(self.form, textvariable=self.name, width=22).grid(row=0, column=1, sticky="w", padx=8)
-        consent_text = ("I am the subject or have consent to store a face template on this device."
-                        if store else "I am the subject or have informed consent.")
-        ttk.Checkbutton(self.form, variable=self.consent, command=self.change_consent,
-                        text=consent_text).grid(row=1, column=0, columnspan=4, sticky="w")
-        ttk.Label(self.form, textvariable=self.status, wraplength=600).grid(row=2, column=0, columnspan=4, sticky="w")
-        self.capture_button = ttk.Button(self.form, text="Capture reference", command=self.capture)
+        ttk.Label(
+            self.form,
+            text="Display name (up to 24 characters)" if store else "Display name",
+        ).grid(row=0, column=0, sticky="w")
+        ttk.Entry(self.form, textvariable=self.name, width=22).grid(
+            row=0, column=1, sticky="w", padx=8
+        )
+        consent_text = (
+            "I am the subject or have consent to store a face template on this device."
+            if store
+            else "I am the subject or have informed consent."
+        )
+        ttk.Checkbutton(
+            self.form,
+            variable=self.consent,
+            command=self.change_consent,
+            text=consent_text,
+        ).grid(row=1, column=0, columnspan=4, sticky="w")
+        ttk.Label(self.form, textvariable=self.status, wraplength=600).grid(
+            row=2, column=0, columnspan=4, sticky="w"
+        )
+        self.capture_button = ttk.Button(
+            self.form, text="Capture reference", command=self.capture
+        )
         self.capture_button.grid(row=3, column=0, sticky="w")
-        self.save_button = ttk.Button(self.form, text="Save profile" if store else "Save test profile",
-                                      command=self.save, state="disabled")
+        self.save_button = ttk.Button(
+            self.form,
+            text="Save profile" if store else "Save test profile",
+            command=self.save,
+            state="disabled",
+        )
         self.save_button.grid(row=3, column=1, sticky="w")
-        ttk.Button(self.form, text="Retry" if store else "Discard photos",
-                   command=self.discard).grid(row=3, column=2, sticky="w")
-        ttk.Button(self.form, text="Cancel" if store else "Clear test profiles",
-                   command=self.cancel if store else self.clear).grid(row=3, column=3, sticky="w")
+        ttk.Button(
+            self.form, text="Retry" if store else "Discard photos", command=self.discard
+        ).grid(row=3, column=2, sticky="w")
+        ttk.Button(
+            self.form,
+            text="Cancel" if store else "Clear test profiles",
+            command=self.cancel if store else self.clear,
+        ).grid(row=3, column=3, sticky="w")
 
     def show(self):
         if self.store is not None:
@@ -127,30 +198,49 @@ class TrialProfiles:
             previous = self._last_face
             if previous is not None:
                 last_token, last_at, last_box, last_shape = previous
-                if (token[0] != last_token[0] or not 0 < captured_at - last_at <= 1.0
-                        or request.frame.shape != last_shape or geometry(last_box, request.bbox)[0] < .20):
+                if (
+                    token[0] != last_token[0]
+                    or not 0 < captured_at - last_at <= 1.0
+                    or request.frame.shape != last_shape
+                    or geometry(last_box, request.bbox)[0] < 0.20
+                ):
                     self.invalidate_source()
                     return
             self._last_face = (token, captured_at, request.bbox, request.frame.shape)
             self._frame_liveness = None
             self._capture_used = False
-        self.source = (token, request, captured_at) if request is not None and self.session.consent else None
+        self.source = (
+            (token, request, captured_at)
+            if request is not None and self.session.consent
+            else None
+        )
 
     def _has_liveness_release(self):
         metadata = self._liveness_provenance
-        return isinstance(metadata, dict) and all(metadata.get(key) == value
-                                                 for key, value in REGISTRATION_RELEASE.items())
+        return isinstance(metadata, dict) and all(
+            metadata.get(key) == value for key, value in REGISTRATION_RELEASE.items()
+        )
 
     def observe_liveness(self, token, request, prediction):
         # The webcam supplies the original inference request after checking its worker token.
-        if (not self.active or self._attempt_id is None or self.source is None
-                or self.source[0] != token or self.source[1] is not request
-                or self._frame_liveness is not None):
+        if (
+            not self.active
+            or self._attempt_id is None
+            or self.source is None
+            or self.source[0] != token
+            or self.source[1] is not request
+            or self._frame_liveness is not None
+        ):
             return
-        if (not self._has_liveness_release() or not isinstance(prediction, dict)
-                or prediction.get("source", "model") != "model"
-                or any(prediction.get(key) != REGISTRATION_RELEASE[key] for key in
-                       ("model_id", "model_version", "threshold", "precision"))):
+        if (
+            not self._has_liveness_release()
+            or not isinstance(prediction, dict)
+            or prediction.get("source", "model") != "model"
+            or any(
+                prediction.get(key) != REGISTRATION_RELEASE[key]
+                for key in ("model_id", "model_version", "threshold", "precision")
+            )
+        ):
             self._abort("Liveness verification failed. Select Retry.")
             return
 
@@ -159,29 +249,52 @@ class TrialProfiles:
         score = prediction.get("spoof_score")
         if status == "uncertain" and score is None and allowed is False:
             reason = "uncertain_sample"
-        elif (status in ("live", "spoof") and type(score) in (int, float)
-                and valid_spoof_score(prediction, self.liveness_threshold) is not None
-                and (status == "live") == (score < self.liveness_threshold)
-                and allowed is (status == "live")):
+        elif (
+            status in ("live", "spoof")
+            and type(score) in (int, float)
+            and valid_spoof_score(prediction, self.liveness_threshold) is not None
+            and (status == "live") == (score < self.liveness_threshold)
+            and allowed is (status == "live")
+        ):
             reason = "accepted_live" if status == "live" else "detected_spoof"
         else:
             self._abort("Invalid liveness result. Select Retry.")
             return
 
         camera_context = request.context
-        context = Context(camera_context.contract_version, self._attempt_id, "registration",
-                          camera_context.capture_id, camera_context.face_id)
-        self._frame_liveness = Completion(context, Liveness(
-            status, reason, score, MODEL_VERSION, REGISTRATION_PREPROCESSING, REGISTRATION_POLICY, "model",
-        ))
+        context = Context(
+            camera_context.contract_version,
+            self._attempt_id,
+            "registration",
+            camera_context.capture_id,
+            camera_context.face_id,
+        )
+        self._frame_liveness = Completion(
+            context,
+            Liveness(
+                status,
+                reason,
+                score,
+                MODEL_VERSION,
+                REGISTRATION_PREPROCESSING,
+                REGISTRATION_POLICY,
+                "model",
+            ),
+        )
         if self._capture_request is self.source:
             self._finish_capture()
         self._update_controls()
 
     def invalidate_source(self):
         if self.store is not None:
-            if self.active and self._attempt_id is not None and self._last_face is not None:
-                self._restart("Face lost or changed. Show one face and retake all five photos.")
+            if (
+                self.active
+                and self._attempt_id is not None
+                and self._last_face is not None
+            ):
+                self._restart(
+                    "Face lost or changed. Show one face and retake all five photos."
+                )
             return
         self.source = None
         if self.session.pending is not None:
@@ -225,14 +338,21 @@ class TrialProfiles:
         selected = self._capture_request
         self._capture_request = None
         if not self._has_fresh_face(monotonic()):
-            self._show_progress("Selected photo expired. Capture a fresh frame.", feedback="retry")
+            self._show_progress(
+                "Selected photo expired. Capture a fresh frame.", feedback="retry"
+            )
             return
 
         evidence = self._frame_liveness
         if evidence.result.status == "spoof":
-            self._abort("Selected photo was flagged as spoof. Registration aborted. Select Retry.", feedback="spoof")
+            self._abort(
+                "Selected photo was flagged as spoof. Registration aborted. Select Retry.",
+                feedback="spoof",
+            )
         elif evidence.result.status == "uncertain":
-            self._show_progress("Uncertain — retry capture with a fresh frame.", feedback="retry")
+            self._show_progress(
+                "Uncertain — retry capture with a fresh frame.", feedback="retry"
+            )
         elif self._is_live_for_attempt(evidence):
             self._submit_reference(selected, evidence)
         else:
@@ -242,8 +362,15 @@ class TrialProfiles:
         token, request, captured_at = source
         try:
             context = evidence.context if evidence is not None else None
-            job = self.session.job("reference", token, request.frame, [request.bbox], captured_at,
-                                   now=monotonic(), registration_context=context)
+            job = self.session.job(
+                "reference",
+                token,
+                request.frame,
+                [request.bbox],
+                captured_at,
+                now=monotonic(),
+                registration_context=context,
+            )
         except (ValueError, PermissionError) as error:
             if self.store is not None:
                 self._show_progress(str(error), feedback="retry")
@@ -256,14 +383,22 @@ class TrialProfiles:
         self._pending_liveness = evidence
         count = len(self.session.references)
         self._guidance_feedback = "guidance"
-        self.status.set(f"{count}/{len(self.POSES)} · Processing reference…" if self.store else "Processing reference…")
+        self.status.set(
+            f"{count}/{len(self.POSES)} · Processing reference…"
+            if self.store
+            else "Processing reference…"
+        )
         self._update_controls()
 
     def poll(self):
-        if (self._capture_request is not None
-                and monotonic() - self._capture_request[2] > self.session.MAX_SAMPLE_AGE):
+        if (
+            self._capture_request is not None
+            and monotonic() - self._capture_request[2] > self.session.MAX_SAMPLE_AGE
+        ):
             self._capture_request = None
-            self._show_progress("Selected photo expired. Capture a fresh frame.", feedback="retry")
+            self._show_progress(
+                "Selected photo expired. Capture a fresh frame.", feedback="retry"
+            )
         result = self.worker.take()
         if result is None or self.session.pending is None:
             if self.store is not None:
@@ -280,13 +415,18 @@ class TrialProfiles:
                     return
                 if getattr(result.value, "job", None) is not job:
                     return
-                if (not self._is_live_for_attempt(self._pending_liveness)
-                        or self._pending_liveness.context != job.request.context):
+                if (
+                    not self._is_live_for_attempt(self._pending_liveness)
+                    or self._pending_liveness.context != job.request.context
+                ):
                     self._abort("Reference verification failed. Select Retry.")
                     return
                 if self.session.references and not self.session.policy.accepts_cosine(
-                        cosine(self.session.references[0], result.value.vector)):
-                    self._restart("Face changed. Retake all five photos of the same person.")
+                    cosine(self.session.references[0], result.value.vector)
+                ):
+                    self._restart(
+                        "Face changed. Retake all five photos of the same person."
+                    )
                     return
                 # Newer frames may arrive while embedding this already-verified capture.
                 current = job.source
@@ -303,11 +443,18 @@ class TrialProfiles:
         else:
             count = len(self.session.references)
             if self.store is None:
-                self.status.set(f"{count} reference photos captured. Capture more or save once you have at least three.")
+                self.status.set(
+                    f"{count} reference photos captured. Capture more or save once you have at least three."
+                )
             else:
-                self._accepted_liveness.append((job.request.context, self._pending_liveness))
-                message = (f"Sample accepted. {self.POSES[count].instruction}, then select Capture reference."
-                           if count < len(self.POSES) else "Registration ready. Select Save profile.")
+                self._accepted_liveness.append(
+                    (job.request.context, self._pending_liveness)
+                )
+                message = (
+                    f"Sample accepted. {self.POSES[count].instruction}, then select Capture reference."
+                    if count < len(self.POSES)
+                    else "Registration ready. Select Save profile."
+                )
                 self._show_progress(message, feedback="accepted")
         self._pending_liveness = None
         self._update_controls()
@@ -317,8 +464,10 @@ class TrialProfiles:
             return
         name = self.name.get().strip()
         try:
-            test_id = self.session.commit_reference(display_name=name or None,
-                                                    save_gallery=self.store.save if self.store else None)
+            test_id = self.session.commit_reference(
+                display_name=name or None,
+                save_gallery=self.store.save if self.store else None,
+            )
         except (ValueError, PermissionError) as error:
             if self.store is not None:
                 self._show_progress(f"Save failed. {error}", feedback="retry")
@@ -335,14 +484,18 @@ class TrialProfiles:
             self._update_controls()
         self.on_gallery_change()
         scope = "on this device" if self.store else "for this session"
-        self.status.set(f"Profile {name or test_id} saved {scope}. Look at the camera to check the match.")
+        self.status.set(
+            f"Profile {name or test_id} saved {scope}. Look at the camera to check the match."
+        )
 
     def discard(self):
         if self.store is not None:
             self._restart()
             return
         self.session.discard_draft()
-        self.status.set("Reference photos discarded. Confirm consent and capture fresh photos.")
+        self.status.set(
+            "Reference photos discarded. Confirm consent and capture fresh photos."
+        )
         self._update_controls()
 
     def cancel(self):
@@ -384,7 +537,9 @@ class TrialProfiles:
             return None
         count = len(self.session.references)
         pose = self.POSES[count] if count < len(self.POSES) else None
-        return RegistrationGuidance(pose, count, len(self.POSES), self._guidance_feedback)
+        return RegistrationGuidance(
+            pose, count, len(self.POSES), self._guidance_feedback
+        )
 
     def _show_progress(self, message=None, *, feedback="guidance"):
         self._guidance_feedback = feedback
@@ -401,8 +556,12 @@ class TrialProfiles:
     def clear(self):
         if self.store:
             from tkinter import messagebox
-            if not messagebox.askyesno("Clear local profiles", "Delete all saved local face templates from this device?",
-                                      parent=self.form):
+
+            if not messagebox.askyesno(
+                "Clear local profiles",
+                "Delete all saved local face templates from this device?",
+                parent=self.form,
+            ):
                 return
             try:
                 self.store.save(empty_gallery())
@@ -426,46 +585,91 @@ class TrialProfiles:
         self.worker.close()
 
     def _has_fresh_face(self, now):
-        return self.source is not None and 0 <= now - self.source[2] <= self.session.MAX_SAMPLE_AGE
+        return (
+            self.source is not None
+            and 0 <= now - self.source[2] <= self.session.MAX_SAMPLE_AGE
+        )
 
     def _is_live_for_attempt(self, completion):
-        if completion is None or self._attempt_id is None or not self._has_liveness_release():
+        if (
+            completion is None
+            or self._attempt_id is None
+            or not self._has_liveness_release()
+        ):
             return False
         context, result = completion.context, completion.result
-        return (context.contract_version == CONTRACT_VERSION and context.attempt_id == self._attempt_id
-                and context.action == "registration" and bool(context.capture_id) and bool(context.face_id)
-                and result.status == "live" and result.reason == "accepted_live" and result.source == "model"
-                and result.model_version == MODEL_VERSION and result.preprocessing_version == REGISTRATION_PREPROCESSING
-                and result.decision_policy_version == REGISTRATION_POLICY
-                and type(result.p_spoof) in (int, float) and 0 <= result.p_spoof < self.liveness_threshold)
+        return (
+            context.contract_version == CONTRACT_VERSION
+            and context.attempt_id == self._attempt_id
+            and context.action == "registration"
+            and bool(context.capture_id)
+            and bool(context.face_id)
+            and result.status == "live"
+            and result.reason == "accepted_live"
+            and result.source == "model"
+            and result.model_version == MODEL_VERSION
+            and result.preprocessing_version == REGISTRATION_PREPROCESSING
+            and result.decision_policy_version == REGISTRATION_POLICY
+            and type(result.p_spoof) in (int, float)
+            and 0 <= result.p_spoof < self.liveness_threshold
+        )
 
     def _has_live_scan(self, now):
         preview = self._liveness_preview
-        if preview is None or preview.last_check is None or preview.last_check_window is None:
+        if (
+            preview is None
+            or preview.last_check is None
+            or preview.last_check_window is None
+        ):
             return False
         started_at, completed_at = preview.last_check_window
-        return (preview.last_check.decision == "live" and started_at >= self._attempt_started_at
-                and 0 <= now - completed_at <= preview.SCAN_SECONDS + self.session.MAX_SAMPLE_AGE)
+        return (
+            preview.last_check.decision == "live"
+            and started_at >= self._attempt_started_at
+            and 0
+            <= now - completed_at
+            <= preview.SCAN_SECONDS + self.session.MAX_SAMPLE_AGE
+        )
 
     def _can_capture(self, now):
-        return (self.active and self._attempt_id is not None and self.session.consent
-                and not self.worker.busy and not self._capture_used and self._capture_request is None
-                and self._has_fresh_face(now) and self._has_live_scan(now)
-                and len(self.session.references) < len(self.POSES))
+        return (
+            self.active
+            and self._attempt_id is not None
+            and self.session.consent
+            and not self.worker.busy
+            and not self._capture_used
+            and self._capture_request is None
+            and self._has_fresh_face(now)
+            and self._has_live_scan(now)
+            and len(self.session.references) < len(self.POSES)
+        )
 
     def _can_save(self, now):
-        return (self.active and self.session.consent and self.session.pending is None
-                and self._capture_request is None
-                and len(self.session.references) == len(self._accepted_liveness) == len(self.POSES)
-                and self._has_fresh_face(now) and bool(self.name.get().strip())
-                and all(self._is_live_for_attempt(sample) and sample.context == context
-                        for context, sample in self._accepted_liveness)
-                and len({context.capture_id for context, _ in self._accepted_liveness}) == len(self.POSES))
+        return (
+            self.active
+            and self.session.consent
+            and self.session.pending is None
+            and self._capture_request is None
+            and len(self.session.references)
+            == len(self._accepted_liveness)
+            == len(self.POSES)
+            and self._has_fresh_face(now)
+            and bool(self.name.get().strip())
+            and all(
+                self._is_live_for_attempt(sample) and sample.context == context
+                for context, sample in self._accepted_liveness
+            )
+            and len({context.capture_id for context, _ in self._accepted_liveness})
+            == len(self.POSES)
+        )
 
     def _update_controls(self):
         if self.store is None:
-            ready = (self.session.consent and self.session.pending is None
-                     and len(self.session.references) >= self.session.MIN_REFERENCES)
+            ready = (
+                self.session.consent
+                and self.session.pending is None
+                and len(self.session.references) >= self.session.MIN_REFERENCES
+            )
             self.save_button.configure(state="normal" if ready else "disabled")
             return
         now = monotonic()

@@ -1,22 +1,31 @@
 """Deterministic CPU-detector, display-stability and instrumentation regressions."""
 
-from dataclasses import asdict
 import io
 import sys
+import unittest
+from dataclasses import asdict
 from threading import Lock
 from types import SimpleNamespace
-import unittest
 from unittest.mock import Mock, patch
 
 from facial_attendance.ui.diagnostics import Diagnostics
 from facial_attendance.ui.face_detection import (
-    FaceDetectorUnavailable, ScaledFaceDetector, YuNetFaceDetector, YUNET_SHA256, bounded_size, map_box,
+    YUNET_SHA256,
+    FaceDetectorUnavailable,
+    ScaledFaceDetector,
+    YuNetFaceDetector,
+    bounded_size,
+    map_box,
 )
 from facial_attendance.ui.live_preview import (
-    CameraFeed, LiveController, WorkResult, evaluate_adapters, prepare_preview_image,
+    CameraFeed,
+    LiveController,
+    WorkResult,
+    evaluate_adapters,
+    prepare_preview_image,
 )
 from facial_attendance.ui.webcam_prototype import StubAdapters
-import test_webcam_live as legacy
+from tests import test_webcam_live as legacy
 
 
 class ScaledDetectorTests(unittest.TestCase):
@@ -44,7 +53,9 @@ class ScaledDetectorTests(unittest.TestCase):
     def test_portrait_and_extreme_aspect_ratio_dimensions_are_nonempty(self):
         self.assertEqual(bounded_size(481, 853), (361, 640))
         self.assertEqual(bounded_size(1, 10000), (1, 640))
-        self.assertEqual(map_box((0, 0, 1, 640), (1, 10000), (1, 640)), (0, 0, 1, 10000))
+        self.assertEqual(
+            map_box((0, 0, 1, 640), (1, 10000), (1, 640)), (0, 0, 1, 10000)
+        )
 
     def test_invalid_regions_are_rejected_before_scaling(self):
         for box in ((-1, 0, 20, 30), (0, 0, 641, 20), (0, 0, True, 3), (0, 0, 2.5, 3)):
@@ -53,11 +64,18 @@ class ScaledDetectorTests(unittest.TestCase):
 
     def test_preview_resizes_bgr_before_conversion(self):
         image = SimpleNamespace(size=(640, 360))
-        cv2 = SimpleNamespace(INTER_AREA=3, COLOR_BGR2RGB=4, resize=Mock(return_value="small-bgr"),
-                              cvtColor=Mock(return_value="small-rgb"))
+        cv2 = SimpleNamespace(
+            INTER_AREA=3,
+            COLOR_BGR2RGB=4,
+            resize=Mock(return_value="small-bgr"),
+            cvtColor=Mock(return_value="small-rgb"),
+        )
         pil = SimpleNamespace(fromarray=Mock(return_value=image))
         frame = legacy.Frame(1920, 1080)
-        with patch.dict(sys.modules, {"cv2": cv2}), patch("PIL.Image.fromarray", pil.fromarray):
+        with (
+            patch.dict(sys.modules, {"cv2": cv2}),
+            patch("PIL.Image.fromarray", pil.fromarray),
+        ):
             self.assertIs(prepare_preview_image(frame), image)
         cv2.resize.assert_called_once_with(frame, (640, 360), interpolation=3)
         cv2.cvtColor.assert_called_once_with("small-bgr", 4)
@@ -69,49 +87,70 @@ class YuNetTests(unittest.TestCase):
         self.model = Mock()
         self.model.detect.return_value = 1, [self.face()]
         self.cv2 = SimpleNamespace(
-            __version__="4.13.0", FaceDetectorYN=SimpleNamespace(create=Mock(return_value=self.model)),
+            __version__="4.13.0",
+            FaceDetectorYN=SimpleNamespace(create=Mock(return_value=self.model)),
             dnn=SimpleNamespace(DNN_BACKEND_OPENCV=3, DNN_TARGET_CPU=0),
             error=type("CVError", (Exception,), {}),
         )
         self.enterContext(patch.dict(sys.modules, {"cv2": self.cv2}))
-        self.read = self.enterContext(patch("facial_attendance.ui.face_detection.Path.read_bytes", return_value=b"fixture"))
-        self.digest = self.enterContext(patch("facial_attendance.ui.face_detection.sha256"))
+        self.read = self.enterContext(
+            patch(
+                "facial_attendance.ui.face_detection.Path.read_bytes",
+                return_value=b"fixture",
+            )
+        )
+        self.digest = self.enterContext(
+            patch("facial_attendance.ui.face_detection.sha256")
+        )
         self.digest.return_value.hexdigest.return_value = YUNET_SHA256
         self.detector = YuNetFaceDetector("fixture.onnx")
         self.frame = legacy.Frame(640, 360)
 
     @staticmethod
-    def face(x=10.2, y=20.8, w=100.1, h=90.1, score=.99):
+    def face(x=10.2, y=20.8, w=100.1, h=90.1, score=0.99):
         return [x, y, w, h, *([0.0] * 10), score]
 
     def test_hash_checked_cpu_api_loaded_once_and_half_open_boxes_rounded_outward(self):
         self.assertEqual(self.detector(self.frame), [(10, 20, 111, 111)])
         self.detector(self.frame)
         self.read.assert_called_once()
-        self.cv2.FaceDetectorYN.create.assert_called_once_with("fixture.onnx", "", (640, 360), .9, .3, 5000, 3, 0)
+        self.cv2.FaceDetectorYN.create.assert_called_once_with(
+            "fixture.onnx", "", (640, 360), 0.9, 0.3, 5000, 3, 0
+        )
         self.model.setInputSize.assert_called_with((640, 360))
 
     def test_no_face_multiple_faces_and_partial_edge_box(self):
         self.model.detect.return_value = 1, None
         self.assertEqual(self.detector(self.frame), [])
         self.model.detect.return_value = 1, [self.face(x=-2), self.face(x=400)]
-        self.assertEqual(self.detector(self.frame), [(0, 20, 99, 111), (400, 20, 501, 111)])
+        self.assertEqual(
+            self.detector(self.frame), [(0, 20, 99, 111), (400, 20, 501, 111)]
+        )
 
-    def test_corrupt_missing_model_or_incompatible_api_fail_without_fallback_or_network(self):
+    def test_corrupt_missing_model_or_incompatible_api_fail_without_fallback_or_network(
+        self,
+    ):
         self.digest.return_value.hexdigest.return_value = "wrong"
         with self.assertRaisesRegex(FaceDetectorUnavailable, "checksum"):
             self.detector(self.frame)
         self.read.side_effect = OSError("missing")
         with self.assertRaisesRegex(FaceDetectorUnavailable, "missing"):
             self.detector(self.frame)
-        self.cv2.__version__ = "5.0.0"
+        self.cv2.FaceDetectorYN.create = None
         with self.assertRaisesRegex(FaceDetectorUnavailable, "OpenCV"):
             self.detector(self.frame)
-        self.cv2.FaceDetectorYN.create.assert_not_called()
+        self.assertIsNone(self.cv2.FaceDetectorYN.create)
 
     def test_one_bad_row_blocks_whole_batch(self):
-        for bad in (self.face(w=0), self.face(x=900), self.face(score=float("nan")),
-                    self.face(score=1.1), self.face(score=.5), self.face(x=True), [1, 2, 3]):
+        for bad in (
+            self.face(w=0),
+            self.face(x=900),
+            self.face(score=float("nan")),
+            self.face(score=1.1),
+            self.face(score=0.5),
+            self.face(x=True),
+            [1, 2, 3],
+        ):
             with self.subTest(bad=bad):
                 self.model.detect.return_value = 1, [self.face(), bad]
                 with self.assertRaises(ValueError):
@@ -153,9 +192,13 @@ class StabilityTests(unittest.TestCase):
         self.live.completed(WorkResult((1, 1), batch))
         self.detect(2, 10.3, [])
         self.assertEqual(self.live.controller.state.ui_state, "no_face")
-        self.assertEqual(self.live.visual_regions(10.31), ([legacy.BOX], (1280, 720), True))
+        self.assertEqual(
+            self.live.visual_regions(10.31), ([legacy.BOX], (1280, 720), True)
+        )
         state = asdict(self.live.controller.state)
-        self.assertTrue(all(state[name] is None for name in ("recognition", "liveness", "emotion")))
+        self.assertTrue(
+            all(state[name] is None for name in ("recognition", "liveness", "emotion"))
+        )
         self.assertFalse(state["can_save"])
         self.assertFalse(self.live.completed(WorkResult((1, 1), batch)))
         self.assertEqual(self.live.visual_regions(10.451), ([], None, False))
@@ -167,7 +210,10 @@ class StabilityTests(unittest.TestCase):
         self.assertIsNone(self.live.stability.box)
         self.assertIsNone(self.detect(3, 10.4, []))
         self.assertEqual(self.live.visual_regions(10.41), ([], None, False))
-        for invalidate in (self.live.reset, lambda: self.live.fail("camera_unavailable", "Camera failure")):
+        for invalidate in (
+            self.live.reset,
+            lambda: self.live.fail("camera_unavailable", "Camera failure"),
+        ):
             self.detect(4, 10.5, [legacy.BOX])
             invalidate()
             self.assertEqual(self.live.visual_regions(10.51), ([], None, False))
@@ -184,7 +230,7 @@ class SchedulingTests(unittest.TestCase):
         app.detector.finish([])
         app._tick()
         for sequence in range(2, 8):
-            self.now = 10 + sequence * .03
+            self.now = 10 + sequence * 0.03
             self.packet(sequence)
             app._tick()
             self.assertFalse(app.detector.busy)
@@ -194,16 +240,20 @@ class SchedulingTests(unittest.TestCase):
         self.assertEqual(app.detector.job, ((1, 20), newest.frame))
         self.assertTrue(app.detector.busy)
 
-    def test_gui_budget_subtracts_rendering_time_and_counts_dropped_preview_frames(self):
+    def test_gui_budget_subtracts_rendering_time_and_counts_dropped_preview_frames(
+        self,
+    ):
         app = self.app
         app.metrics = Diagnostics(True, clock=lambda: self.now)
+
         def draw(frame):
-            self.now += .015
+            self.now += 0.015
+
         app._draw_frame.side_effect = draw
         self.packet(10)
         app._tick()
         self.assertEqual(app.root.after.call_args.args[0], 18)
-        self.now += .1
+        self.now += 0.1
         self.packet(15)
         app._tick()
         report = app.metrics.snapshot(force=True)
@@ -246,8 +296,10 @@ class SchedulingTests(unittest.TestCase):
         app._tick()
         app.inference.finish(evaluate_adapters(app.inference.job[1]))
         self.packet(2)
+
         def delayed_render(frame):
             self.now += 1.01
+
         app._draw_frame.side_effect = delayed_render
         app._tick()
         self.assertEqual(app.controller.state.errors[0].code, "camera_unavailable")
@@ -264,8 +316,8 @@ class DiagnosticsTests(unittest.TestCase):
         metrics = Diagnostics(True, clock=lambda: now[0])
         metrics.count("captured", 150)
         metrics.count("previewed", 100)
-        metrics.duration("detector", .01)
-        metrics.duration("detector", .03)
+        metrics.duration("detector", 0.01)
+        metrics.duration("detector", 0.03)
         now[0] = 4.9
         self.assertIsNone(metrics.snapshot())
         now[0] = 5
@@ -273,7 +325,9 @@ class DiagnosticsTests(unittest.TestCase):
             report = metrics.report()
         self.assertEqual(report["capture_fps"], 30)
         self.assertEqual(report["preview_fps"], 20)
-        self.assertEqual(report["timings_ms"]["detector"], {"mean": 20, "max": 30, "n": 2})
+        self.assertEqual(
+            report["timings_ms"]["detector"], {"mean": 20, "max": 30, "n": 2}
+        )
         self.assertEqual(stream.getvalue().count("SYS05_PERF"), 1)
         self.assertIsNone(metrics.report())
 
@@ -290,9 +344,12 @@ class DiagnosticsTests(unittest.TestCase):
         feed._generation = 1
         feed._current = Mock(side_effect=[True, False])
         feed._publish = Mock()
-        with patch("facial_attendance.ui.live_preview.monotonic", side_effect=[0, .020, .022, .023]):
+        with patch(
+            "facial_attendance.ui.live_preview.monotonic",
+            side_effect=[0, 0.020, 0.022, 0.023],
+        ):
             feed._run()
-        self.assertAlmostEqual(feed._stop.wait.call_args.args[0], 1 / 30 - .023)
+        self.assertAlmostEqual(feed._stop.wait.call_args.args[0], 1 / 30 - 0.023)
         camera.release.assert_called_once()
 
 

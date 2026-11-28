@@ -3,14 +3,23 @@
 from hashlib import file_digest
 from pathlib import Path
 
-from .webcam_prototype import (
-    CONTRACT_VERSION, Completion, Emotion, FaceRequest, OperationError, StubAdapters, box_in_frame, frame_size,
-)
 from ..emotion.inference import (
-    EmotionCheckpointMismatch, EmotionInference, EmotionUnavailable,
+    EmotionCheckpointMismatch,
+    EmotionInference,
+    EmotionUnavailable,
 )
 from ..emotion.model_contracts import RESNET18_SHA256
 from ..emotion.resnet_inference import ResNetEmotionInference
+from .webcam_prototype import (
+    CONTRACT_VERSION,
+    Completion,
+    Emotion,
+    FaceRequest,
+    OperationError,
+    StubAdapters,
+    box_in_frame,
+    frame_size,
+)
 
 
 class TrainedEmotionAdapter:
@@ -21,7 +30,11 @@ class TrainedEmotionAdapter:
                     digest = file_digest(handle, "sha256").hexdigest()
             except OSError:
                 digest = None  # The loader reports unavailable files through the existing typed error.
-            loader = ResNetEmotionInference if digest == RESNET18_SHA256 else EmotionInference
+            loader = (
+                ResNetEmotionInference
+                if digest == RESNET18_SHA256
+                else EmotionInference
+            )
             inference = loader(checkpoint)
         self.inference = inference
 
@@ -30,28 +43,48 @@ class TrainedEmotionAdapter:
             raise ValueError("Emotion requires a context-bound FaceRequest.")
         try:
             if request.context.contract_version != CONTRACT_VERSION:
-                return Completion(request.context, OperationError(
-                    "emotion", "version_mismatch", "Emotion request contract version differs.", False))
+                return Completion(
+                    request.context,
+                    OperationError(
+                        "emotion",
+                        "version_mismatch",
+                        "Emotion request contract version differs.",
+                        False,
+                    ),
+                )
             width, height = frame_size(request.frame)
             if not box_in_frame(request.bbox, width, height):
                 raise ValueError("Invalid source-frame emotion crop.")
             prediction = self.inference.predict_bgr(request.face_crop)
             provenance = self.inference.provenance
-            return Completion(request.context, Emotion(
-                prediction.class_id, prediction.label, prediction.confidence,
-                source="model", model_id=provenance["model_id"], model_version=provenance["model_version"],
-                checkpoint_sha256=provenance["checkpoint_sha256"],
-                preprocessing_version=provenance["preprocessing_version"], selected_epoch=provenance["selected_epoch"],
-            ))
+            return Completion(
+                request.context,
+                Emotion(
+                    prediction.class_id,
+                    prediction.label,
+                    prediction.confidence,
+                    source="model",
+                    model_id=provenance["model_id"],
+                    model_version=provenance["model_version"],
+                    checkpoint_sha256=provenance["checkpoint_sha256"],
+                    preprocessing_version=provenance["preprocessing_version"],
+                    selected_epoch=provenance["selected_epoch"],
+                ),
+            )
         except EmotionUnavailable as error:
             code, message = "model_unavailable", str(error)
         except EmotionCheckpointMismatch as error:
             code, message = "version_mismatch", str(error)
         except (ValueError, TypeError, AttributeError):
-            code, message = "invalid_input", "Invalid context-bound emotion source or crop."
+            code, message = (
+                "invalid_input",
+                "Invalid context-bound emotion source or crop.",
+            )
         except Exception:
             code, message = "inference_error", "Trained emotion inference failed."
-        return Completion(request.context, OperationError("emotion", code, message, False))
+        return Completion(
+            request.context, OperationError("emotion", code, message, False)
+        )
 
 
 class MixedEmotionAdapters(StubAdapters):

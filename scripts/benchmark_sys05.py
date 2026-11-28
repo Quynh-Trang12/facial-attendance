@@ -3,13 +3,17 @@
 import argparse
 import json
 import platform
+import sys
 from pathlib import Path
 from statistics import median
-import sys
 from time import perf_counter, sleep
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from facial_attendance.ui.face_detection import HaarFaceDetector, ScaledFaceDetector, YuNetFaceDetector
+from facial_attendance.ui.face_detection import (
+    HaarFaceDetector,
+    ScaledFaceDetector,
+    YuNetFaceDetector,
+)
 from facial_attendance.ui.live_preview import CameraFeed, prepare_preview_image
 
 
@@ -38,8 +42,11 @@ def main(argv=None):
     haar = HaarFaceDetector()
     small_haar = ScaledFaceDetector(HaarFaceDetector())
     yunet = ScaledFaceDetector(YuNetFaceDetector())
-    operations.update(haar_1920=lambda: haar(source), haar_640=lambda: small_haar(source),
-                      yunet_640=lambda: yunet(source))
+    operations.update(
+        haar_1920=lambda: haar(source),
+        haar_640=lambda: small_haar(source),
+        yunet_640=lambda: yunet(source),
+    )
     timings = {}
     for name, operation in operations.items():
         samples = []
@@ -51,11 +58,15 @@ def main(argv=None):
         timings[name] = round(median(samples), 3)
 
     class PacedCamera:
-        def isOpened(self): return True
+        def isOpened(self):
+            return True
+
         def read(self):
             sleep(1 / 30)
             return True, source
-        def release(self): pass
+
+        def release(self):
+            pass
 
     # This legacy loop reproduces the previous read/copy/fixed-wait timing.
     camera = PacedCamera()
@@ -66,7 +77,7 @@ def main(argv=None):
         frame = frame.copy()
         frame.flags.writeable = False
         count += 1
-        sleep(.03)
+        sleep(0.03)
     legacy_fps = count / (perf_counter() - started)
 
     feed = CameraFeed(PacedCamera)
@@ -78,13 +89,26 @@ def main(argv=None):
         current_fps = packet.sequence / (perf_counter() - started)
     finally:
         feed.close()
-    print(json.dumps({
-        "scope": "Synthetic noise / paced fake camera only. No native Tk, physical webcam or glasses accuracy.",
-        "system": platform.platform(), "python": platform.python_version(), "opencv": cv2.__version__,
-        "source": [1920, 1080], "opencv_threads": 1, "warmup": 2, "runs": args.runs,
-        "median_ms": timings,
-        "synthetic_capture_fps": {"legacy_fixed_wait": round(legacy_fps, 2), "current": round(current_fps, 2)},
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "scope": "Synthetic noise / paced fake camera only. No native Tk, physical webcam or glasses accuracy.",
+                "system": platform.platform(),
+                "python": platform.python_version(),
+                "opencv": cv2.__version__,
+                "source": [1920, 1080],
+                "opencv_threads": 1,
+                "warmup": 2,
+                "runs": args.runs,
+                "median_ms": timings,
+                "synthetic_capture_fps": {
+                    "legacy_fixed_wait": round(legacy_fps, 2),
+                    "current": round(current_fps, 2),
+                },
+            },
+            indent=2,
+        )
+    )
     return 0
 
 

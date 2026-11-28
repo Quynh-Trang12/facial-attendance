@@ -1,11 +1,14 @@
 """Exercise the Haar adapter contract without requiring an OpenCV install."""
 
 import sys
-from types import SimpleNamespace
 import unittest
+from types import SimpleNamespace
 from unittest.mock import Mock, patch, sentinel
 
-from facial_attendance.ui.face_detection import FaceDetectorUnavailable, HaarFaceDetector
+from facial_attendance.ui.face_detection import (
+    FaceDetectorUnavailable,
+    HaarFaceDetector,
+)
 
 
 class HaarFaceDetectorTests(unittest.TestCase):
@@ -27,8 +30,13 @@ class HaarFaceDetectorTests(unittest.TestCase):
         )
 
     def test_converts_bgr_to_gray_and_keeps_source_coordinates(self):
-        self.classifier.detectMultiScale.return_value = [(700, 300, 200, 100), (1230, 650, 50, 70)]
-        self.assertEqual(self.detector(self.frame), [(700, 300, 900, 400), (1230, 650, 1280, 720)])
+        self.classifier.detectMultiScale.return_value = [
+            (700, 300, 200, 100),
+            (1230, 650, 50, 70),
+        ]
+        self.assertEqual(
+            self.detector(self.frame), [(700, 300, 900, 400), (1230, 650, 1280, 720)]
+        )
         self.cv2.cvtColor.assert_called_once_with(self.frame, self.cv2.COLOR_BGR2GRAY)
         self.classifier.detectMultiScale.assert_called_once_with(
             sentinel.gray, scaleFactor=1.1, minNeighbors=5
@@ -57,22 +65,47 @@ class HaarFaceDetectorTests(unittest.TestCase):
     def test_separate_face_survives_suppression_of_nested_and_duplicate_boxes(self):
         face = (100, 100, 200, 200)
         other_face = (500, 130, 120, 120)
-        self.classifier.detectMultiScale.return_value = [(140, 140, 70, 60), other_face, face, face]
-        self.assertEqual(self.detector(self.frame), [(100, 100, 300, 300), (500, 130, 620, 250)])
+        self.classifier.detectMultiScale.return_value = [
+            (140, 140, 70, 60),
+            other_face,
+            face,
+            face,
+        ]
+        self.assertEqual(
+            self.detector(self.frame), [(100, 100, 300, 300), (500, 130, 620, 250)]
+        )
 
     def test_ambiguous_overlap_or_containment_keeps_both_boxes(self):
         face = (100, 100, 200, 200)
-        for candidate in ((155, 100, 200, 200), (120, 120, 160, 160), (80, 140, 70, 60)):
+        for candidate in (
+            (155, 100, 200, 200),
+            (120, 120, 160, 160),
+            (80, 140, 70, 60),
+        ):
             with self.subTest(candidate=candidate):
                 self.classifier.detectMultiScale.return_value = [face, candidate]
                 x, y, w, h = candidate
-                self.assertEqual(self.detector(self.frame), [(100, 100, 300, 300), (x, y, x + w, y + h)])
+                self.assertEqual(
+                    self.detector(self.frame),
+                    [(100, 100, 300, 300), (x, y, x + w, y + h)],
+                )
 
     def test_invalid_detection_blocks_entire_batch(self):
-        for invalid in (None, (0, 0, 1), (-1, 10, 5, 5), (1279, 0, 2, 3),
-                        (0, 0, 0, 4), (0, 0, 3, -1), (0, 0, True, 2), (0, 0, 2.0, 2)):
+        for invalid in (
+            None,
+            (0, 0, 1),
+            (-1, 10, 5, 5),
+            (1279, 0, 2, 3),
+            (0, 0, 0, 4),
+            (0, 0, 3, -1),
+            (0, 0, True, 2),
+            (0, 0, 2.0, 2),
+        ):
             with self.subTest(invalid=invalid):
-                self.classifier.detectMultiScale.return_value = [(10, 10, 40, 40), invalid]
+                self.classifier.detectMultiScale.return_value = [
+                    (10, 10, 40, 40),
+                    invalid,
+                ]
                 with self.assertRaisesRegex(ValueError, "Haar returned"):
                     self.detector(self.frame)
 

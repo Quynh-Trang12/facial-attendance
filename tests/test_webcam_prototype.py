@@ -1,8 +1,8 @@
 """SYS-05 contract tests without camera hardware or optional ML packages."""
 
-from dataclasses import asdict, replace
 import json
 import unittest
+from dataclasses import asdict, replace
 
 from facial_attendance.ui.webcam_prototype import (
     Completion,
@@ -45,8 +45,12 @@ class WebcamPrototypeTests(unittest.TestCase):
             with self.subTest(box=box):
                 self.assertIsNone(self.controller.begin_capture(self.frame, [box]))
                 self.assertEqual(self.controller.state.errors[0].code, "invalid_input")
-        for shape, dtype in (((80, 100), "uint8"), ((80, 100, 4), "uint8"),
-                             ((0, 100, 3), "uint8"), ((80, 100, 3), "float32")):
+        for shape, dtype in (
+            ((80, 100), "uint8"),
+            ((80, 100, 4), "uint8"),
+            ((0, 100, 3), "uint8"),
+            ((80, 100, 3), "float32"),
+        ):
             with self.subTest(shape=shape, dtype=dtype):
                 self.frame.shape, self.frame.dtype = shape, dtype
                 self.assertIsNone(self.controller.begin_capture(self.frame, [self.box]))
@@ -54,14 +58,17 @@ class WebcamPrototypeTests(unittest.TestCase):
 
     def test_live_scenarios_serialize_contract_and_never_allow_save(self):
         for scenario, accepted, identity, class_id in (
-            ("Live match", True, "Demo Person", 2), ("Live unknown", False, "Unknown", 1)
+            ("Live match", True, "Demo Person", 2),
+            ("Live unknown", False, "Unknown", 1),
         ):
             for action in ("attendance", "registration"):
                 with self.subTest(scenario=scenario, action=action):
                     self.controller.reset(action)
                     request = self.capture()
                     run_stubs(self.controller, request, StubAdapters(scenario))
-                    payload = json.loads(json.dumps(asdict(self.controller.state), allow_nan=False))
+                    payload = json.loads(
+                        json.dumps(asdict(self.controller.state), allow_nan=False)
+                    )
                     self.assertEqual(payload["context"]["action"], action)
                     self.assertEqual(payload["liveness"]["source"], "stub")
                     self.assertEqual(payload["recognition"]["accepted"], accepted)
@@ -71,8 +78,11 @@ class WebcamPrototypeTests(unittest.TestCase):
                     self.assertFalse(payload["can_save"])
 
     def test_face_loss_multiple_regions_and_camera_error_clear_results(self):
-        for boxes, code in (([], "no_face"), ([self.box, self.box], "multiple_faces"),
-                            (None, "camera_unavailable")):
+        for boxes, code in (
+            ([], "no_face"),
+            ([self.box, self.box], "multiple_faces"),
+            (None, "camera_unavailable"),
+        ):
             with self.subTest(code=code):
                 request = self.capture()
                 adapters = StubAdapters("Live match")
@@ -93,12 +103,17 @@ class WebcamPrototypeTests(unittest.TestCase):
         request = self.capture()
         adapters = StubAdapters("Live match")
         for field, other in (
-            ("contract_version", "old"), ("attempt_id", "old"), ("action", "registration"),
-            ("capture_id", "old"), ("face_id", "old"),
+            ("contract_version", "old"),
+            ("attempt_id", "old"),
+            ("action", "registration"),
+            ("capture_id", "old"),
+            ("face_id", "old"),
         ):
             with self.subTest(field=field):
                 result = adapters.liveness(request)
-                mismatched = replace(result, context=replace(result.context, **{field: other}))
+                mismatched = replace(
+                    result, context=replace(result.context, **{field: other})
+                )
                 self.assertFalse(self.controller.receive(mismatched))
                 self.assertEqual(self.controller.state.ui_state, "checking")
         second = self.capture()
@@ -113,7 +128,9 @@ class WebcamPrototypeTests(unittest.TestCase):
         match = StubAdapters("Live match")
         self.assertTrue(self.controller.receive(match.recognition(request)))
         self.assertEqual(self.controller.demo_identity, "Unavailable")
-        self.assertTrue(self.controller.receive(StubAdapters("Spoof").liveness(request)))
+        self.assertTrue(
+            self.controller.receive(StubAdapters("Spoof").liveness(request))
+        )
         self.assertIsNone(self.controller.state.recognition)
         self.assertIsNone(self.controller.state.emotion)
         self.assertFalse(self.controller.receive(match.liveness(request)))
@@ -132,13 +149,17 @@ class WebcamPrototypeTests(unittest.TestCase):
         self.assertIsNone(self.controller.state.recognition)
         self.assertEqual(self.controller.state.emotion.label, "Negative")
         self.capture()
-        self.assertFalse(self.controller.receive(StubAdapters("Live match").liveness(request)))
+        self.assertFalse(
+            self.controller.receive(StubAdapters("Live match").liveness(request))
+        )
 
     def test_bad_liveness_is_an_operational_error(self):
-        for result in (Liveness("live", "demo_result", float("nan")),
-                       Liveness("live", "demo_result", None),
-                       Liveness("live", "demo_result", 1.1),
-                       Liveness("live", "accepted_live", 0.08, source="model")):
+        for result in (
+            Liveness("live", "demo_result", float("nan")),
+            Liveness("live", "demo_result", None),
+            Liveness("live", "demo_result", 1.1),
+            Liveness("live", "accepted_live", 0.08, source="model"),
+        ):
             with self.subTest(result=result):
                 request = self.capture()
                 self.controller.receive(Completion(request.context, result))
@@ -149,8 +170,12 @@ class WebcamPrototypeTests(unittest.TestCase):
     def test_invalid_emotion_clears_display_only(self):
         request = self.capture()
         run_stubs(self.controller, request, StubAdapters("Live match"))
-        for emotion in (Emotion(2, "Neutral"), Emotion(3, "Surprise"),
-                        Emotion(2, "Positive", float("nan")), Emotion(2, "Positive", 1.1)):
+        for emotion in (
+            Emotion(2, "Neutral"),
+            Emotion(3, "Surprise"),
+            Emotion(2, "Positive", float("nan")),
+            Emotion(2, "Positive", 1.1),
+        ):
             with self.subTest(emotion=emotion):
                 self.controller.receive(Completion(request.context, emotion))
                 self.assertIsNone(self.controller.state.emotion)
