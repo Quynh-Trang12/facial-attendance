@@ -8,11 +8,11 @@ The ML stack is imported once here; computation helpers do not import packages.
 import cv2
 import matplotlib  # noqa: F401
 import numpy as np
-from PIL import Image
-from sklearn.metrics import roc_auc_score
 import torch
 import torchvision
 import tqdm  # noqa: F401
+from PIL import Image
+from sklearn.metrics import roc_auc_score
 
 from .environment import require, select_device
 

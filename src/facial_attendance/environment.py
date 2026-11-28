@@ -1,15 +1,15 @@
 """Check dependency compatibility, then one explicit CPU or CUDA training step."""
 
 import argparse
-from datetime import datetime, timezone
-from hashlib import sha256
-from importlib.metadata import version
 import json
-from pathlib import Path
 import platform
 import subprocess
 import sys
 import traceback
+from datetime import UTC, datetime
+from hashlib import sha256
+from importlib.metadata import version
+from pathlib import Path
 
 from .config import load_paths
 
@@ -145,9 +145,7 @@ def check_versions(root: Path) -> dict:
     }
 
 
-def check_environment(
-    root: Path, *, device: str = "cuda"
-) -> dict:
+def check_environment(root: Path, *, device: str = "cuda") -> dict:
     """Validate setup in stages; dataset availability is reported, not fabricated."""
     validate_platform(
         platform.system(),
@@ -207,7 +205,7 @@ def main(argv: list[str] | None = None) -> int:
     root = Path(__file__).resolve().parents[2]
     result = {
         "schema_version": 2,
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "timestamp_utc": datetime.now(UTC).isoformat(),
         "operator": args.operator,
         "status": "FAIL",
         "python": platform.python_version(),

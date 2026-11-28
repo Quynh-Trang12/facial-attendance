@@ -1,21 +1,21 @@
 """Device/version policy tests require no GPU or ML package installation in CI."""
 
-from contextlib import redirect_stderr, redirect_stdout
-from io import StringIO
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
+from pathlib import Path
 from unittest.mock import patch
 
 from facial_attendance.environment import (
     check_versions,
     main,
-    select_device,
-    validate_python,
-    validate_platform,
-    version_matches,
     read_pins,
+    select_device,
+    validate_platform,
+    validate_python,
+    version_matches,
 )
 
 
@@ -59,7 +59,7 @@ class RuntimeTests(unittest.TestCase):
                 validate_platform(system, machine)
 
     def test_missing_ml_stack_produces_failed_report(self):
-        # CI has no ML stack. Import errors must become inspectable evidence,
+        # A missing ML stack must produce inspectable evidence,
         # rather than preventing CLI parsing or crashing before the report exists.
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "missing-runtime.json"
@@ -104,7 +104,9 @@ class RuntimeTests(unittest.TestCase):
             (root / "requirements.txt").write_text("torch==2.13.0\n")
             # No reference Python file or archived lock is needed for this check.
             with (
-                patch("facial_attendance.environment.version", return_value="2.13.0+cpu"),
+                patch(
+                    "facial_attendance.environment.version", return_value="2.13.0+cpu"
+                ),
                 patch("facial_attendance.environment.sys.version_info", (3, 13, 17)),
             ):
                 report = check_versions(root)
