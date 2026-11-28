@@ -1,1 +1,1 @@
-"""Anti-spoofing data auditing/loading and future model/inference adapters."""
+"""Live/spoof data auditing, model training, evaluation and inference."""
