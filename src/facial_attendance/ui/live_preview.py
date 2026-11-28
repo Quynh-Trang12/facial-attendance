@@ -8,10 +8,18 @@ from dataclasses import dataclass, field, replace
 from threading import Condition, Event, Lock, Thread
 from time import monotonic
 
-from .face_detection import FaceDetectorUnavailable
 from .diagnostics import Diagnostics
+from .face_detection import FaceDetectorUnavailable
 from .webcam_prototype import (
-    Completion, Emotion, Envelope, Liveness, OperationError, PrototypeController, box_in_frame, frame_size, run_stubs,
+    Completion,
+    Emotion,
+    Envelope,
+    Liveness,
+    OperationError,
+    PrototypeController,
+    box_in_frame,
+    frame_size,
+    run_stubs,
 )
 
 
@@ -66,7 +74,9 @@ class SingleWorker:
                 (token, value), self._job = self._job, None
             started = monotonic()
             try:
-                result = WorkResult(token, self.function(value), duration=monotonic() - started)
+                result = WorkResult(
+                    token, self.function(value), duration=monotonic() - started
+                )
             except Exception as error:
                 result = WorkResult(token, error=error, duration=monotonic() - started)
             self.metrics.duration(self.name, result.duration)
@@ -141,20 +151,27 @@ class CameraFeed:
                 generation = self._generation
             camera = None
             sequence = 0
+            previous_capture = None
             try:
                 camera = self.open_camera()
                 if not camera.isOpened():
-                    raise OSError("Camera unavailable. Check permissions/device and retry.")
+                    raise OSError(
+                        "Camera unavailable. Check permissions/device and retry."
+                    )
                 while self._current(generation):
                     cycle_started = monotonic()
                     ok, frame = camera.read()
                     captured_at = monotonic()
                     self.metrics.duration("camera_read", captured_at - cycle_started)
-                    if sequence:
-                        self.metrics.duration("capture_interval", captured_at - previous_capture)
+                    if previous_capture is not None:
+                        self.metrics.duration(
+                            "capture_interval", captured_at - previous_capture
+                        )
                     previous_capture = captured_at
                     if not ok:
-                        raise OSError("Camera read failed. Reconnect the camera and retry.")
+                        raise OSError(
+                            "Camera read failed. Reconnect the camera and retry."
+                        )
                     frame_size(frame)
                     # Some backends reuse their read buffer. Publish an owned,
                     # immutable BGR snapshot for both preview and analysis.
@@ -162,16 +179,22 @@ class CameraFeed:
                     frame.flags.writeable = False
                     self.metrics.duration("camera_copy", monotonic() - captured_at)
                     sequence += 1
-                    published = self._publish(CameraPacket(generation, sequence, captured_at, frame))
+                    published = self._publish(
+                        CameraPacket(generation, sequence, captured_at, frame)
+                    )
                     self.metrics.count("captured" if published else "capture_discarded")
                     # Blocking reads already consume the frame period. Adding
                     # a fixed sleep after them nearly halves a 30-Hz source.
                     self._stop.wait(max(0.0, 1 / 30 - (monotonic() - cycle_started)))
             except Exception:
-                self._publish(CameraPacket(
-                    generation, sequence + 1, monotonic(),
-                    error="Camera unavailable or unusable BGR frame. Check access and retry.",
-                ))
+                self._publish(
+                    CameraPacket(
+                        generation,
+                        sequence + 1,
+                        monotonic(),
+                        error="Camera unavailable or unusable BGR frame. Check access and retry.",
+                    )
+                )
             finally:
                 if camera is not None:
                     try:
@@ -197,40 +220,68 @@ def evaluate_adapters(request_and_adapters, *, unverified_preview=False):
     local.attempt_id = request.context.attempt_id
     local.state = Envelope(context=request.context, ui_state="checking")
     metrics = getattr(adapters, "diagnostics", None)
+
     # Time module boundaries without modifying model inputs or dispatch gating.
     class MeasuredAdapters:
         def __getattr__(self, name):
             method = getattr(adapters, name)
+
             def measured(source):
                 started = monotonic()
                 try:
                     return method(source)
                 finally:
                     metrics.duration(name, monotonic() - started)
+
             return measured
-    measured = MeasuredAdapters() if metrics is not None and metrics.enabled else adapters
-    batch = run_stubs(local, request, measured, include_emotion=include_emotion,
-                      unverified_preview=unverified_preview)
+
+    measured = (
+        MeasuredAdapters() if metrics is not None and metrics.enabled else adapters
+    )
+    batch = run_stubs(
+        local,
+        request,
+        measured,
+        include_emotion=include_emotion,
+        unverified_preview=unverified_preview,
+    )
     # A recognition failure blocks every operation, but is not an Emotion
     # model failure. Run the independent informational model once, preserving
     # its original context; the authoritative error envelope remains blocked.
-    if (include_emotion
-            and getattr(adapters, "trained_recognition", False) is True
-            and getattr(adapters, "trained_emotion", False) is True
-            and (unverified_preview or any(isinstance(c.result, Liveness) and c.result.status == "live" for c in batch))
-            and any(error.module == "recognition" for error in local.state.errors)
-            and not any(isinstance(c.result, Emotion) or (
-                isinstance(c.result, OperationError) and c.result.module == "emotion") for c in batch)):
+    if (
+        include_emotion
+        and getattr(adapters, "trained_recognition", False) is True
+        and getattr(adapters, "trained_emotion", False) is True
+        and (
+            unverified_preview
+            or any(
+                isinstance(c.result, Liveness) and c.result.status == "live"
+                for c in batch
+            )
+        )
+        and any(error.module == "recognition" for error in local.state.errors)
+        and not any(
+            isinstance(c.result, Emotion)
+            or (isinstance(c.result, OperationError) and c.result.module == "emotion")
+            for c in batch
+        )
+    ):
         try:
             extra = measured.emotion(request)
         except Exception:
-            extra = Completion(request.context, OperationError("emotion", "inference_error",
-                               "The emotion adapter failed.", False))
+            extra = Completion(
+                request.context,
+                OperationError(
+                    "emotion", "inference_error", "The emotion adapter failed.", False
+                ),
+            )
         if isinstance(extra, Completion) and extra.context == request.context:
             validator = PrototypeController()
             validator.state = Envelope(context=request.context, ui_state="checking")
             if isinstance(extra.result, Emotion) or (
-                    isinstance(extra.result, OperationError) and extra.result.module == "emotion"):
+                isinstance(extra.result, OperationError)
+                and extra.result.module == "emotion"
+            ):
                 validator.receive(extra)
                 if validator.state.emotion is not None:
                     batch += (extra,)
@@ -243,6 +294,7 @@ def prepare_preview_image(frame, *, viewport=None):
     """Fit the full frame inside the viewport before RGB conversion."""
     import cv2
     from PIL import Image
+
     width, height = frame_size(frame)
     if viewport is None:
         scale = min(1.0, 640 / width, 360 / height)
@@ -269,26 +321,37 @@ class BoxStability:
         self.box = self.size = self.time = None
 
     def confirm(self, box, size, timestamp):
-        if self.box is not None and size == self.size and timestamp - self.time <= self.hold_seconds:
+        if (
+            self.box is not None
+            and size == self.size
+            and timestamp - self.time <= self.hold_seconds
+        ):
             a, b = self.box, box
-            overlap = max(0, min(a[2], b[2]) - max(a[0], b[0])) * max(0, min(a[3], b[3]) - max(a[1], b[1]))
+            overlap = max(0, min(a[2], b[2]) - max(a[0], b[0])) * max(
+                0, min(a[3], b[3]) - max(a[1], b[1])
+            )
             area_a = (a[2] - a[0]) * (a[3] - a[1])
             area_b = (b[2] - b[0]) * (b[3] - b[1])
             if overlap / (area_a + area_b - overlap) > 0.5:
-                weight = .7
+                weight = 0.7
                 if self.damped:
                     short_side = min(b[2] - b[0], b[3] - b[1])
-                    offset = max(abs(current - previous) for current, previous in zip(b, a))
-                    if offset <= max(2, .04 * short_side):
+                    offset = max(
+                        abs(current - previous) for current, previous in zip(b, a)
+                    )
+                    if offset <= max(2, 0.04 * short_side):
                         weight = 0
-                    elif offset <= .14 * short_side:
-                        weight = .35
-                box = tuple(round(weight * current + (1 - weight) * previous) for current, previous in zip(b, a))
+                    elif offset <= 0.14 * short_side:
+                        weight = 0.35
+                box = tuple(
+                    round(weight * current + (1 - weight) * previous)
+                    for current, previous in zip(b, a)
+                )
         self.box, self.size, self.time = box, size, timestamp
 
     @property
     def hold_seconds(self):
-        return .55 if self.damped else self.HOLD_SECONDS
+        return 0.55 if self.damped else self.HOLD_SECONDS
 
     def visual(self, now):
         if self.box is None or now - self.time > self.hold_seconds:
@@ -340,11 +403,22 @@ class LiveController:
         if result.token != self.token:
             return None
         if result.error is not None:
-            code = "model_unavailable" if isinstance(result.error, FaceDetectorUnavailable) else (
-                "invalid_input" if isinstance(result.error, ValueError) else "inference_error"
+            code = (
+                "model_unavailable"
+                if isinstance(result.error, FaceDetectorUnavailable)
+                else (
+                    "invalid_input"
+                    if isinstance(result.error, ValueError)
+                    else "inference_error"
+                )
             )
-            self.fail(code, f"Detector unavailable: {result.error}"
-                      if code == "model_unavailable" else "Face detector failed; retry.", "detector")
+            self.fail(
+                code,
+                f"Detector unavailable: {result.error}"
+                if code == "model_unavailable"
+                else "Face detector failed; retry.",
+                "detector",
+            )
             return None
         try:
             width, height = frame_size(frame)
@@ -352,7 +426,9 @@ class LiveController:
             if not all(box_in_frame(box, width, height) for box in boxes):
                 raise ValueError("Invalid detector box")
         except (TypeError, ValueError):
-            self.fail("invalid_input", "Invalid face detection coordinates.", "detector")
+            self.fail(
+                "invalid_input", "Invalid face detection coordinates.", "detector"
+            )
             return None
         self.boxes = boxes
         self.sample_size = width, height
@@ -364,7 +440,11 @@ class LiveController:
         self.status = {
             "no_face": "No face detected",
             "multiple_faces": "Multiple faces — show one face only",
-            "checking": ("Processing — recognition preview" if self.unverified_preview else "Processing — simulated adapters"),
+            "checking": (
+                "Processing — recognition preview"
+                if self.unverified_preview
+                else "Processing — simulated adapters"
+            ),
         }.get(self.controller.state.ui_state, "Face input unavailable")
         return request
 
@@ -382,12 +462,21 @@ class LiveController:
         if result.error is not None:
             self.fail("inference_error", "Demo adapter unavailable; retry.", "adapters")
             return False
-        if (not isinstance(result.value, (tuple, list))
-                or not all(isinstance(value, Completion) for value in result.value)):
-            self.fail("invalid_input", "Malformed adapter completion batch.", "adapters")
+        if not isinstance(result.value, (tuple, list)) or not all(
+            isinstance(value, Completion) for value in result.value
+        ):
+            self.fail(
+                "invalid_input", "Malformed adapter completion batch.", "adapters"
+            )
             return False
-        if self.unverified_preview and any(isinstance(value.result, Liveness) for value in result.value):
-            self.fail("invalid_input", "The local workspace does not accept authorization results.", "adapters")
+        if self.unverified_preview and any(
+            isinstance(value.result, Liveness) for value in result.value
+        ):
+            self.fail(
+                "invalid_input",
+                "The local workspace does not accept authorization results.",
+                "adapters",
+            )
             return False
         applied = False
         for completion in result.value:
@@ -403,9 +492,17 @@ class LiveController:
             "uncertain": "Simulated uncertain liveness — retry / use a fresh frame",
             "error": "Demo adapter error — retry",
         }.get(state.ui_state, self.status)
-        if state.ui_state == "live" and state.emotion is not None and state.emotion.source == "model":
+        if (
+            state.ui_state == "live"
+            and state.emotion is not None
+            and state.emotion.source == "model"
+        ):
             self.status = "One face — trained emotion; identity/liveness SIMULATED"
-        if state.ui_state == "live" and state.recognition is not None and state.recognition.source == "model":
+        if (
+            state.ui_state == "live"
+            and state.recognition is not None
+            and state.recognition.source == "model"
+        ):
             self.status = "Trained face match — UNVERIFIED; liveness SIMULATED"
         return applied
 
