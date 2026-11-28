@@ -24,6 +24,7 @@ from facial_attendance.ui.live_preview import (
 from facial_attendance.ui.liveness_preview import THRESHOLD
 from facial_attendance.ui.local_profile_store import LocalProfileStore
 from facial_attendance.ui.recognition_adapter import TrainedRecognitionAdapter
+from facial_attendance.ui.registration_pose import FacePose
 from facial_attendance.ui.trial_profiles import REGISTRATION_RELEASE, TrialProfiles
 from facial_attendance.ui.webcam_app import LiveWebcamApp
 from facial_attendance.ui.webcam_prototype import (
@@ -171,9 +172,10 @@ class GuidedRegistrationTests(unittest.TestCase):
         self.now = 10.0
         self.sequence = 0
         self.inference = FakeInference()
-        self.preview = SimpleNamespace(
-            last_check=None, last_check_window=None, SCAN_SECONDS=3.0
-        )
+        self.preview = SimpleNamespace(last_check=None, last_check_window=None, SCAN_SECONDS=3.0)
+        poses = (FacePose(0, .50), FacePose(.20, .50), FacePose(-.20, .50),
+                 FacePose(0, .35), FacePose(0, .65))
+        self.pose_estimator = Mock(side_effect=lambda request: poses[len(self.profiles.session.references)])
         tk = SimpleNamespace(StringVar=WidgetValue, BooleanVar=WidgetValue, ttk=Mock())
         self.enterContext(
             patch(
@@ -186,12 +188,9 @@ class GuidedRegistrationTests(unittest.TestCase):
             patch("facial_attendance.ui.trial_profiles.SingleWorker", ReferenceWorker),
         ):
             self.profiles = TrialProfiles(
-                Mock(),
-                SimpleNamespace(face_inference=self.inference),
-                Mock(),
-                store=self.store,
-                liveness_provenance=dict(REGISTRATION_RELEASE),
-                liveness_preview=self.preview,
+                Mock(), SimpleNamespace(face_inference=self.inference), Mock(),
+                store=self.store, liveness_provenance=dict(REGISTRATION_RELEASE), liveness_preview=self.preview,
+                pose_estimator=self.pose_estimator,
             )
         self.profiles.show()
         self.profiles.consent.set(True)
@@ -283,6 +282,45 @@ class GuidedRegistrationTests(unittest.TestCase):
 
     def assert_no_attendance_file(self):
         self.assertEqual(list(self.store.path.parent.glob("*attendance*")), [])
+
+    def test_wrong_pose_and_missing_landmarks_keep_progress_and_require_a_fresh_capture(self):
+        self.capture(.2)
+        attempt = self.profiles._attempt_id
+        initial_evidence = tuple(self.profiles._accepted_liveness)
+        self.pose_estimator.side_effect = [FacePose(-.20, .50), None, FacePose(.20, .50)]
+        for message in ("Face direction does not match", "Could not check face direction"):
+            with self.subTest(message=message):
+                _, request, _ = self.observe(.2)
+                self.profiles.capture()
+                self.profiles.poll()
+                measured = self.pose_estimator.call_args.args[0]
+                self.assertIs(measured.frame, request.frame)
+                self.assertEqual(measured.bbox, request.bbox)
+                self.assertEqual(measured.context.capture_id, request.context.capture_id)
+                self.assertEqual(measured.context.face_id, request.context.face_id)
+                self.assertEqual(self.profiles._attempt_id, attempt)
+                self.assertEqual(tuple(self.profiles._accepted_liveness), initial_evidence)
+                self.assertEqual(self.profiles.guidance().captured, 1)
+                self.assertEqual(self.profiles.guidance().pose, TrialProfiles.POSES[1])
+                self.assertEqual(self.profiles.guidance().feedback, "retry")
+                self.assertIn(message, self.profiles.status.get())
+                self.assertFalse(self.profiles._can_capture(self.now))
+        self.capture(.2)
+        self.assertEqual(self.profiles.guidance().captured, 2)
+
+    def test_wrong_first_pose_does_not_calibrate_and_spoof_aborts_before_pose_check(self):
+        self.pose_estimator.side_effect = [FacePose(.20, .50), FacePose(0, .62)]
+        self.capture(.2)
+        self.assertEqual(self.profiles.guidance().captured, 0)
+        self.assertIsNone(self.profiles._neutral_pose)
+        self.capture(.2)
+        self.assertEqual(self.profiles._neutral_pose, FacePose(0, .62))
+
+        self.capture(.8)
+        self.assertEqual(self.pose_estimator.call_count, 2)
+        self.assertEqual(self.profiles.guidance().feedback, "spoof")
+        self.assertEqual(self.profiles.guidance().captured, 0)
+        self.assertIsNone(self.profiles._neutral_pose)
 
     def test_spoof_as_first_or_fifth_sample_aborts_and_discards_all_references(self):
         for accepted in (0, 4):
