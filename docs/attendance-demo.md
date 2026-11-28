@@ -16,8 +16,8 @@ $env:PYTHONPATH = "src"
   --camera 0 --detector yunet `
   --face-checkpoint artifacts/models/face-recognition-resnet18.pt `
   --emotion-checkpoint artifacts/models/emotion-recognition-resnet18-v1.pt `
-  --local-profile-db artifacts/attendance-verification-test/demo/profiles.sqlite3 `
-  --attendance-db artifacts/attendance-verification-test/demo/attendance.sqlite3 `
+  --local-profile-db artifacts/attendance-verification-test/demo-box/profiles.sqlite3 `
+  --attendance-db artifacts/attendance-verification-test/demo-box/attendance.sqlite3 `
   --opencv-threads 1
 ```
 
@@ -47,13 +47,15 @@ Select the camera with `--camera INDEX`. For a different checkpoint location, pa
 ## How verification works
 
 - **Preview.** AENet-Full averages the scores from valid single-face samples over about three seconds. The checkpoint threshold is `0.46483826637268066`. A mean greater than or equal to the threshold yields `spoof`; a lower mean yields `live`. A scan without valid samples yields `uncertain`. The preview is informational for Attendance.
+- **Recognition crop.** The local webcam workspace resizes the tight YuNet box for both reference and probe embeddings. Liveness and Emotion receive the original detector crop through their existing adapters. The recognition sandbox and read-only JSON gallery keep the square crop associated with their existing templates.
+- **Naming a face.** The preview and Attendance name the best-matching profile only if its cosine score reaches 0.69 (`min_score` in `configs/recognition.toml`) and beats every other profile by 0.10 (`margin`). Otherwise the result is unknown. The FAC threshold `0.4619967254593038` was chosen for comparing one pair of faces; against a whole class an unregistered person gets one chance per profile, so it alone named most unregistered people in an LFW test (see the config notes). The registration duplicate check stays on the FAC threshold alone, so a face close to an existing profile is refused as a duplicate.
 - **Registration.** A completed live preview from the current attempt enables **Capture reference**. The five requested poses cover center, slight left and right, up and down. Only individually live captures count. An uncertain capture asks for a new photo; spoof discards the attempt and requires **Retry**. The gallery stores one averaged template per profile and rejects duplicate matches before saving.
 - **Attendance.** The candidate reuses Trang's temporal gate and the [LIV-02 same-capture contract](https://github.com/Quynh-Trang12/facial-attendance/blob/25eafa26091be2f9dcd6b17aeffb75d801448435/docs/liveness-gating.md#registration-and-attendance-flow). It requires at least five consecutive live samples over at least one second, with gaps no longer than 0.5 seconds. The accepted recognition result must come from the exact gate-passing capture, under the current attempt, action, capture and face IDs. A camera failure, missing or multiple faces, changed identity, unknown result or stale completion cannot carry over an authorization. Emotion has no role in the write decision.
 - **Options.** Automatic retry ends the spoof attempt and starts another with fresh samples. Auto record adds a minimum three-second live span measured from the first valid sample of the same continuous attempt. It uses the latest verified capture and goes through the same service pre-write checks. These are isolated test policies. The recording mode does not change the liveness model, recognition threshold, or preview scan.
 
 ## Where records are stored
 
-The launch examples keep profiles in `artifacts/attendance-verification-test/demo/profiles.sqlite3` and attendance in `artifacts/attendance-verification-test/demo/attendance.sqlite3`. Each is a different database. Use the paths supplied on the command line when opening another test workspace. With the preview-only launch, the default profile database is `artifacts/local-recognition/profiles.sqlite3`.
+The launch examples keep profiles in `artifacts/attendance-verification-test/demo-box/profiles.sqlite3` and attendance in `artifacts/attendance-verification-test/demo-box/attendance.sqlite3`. For a preview-only local workspace the default profile database is `artifacts/local-recognition/profiles-box.sqlite3`. Use a fresh path and register again when switching from square crops. Local profile databases are tagged with their crop format, so the app can reject an incompatible profile file. Older square-crop databases stay available to the previous build.
 
 The `attendance` table stores `attendance_id`, `person_id`, `person_name`, `session_id`, `recorded_at` (UTC), and `status` (`present`). SQLite enforces one row per `(session_id, person_id)`. The app displays success after the transaction completes. The two databases, diagnostic exports, recordings, and checkpoints stay out of Git.
 
@@ -72,10 +74,13 @@ GROUP BY session_id;
 | Physical webcam registration baseline, 25 November 2026 | A profile was enrolled with five reference captures and matched on webcam. The source baseline preserves 129 files from base `798f2e7` plus the then-current working changes. The stored replay check rejected spoof enrollment. |
 | macOS physical Attendance test | The local auto-record test databases contain stored rows and pass SQLite integrity checks. This confirms local writes; the records alone do not validate every identity match or physical spoof case. |
 | Offline replay with the actual Face and AENet-Full checkpoints | 17 distinct clips. All eight screen clips produced zero attendance records. Two clips of the enrolled participant wrote one row each in separate test sessions after about 3.0–3.3 seconds. One other live participant was falsely matched and generated one test record. |
-| Regression suite on Apple Silicon macOS | 504 passed and one optional legacy-checkpoint test skipped. Coverage includes stale and mismatched results, duplicate recording, SQLite failure, registration, changing modes, stable sidebar scrolling, and diagnostic export. |
+| Earlier one-profile replay | On the same 17 clips, the earlier 0.15-margin rule kept the two correct SQLite writes and blocked the one wrong-person write. The misidentified clip dropped from 18 named frames to zero. All eight screen clips produced zero writes. |
+| Earlier two-profile square-crop replay | On the same 17 clips and two-profile test gallery, the original rule wrote five wrong-person records. The 0.15-margin rule wrote four. The 0.69 minimum score and 0.10 margin wrote three. All three runs recorded the two known live clips correctly and wrote zero records across the eight screen clips. |
+| Paired crop replay | On held-out clips from four participants with separate templates for each crop, square 1.2 recorded 7/15 known attempts and tight box recorded 6/15. Each wrote 1/15 stranger attempts and 0/48 screen attempts. A single held-out clip was tested against several profile pairs. |
+| Regression suite on Apple Silicon macOS | 538 passed and one optional legacy-checkpoint test skipped. Coverage includes box preprocessing, crop compatibility of local profiles, the minimum identification score, ambiguous matches, malformed scores, duplicate enrollment and recording, stale results, SQLite failure, and the GUI. |
 | Windows and independent reviewer checks | Physical Windows webcam verification and independent reviewer acceptance are pending. |
 
-The observed wrong-person match is the blocker for real attendance. The replay set represents a small set of prerecorded cases; it does not establish a general false-accept or spoof-rejection rate. The next release check uses separate enrollment and test captures, including the previously misidentified person, several lighting conditions, and physical phone and print trials. Keep all test data consented and local.
+Real attendance remains disabled. The two-profile replay still produced wrong-person records. The next release check uses separate enrollment and test captures, including the previously misidentified person, additional enrolled people, several lighting conditions, and physical phone and print trials. Keep test data consented and local.
 
 Tested macOS model versions: Face metric ResNet-18 `cb38ea47ceff`, Emotion ResNet-18 epoch 10, and AENet-Full epoch 18 `f16fbfaf36046f75`. Face recognition uses the selected FAC cosine threshold `0.4619967254593038`. The native webcam run used Python 3.13.17, PyTorch 2.13.0, torchvision 0.28.0, and OpenCV 4.13.0.92 in an existing local environment. The repository pins define the shared setup; the exact pinned OpenCV version was not used for this webcam run.
 

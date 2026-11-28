@@ -1,5 +1,6 @@
 """Reference collection for session-only and persistent local profiles."""
 
+from dataclasses import dataclass
 from time import monotonic
 from uuid import uuid4
 
@@ -24,9 +25,25 @@ REGISTRATION_RELEASE = {
 }
 
 
+@dataclass(frozen=True)
+class Pose:
+    instruction: str
+    direction: tuple[int, int] | None = None
+
+
+@dataclass(frozen=True)
+class RegistrationGuidance:
+    pose: Pose | None
+    captured: int
+    total: int
+    feedback: str
+
+
 class TrialProfiles:
-    POSES = ("Look straight ahead", "Turn slightly left", "Turn slightly right",
-             "Tilt your chin slightly up", "Tilt your chin slightly down")
+    # Direction is expressed in the user's mirrored preview coordinates.
+    POSES = (Pose("Look straight ahead"), Pose("Turn slightly left", (-1, 0)),
+             Pose("Turn slightly right", (1, 0)), Pose("Look slightly up", (0, -1)),
+             Pose("Look slightly down", (0, 1)))
 
     def __init__(self, parent, adapters, on_gallery_change, *, store=None, loaded_gallery=None,
                  liveness_provenance=None, liveness_preview=None):
@@ -39,6 +56,7 @@ class TrialProfiles:
         self._liveness_preview = liveness_preview
         self.liveness_threshold = (liveness_provenance["threshold"] if self._has_liveness_release() else None)
         self.active = False
+        self._guidance_feedback = "guidance"
         self._control_states = None
         if loaded_gallery is not None:
             self.session.matcher._gallery = loaded_gallery
@@ -207,14 +225,14 @@ class TrialProfiles:
         selected = self._capture_request
         self._capture_request = None
         if not self._has_fresh_face(monotonic()):
-            self._show_progress("Selected photo expired. Capture a fresh frame.")
+            self._show_progress("Selected photo expired. Capture a fresh frame.", feedback="retry")
             return
 
         evidence = self._frame_liveness
         if evidence.result.status == "spoof":
-            self._abort("Selected photo was flagged as spoof. Registration aborted. Select Retry.")
+            self._abort("Selected photo was flagged as spoof. Registration aborted. Select Retry.", feedback="spoof")
         elif evidence.result.status == "uncertain":
-            self._show_progress("Uncertain — retry capture with a fresh frame.")
+            self._show_progress("Uncertain — retry capture with a fresh frame.", feedback="retry")
         elif self._is_live_for_attempt(evidence):
             self._submit_reference(selected, evidence)
         else:
@@ -228,7 +246,7 @@ class TrialProfiles:
                                    now=monotonic(), registration_context=context)
         except (ValueError, PermissionError) as error:
             if self.store is not None:
-                self._show_progress(str(error))
+                self._show_progress(str(error), feedback="retry")
             else:
                 self.status.set(str(error))
             return
@@ -237,6 +255,7 @@ class TrialProfiles:
             return
         self._pending_liveness = evidence
         count = len(self.session.references)
+        self._guidance_feedback = "guidance"
         self.status.set(f"{count}/{len(self.POSES)} · Processing reference…" if self.store else "Processing reference…")
         self._update_controls()
 
@@ -244,7 +263,7 @@ class TrialProfiles:
         if (self._capture_request is not None
                 and monotonic() - self._capture_request[2] > self.session.MAX_SAMPLE_AGE):
             self._capture_request = None
-            self._show_progress("Selected photo expired. Capture a fresh frame.")
+            self._show_progress("Selected photo expired. Capture a fresh frame.", feedback="retry")
         result = self.worker.take()
         if result is None or self.session.pending is None:
             if self.store is not None:
@@ -278,7 +297,7 @@ class TrialProfiles:
         except (ValueError, PermissionError) as error:
             if self.store is not None:
                 self.session.cancel()
-                self._show_progress(str(error))
+                self._show_progress(str(error), feedback="retry")
             else:
                 self.status.set(str(error))
         else:
@@ -287,9 +306,9 @@ class TrialProfiles:
                 self.status.set(f"{count} reference photos captured. Capture more or save once you have at least three.")
             else:
                 self._accepted_liveness.append((job.request.context, self._pending_liveness))
-                message = (f"Sample accepted. {self.POSES[count]}, then select Capture reference."
+                message = (f"Sample accepted. {self.POSES[count].instruction}, then select Capture reference."
                            if count < len(self.POSES) else "Registration ready. Select Save profile.")
-                self._show_progress(message)
+                self._show_progress(message, feedback="accepted")
         self._pending_liveness = None
         self._update_controls()
 
@@ -302,7 +321,7 @@ class TrialProfiles:
                                                     save_gallery=self.store.save if self.store else None)
         except (ValueError, PermissionError) as error:
             if self.store is not None:
-                self._show_progress(f"Save failed. {error}")
+                self._show_progress(f"Save failed. {error}", feedback="retry")
             else:
                 self.status.set(str(error))
             return
@@ -342,9 +361,9 @@ class TrialProfiles:
         self._show_progress(message)
         self._update_controls()
 
-    def _abort(self, message):
+    def _abort(self, message, *, feedback="guidance"):
         self._clear_attempt()
-        self._show_progress(message)
+        self._show_progress(message, feedback=feedback)
         self._update_controls()
 
     def _clear_attempt(self):
@@ -356,13 +375,25 @@ class TrialProfiles:
         self._capture_request = None
         self._capture_used = False
 
-    def _show_progress(self, message=None):
+    def guidance(self):
+        if self.store is None or not self.active:
+            return None
+        if self._attempt_id is None:
+            if self._guidance_feedback == "spoof":
+                return RegistrationGuidance(None, 0, len(self.POSES), "spoof")
+            return None
+        count = len(self.session.references)
+        pose = self.POSES[count] if count < len(self.POSES) else None
+        return RegistrationGuidance(pose, count, len(self.POSES), self._guidance_feedback)
+
+    def _show_progress(self, message=None, *, feedback="guidance"):
+        self._guidance_feedback = feedback
         count = len(self.session.references)
         if message is None:
             if not self.session.consent:
                 message = "Confirm consent before capturing photos."
             elif count < len(self.POSES):
-                message = f"{self.POSES[count]}. Wait for a live 3-second scan, then select Capture reference."
+                message = f"{self.POSES[count].instruction}. Wait for a live 3-second scan, then select Capture reference."
             else:
                 message = "Registration ready. Select Save profile."
         self.status.set(f"{count}/{len(self.POSES)} · {message}")
