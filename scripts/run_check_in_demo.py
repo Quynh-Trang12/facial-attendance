@@ -167,13 +167,15 @@ class Window:
 
         self.cv2, self.title, self.show = cv2, title, show
 
-    def draw(self, frame_bgr, faces, lines, kept=0, needed=0, colour=WHITE):
+    def draw(self, frame_bgr, faces, lines, kept=0, needed=0, colour=WHITE, banner=None):
         if not self.show:
             return None
         cv2 = self.cv2
         for face in faces:
             x1, y1, x2, y2 = face.box
             cv2.rectangle(frame_bgr, (x1, y1), (x2, y2), colour, 2)
+        if banner:
+            self.draw_banner(frame_bgr, banner, colour)
         for row, text in enumerate(lines):
             cv2.putText(frame_bgr, text, (12, 30 + 30 * row), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 4)
             cv2.putText(frame_bgr, text, (12, 30 + 30 * row), cv2.FONT_HERSHEY_SIMPLEX, 0.8, colour, 2)
@@ -184,6 +186,21 @@ class Window:
                               (40 + 34 * index, 44 + 30 * len(lines)), fill, -1)
         cv2.imshow(self.title, frame_bgr)
         return cv2.waitKey(1) & 0xFF
+
+    def draw_banner(self, frame_bgr, text, colour):
+        """The live prompt in large bold type, centred below the face so a viewer can read it."""
+        cv2 = self.cv2
+        height, width = frame_bgr.shape[:2]
+        font, scale, thickness = cv2.FONT_HERSHEY_DUPLEX, 1.8 * width / 1280, max(2, round(4 * width / 1280))
+        (text_w, text_h), base = cv2.getTextSize(text, font, scale, thickness)
+        if text_w > 0.9 * width:
+            scale *= 0.9 * width / text_w
+            (text_w, text_h), base = cv2.getTextSize(text, font, scale, thickness)
+        x, y, pad = (width - text_w) // 2, int(0.85 * height), int(0.4 * text_h)
+        band = frame_bgr.copy()
+        cv2.rectangle(band, (x - 2 * pad, y - text_h - pad), (x + text_w + 2 * pad, y + base + pad), (0, 0, 0), -1)
+        cv2.addWeighted(band, 0.6, frame_bgr, 0.4, 0, frame_bgr)
+        cv2.putText(frame_bgr, text, (x, y), font, scale, colour, thickness, cv2.LINE_AA)
 
     @staticmethod
     def quit(key):
@@ -365,7 +382,7 @@ def run_check_in(args):
             else:
                 lines, colour, kept, needed = [text for text, _ in shown], shown[-1][1], 0, 0
             key = window.draw(frame_bgr, faces, [f"{args.mode} | {args.person} | attempts {count}", *lines],
-                              kept, needed, colour)
+                              kept, needed, colour, banner=current.prompt if main.active else None)
             if key == ord(" ") and not any(c.active for c in check_ins.values()):
                 count, attempt, started, shown = count + 1, f"{session}-{count + 1}", now, []
                 for c in check_ins.values():
