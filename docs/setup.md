@@ -1,231 +1,115 @@
 # Setup
 
-Choose where to run the project. Local and Colab are separate execution routes; follow one route for the module you need. Complete the numbered steps within your chosen route in order; continue only after the preceding checks pass.
-
-| Execution route | Steps |
-| --- | --- |
-| **Local execution** | 1. From your cloned repository, complete [environment setup and the device check](#1-open-a-terminal-and-select-the-environment) in steps 1–3.<br>2. Run the [unit tests](#run-unit-tests); resolve failures before continuing.<br>3. Choose the module you want to run under [Download and check the dataset](#4-download-and-check-the-dataset), then follow its local instructions. |
-| **Google Colab execution** | 1. Open [Google Colab: CPU or T4 GPU](#google-colab-cpu-or-t4-gpu) and expand the section for the module you want to run.<br>2. Complete its prerequisites and setup: face recognition has numbered cells; anti-spoofing uses the shared notebook.<br>3. Follow that route's test and dataset-check sequence, then inspect and retain its outputs. |
+Use Python 3.13.x and the repository root as the working directory. Install once into a project environment, then follow the [module guide](../README.md#start-here). Inference and saved inspection use CPU; liveness training/evaluation reproduction uses the [Colab notebook](../notebooks/liveness-training-and-evaluation.ipynb).
 
 ## 1. Open a terminal and select the environment
 
-Use the `facial-attendance` repository root as the working directory, containing `scripts/` and `requirements.txt`. Use Python **3.13.x**; the exact patch in `.python-version` is not required.
+Reuse an existing compatible environment, or create one using the platform block below. Supported targets are Linux x86_64, Windows x64 and macOS 14+ Apple Silicon with native arm64 Python. Intel/Rosetta Macs, Windows ARM64 and MPS are outside this dependency policy. Another 3.13 patch is accepted; CI reads its reference from [.python-version](../.python-version).
 
-If you already have a compatible environment, activate it and skip creating `.venv`. Otherwise, use the appropriate branch:
+## 2. Install dependencies into the environment from step 1
 
-**Linux x86_64 / macOS 14+ Apple Silicon — bash/zsh**
+Run only your platform's block. Each creates/activates the environment and installs the CPU profile plus [shared dependencies](../requirements.txt). If the environment already exists, skip creation/installation as appropriate.
 
-```bash
+<details>
+<summary>Linux x86_64 — bash/zsh</summary>
+
+```sh
 python3.13 -m venv .venv
 source .venv/bin/activate
+python -m pip install -r requirements-cpu.txt
+python -m pip install -r requirements.txt
 ```
 
-**Windows x64 — PowerShell**
+</details>
+
+<details>
+<summary>Windows x64 — PowerShell</summary>
 
 ```powershell
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements-cpu.txt
+python -m pip install -r requirements.txt
 ```
 
-If PowerShell blocks activation, use `.\.venv\Scripts\python.exe` instead of `python` in the following steps.
+If activation is blocked, replace `python` with `.\.venv\Scripts\python.exe`; no policy change is needed.
 
-Check the selected interpreter:
+</details>
 
-```bash
+<details>
+<summary>macOS 14+ Apple Silicon — bash/zsh</summary>
+
+```sh
+python3.13 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+Native arm64 wheels come from PyPI; do not use the CUDA index.
+
+</details>
+
+For explicit local NVIDIA CUDA work on Linux/Windows, replace requirements-cpu.txt with [requirements-cuda.txt](../requirements-cuda.txt), then install shared requirements. Choose one wheel profile. [requirements.lock](../requirements.lock) is an attributed historical Linux/CUDA snapshot, not the installation recipe.
+
+Confirm the interpreter and pip both belong to your chosen environment:
+
+```sh
 python -c "import sys; print(sys.executable); print(sys.version)"
+python -m pip --version
 ```
-
-**Expected:** Python 3.13.x and an executable inside `.venv` (or the compatible environment you chose to reuse). This identifies the interpreter that the later `python` commands will use.
-
-macOS requires native `arm64` Python. Intel Macs, Rosetta and Windows ARM64 are not supported by this dependency set. macOS currently uses CPU only; MPS is not supported.
-
-## 2. Install dependencies into the environment from step 1
-
-Skip this step if that environment already has the project dependencies. These are **terminal commands**, run from the same repository root as step 1. They target the existing `.venv` directly; activation is not needed for installation.
-
-If step 1 reused an environment at another location, substitute its Python executable for the `.venv` executable below. The intended target is the same environment throughout setup.
-
-**Expand only your platform below.**
-
-<details>
-<summary>Linux x86_64</summary>
-
-First confirm pip's location:
-
-```bash
-.venv/bin/python -m pip --version
-```
-
-Expected: the pip location is inside this repository's `.venv`, with Python 3.13. A missing executable means step 1 has not prepared that environment at this location.
-
-Choose **one** framework profile:
-
-| Device | Command |
-| --- | --- |
-| NVIDIA GPU | `.venv/bin/python -m pip install -r requirements-cuda.txt` |
-| CPU | `.venv/bin/python -m pip install -r requirements-cpu.txt` |
-
-Then install the shared dependencies:
-
-```bash
-.venv/bin/python -m pip install -r requirements.txt
-```
-
-</details>
-
-<details>
-<summary>Windows x64 — PowerShell</summary>
-
-First confirm pip's location:
-
-```powershell
-.\.venv\Scripts\python.exe -m pip --version
-```
-
-Expected: the pip location is inside this repository's `.venv`, with Python 3.13. This also works when PowerShell blocks activation.
-
-Choose **one** framework profile:
-
-| Device | Command |
-| --- | --- |
-| NVIDIA GPU | `.\.venv\Scripts\python.exe -m pip install -r requirements-cuda.txt` |
-| CPU | `.\.venv\Scripts\python.exe -m pip install -r requirements-cpu.txt` |
-
-Then install the shared dependencies:
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-```
-
-</details>
-
-<details>
-<summary>macOS Apple Silicon</summary>
-
-First confirm pip's location, then install from PyPI:
-
-```bash
-.venv/bin/python -m pip --version
-.venv/bin/python -m pip install -r requirements.txt
-```
-
-Expected: the pip location is inside this repository's `.venv`, with Python 3.13. macOS uses the shared requirements directly, without a CPU/CUDA profile file.
-
-</details>
-
-**Next:** continue to step 3 using the environment selected in step 1. The NVIDIA profile requires a driver compatible with CUDA 12.6.
 
 ## 3. Check the device
 
-Run one check using the same environment as steps 1–2. If you reused an environment elsewhere, substitute its Python executable below.
+After activation, the same command works on all supported OSs:
 
-<details>
-<summary>Linux x86_64 / macOS Apple Silicon — bash/zsh</summary>
-
-**CPU, including macOS:**
-
-```bash
-.venv/bin/python scripts/check_environment.py --device cpu --operator team-check --output evidence/runs/SYS-03/team-cpu-check.json
+```sh
+python scripts/check_environment.py --device cpu --operator reviewer --output evidence/runs/SYS-03/reviewer-cpu.json
 ```
 
-**NVIDIA GPU — Linux only:**
-
-```bash
-.venv/bin/python scripts/check_environment.py --device cuda --operator team-check --output evidence/runs/SYS-03/team-cuda-check.json
-```
-
-</details>
-
-<details>
-<summary>Windows x64 — PowerShell</summary>
-
-**CPU:**
-
-```powershell
-.\.venv\Scripts\python.exe scripts/check_environment.py --device cpu --operator team-check --output evidence/runs/SYS-03/team-cpu-check.json
-```
-
-**NVIDIA GPU:**
-
-```powershell
-.\.venv\Scripts\python.exe scripts/check_environment.py --device cuda --operator team-check --output evidence/runs/SYS-03/team-cuda-check.json
-```
-
-</details>
-
-**Expected:** exit code 0, JSON `status: PASS` and the selected device. Each rerun needs a new output filename because existing results are preserved. The check runs a synthetic training step and inference pass; it does not measure model accuracy. Inaccessible CUDA produces an error rather than switching to CPU.
-
-**If it fails:** the command, terminal output and generated JSON identify the failed check.
+Expected: exit 0 and JSON status PASS. The report checks versions, numerical training/inference and image/metric APIs; dataset locations are reported separately. Use a new output filename on repeats. For an explicitly requested NVIDIA target, use `--device cuda`; inaccessible CUDA fails without CPU fallback. Resolve the reported failure before relying on that runtime.
 
 ## Run unit tests
 
-Run the suite after installing dependencies to check the setup, and after code or configuration changes to catch regressions before review.
+Tests use generated fixtures, not a Kaggle token, GPU or downloaded dataset. Configure the source path and discover from the repository root:
 
-The current tests check path/configuration handling, Python/device policy, dataset labels and trial ordering, image decoding and seeded pair sampling. For example, they can detect a change that maps validation identities incorrectly or alters official trial order. They use generated fixtures and mocked download calls, so the current suite needs no GPU, Kaggle token or competition download.
-
-The command below uses `unittest` discovery to collect tests from `tests/`. As model and system-integration tests are added, the discovered test count and covered behavior can grow.
-
-From the repository root, using the environment selected in step 1 (substitute its executable if it is outside `.venv`):
-
-```bash
+```sh
 # Linux/macOS
-PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
+PYTHONPATH=src python -m unittest discover -s tests -t . -v
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows
 $env:PYTHONPATH = "src"
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+python -m unittest discover -s tests -t . -v
 ```
 
-**Expected:** exit code 0 and `Ran N tests` followed by `OK`, where `N` is the number discovered for the checked-out revision, not a fixed target. `FAILED` lists failures/errors to investigate; skipped tests are reported separately and do not establish that the skipped behavior works.
-
-Passing the suite confirms only the behavior covered by its tests. The device check above exercises actual training/inference; dataset inspection and model-performance evaluation remain separate checks.
+Expected: OK; failures and skips describe their own scope. The cache-publication fixture checks real disk capacity, so leave more than 2 GiB free. Tests are grouped under [liveness](../tests/liveness/) and [recognition](../tests/recognition/), with shared configuration/runtime tests at the root. A passing suite does not establish dataset truth, accuracy or live webcam integration.
 
 ## 4. Download and check the dataset
 
-Choose the module you want to use. Each section links its local and Colab instructions.
+- **Face recognition:** [Acquisition, token setup and loader checks](data-loading.md).
+- **Liveness:** [Saved inspection and CPU inference](liveness-training-and-evaluation.md#portable-inference-and-saved-inspection), [full data audit](liveness-data-preparation-and-audit.md#audit-the-current-frozen-selection) or [Colab training](liveness-training-and-evaluation.md#execution-and-resume).
 
-<details>
-<summary>Face recognition</summary>
-
-Use [local dataset acquisition and checks](data-loading.md#download-on-your-own-machine), or open [Google Colab: CPU or T4 GPU](#google-colab-cpu-or-t4-gpu), expand **Face recognition**, and follow steps 1–4 before [adding the Kaggle token and downloading](data-loading.md#download-on-google-colab).
-
-</details>
-
-<details>
-<summary>Anti-spoofing (liveness)</summary>
-
-Follow the [data preparation and loader guide](liveness-loader.md#reproduce-the-results), choosing [local execution](liveness-loader.md#local-execution) or [Colab execution](liveness-loader.md#google-colab-execution). It defines dataset links, storage requirements, file locations and audit commands. Read its storage plan before downloading CelebA-Spoof.
-
-</details>
-
-<details>
-<summary>Emotion recognition</summary>
-
-Dataset acquisition and loading are not implemented yet; the module remains a scaffold.
-
-</details>
-
-**For subsequent runs:** open a terminal at the repository root, activate the existing environment and run `python ...`. Environment creation and dependency installation are one-time setup steps.
-
-Platform verification and previous execution results are in the [reference section](#reference).
+Liveness inference needs the selected checkpoint and optional detector; it does not require downloading training data. [Storage](../data/README.md) explains existing datasets, cache locations and path overrides.
 
 ## Google Colab: CPU or T4 GPU
 
-Expand the section for the module you want to run: face recognition or anti-spoofing. Face recognition contains numbered setup steps; anti-spoofing links to its existing notebook. Links to these sections may leave them collapsed, so click the module name to reveal the instructions. For local execution, follow steps 1–4 above and the module's linked dataset guide.
+<details>
+<summary>Liveness</summary>
+
+Use the [training/evaluation notebook](../notebooks/liveness-training-and-evaluation.ipynb) or [data audit notebook](../notebooks/liveness-data-preparation-and-audit.ipynb). Their [module guides](liveness-training-and-evaluation.md) own action/runtime selection, asset checks and outputs. Commenters read shared inputs and write results under their private MyDrive; no edit access to the shared project is required. Native revised Colab execution remains unverified.
+
+</details>
 
 <details>
-<summary>Face recognition</summary>
+<summary>Face recognition — isolated runtime and loader check</summary>
 
-**Order:** select runtime → prepare environment → install → check → load data.
-
-Follow these cells in order in one notebook session. They run repository scripts in an isolated project environment using Colab's existing Python; they do not replace Colab's stock Torch/TensorFlow packages. The notebook itself continues to use the stock kernel, so run project commands through the `python` path defined below. Use the Python 3.13 interpreter supplied by Colab; another Python 3.13 patch release is acceptable. Matching the reference patch does not require a separate Python installation.
+The following steps define `repo`, `python`, `run_dir`, `command_env` and `run(...)` used by the [Colab acquisition guide](data-loading.md#download-on-google-colab). They keep project packages separate from the notebook kernel. Match the selected device and retain logs; an unavailable GPU stops rather than switching devices.
 
 ### 1. Put the repository in one directory and select the device
 
-1. Upload/extract the repository to `/content/facial-attendance`.
-2. Confirm `/content/facial-attendance/scripts/check_environment.py` exists.
+1. Extract the repository under **/content** as **facial-attendance**.
+2. Confirm the extracted project contains [check_environment.py](../scripts/check_environment.py) in its scripts directory.
 3. Choose **Runtime → Change runtime type** → CPU or NVIDIA GPU.
 4. Set `device` in the cell below to match your selection, then run it.
 
@@ -239,20 +123,20 @@ import subprocess
 import sys
 import venv
 
-repo = Path('/content/facial-attendance')
-assert (repo / 'scripts/check_environment.py').is_file(), 'Extract the repo first'
+repo = Path("/content/facial-attendance")
+assert (repo / "scripts/check_environment.py").is_file(), "Extract the repo first"
 assert sys.version_info[:2] == (3, 13), sys.version
 # Match the Colab runtime you selected: 'cpu' or 'cuda'.
-device = 'cpu'
-if device == 'cuda':
-    subprocess.run(['nvidia-smi'], check=True)
-assert device in ('cpu', 'cuda')
-run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
-run_dir = repo / 'evidence/runs/SYS-03' / f'colab-{device}-{run_id}'
+device = "cpu"
+if device == "cuda":
+    subprocess.run(["nvidia-smi"], check=True)
+assert device in ("cpu", "cuda")
+run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+run_dir = repo / "evidence/runs/SYS-03" / f"colab-{device}-{run_id}"
 run_dir.mkdir(parents=True, exist_ok=False)
-python = repo / '.venv/bin/python'
-print('Kernel:', sys.version.split()[0], '| device:', device)
-print('Project:', repo, '| evidence:', run_dir)
+python = repo / ".venv/bin/python"
+print("Kernel:", sys.version.split()[0], "| device:", device)
+print("Project:", repo, "| evidence:", run_dir)
 ```
 
 Keep a CPU environment and a CUDA environment in different Colab sessions. Each project environment uses one wheel profile.
@@ -266,54 +150,82 @@ Run this cell once. It creates the isolated environment and defines a runner tha
 ```python
 command_env = {
     **os.environ,
-    'MPLBACKEND': 'Agg',
-    'PYTHONDONTWRITEBYTECODE': '1',
-    'PYTHONPATH': os.pathsep.join([str(repo / 'src'), str(repo / 'tests')]),
+    "MPLBACKEND": "Agg",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": str(repo / "src"),
 }
 
+
 def run(stage, command):
-    result = subprocess.run([str(arg) for arg in command], cwd=repo,
-                            env=command_env, capture_output=True, text=True)
-    (run_dir / f'{stage}.log').write_text(result.stdout + result.stderr)
-    print(stage, 'PASS' if result.returncode == 0 else 'FAIL')
+    result = subprocess.run(
+        [str(arg) for arg in command],
+        cwd=repo,
+        env=command_env,
+        capture_output=True,
+        text=True,
+    )
+    (run_dir / f"{stage}.log").write_text(result.stdout + result.stderr)
+    print(stage, "PASS" if result.returncode == 0 else "FAIL")
     if result.returncode:
         print((result.stdout + result.stderr)[-3000:])
     result.check_returncode()
 
+
 # Bootstrap pip through the existing kernel; keep installed packages in .venv.
-venv.EnvBuilder(with_pip=False).create(repo / '.venv')
-run('bootstrap-pip', [sys.executable, '-m', 'pip', '--python', python,
-                      'install', 'pip'])
+venv.EnvBuilder(with_pip=False).create(repo / ".venv")
+run(
+    "bootstrap-pip", [sys.executable, "-m", "pip", "--python", python, "install", "pip"]
+)
 ```
 
 ### 3. Install one wheel profile, then shared requirements
 
 ```python
-profile = 'requirements-cpu.txt' if device == 'cpu' else 'requirements-cuda.txt'
-run('install-framework', [python, '-m', 'pip', 'install', '-r', profile])
-run('install-project', [python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+profile = "requirements-cpu.txt" if device == "cpu" else "requirements-cuda.txt"
+run("install-framework", [python, "-m", "pip", "install", "-r", profile])
+run("install-project", [python, "-m", "pip", "install", "-r", "requirements.txt"])
 ```
 
-The CUDA profile uses CUDA 12.6 wheels and needs a compatible NVIDIA driver. If installation or CUDA checks fail, inspect the stage log for the failing command. The archived [requirements.lock](../requirements.lock) describes a historical Linux/CUDA environment rather than the Colab dependency profile.
+The CUDA profile uses CUDA 13.0 wheels and needs a compatible NVIDIA driver. The existing Python 3.13 local runtime with PyTorch 2.13.0+cu126 is also accepted for inference; a valid local build is retained rather than replaced with Colab wheels. The [inference routes](liveness-training-and-evaluation.md#cuda-inference-on-local-and-colab-runtimes) identify the two runtimes and their cache separation. If installation or CUDA checks fail, inspect the stage log for the failing command. The archived [requirements.lock](../requirements.lock) describes a historical Linux/CUDA environment rather than the Colab dependency profile.
 
 ### 4. Run tests and the selected-device check
 
 ```python
-run('unit-tests', [python, '-m', 'unittest', 'discover', '-s', 'tests', '-v'])
-run('environment', [python, 'scripts/check_environment.py', '--device', device,
-                    '--operator', 'colab-review',
-                    '--output', run_dir / 'environment.json'])
+run(
+    "unit-tests", [python, "-m", "unittest", "discover", "-s", "tests", "-t", ".", "-v"]
+)
+run(
+    "environment",
+    [
+        python,
+        "scripts/check_environment.py",
+        "--device",
+        device,
+        "--operator",
+        "colab-review",
+        "--output",
+        run_dir / "environment.json",
+    ],
+)
 ```
 
-Expected: the discovered tests finish with `OK`; environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
+Expected: the discovered tests finish successfully (OK); environment JSON has `status=PASS`, the requested device, finite gradients, changed weights, finite inference and a successful `pip check`. This step uses a tiny synthetic tensor batch to check infrastructure, not face-model accuracy.
 
 ### 5. Run the loader on real competition data
 
 Configure your own Kaggle token using [the data-loading instructions](data-loading.md#download-on-google-colab), then run:
 
 ```python
-run('loader', [python, 'scripts/check_face_data.py', '--download',
-               '--output', run_dir / 'loader.json'])
+run(
+    "loader",
+    [
+        python,
+        "scripts/check_face_data.py",
+        "--download",
+        "--output",
+        run_dir / "loader.json",
+    ],
+)
 ```
 
 This downloads/reuses the assigned competition and checks its actual data.
@@ -324,9 +236,17 @@ This downloads/reuses the assigned competition and checks its actual data.
 Replace `--download` with `--data-root`, followed by the dataset root. For files already extracted at `repo / 'data/colab-sample'`, the alternative loader cell is:
 
 ```python
-run('loader', [python, 'scripts/check_face_data.py',
-               '--data-root', repo / 'data/colab-sample',
-               '--output', run_dir / 'loader.json'])
+run(
+    "loader",
+    [
+        python,
+        "scripts/check_face_data.py",
+        "--data-root",
+        repo / "data/colab-sample",
+        "--output",
+        run_dir / "loader.json",
+    ],
+)
 ```
 
 Run this cell instead of the download cell above. That folder must have the [required layout](../data/README.md); the example subset is not shipped with the repository. Loader decoding/collation runs on CPU even when the model runs on GPU. The environment JSON's `face_dataset_present` describes the configured default path at the time it ran; an explicit `--data-root` can point elsewhere.
@@ -335,70 +255,26 @@ Run this cell instead of the download cell above. That folder must have the [req
 
 **Expected full-dataset counts:** 380,638 train images, 8,000 validation images, 8,000 classification test images, 4,000 identities, and 8,805 official trials. A deliberately uploaded subset will have smaller counts and must be labelled as such. `status=PASS` checks mappings, finite decoded batches, pair labels/paths and seeded training-pair rules; it does not decode every image or measure recognition accuracy.
 
-Download the `run_dir` directory shown in step 1 before ending the session, then disconnect and delete the runtime in Colab. Runtime files are temporary; keep credentials and raw images out of Git.
-
-</details>
-
-<details>
-<summary>Anti-spoofing (liveness)</summary>
-
-Open the notebook from the [shared Drive project](https://drive.google.com/drive/folders/1wp-WH2Rgaow7_gi9OMOt3xmXD1-rd1zB?usp=sharing) and follow the [Colab execution instructions](liveness-loader.md#google-colab-execution). The notebook installs the CPU environment, runs tests and performs data preparation/auditing with existing cells. Use **Runtime → Run all**; no manual device selection or cell creation is needed.
-
-</details>
-
-<details>
-<summary>Emotion recognition</summary>
-
-A runnable Colab workflow is not implemented yet; the module remains a scaffold.
+Download the output directory identified by `run_dir` in step 1 before ending the session, then disconnect and delete the runtime in Colab. Runtime files are temporary; keep credentials and raw images out of Git.
 
 </details>
 
 ## Reference
 
-<details>
-<summary>Platform verification</summary>
+<a id="platform-verification"></a>
 
 ### Platform verification
 
-Linux CPU/CUDA execution has recorded evidence. Windows 11 and Mac M1 CPU execution passed in the accepted independent review; see [review notes](../evidence/SYS-03/README.md#sys-03-independent-review). Historical dependency-resolution reports remain separate evidence. The macOS minimum follows the pinned [Torch wheels](https://pypi.org/project/torch/2.13.0/#files).
+Current native checks cover Linux CPU behavior and one selected-checkpoint CUDA face-crop inference run. Earlier independent Windows 11/Mac M1 CPU reviews remain attributed in [SYS-03 evidence](../evidence/SYS-03/README.md#sys-03-independent-review); they do not certify this revision. CI retains source-checks (3.13), OS compatibility (windows-latest) and OS compatibility (macos-15). Each installs the relevant CPU dependencies, prepares the pinned detector and runs behavior tests, both notebook inspect routes and the CPU inference CLI. Linux also runs Ruff. Linux/Colab staging tests are explicitly excluded on other OSs; those exceptions do not exclude inspect/inference.
 
-`requirements.lock` is an archived Linux/CUDA snapshot, not the team installation file.
+<a id="dataset-configuration"></a>
 
-</details>
+### Dataset configuration
 
-<details>
-<summary>Recorded remote evidence</summary>
+[project.toml](../configs/project.toml) resolves relative locations from the repository root. CLI `--data-root`, `--cache-dir` and `--config` options select existing storage or another configuration; they do not imply moving data. Use [storage guidance](../data/README.md) and keep secrets out of source/output.
 
-### Recorded remote evidence
+<a id="execution-evidence-and-review-records"></a>
 
-See [Google's runtime documentation](https://research.google.com/colaboratory/runtime-version-faq.html) for runtime changes and [official PyTorch wheel profiles](https://pytorch.org/get-started/previous-versions/) for installation background.
+### Execution evidence and review records
 
-</details>
-
-<details>
-<summary>Dataset configuration</summary>
-
-## Dataset configuration
-
-`configs/project.toml` contains both `kaggle_cache` and `face_data`. The defaults now match the actual downloaded competition under `data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2`. Both dataset CLI branches read this config; `--data-root`, `--cache-dir` and `--config` are explicit overrides for external disks or Colab mounts.
-
-Dataset decoding/collation happens on CPU and does not require GPU access. In Colab, put the modern token in a private Kaggle token file or its supported environment/secret mechanism, then use [the data-loading commands](data-loading.md). Do not put tokens in notebook output or source control.
-
-</details>
-
-<details>
-<summary>Execution evidence and review records</summary>
-
-## Execution evidence and review records
-
-- Current Python 3.13-only policy: [CPU runtime report](../evidence/SYS-03/cpu-python313-2026-11-04.json) and [46-test log](../evidence/SYS-03/python313-tests-2026-11-04.log).
-
-CI discovers tests from `tests/` rather than checking a fixed test count. All CI jobs read `.python-version` and run **3.13.16 only**. The Linux check retains its existing `source-checks (3.13)` name. Windows x64 and macOS Apple Silicon CPU jobs cover the team's actual operating systems, not extra Python versions. Independent Windows/macOS CPU execution passed in the accepted review; GitHub CI execution remains unverified.
-
-The workflow defines `source-checks (3.13)`, `OS compatibility (windows-latest)` and `OS compatibility (macos-15)`. The former `source-checks (3.12)` job is retired; repository ruleset configuration is separate from execution evidence.
-
-[SYS-03 review evidence](../evidence/SYS-03/README.md#sys-03-independent-review) records the tested platforms and findings. [FAC-01 evidence](../evidence/FAC-01/README.md) documents loader checks and protocol findings. Task status and assignments are maintained in the [Project Tracker](../README.md#project-tracker).
-
-Primary wheel reference: [official PyTorch CPU/CUDA installation commands](https://pytorch.org/get-started/previous-versions/).
-
-</details>
+[SYS-03](../evidence/SYS-03/README.md), [FAC-01](../evidence/FAC-01/README.md) and the [current liveness verification](../evidence/liveness/package-refactor/verification.json) identify inputs, versions, devices and limits. Assignment/status/reviewer confirmation remain in the [Project Tracker](../README.md#project-tracker). [Colab runtime notes](https://research.google.com/colaboratory/runtime-version-faq.html) and [official PyTorch wheel profiles](https://pytorch.org/get-started/previous-versions/) are background references, not evidence of a run on this revision.
