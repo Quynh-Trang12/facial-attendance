@@ -1,3 +1,7 @@
 # Generated checkpoints and attendance records remain local.
 *
 !.gitignore
+!/detectors/
+!/detectors/**
+!/models/
+!/models/**

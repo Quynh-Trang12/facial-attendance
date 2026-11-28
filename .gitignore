@@ -22,9 +22,7 @@ kaggle.json
 !/data/README.md
 /artifacts/*
 !/artifacts/.gitignore
-*.pt
 *.pth
-*.onnx
 *.zip
 *.tar
 *.tar.gz
@@ -229,6 +227,7 @@ kaggle.json
 !/evidence/liveness/liveness-continuation/aenet-full-resume-20261123T092427Z-4631/training-config.json
 !/evidence/liveness/liveness-continuation/aenet-full-resume-20261123T092427Z-4631/training-history.jsonl
 !/evidence/liveness/liveness-continuation/aenet-full-resume-20261123T092427Z-4631/training-results.json
+!/evidence/liveness/liveness-continuation/aenet-full-resume-20261123T092427Z-4631/liveness-inference.pt
 !/evidence/liveness/liveness-continuation/binary-semantic-epoch-checkpoints/epoch-021-validation.csv
 !/evidence/liveness/liveness-continuation/binary-semantic-epoch-checkpoints/epoch-021.json
 !/evidence/liveness/liveness-continuation/binary-semantic-resume-20261123T092427Z-4631/epoch-extension.json
@@ -245,11 +244,9 @@ kaggle.json
 !/evidence/liveness/visual-analysis-filtered/selected-examples-input.json
 !/evidence/liveness/visual-analysis-filtered/selected-examples.json
 
-# Source recordings and project weight files are external inputs in every layout.
+# Source recordings are external inputs in every layout.
 *.[mM][pP]4
-*.pt
 *.pth
-*.onnx
 
 # Retired experimental implementations stay local, outside the source ZIP.
 /.local-retired/
