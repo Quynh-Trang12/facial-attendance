@@ -314,17 +314,18 @@ class CheckIn:
     until the attempt times out.
 
     Both modes name a face by the same rule, decide() in decision.py: the best score
-    must reach the gallery's tau and beat every other enrolled person by margin.
+    must reach max(tau, min_score) and beat every other enrolled person by margin.
     """
 
-    def __init__(self, mode, gallery: Gallery, embed, *, margin, settings=None, timeout_s=ATTEMPT_TIMEOUT_S):
+    def __init__(self, mode, gallery: Gallery, embed, *, margin, min_score=None, settings=None,
+                 timeout_s=ATTEMPT_TIMEOUT_S):
         if mode not in ("single", "fused"):
             raise ValueError("mode is 'single' or 'fused'")
         if mode == "fused" and (settings is None or settings.limits is None):
             raise ValueError("The fused mode needs calibrated [check_in.limits]")
         self.mode, self.gallery, self.embed, self.settings, self.timeout_s = mode, gallery, embed, settings, timeout_s
-        self.margin = margin
-        decide([], [], gallery.tau, margin)  # refuse a negative or non-numeric margin now
+        self.margin, self.min_score = margin, min_score
+        decide([], [], gallery.tau, margin, min_score)  # refuse a bad margin or min_score now
         self.collector = (ProbeCollector(tau=gallery.tau, k=settings.k, min_frames=settings.min_frames,
                                          window_s=settings.window_s) if mode == "fused" else None)
         self.started = None
@@ -340,7 +341,8 @@ class CheckIn:
 
     def _decide(self, probe, frames_used, now):
         labels = self.gallery.labels
-        rule = decide(labels, _scores(self.gallery, probe) if labels else [], self.gallery.tau, self.margin)
+        rule = decide(labels, _scores(self.gallery, probe) if labels else [], self.gallery.tau, self.margin,
+                      self.min_score)
         decision = Decision(self.mode, rule.label, rule.accepted, rule.best_score, frames_used, self.retries,
                             now - self.started, "match" if rule.accepted else "unknown",
                             rule.runner_up_score if len(set(labels)) >= 2 else None, rule.best_label, self.margin)

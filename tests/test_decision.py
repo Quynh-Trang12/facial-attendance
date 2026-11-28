@@ -11,6 +11,7 @@ from facial_attendance.recognition.decision import (
     EMPTY_GALLERY,
     decide,
     load_margin,
+    load_min_score,
     threshold_from_meta,
 )
 
@@ -99,8 +100,33 @@ class SettingsTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     threshold_from_meta(meta)
 
-    def test_repository_margin_is_the_measured_value(self):
-        self.assertEqual(load_margin(ROOT / "configs/recognition.toml"), 0.15)
+    def test_repository_values_are_the_measured_ones(self):
+        self.assertEqual(load_margin(ROOT / "configs/recognition.toml"), 0.10)
+        self.assertEqual(load_min_score(ROOT / "configs/recognition.toml"), 0.69)
+
+    def test_min_score_raises_the_floor_but_not_the_single_person_stand_in(self):
+        self.assertEqual(decide(["a", "b"], [0.68, 0.2], tau=0.462, margin=0.1, min_score=0.69).reason,
+                         BELOW_THRESHOLD)
+        self.assertTrue(decide(["a", "b"], [0.70, 0.2], tau=0.462, margin=0.1, min_score=0.69).accepted)
+        # One person: tau stands in for s2, so 0.70 - 0.462 >= 0.1 passes.
+        single = decide(["a"], [0.70], tau=0.462, margin=0.1, min_score=0.69)
+        self.assertEqual((single.accepted, single.runner_up_score), (True, 0.462))
+        # A min_score below tau never lowers the floor.
+        self.assertEqual(decide(["a", "b"], [0.45, 0.1], tau=0.462, margin=0.1, min_score=0.3).reason,
+                         BELOW_THRESHOLD)
+
+    def test_min_score_is_optional_and_validated(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "recognition.toml"
+            config.write_text("[decision]\nmargin = 0.15\n", encoding="utf-8")
+            self.assertIsNone(load_min_score(config))
+            for body in ("[decision]\nmargin = 0.1\nmin_score = 1.5\n",
+                         "[decision]\nmargin = 0.1\nmin_score = \"0.69\"\n",
+                         "[decision]\nmin_score = 0.69\n"):
+                with self.subTest(body=body):
+                    config.write_text(body, encoding="utf-8")
+                    with self.assertRaises(ValueError):
+                        load_min_score(config)
 
     def test_margin_config_is_validated(self):
         with tempfile.TemporaryDirectory() as directory:

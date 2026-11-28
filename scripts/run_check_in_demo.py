@@ -7,7 +7,8 @@
              (quality gate + multi-frame fusion) or --mode both (both decide on the
              same frames, and every frame's quality and score under every crop rule
              is traced); --crop picks the gallery that decides, and both modes
-             name a face only past tau and the margin in configs/recognition.toml
+             name a face only past max(tau, min_score) and the margin in
+             configs/recognition.toml
   probe      score held-out photos of an enrolled person, or of someone never
              enrolled (--impostor), under every crop rule
   calibrate  record quality numbers of good or bad frames, no images
@@ -63,7 +64,7 @@ from facial_attendance.recognition.check_in_live import (  # noqa: E402
     trace_row,
     with_limits,
 )
-from facial_attendance.recognition.decision import load_margin  # noqa: E402
+from facial_attendance.recognition.decision import load_margin, load_min_score  # noqa: E402
 from facial_attendance.recognition.probe_fusion import load_check_in_settings  # noqa: E402
 from facial_attendance.recognition.quality import MEASURE_SIZE, check, measure, prompt  # noqa: E402
 
@@ -292,7 +293,7 @@ def run_check_in(args):
         raise SystemExit("The galleries are empty; register someone with the enroll step first.")
     settings = load_check_in_settings(args.config)
     try:
-        margin = load_margin(args.decision)
+        margin, min_score = load_margin(args.decision), load_min_score(args.decision)
     except (OSError, ValueError) as error:
         raise SystemExit(f"{args.decision}: {error}")
     paired = args.mode == "both"
@@ -309,7 +310,7 @@ def run_check_in(args):
 
     try:
         modes = ("single", "fused") if paired else (args.mode,)
-        check_ins = {mode: CheckIn(mode, gallery, embed, margin=margin, settings=settings) for mode in modes}
+        check_ins = {mode: CheckIn(mode, gallery, embed, margin=margin, min_score=min_score, settings=settings) for mode in modes}
     except ValueError as error:
         raise SystemExit(str(error))
     main = check_ins["fused" if paired else args.mode]
@@ -581,7 +582,7 @@ def main(argv=None) -> int:
     run.add_argument("--mode", choices=("single", "fused", "both"), required=True,
                      help="both: single and fused decide on the same frames of each attempt")
     run.add_argument("--decision", type=Path, default=DECISION_CONFIG,
-                     help="the [decision] margin both modes name a face under")
+                     help="the [decision] margin and min_score both modes name a face under")
     run.add_argument("--person", required=True, help='who is in front of the camera, or "impostor"')
     run.add_argument("--crop", type=crop_rule, default=SCHEMA_RULE,
                      help=f"the crop rule whose gallery decides (default {SCHEMA_RULE}, the schema's)")

@@ -7,7 +7,7 @@ Two changes are involved, and they can be adopted separately:
 
 | Change | What it does | Where it lives |
 | --- | --- | --- |
-| **Margin rule** | A face is named only if its best score reaches τ (0.462, from the checkpoint) **and** beats every other enrolled person by 0.15. Otherwise the result is unknown. This targets the app's known fault: an unregistered person, or a look-alike, being named as someone enrolled. | `src/facial_attendance/recognition/decision.py`, `configs/recognition.toml` (PR #21) |
+| **Margin rule** | A face is named only if its best score reaches max(τ, min_score), that is 0.69 (τ is 0.462, from the checkpoint), **and** beats every other enrolled person by 0.10. Otherwise the result is unknown. This targets the app's known fault: an unregistered person, or a look-alike, being named as someone enrolled. | `src/facial_attendance/recognition/decision.py`, `configs/recognition.toml` (PR #22) |
 | **Quality-gated check-in** (innovative feature) | Each frame must pass a quality gate (size, sharpness, brightness, contrast, head pose). Up to 3 good frames within 2 s are fused into one probe, and frames that disagree are rejected. The user sees a prompt such as "too dark" or "turn to the camera". | `quality.py`, `probe_fusion.py`, `check_in_live.py`, `configs/check-in-quality.toml` |
 
 The webcam app on `feature/ui03-ui04-emotion-integration` uses neither yet. Its
@@ -120,7 +120,7 @@ This step is done on branch `feat/gui-decision-margin`, a draft PR into
    identical and do not conflict.
 2. `GalleryMatcher.match` scores every profile and lets `decide()` choose the result. A best
    score at or above τ with a runner-up inside the margin returns unknown with that score
-   and no identity. With one profile the score must reach τ + 0.15, about 0.612.
+   and no identity. With one profile the score must reach 0.69 and τ + 0.10, so 0.69.
 3. Both registration paths keep their duplicate check on τ alone through
    `GalleryMatcher.match_threshold_only`. These are `RecognitionEvaluation.commit_reference`,
    the webcam registration, and `ControlledTestEnrollment.commit`, the generated fixtures.
@@ -161,7 +161,7 @@ Do this only if step 2 shows fused does at least as well as single plus the marg
 
 ## Known limits
 
-- The margin of 0.15 comes from three people in one session. Change it in
+- The margin of 0.10 and min_score of 0.69 come from LFW photos and one webcam session. Change it in
   `configs/recognition.toml` only after the team's runs; the log keeps each runner-up
   score, so old attempts can be decided again under another margin.
 - The quality limits come from the validation images. In a dark or bright room they may

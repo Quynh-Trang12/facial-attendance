@@ -430,9 +430,9 @@ class CheckInTests(unittest.TestCase):
         decision = check_in.step(frame(), [FACE], 5.0).decision
         self.assertEqual((decision.end, decision.retries), ("timeout", 1))
 
-    def decide_once(self, mode, direction, margin, gallery=None):
+    def decide_once(self, mode, direction, margin, gallery=None, min_score=None):
         check_in = CheckIn(mode, gallery or self.gallery, self.embed_as(direction), margin=margin,
-                           settings=SETTINGS)
+                           min_score=min_score, settings=SETTINGS)
         check_in.start(0.0)
         for moment in (0.1, 0.2, 0.3):
             display = check_in.step(frame(), [FACE], moment)
@@ -463,6 +463,18 @@ class CheckInTests(unittest.TestCase):
         self.assertTrue(self.decide_once("single", probe, 0.0, alone).accepted)
         decision = self.decide_once("single", probe, 0.15, alone)
         self.assertEqual((decision.accepted, decision.best_label, decision.runner_up), (False, "An", None))
+
+    def test_min_score_raises_the_floor_in_both_modes(self):
+        probe = unit(1, 0, 1.2)  # An 0.640, Vy 0: above tau and clear of Vy, below 0.69
+        for mode in ("single", "fused"):
+            self.assertTrue(self.decide_once(mode, probe, 0.10).accepted)
+            decision = self.decide_once(mode, probe, 0.10, min_score=0.69)
+            self.assertEqual((decision.label, decision.accepted, decision.best_label), (None, False, "An"))
+            self.assertTrue(self.decide_once(mode, unit(1, 0.5, 0), 0.10, min_score=0.69).accepted)
+
+    def test_a_non_numeric_min_score_is_refused(self):
+        with self.assertRaises(ValueError):
+            CheckIn("single", self.gallery, self.embed_as(unit(1, 0, 0)), margin=0.1, min_score="0.69")
 
     def test_a_negative_margin_is_refused(self):
         with self.assertRaises(ValueError):
