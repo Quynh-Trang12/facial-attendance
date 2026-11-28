@@ -5,7 +5,6 @@ from pathlib import Path
 
 from .data_loader import FaceLayout
 
-
 COMPETITION = "11-785-fall-20-homework-2-part-2"
 
 

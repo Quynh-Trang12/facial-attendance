@@ -1,20 +1,20 @@
 """Inspect configured/API face data in readable stages; never train a model here."""
 
 import argparse
-from collections import Counter
-from datetime import datetime, timezone
-from hashlib import sha256
-from importlib.metadata import version
 import json
-from pathlib import Path
 import sys
 import traceback
+from collections import Counter
+from datetime import UTC, datetime
+from hashlib import sha256
+from importlib.metadata import version
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from facial_attendance.config import load_paths
-from facial_attendance.recognition.data_loader import (
+from facial_attendance.config import load_paths  # noqa: E402 — repository path is configured before local imports.
+from facial_attendance.recognition.data_loader import (  # noqa: E402 — repository path is configured before local imports.
     ClassificationFaces,
     FaceLayout,
     PairFaces,
@@ -22,7 +22,7 @@ from facial_attendance.recognition.data_loader import (
     image_transform,
     sample_training_pairs,
 )
-from facial_attendance.recognition.download import COMPETITION, download_face_data
+from facial_attendance.recognition.download import COMPETITION, download_face_data  # noqa: E402 — repository path is configured before local imports.
 
 
 def first_batch(dataset, batch_size: int):
@@ -223,7 +223,7 @@ def resolve_layout(args):
 def main(argv: list[str] | None = None) -> int:
     args = parse_arguments(argv)
     report = {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "timestamp_utc": datetime.now(UTC).isoformat(),
         "task": "FAC-01.2",
         "status": "FAIL",
         "competition": COMPETITION,

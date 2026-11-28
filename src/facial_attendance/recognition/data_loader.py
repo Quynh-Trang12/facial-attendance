@@ -1,11 +1,10 @@
 """Map-style face datasets and reproducible training-pair sampling."""
 
+import random
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-import random
-
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
 SPLITS = ("train_data", "val_data", "test_data")

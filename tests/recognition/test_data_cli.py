@@ -1,15 +1,15 @@
 """The local and API entry points must actually consume the shared configuration."""
 
 import importlib.util
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 
 class DataCliTests(unittest.TestCase):
     def setUp(self):
-        script = Path(__file__).resolve().parents[1] / "scripts/check_face_data.py"
+        script = Path(__file__).resolve().parents[2] / "scripts/check_face_data.py"
         spec = importlib.util.spec_from_file_location("data_check_for_test", script)
         self.cli = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.cli)

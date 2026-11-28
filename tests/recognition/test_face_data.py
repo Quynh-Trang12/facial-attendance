@@ -1,11 +1,11 @@
 """Generated-image fixtures test loader behavior; they are not Kaggle data."""
 
-from collections import Counter
 import os
-from pathlib import Path
-from types import SimpleNamespace
 import tempfile
 import unittest
+from collections import Counter
+from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from PIL import Image
@@ -178,22 +178,26 @@ class FaceDataTests(unittest.TestCase):
 
     def test_download_calls_assigned_competition_and_restores_cache_environment(self):
         api = Mock(return_value=str(self.root))
-        with patch.dict(
-            "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
+        with (
+            patch.dict(
+                "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
+            ),
+            patch.dict(os.environ, {"KAGGLEHUB_CACHE": "existing-cache"}),
         ):
-            with patch.dict(os.environ, {"KAGGLEHUB_CACHE": "existing-cache"}):
-                layout = download_face_data(cache_dir=self.root / "cache")
-                self.assertEqual(layout.root, self.root.resolve())
-                self.assertEqual(os.environ["KAGGLEHUB_CACHE"], "existing-cache")
+            layout = download_face_data(cache_dir=self.root / "cache")
+            self.assertEqual(layout.root, self.root.resolve())
+            self.assertEqual(os.environ["KAGGLEHUB_CACHE"], "existing-cache")
         api.assert_called_once_with(COMPETITION)
 
     def test_download_failure_preserves_original_error(self):
         api = Mock(side_effect=RuntimeError("authentication required"))
-        with patch.dict(
-            "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
+        with (
+            patch.dict(
+                "sys.modules", {"kagglehub": SimpleNamespace(competition_download=api)}
+            ),
+            self.assertRaisesRegex(RuntimeError, "authentication required"),
         ):
-            with self.assertRaisesRegex(RuntimeError, "authentication required"):
-                download_face_data(cache_dir=self.root / "cache")
+            download_face_data(cache_dir=self.root / "cache")
 
 
 if __name__ == "__main__":
