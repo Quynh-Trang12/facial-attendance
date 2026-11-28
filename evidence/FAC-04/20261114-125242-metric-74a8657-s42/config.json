@@ -1,0 +1,16 @@
+{
+  "epochs": 30,
+  "identities_per_batch": 64,
+  "images_per_identity": 4,
+  "margin": 0.2,
+  "learning_rate": 0.05,
+  "momentum": 0.9,
+  "weight_decay": 0.0005,
+  "seed": 42,
+  "embedding_dim": 512,
+  "input_size": 64,
+  "eval_batch_size": 512,
+  "num_workers": 2,
+  "mixed_precision": true,
+  "max_steps_per_epoch": null
+}

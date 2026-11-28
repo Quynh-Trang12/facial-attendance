@@ -6,6 +6,9 @@ The [Project Tracker](../README.md#project-tracker) is the single source for tas
 | --- | --- |
 | SYS-03 | [Setup, training/inference and independent review](SYS-03/README.md) |
 | FAC-01 | [Loader evidence and protocol findings](FAC-01/README.md) |
+| FAC-02 | [Face data audit, cleaning rule and P×K sampler](FAC-02/README.md) |
+| FAC-04 | [Triplet-loss face embedding, identity check and two-image demo](FAC-04/README.md) |
+| FAC-05 | [Comparison of both face approaches: ROC/AUC, selection and threshold](FAC-05/README.md) |
 | LIV-03 | [Current data audit, loader checks and limits](LIV-03/README.md) |
 | Liveness training and evaluation | [Selected model and final evidence](liveness/submission-artifacts.json) |
 
