@@ -10,6 +10,10 @@ Prepared 18 November 2026, branch `feature/ui03-ui04-emotion-integration`, workt
 
 This is an owner-side implementation prepared for read-only review, not reviewer approval or Final Owner Evidence. Face and Emotion inference are trained. **Liveness is simulated and genuine enrollment/attendance remain disabled (`can_save=false`).** Displayed identities are provisional, explicitly UNVERIFIED. Controlled registration exercises mechanics using generated images and an isolated memory gallery, never a genuine person's enrollment.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Actual checkpoint verification
 
 Both original files remain outside the repository and were read without modification.

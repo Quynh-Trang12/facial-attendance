@@ -11,6 +11,10 @@ Model targets: Negative=0, Neutral=1, Positive=2.
 Surprise is excluded. Source annotations remain in the manifest; training targets are aggregated.
 Use `data/processed/emotion_3class/train`, `val` and `test`. Each contains three target folders.
 
+## Current entry point
+
+This record describes an earlier emotion experiment. The [final model](emotion-finalized.md) defines the deployed Sad/Happy/Neutral classes; use the [launch guide](attendance-demo.md) for current integration. Original commands and findings below retain their historical scope.
+
 ## Reproduce
 
 Use the project Python 3.13 environment. From the repository root:

@@ -28,7 +28,7 @@ Validation: accuracy 77.49%, macro F1 75.08%, Neutral F1 69.97%. Held-out test: 
 
 To reproduce metrics with the frozen checkpoint (no model selection), run:
 ```text
-python scripts/emotion_final/evaluate.py --checkpoint artifacts/checkpoints/emotion-final/best.pt --data-root PATH_TO_EXTRACTED_DATA --split test --output artifacts/emotion-final-test-recheck
+python scripts/emotion_final/evaluate.py --checkpoint artifacts/models/emotion/best.pt --data-root PATH_TO_EXTRACTED_DATA --split test --output artifacts/emotion-final-test-recheck
 ```
 Use a new output folder. Per-image predictions are local artifacts, not Git evidence.
 
@@ -36,7 +36,7 @@ Use a new output folder. Per-image predictions are local artifacts, not Git evid
 - [Tested best.pt](https://drive.google.com/file/d/1s5wockz4DTkKWMspzrOVTEbsaxK2zyY0/view). SHA256: `0dcecbdbc7195bfb8cfd4529e0aa287d9b40c43da323311ad3803d687fcbfd24`.
 - [Approved dataset ZIP](https://drive.google.com/file/d/1Anse0tdcSrXPJdd1QP-voeYksrA-G3sv/view). SHA256: `f94320ce10a3403722d4b693c0ca0f32786ad41f0683a31bc1a619790e3cd039`.
 - [Original run and detailed records](https://drive.google.com/drive/folders/1Q-BDoMvHr3yFwm3ZDRmbxjIy13KbjnuP).
-These existing links do not grant access automatically; owners must share access through the team. No new upload or sharing change is claimed. Checkpoints remain outside Git under the repository policy. The checkpoint's original training config says test_accessed=false; the later test record is separate and its weights were not modified.
+These existing links do not grant access automatically; owners must share access through the team. No new upload or sharing change is claimed. The selected [inference checkpoint](../artifacts/models/emotion/best.pt) is bundled with source; training/resume artifacts remain external. The checkpoint's original training config says test_accessed=false; the later test record is separate and its weights were not modified.
 
 ## Limitations and current status
 One final seed, unequal class sizes, low-resolution images and known content/annotation errors. Identity and near-duplicate separation are not established. Geometry screening included the test images before model scoring. Cleaning changes validation membership, so historical before/after scores are not a controlled comparison. The owner reported useful predictions in one informal webcam trial; independent multi-user evaluation is pending. Expressions do not establish actual feelings and must not determine attendance. Prepared evidence is not independent reviewer approval or shared-GUI integration completion.

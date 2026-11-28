@@ -4,7 +4,8 @@ Use [the canonical final record](emotion-finalized.md). Host input: one detected
 
 ```python
 from facial_attendance.emotion.final import EmotionPredictor
-emotion = EmotionPredictor(checkpoint="artifacts/checkpoints/emotion-final/best.pt")
+
+emotion = EmotionPredictor(checkpoint="artifacts/models/emotion/best.pt")
 result = emotion.predict_bgr(face_crop_bgr)  # load once; call off the UI thread
 ```
 
@@ -14,7 +15,7 @@ Host responsibilities: detection, crop quality, identity, liveness, attendance g
 
 Checkpoint check (synthetic inference, not accuracy):
 ```text
-python scripts/check_emotion_final.py --checkpoint artifacts/checkpoints/emotion-final/best.pt
+python scripts/check_emotion_final.py --checkpoint artifacts/models/emotion/best.pt
 ```
 
 Owner checks reproduced saved probabilities for each class, RGB/BGR agreement, three-second scheduling, invalid-input rejection and stale-result invalidation. [Verification](../reports/emotion/final/verification.json). An informal single-user webcam trial was reported. Vy must still independently load the checkpoint and test the integrated application; none of the pending UI-04.7/SYS-07 cases are marked passed here.

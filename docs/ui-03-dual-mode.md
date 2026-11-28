@@ -8,6 +8,10 @@ Prepared 18 November 2026 in the existing `feature/ui03-ui04-emotion-integration
 
 > Visibility follow-up: the diagnostics button was unconditionally packed in Standard Mode. It now starts hidden and is packed only in Developer Mode. Returning to Standard Mode hides the button and withdraws the inspector; returning to Developer Mode reopens the same inspector. The mode switch remains visible. All preceding 299 automated tests and 47 native checks pass again, plus three automated and nine actual-widget visibility checks: **302 automated tests and 56 native checks passed**, zero failures/skips/callback errors. New local evidence is ignored under `artifacts/ui03-visibility-evidence/`. The benchmark history below belongs to the preceding dual-mode delivery; no new physical performance claim is made.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Diagnosed cause
 
 The Diagnostics button callback toggled successfully; its binding was not broken. The panel was packed into the bottom of the fixed main window, after the preview/results and optional registration rows. It did not have its own usable viewport for all technical content.

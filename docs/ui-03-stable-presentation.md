@@ -4,6 +4,10 @@
 
 Work remains in `/Users/elvyx/Downloads/fa-sys03-mac/artifacts/ui03-ui04-emotion-integration` on `feature/ui03-ui04-emotion-integration`. The preceding fixed window/panel geometry is preserved. No weights, preprocessing, similarity threshold, label mapping, capture resolution or model-inference interval changed. Nothing is staged, committed, pushed or merged; no Google Sheet or original SYS-05 branch change was made.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Reproduced cause and measured result
 
 The old visible summary directly reflected the authoritative envelope. Every 300 ms sample correctly cleared that envelope, causing Identity, Emotion and Liveness to switch to Processing/Unavailable and then repopulate after inference. Per-capture confidence percentages changed too. The registration navigation button alternated disabled/normal with those same phases. A fixed outer window did not prevent these text changes or the line offsets inside one combined multiline label.

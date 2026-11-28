@@ -2,6 +2,10 @@
 
 > Historical Emotion-only scope and reports below. Current Face + Emotion implementation, launch commands, acceptance status and review inventory are in [the UI-03 delivery](ui-03-integration-delivery.md). The local Emotion path below is updated to its renamed file; old reports retain the paths actually used at their creation.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Scope and isolation
 
 Implementation branch: `feature/ui03-ui04-emotion-integration`, isolated worktree `/Users/elvyx/Downloads/fa-sys03-mac/artifacts/ui03-ui04-emotion-integration`, based on SYS-05 `798f2e7b9484a682e50c70b0b4689cd2fde316dc`. The original verified SYS-05 branch/environment and protected `reports/environment/vy-mac-m1-review.json` are untouched. No changes are staged, committed, pushed or merged; no PR or Google Sheet update is made.

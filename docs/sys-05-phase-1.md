@@ -10,6 +10,10 @@ actual handover delivery remain pending. Do not treat this document as Owner Evi
 mark tasks complete.
 Do not commit or push this redesign before the owner validates the GUI.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Current owner verification — 16 November 2026
 
 Candidate **SYS05-LOCAL-20261116-c00c004fc23a** identifies the current UI runtime;

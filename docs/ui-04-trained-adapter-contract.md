@@ -6,6 +6,10 @@ Prepared 18 November 2026 against [SYS-02 Final v1.0](https://app.notion.com/p/4
 
 Current extension: the selected Face checkpoint is now integrated alongside Emotion. Its displayed matches are trained but UNVERIFIED, because liveness remains simulated; genuine registration/attendance are blocked. Controlled registration embeds only internally generated fixtures into a separate memory gallery. See [current delivery and tests](ui-03-integration-delivery.md).
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Adapter boundary
 
 All adapters take `FaceRequest(context,bbox,frame)` and return `Completion(original_context,result)` or a typed `OperationError(module,code,message,blocks_persistence)`. Context is exactly `contract_version`, `attempt_id`, `action`, `capture_id`, `face_id`. The source is the immutable original BGR uint8 frame with valid source-coordinate half-open box. `face_crop` is a view of that source; adapters make copies before conversion or normalization. Only local in-memory pixels are passed; frame data is not serialized into debug JSON.

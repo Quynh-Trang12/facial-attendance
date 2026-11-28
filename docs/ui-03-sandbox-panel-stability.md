@@ -2,6 +2,10 @@
 
 Prepared 21 November 2026 on `feature/ui03-ui04-emotion-integration`. This is a presentation-only correction in the integration worktree. Physical owner acceptance remains pending. All new measurements use generated inputs; none measure webcam FPS or recognition accuracy.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Cause and scope
 
 The original 420 × 360 outer frame already disabled geometry propagation. However, its children were packed vertically at their natural sizes. The current-result label switched between a one-line checking/stopped message and a four-line completed result. That resized the label and moved checkpoint metadata, progress and both action buttons. In the controlled comparison, the result label changed geometry 65 times; metadata, progress, Start and Reset each changed 32 times: 193 widget geometry transitions in total. The outer window/panel did not need another geometry change.

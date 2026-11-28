@@ -2,8 +2,8 @@
   "schema": "liveness-training-release-v1",
   "files": {
     "configs/project.toml": {
-      "sha256": "0675d97709daaf84f3a1e279f69d43e87a87699f21d6f8616add241cd195e5a1",
-      "bytes": 900,
+      "sha256": "dc20f7b685d56aa82aef69e9e88aa876bc25d7cbddd92e7694f3aa0167b9ac3e",
+      "bytes": 963,
       "delivery_path": "configs/project.toml"
     },
     ".python-version": {
@@ -87,8 +87,8 @@
       "delivery_path": "data/liveness/face-cache/geometry/geometric-cache.json"
     },
     ".github/workflows/checks.yml": {
-      "sha256": "7344775306807fe34b2368c9ba30f9e05297e84b003a55ba07e02690c0aec87f",
-      "bytes": 5344,
+      "sha256": "0321f53b5113e86b0e23f2c5e685e7fd7379ca4177ab47cb97a214fde3a66575",
+      "bytes": 5966,
       "delivery_path": ".github/workflows/checks.yml"
     },
     ".github/workflows/commit-attribution.yml": {
@@ -97,18 +97,18 @@
       "delivery_path": ".github/workflows/commit-attribution.yml"
     },
     ".gitignore": {
-      "sha256": "0d08d7c40a66ba6a148a24f03bdc5972c7062598f9e7a9e46b4073335e35d142",
-      "bytes": 16330,
+      "sha256": "faa9ddaa8ddefa0f10673b14c74f0cb564ed619318ff3d9390948528a47b10c7",
+      "bytes": 16385,
       "delivery_path": ".gitignore"
     },
     "README.md": {
-      "sha256": "85902f4de8a1507df9a47ed1c3fa8e9bc91893c4b143816afc95e92b56603a07",
-      "bytes": 3261,
+      "sha256": "eb8a725686a7d9b7ef81064ad9524f6984964b1098bc628064972dbf88854cd0",
+      "bytes": 8553,
       "delivery_path": "README.md"
     },
     "docs/architecture.md": {
-      "sha256": "82a9a252e298a7abf61cbcec1de941efc9e889c3b9daa7e53c738bae33dd988f",
-      "bytes": 7736,
+      "sha256": "a36371f864c0b27ef5e1b0d5a96aeaa6ce2235517121a77129ee996ade10e277",
+      "bytes": 8276,
       "delivery_path": "docs/architecture.md"
     },
     "docs/data-loading.md": {
@@ -122,8 +122,8 @@
       "delivery_path": "docs/liveness-data-preparation-and-audit.md"
     },
     "docs/liveness-training-and-evaluation.md": {
-      "sha256": "bcb408c7d96de852adf47bbbd8c9f454b0e1de43d232dcc296a498604a640a7a",
-      "bytes": 17236,
+      "sha256": "f15e81b612891ef59f10e82ef422c8d35330e5a5c291d0cfadcf1c8610be3606",
+      "bytes": 17346,
       "delivery_path": "docs/liveness-training-and-evaluation.md"
     },
     "docs/reference/project-brief.pdf": {
@@ -132,13 +132,13 @@
       "delivery_path": "docs/reference/project-brief.pdf"
     },
     "docs/requirements.md": {
-      "sha256": "7e1fd516d659320bc21d0b5cf325a04cc9d7e5f211aacb7c399f007a821eac0a",
-      "bytes": 3776,
+      "sha256": "16f6f222e3c4f9877668d4adf1ab22f1f419769e54d6f5b7d96f4bc4dfb61977",
+      "bytes": 9562,
       "delivery_path": "docs/requirements.md"
     },
     "docs/setup.md": {
-      "sha256": "1f0ac7d4ef61e8d51b6191a196da49f66528d676c595080c0bc1e285e99237f4",
-      "bytes": 13298,
+      "sha256": "945953ba623f1eb68f4583cde66e5f4f24f574de80b5bade136d18eb168e5fe3",
+      "bytes": 14065,
       "delivery_path": "docs/setup.md"
     },
     "pyproject.toml": {
@@ -162,8 +162,8 @@
       "delivery_path": "scripts/check_environment.py"
     },
     "scripts/check_face_data.py": {
-      "sha256": "eff8a178e05b8f0d87f6c6ea19b78b52d9b953a6726ec310e32069e78f8a28c5",
-      "bytes": 10485,
+      "sha256": "558b84263bcf3f86772b6c9943bb672e323feec1d92520e1dab118547ffd5a1b",
+      "bytes": 14172,
       "delivery_path": "scripts/check_face_data.py"
     },
     "scripts/liveness_training_health.py": {
@@ -212,8 +212,8 @@
       "delivery_path": "src/facial_attendance/recognition/__init__.py"
     },
     "src/facial_attendance/recognition/data_loader.py": {
-      "sha256": "ad449438a93ba93aa138078b5cafdb66c0acb66675171ceba8cc10ef5beb4a6f",
-      "bytes": 10621,
+      "sha256": "4aed666585f5c6a0a675b637e43eb3bbb4eec4f094f773c3372b43852ca73d3b",
+      "bytes": 11454,
       "delivery_path": "src/facial_attendance/recognition/data_loader.py"
     },
     "src/facial_attendance/recognition/download.py": {
@@ -247,8 +247,8 @@
       "delivery_path": "scripts/run_liveness_public_test.py"
     },
     "notebooks/liveness-training-and-evaluation.ipynb": {
-      "sha256": "d4d4a762350845a5fb1bba0f04b6fb222434414f6098f9fc43c583408f126d5a",
-      "bytes": 2938321,
+      "sha256": "565fd843407a700e13a26d5410728faabe3878841ba80873bd543eb18b10c1f1",
+      "bytes": 2939519,
       "delivery_path": "notebooks/liveness-training-and-evaluation.ipynb"
     },
     "data/README.md": {
@@ -263,8 +263,8 @@
     },
     "artifacts/.gitignore": {
       "delivery_path": "artifacts/.gitignore",
-      "bytes": 75,
-      "sha256": "c7c68d010981ed6f7b4c5a9c6d251c73c9f4edca05a3a095de0a760e6c0e1bf6"
+      "bytes": 125,
+      "sha256": "d01692e98ab2ef1a7c6aabc38b79e7cce4a545878b755a2d917ce222668cd53a"
     },
     "scripts/liveness_camera_inputs.py": {
       "sha256": "7ab532c54cd54d74ee3694fd1a821d2fc797ba1d44286c96793b1a4f6bb211c5",
@@ -917,8 +917,8 @@
       "delivery_path": "src/facial_attendance/notebook_runtime.py"
     },
     "scripts/run_liveness_notebook.py": {
-      "sha256": "573125df6a30192deba910f11ccc8702be9afc1a9049a279daeae2cf5e4e7d84",
-      "bytes": 7602,
+      "sha256": "c3336c5e090af4c500ad5799c5df8a6c27565ecfe91aa7dc6462b1fea096c26b",
+      "bytes": 8164,
       "delivery_path": "scripts/run_liveness_notebook.py"
     },
     "evidence/liveness/visual-analysis-filtered/selected-examples-input.json": {
@@ -947,8 +947,8 @@
       "delivery_path": "evidence/liveness/crop-review/filtered-view-v4-20261126/filtered-test-evaluation-predictions.csv"
     },
     "evidence/liveness/submission-artifacts.json": {
-      "sha256": "2df6d3709d228371fa80cb9cf4f26c2809ced0921d76c41ed5c6995e8290776f",
-      "bytes": 6256,
+      "sha256": "adfb837b99f384e16704fb6ec5799de175302ebb6de0c089737e6d5bec67aeba",
+      "bytes": 6246,
       "delivery_path": "evidence/liveness/submission-artifacts.json"
     },
     "evidence/liveness/crop-review/selection-inspection-20261127/test.png": {
@@ -1012,8 +1012,8 @@
       "delivery_path": "scripts/preparation/convert_liveness_depth_teacher.py"
     },
     "scripts/preparation/build_liveness_cache_view.py": {
-      "sha256": "6862a4444bacc48b4b7958ed7d96312f475bb956ef7c2aecb46cdcf3921547d8",
-      "bytes": 12207,
+      "sha256": "e34e49fc4e01a296594f976383fdb537bc30d72d0d35d6507084245c9884eea1",
+      "bytes": 12247,
       "delivery_path": "scripts/preparation/build_liveness_cache_view.py"
     },
     "scripts/audit/review_liveness_data.py": {
@@ -1217,8 +1217,8 @@
       "delivery_path": "scripts/training/train_liveness_multitask.py"
     },
     "src/facial_attendance/liveness/datasets/decoded_cache.py": {
-      "sha256": "e9f5fc726ab38d3807fa0971822269460c1b9c8f90bece7832426991b70f0cb2",
-      "bytes": 7791,
+      "sha256": "c6e9391f428f541961c0f48c90e93b1f3fe0eb41a7315a2a9079a6eb939c5914",
+      "bytes": 8647,
       "delivery_path": "src/facial_attendance/liveness/datasets/decoded_cache.py"
     },
     "src/facial_attendance/liveness/experiments/__init__.py": {
@@ -1227,13 +1227,13 @@
       "delivery_path": "src/facial_attendance/liveness/experiments/__init__.py"
     },
     "src/facial_attendance/liveness/datasets/geometric_cache.py": {
-      "sha256": "e72890589754e4d8e07e46f527b54b365dc4860ca0126acde0be8f9adab36d8f",
-      "bytes": 13133,
+      "sha256": "d757e5651b04f32b07f565e4770d28dd7426e4b911205d21396fb3ea4aef9a22",
+      "bytes": 13160,
       "delivery_path": "src/facial_attendance/liveness/datasets/geometric_cache.py"
     },
     "src/facial_attendance/liveness/datasets/semantic_dataset.py": {
-      "sha256": "c7ceab0964857118ed569e80488f6c5b41ffb1b5eecd1fcebedabf8f00dfccc5",
-      "bytes": 3269,
+      "sha256": "cc5566473307e00bbad999ec8ea154b0c9f4a6a90e7bbedd681e79e9893b4cfb",
+      "bytes": 3496,
       "delivery_path": "src/facial_attendance/liveness/datasets/semantic_dataset.py"
     },
     "src/facial_attendance/liveness/training/batching.py": {
@@ -1312,8 +1312,8 @@
       "delivery_path": "src/facial_attendance/liveness/models/binary_model.py"
     },
     "src/facial_attendance/liveness/datasets/reviewed_cache.py": {
-      "sha256": "d46d95813751979efc6b2648e024e9d9bf66034987ad7a0f968a764befb58cb3",
-      "bytes": 9784,
+      "sha256": "3c24fd6e282c20e8701ba36fe6075d993d823d354b0aab2f06f0850d660ea917",
+      "bytes": 9911,
       "delivery_path": "src/facial_attendance/liveness/datasets/reviewed_cache.py"
     },
     "src/facial_attendance/liveness/models/depth_teacher.py": {
@@ -1607,8 +1607,8 @@
       "delivery_path": "tests/recognition/test_face_data.py"
     },
     "tests/liveness/test_liveness_decoded_cache.py": {
-      "sha256": "8c49d94c184fa014fbafffb61837f4cde58ed3e9649678effbcb559e00bb1a0c",
-      "bytes": 5277,
+      "sha256": "ae4cec5313e34c980b275136666debf3f20ad809f0ed083a223e997a4c2110ed",
+      "bytes": 7418,
       "delivery_path": "tests/liveness/test_liveness_decoded_cache.py"
     },
     "tests/liveness/test_liveness_geometric_supervision.py": {
@@ -1617,8 +1617,8 @@
       "delivery_path": "tests/liveness/test_liveness_geometric_supervision.py"
     },
     "tests/liveness/test_liveness_quality.py": {
-      "sha256": "edabf0e807a5b97f4908b4799a55f026092d0e972ba0501876ba4ebe8820f771",
-      "bytes": 21544,
+      "sha256": "8b07129940f338302149ec401fa60b4b7b8e9770afa8e518d2dca64a4f95cad5",
+      "bytes": 22521,
       "delivery_path": "tests/liveness/test_liveness_quality.py"
     },
     "tests/liveness/test_liveness_runtime_staging.py": {
@@ -1627,8 +1627,8 @@
       "delivery_path": "tests/liveness/test_liveness_runtime_staging.py"
     },
     "tests/liveness/test_liveness_checkpoint_selection.py": {
-      "sha256": "a654daab1f085dd5bb72a240f8352209902376902c5c45efafa8f77b0e6298de",
-      "bytes": 20516,
+      "sha256": "42c418bce67ac9bd3c737ef483214c67df53fafcb0addb76601686f321f8796b",
+      "bytes": 20641,
       "delivery_path": "tests/liveness/test_liveness_checkpoint_selection.py"
     },
     "tests/liveness/test_liveness_public_test_workflow.py": {
@@ -1647,23 +1647,23 @@
       "delivery_path": "tests/liveness/test_liveness_tensorflow_checkpoint.py"
     },
     "tests/liveness/test_liveness_cache_corrections.py": {
-      "sha256": "bb3ae321797b8ae11a924e0163497412cac1d84792a61610714c1a28236e0c5d",
-      "bytes": 5959,
+      "sha256": "a91fabb2f824224a71792704b67124854f17ee63803240ae3fc6b8fa21c5326e",
+      "bytes": 6010,
       "delivery_path": "tests/liveness/test_liveness_cache_corrections.py"
     },
     "tests/liveness/test_liveness_face_transport.py": {
-      "sha256": "8166e189e03fa5206c4f086c07b16116fd731af42646a7477304b63eee06f6d1",
-      "bytes": 4959,
+      "sha256": "95b6f44c9b6f51d2c7df8b4c18ede7f395c36ace873de4cade6079894333df5c",
+      "bytes": 5359,
       "delivery_path": "tests/liveness/test_liveness_face_transport.py"
     },
     "tests/recognition/test_data_cli.py": {
-      "sha256": "8ecbbc03aa4d806678a6902f15d1e260b5dbfd29fd647b8c454d68c4136c36dd",
-      "bytes": 1965,
+      "sha256": "4f7edde28e9b8a697dd1d582ba11d3d6263a85b826608f53e274e5e739414eca",
+      "bytes": 2759,
       "delivery_path": "tests/recognition/test_data_cli.py"
     },
     "tests/liveness/test_liveness_datasets.py": {
-      "sha256": "ec710c30902b3421999f9c7ceb659dca10c52728f6688fdfe95d807d35de881a",
-      "bytes": 21135,
+      "sha256": "baf5add9e2527803f9253239812cbda21d7b2bc2a463eb35af36d441c3ab3fb5",
+      "bytes": 22325,
       "delivery_path": "tests/liveness/test_liveness_datasets.py"
     },
     "tests/liveness/test_liveness_release_package.py": {
@@ -1702,8 +1702,8 @@
       "delivery_path": "tests/liveness/test_liveness_camera_inputs.py"
     },
     "tests/liveness/test_liveness_aenet_training.py": {
-      "sha256": "0d53360f3ee1e9538aca87b90ee2f29a321d543d2178c03abbb3b27f9bcc8b3a",
-      "bytes": 15439,
+      "sha256": "17b468a5407a4e688e7cbdd76c52331ce65d15c50fb78b0672a25d8d0e4af647",
+      "bytes": 15544,
       "delivery_path": "tests/liveness/test_liveness_aenet_training.py"
     },
     "tests/liveness/test_liveness_multitask_model.py": {
@@ -1725,9 +1725,24 @@
       "sha256": "56fdb2fbdc7ed5bf1d84c78db15adfa99b14a19d42ca3687ae5275cc5a540644",
       "bytes": 52,
       "delivery_path": "tests/recognition/__init__.py"
+    },
+    "artifacts/models/liveness/liveness-inference.pt": {
+      "sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+      "bytes": 44801099,
+      "delivery_path": "artifacts/models/liveness/liveness-inference.pt"
+    },
+    "artifacts/detectors/LICENSE-YuNet.txt": {
+      "sha256": "c83b8120c50ccbd4c4f96edf53141bdd566ebb8f8e9227e415326aa1b1aba958",
+      "bytes": 1085,
+      "delivery_path": "artifacts/detectors/LICENSE-YuNet.txt"
+    },
+    "artifacts/detectors/yunet-source.json": {
+      "sha256": "a0639894b1b78cc861e6540ec795b1e570e80a4f1f27a7178464e12a20605fde",
+      "bytes": 391,
+      "delivery_path": "artifacts/detectors/yunet-source.json"
     }
   },
-  "bytes": 1887201600,
+  "bytes": 1932030790,
   "scope": "AENet training, validation, evaluation and integration with fixed split assignments",
   "crop_recipe": "celeba-spoof-client-integer-coordinates-ratio-first-v1",
   "submission": {
@@ -1879,7 +1894,11 @@
       "tests/liveness/__init__.py",
       "tests/liveness/test_liveness_crop_content.py",
       "tests/recognition/__init__.py",
-      "tests/test_notebook_runtime.py"
+      "tests/test_notebook_runtime.py",
+      "artifacts/models/liveness/liveness-inference.pt",
+      "artifacts/detectors/face_detection_yunet_2023mar.onnx",
+      "artifacts/detectors/LICENSE-YuNet.txt",
+      "artifacts/detectors/yunet-source.json"
     ],
     "external_inputs": [
       "data/raw/liveness/celeba-spoof-full/audits/current-schema-2026-11-12/inventory.csv",
@@ -1891,7 +1910,6 @@
       "artifacts/pretrained/resnet18-imagenet1k-initialization.pth",
       "artifacts/pretrained/prnet-tensorflow/face_ind.txt",
       "artifacts/pretrained/prnet-tensorflow/triangles.txt",
-      "artifacts/detectors/face_detection_yunet_2023mar.onnx",
       "data/liveness/face-cache/geometry/geometric-targets.npy",
       "data/liveness/face-cache/geometry/geometric-cache.json",
       "data/liveness/camera-trials/An-20261124_112527-print-bright.mp4",
@@ -1935,7 +1953,7 @@
     ],
     "evaluation_requirement": "Include the final validation/test results and physical-trial results attributable to the selected checkpoint.",
     "model_choice": "evidence/liveness/liveness-continuation/model-choice.json",
-    "model_requirement": "Provide the validation-selected inference checkpoint through the artifact index, with its Drive download link, verified SHA-256 and byte size; weight files remain outside ordinary Git tracking.",
+    "model_requirement": "Bundle the validation-selected inference checkpoint with source, verified by SHA-256 and byte size in the artifact index. The Drive link is an alternative download source; full training/resume weights remain external.",
     "repository_evidence": [
       "evidence/FAC-01/README.md",
       "evidence/FAC-01/colab-real-input-2026-11-04.json",
@@ -7479,6 +7497,69 @@
           }
         }
       ]
+    },
+    {
+      "id": "submission-bundled-inference-paths-and-source-checks",
+      "scope": "Refresh source-distribution checksums after bundled inference path fixes, Ruff source checks and guide reconciliation. Historical model/data receipts and numerical training modules remain unchanged. No training/resume compatibility is added by this metadata refresh.",
+      "before_files": {
+        "configs/project.toml": "0675d97709daaf84f3a1e279f69d43e87a87699f21d6f8616add241cd195e5a1",
+        ".github/workflows/checks.yml": "7344775306807fe34b2368c9ba30f9e05297e84b003a55ba07e02690c0aec87f",
+        ".gitignore": "0d08d7c40a66ba6a148a24f03bdc5972c7062598f9e7a9e46b4073335e35d142",
+        "README.md": "85902f4de8a1507df9a47ed1c3fa8e9bc91893c4b143816afc95e92b56603a07",
+        "docs/architecture.md": "82a9a252e298a7abf61cbcec1de941efc9e889c3b9daa7e53c738bae33dd988f",
+        "docs/liveness-training-and-evaluation.md": "bcb408c7d96de852adf47bbbd8c9f454b0e1de43d232dcc296a498604a640a7a",
+        "docs/requirements.md": "7e1fd516d659320bc21d0b5cf325a04cc9d7e5f211aacb7c399f007a821eac0a",
+        "docs/setup.md": "1f0ac7d4ef61e8d51b6191a196da49f66528d676c595080c0bc1e285e99237f4",
+        "scripts/check_face_data.py": "eff8a178e05b8f0d87f6c6ea19b78b52d9b953a6726ec310e32069e78f8a28c5",
+        "src/facial_attendance/recognition/data_loader.py": "ad449438a93ba93aa138078b5cafdb66c0acb66675171ceba8cc10ef5beb4a6f",
+        "notebooks/liveness-training-and-evaluation.ipynb": "d4d4a762350845a5fb1bba0f04b6fb222434414f6098f9fc43c583408f126d5a",
+        "artifacts/.gitignore": "c7c68d010981ed6f7b4c5a9c6d251c73c9f4edca05a3a095de0a760e6c0e1bf6",
+        "scripts/run_liveness_notebook.py": "573125df6a30192deba910f11ccc8702be9afc1a9049a279daeae2cf5e4e7d84",
+        "evidence/liveness/submission-artifacts.json": "2df6d3709d228371fa80cb9cf4f26c2809ced0921d76c41ed5c6995e8290776f",
+        "scripts/preparation/build_liveness_cache_view.py": "6862a4444bacc48b4b7958ed7d96312f475bb956ef7c2aecb46cdcf3921547d8",
+        "src/facial_attendance/liveness/datasets/decoded_cache.py": "e9f5fc726ab38d3807fa0971822269460c1b9c8f90bece7832426991b70f0cb2",
+        "src/facial_attendance/liveness/datasets/geometric_cache.py": "e72890589754e4d8e07e46f527b54b365dc4860ca0126acde0be8f9adab36d8f",
+        "src/facial_attendance/liveness/datasets/semantic_dataset.py": "c7ceab0964857118ed569e80488f6c5b41ffb1b5eecd1fcebedabf8f00dfccc5",
+        "src/facial_attendance/liveness/datasets/reviewed_cache.py": "d46d95813751979efc6b2648e024e9d9bf66034987ad7a0f968a764befb58cb3",
+        "tests/liveness/test_liveness_decoded_cache.py": "8c49d94c184fa014fbafffb61837f4cde58ed3e9649678effbcb559e00bb1a0c",
+        "tests/liveness/test_liveness_quality.py": "edabf0e807a5b97f4908b4799a55f026092d0e972ba0501876ba4ebe8820f771",
+        "tests/liveness/test_liveness_checkpoint_selection.py": "a654daab1f085dd5bb72a240f8352209902376902c5c45efafa8f77b0e6298de",
+        "tests/liveness/test_liveness_cache_corrections.py": "bb3ae321797b8ae11a924e0163497412cac1d84792a61610714c1a28236e0c5d",
+        "tests/liveness/test_liveness_face_transport.py": "8166e189e03fa5206c4f086c07b16116fd731af42646a7477304b63eee06f6d1",
+        "tests/recognition/test_data_cli.py": "8ecbbc03aa4d806678a6902f15d1e260b5dbfd29fd647b8c454d68c4136c36dd",
+        "tests/liveness/test_liveness_datasets.py": "ec710c30902b3421999f9c7ceb659dca10c52728f6688fdfe95d807d35de881a",
+        "tests/liveness/test_liveness_aenet_training.py": "0d53360f3ee1e9538aca87b90ee2f29a321d543d2178c03abbb3b27f9bcc8b3a"
+      },
+      "after_files": {
+        "configs/project.toml": "dc20f7b685d56aa82aef69e9e88aa876bc25d7cbddd92e7694f3aa0167b9ac3e",
+        ".github/workflows/checks.yml": "0321f53b5113e86b0e23f2c5e685e7fd7379ca4177ab47cb97a214fde3a66575",
+        ".gitignore": "faa9ddaa8ddefa0f10673b14c74f0cb564ed619318ff3d9390948528a47b10c7",
+        "README.md": "eb8a725686a7d9b7ef81064ad9524f6984964b1098bc628064972dbf88854cd0",
+        "docs/architecture.md": "a36371f864c0b27ef5e1b0d5a96aeaa6ce2235517121a77129ee996ade10e277",
+        "docs/liveness-training-and-evaluation.md": "f15e81b612891ef59f10e82ef422c8d35330e5a5c291d0cfadcf1c8610be3606",
+        "docs/requirements.md": "16f6f222e3c4f9877668d4adf1ab22f1f419769e54d6f5b7d96f4bc4dfb61977",
+        "docs/setup.md": "945953ba623f1eb68f4583cde66e5f4f24f574de80b5bade136d18eb168e5fe3",
+        "scripts/check_face_data.py": "558b84263bcf3f86772b6c9943bb672e323feec1d92520e1dab118547ffd5a1b",
+        "src/facial_attendance/recognition/data_loader.py": "4aed666585f5c6a0a675b637e43eb3bbb4eec4f094f773c3372b43852ca73d3b",
+        "notebooks/liveness-training-and-evaluation.ipynb": "565fd843407a700e13a26d5410728faabe3878841ba80873bd543eb18b10c1f1",
+        "artifacts/.gitignore": "d01692e98ab2ef1a7c6aabc38b79e7cce4a545878b755a2d917ce222668cd53a",
+        "scripts/run_liveness_notebook.py": "c3336c5e090af4c500ad5799c5df8a6c27565ecfe91aa7dc6462b1fea096c26b",
+        "evidence/liveness/submission-artifacts.json": "adfb837b99f384e16704fb6ec5799de175302ebb6de0c089737e6d5bec67aeba",
+        "scripts/preparation/build_liveness_cache_view.py": "e34e49fc4e01a296594f976383fdb537bc30d72d0d35d6507084245c9884eea1",
+        "src/facial_attendance/liveness/datasets/decoded_cache.py": "c6e9391f428f541961c0f48c90e93b1f3fe0eb41a7315a2a9079a6eb939c5914",
+        "src/facial_attendance/liveness/datasets/geometric_cache.py": "d757e5651b04f32b07f565e4770d28dd7426e4b911205d21396fb3ea4aef9a22",
+        "src/facial_attendance/liveness/datasets/semantic_dataset.py": "cc5566473307e00bbad999ec8ea154b0c9f4a6a90e7bbedd681e79e9893b4cfb",
+        "src/facial_attendance/liveness/datasets/reviewed_cache.py": "3c24fd6e282c20e8701ba36fe6075d993d823d354b0aab2f06f0850d660ea917",
+        "tests/liveness/test_liveness_decoded_cache.py": "ae4cec5313e34c980b275136666debf3f20ad809f0ed083a223e997a4c2110ed",
+        "tests/liveness/test_liveness_quality.py": "8b07129940f338302149ec401fa60b4b7b8e9770afa8e518d2dca64a4f95cad5",
+        "tests/liveness/test_liveness_checkpoint_selection.py": "42c418bce67ac9bd3c737ef483214c67df53fafcb0addb76601686f321f8796b",
+        "tests/liveness/test_liveness_cache_corrections.py": "a91fabb2f824224a71792704b67124854f17ee63803240ae3fc6b8fa21c5326e",
+        "tests/liveness/test_liveness_face_transport.py": "95b6f44c9b6f51d2c7df8b4c18ede7f395c36ace873de4cade6079894333df5c",
+        "tests/recognition/test_data_cli.py": "4f7edde28e9b8a697dd1d582ba11d3d6263a85b826608f53e274e5e739414eca",
+        "tests/liveness/test_liveness_datasets.py": "baf5add9e2527803f9253239812cbda21d7b2bc2a463eb35af36d441c3ab3fb5",
+        "tests/liveness/test_liveness_aenet_training.py": "17b468a5407a4e688e7cbdd76c52331ce65d15c50fb78b0672a25d8d0e4af647"
+      },
+      "scopes": []
     }
   ],
   "current_package_verification": "evidence/liveness/package-refactor/verification.json",

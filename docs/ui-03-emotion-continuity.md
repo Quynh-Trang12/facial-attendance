@@ -6,6 +6,10 @@
 
 Work stays in `artifacts/ui03-ui04-emotion-integration`, branch `feature/ui03-ui04-emotion-integration`. The fixed window geometry, trained models, preprocessing, recognition threshold, label mapping, 300 ms analysis interval and camera settings are preserved. No tracker, original SYS-05 branch, protected review JSON or supplied checkpoint was changed. Nothing was staged, committed, pushed or merged. No independent reviewer approval is claimed.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Measured physical failure
 
 The owner authorized two 15-second camera probes, including a repeat with instructions to remain still for five seconds, move gently for five, then remain still. The reports do not establish compliance with every movement instruction; those phases are timing bins. No images, crops or recordings were saved.

@@ -2,6 +2,10 @@
 
 Owner: chị Dung. Status: baseline implementation ready for review; full training has not started. These settings are starting values, not measured results. Record any change and its reason in the run manifest before comparing results.
 
+## Current entry point
+
+This record describes an earlier emotion experiment. The [final model](emotion-finalized.md) defines the deployed Sad/Happy/Neutral classes; use the [launch guide](attendance-demo.md) for current integration. Original commands and findings below retain their historical scope.
+
 ## Data and labels
 
 Use the fixed FER2013 partitions under `data/processed/emotion_3class/`. The [dataset protocol](emotion-3class.md) defines filtering and split creation; the [loader guide](emotion-loader.md) defines loading. Do not create a new split for each run.

@@ -1,10 +1,10 @@
 # Webcam and Attendance demo
 
-This guide covers the current Apple Silicon macOS demo for review. Both attendance modes write to an explicitly selected test database. Live face recognition can still match the wrong person, so the production writer remains disabled.
+This guide covers the current Apple Silicon macOS demo for review. Both attendance modes write to an explicitly selected test database. The entry point enables recording only with the attendance verification flag; ordinary attendance controls do not enable writes. Historical replay findings below are attributed to those tests and do not establish current webcam error rates.
 
 ## Launch
 
-Use Python 3.13.x and a working Tk installation. Install or reuse an environment from [runtime setup](setup.md), then add the team-supplied [model files](../README.md#run-the-demo). Run the [macOS launch command](../README.md#run-the-demo) from the repository root.
+Use Python 3.13.x and a working Tk installation. Install or reuse an environment from [runtime setup](setup.md), then verify the bundled [model files](../README.md#run-the-demo). Run the [Linux/macOS launch command](../README.md#run-the-demo) from the repository root.
 
 For a Windows review, use the equivalent PowerShell command below and the Windows CPU environment from the setup guide. The current version has not been verified end to end with a physical Windows webcam.
 
@@ -14,8 +14,8 @@ $env:PYTHONPATH = "src"
   --local-workspace --attendance --attendance-verification-test `
   --attendance-auto-retry-test --attendance-auto-record-test `
   --camera 0 --detector yunet `
-  --face-checkpoint artifacts/models/face-recognition-resnet18.pt `
-  --emotion-checkpoint artifacts/models/emotion-recognition-resnet18-v1.pt `
+  --face-checkpoint artifacts/models/recognition/face-recognition-resnet18.pt `
+  --emotion-checkpoint artifacts/models/emotion/best.pt `
   --local-profile-db artifacts/attendance-verification-test/demo-box/profiles.sqlite3 `
   --attendance-db artifacts/attendance-verification-test/demo-box/attendance.sqlite3 `
   --opencv-threads 1
@@ -26,12 +26,14 @@ Select the camera with `--camera INDEX`. For a different checkpoint location, pa
 | Flag | Effect |
 | --- | --- |
 | `--attendance` | Shows session controls. Recording stays disabled with this flag alone. |
-| `--attendance-verification-test` | Enables attendance checks with two separate database paths under `artifacts/attendance-verification-test/`. The window title shows **Attendance test**. |
+| `--attendance-verification-test` | Enables attendance checks with two separate database paths under the generated attendance-verification-test subdirectory of [artifacts](../artifacts/). The window title shows **Attendance test**. |
 | `--attendance-auto-retry-test` | Starts one fresh attempt after spoof. A second spoof requires **Retry verification**. A new session or an explicit retry restores the allowance. |
 | `--attendance-auto-record-test` | Saves after at least three seconds of continuous verification. The title shows **Auto record** and there is no separate confirmation button. |
 | `--diagnostics` | Prints aggregate performance metrics to the console. **Developer Mode** controls the review window. |
 
 ## Reviewer walkthrough
+
+Registration belongs to **Developer Mode** by the team's role design. **Standard Mode** serves recognition and attendance; the placement of registration controls is intentional project scope.
 
 | Check | What to do | What to look for |
 | --- | --- | --- |
@@ -48,16 +50,16 @@ Select the camera with `--camera INDEX`. For a different checkpoint location, pa
 
 - **Preview.** AENet-Full averages the scores from valid single-face samples over about three seconds. The checkpoint threshold is `0.46483826637268066`. A mean greater than or equal to the threshold yields `spoof`; a lower mean yields `live`. A scan without valid samples yields `uncertain`. The preview is informational for Attendance.
 - **Recognition crop.** The local webcam workspace resizes the tight YuNet box for both reference and probe embeddings. Liveness and Emotion receive the original detector crop through their existing adapters. The recognition sandbox and read-only JSON gallery keep the square crop associated with their existing templates.
-- **Naming a face.** The preview and Attendance name the best-matching profile only if its cosine score reaches 0.69 (`min_score` in `configs/recognition.toml`) and beats every other profile by 0.10 (`margin`). Otherwise the result is unknown. The FAC threshold `0.4619967254593038` was chosen for comparing one pair of faces; against a whole class an unregistered person gets one chance per profile, so it alone named most unregistered people in an LFW test (see the config notes). The registration duplicate check stays on the FAC threshold alone, so a face close to an existing profile is refused as a duplicate.
+- **Naming a face.** The preview and Attendance name the best-matching profile only if its cosine score reaches 0.69 (`min_score` in the [decision configuration](../configs/recognition.toml)) and beats every other profile by 0.10 (`margin`). Otherwise the result is unknown. The FAC threshold `0.4619967254593038` was chosen for comparing one pair of faces; against a whole class an unregistered person gets one chance per profile, so it alone named most unregistered people in an LFW test (see the config notes). The registration duplicate check stays on the FAC threshold alone, so a face close to an existing profile is refused as a duplicate.
 - **Registration.** A completed live preview from the current attempt enables **Capture reference**. The five requested poses cover center, slight left and right, up and down. Only individually live captures count. An uncertain capture asks for a new photo; spoof discards the attempt and requires **Retry**. The gallery stores one averaged template per profile and rejects duplicate matches before saving.
 - **Attendance.** The candidate reuses Trang's temporal gate and the [LIV-02 same-capture contract](https://github.com/Quynh-Trang12/facial-attendance/blob/25eafa26091be2f9dcd6b17aeffb75d801448435/docs/liveness-gating.md#registration-and-attendance-flow). It requires at least five consecutive live samples over at least one second, with gaps no longer than 0.5 seconds. The accepted recognition result must come from the exact gate-passing capture, under the current attempt, action, capture and face IDs. A camera failure, missing or multiple faces, changed identity, unknown result or stale completion cannot carry over an authorization. Emotion has no role in the write decision.
 - **Options.** Automatic retry ends the spoof attempt and starts another with fresh samples. Auto record adds a minimum three-second live span measured from the first valid sample of the same continuous attempt. It uses the latest verified capture and goes through the same service pre-write checks. These are isolated test policies. The recording mode does not change the liveness model, recognition threshold, or preview scan.
 
 ## Where records are stored
 
-The launch examples keep profiles in `artifacts/attendance-verification-test/demo-box/profiles.sqlite3` and attendance in `artifacts/attendance-verification-test/demo-box/attendance.sqlite3`. For a preview-only local workspace the default profile database is `artifacts/local-recognition/profiles-box.sqlite3`. Use a fresh path and register again when switching from square crops. Local profile databases are tagged with their crop format, so the app can reject an incompatible profile file. Older square-crop databases stay available to the previous build.
+The launch examples create an attendance-verification-test/demo-box subdirectory of [artifacts](../artifacts/), holding **profiles.sqlite3** and **attendance.sqlite3** as separate files. Preview-only local workspaces use **profiles-box.sqlite3** in the generated local-recognition subdirectory of that same parent. Use a fresh path and register again when switching from square crops. Local profile databases are tagged with their crop format, so the app can reject an incompatible profile file. Older square-crop databases stay available to the previous build.
 
-The `attendance` table stores `attendance_id`, `person_id`, `person_name`, `session_id`, `recorded_at` (UTC), and `status` (`present`). SQLite enforces one row per `(session_id, person_id)`. The app displays success after the transaction completes. The two databases, diagnostic exports, recordings, and checkpoints stay out of Git.
+The `attendance` table stores `attendance_id`, `person_id`, `person_name`, `session_id`, `recorded_at` (UTC), and `status` (`present`). SQLite enforces one row per `(session_id, person_id)`. The app displays success after the transaction completes. Generated databases, diagnostic exports, recordings and training checkpoints stay local. Selected inference checkpoints are bundled in the source submission.
 
 To check counts without printing names, open the SQLite file after the first successful record and run:
 
@@ -80,7 +82,7 @@ GROUP BY session_id;
 | Regression suite on Apple Silicon macOS | 538 passed and one optional legacy-checkpoint test skipped. Coverage includes box preprocessing, crop compatibility of local profiles, the minimum identification score, ambiguous matches, malformed scores, duplicate enrollment and recording, stale results, SQLite failure, and the GUI. |
 | Windows and independent reviewer checks | Physical Windows webcam verification and independent reviewer acceptance are pending. |
 
-Real attendance remains disabled. The two-profile replay still produced wrong-person records. The next release check uses separate enrollment and test captures, including the previously misidentified person, additional enrolled people, several lighting conditions, and physical phone and print trials. Keep test data consented and local.
+The default attendance service has no verification policy and cannot write; the explicit verification mode supplies that policy and enables local test recording. Historical two-profile replay produced wrong-person records; current webcam accuracy has not been remeasured in this source review. The next release check uses separate enrollment and test captures, including the previously misidentified person, additional enrolled people, several lighting conditions, and physical phone and print trials. Keep test data consented and local.
 
 Tested macOS model versions: Face metric ResNet-18 `cb38ea47ceff`, Emotion ResNet-18 epoch 10, and AENet-Full epoch 18 `f16fbfaf36046f75`. Face recognition uses the selected FAC cosine threshold `0.4619967254593038`. The native webcam run used Python 3.13.17, PyTorch 2.13.0, torchvision 0.28.0, and OpenCV 4.13.0.92 in an existing local environment. The repository pins define the shared setup; the exact pinned OpenCV version was not used for this webcam run.
 
@@ -91,13 +93,13 @@ From the repository root in the prepared macOS Python environment:
 ```sh
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src \
   FA_NATIVE_ATTENDANCE_TESTS=1 \
-  FA_FACE_CHECKPOINT="$PWD/artifacts/models/face-recognition-resnet18.pt" \
-  FA_LIVENESS_RELEASE="$PWD/artifacts/models/liveness-aenet-full-epoch18.pt" \
-  FA_LIVENESS_YUNET="$PWD/artifacts/sys05-yunet/face_detection_yunet_2023mar.onnx" \
-  python -m unittest discover -s tests -v
+  FA_FACE_CHECKPOINT="$PWD/artifacts/models/recognition/face-recognition-resnet18.pt" \
+  FA_LIVENESS_RELEASE="$PWD/artifacts/models/liveness/liveness-inference.pt" \
+  FA_LIVENESS_YUNET="$PWD/artifacts/detectors/face_detection_yunet_2023mar.onnx" \
+  python -m unittest discover -s tests -t . -v
 ```
 
-The supplied ResNet-18 Emotion integration tests look for `artifacts/emotion-resnet18-v1/best.pt` directly. Put the same checkpoint there if your model is set up only at the launch path. Set `FA_EMOTION_CHECKPOINT` to the separate legacy Emotion checkpoint for its compatibility tests. The optional historical liveness comparison uses `FA_TRIAL_FULL` and `FA_TRIAL_BASELINE` for its two legacy checkpoint paths. Report test skips alongside the total.
+The supplied ResNet-18 Emotion integration tests load the bundled [Emotion checkpoint](../artifacts/models/emotion/best.pt) directly. Set `FA_EMOTION_CHECKPOINT` to the separate legacy Emotion checkpoint for its compatibility tests. The optional historical liveness comparison uses `FA_TRIAL_FULL` and `FA_TRIAL_BASELINE` for its two legacy checkpoint paths. Report test skips alongside the total.
 
 ## Historical checkpoint comparison
 

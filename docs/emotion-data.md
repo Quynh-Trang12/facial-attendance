@@ -3,6 +3,10 @@
 The original dataset is read from `paths.emotion_data` in `configs/project.toml`.
 The revised dataset is written to `data/processed/emotion/`. Raw files stay unchanged.
 
+## Current entry point
+
+This record describes an earlier emotion experiment. The [final model](emotion-finalized.md) defines the deployed Sad/Happy/Neutral classes; use the [launch guide](attendance-demo.md) for current integration. Original commands and findings below retain their historical scope.
+
 ## Reproduce the dataset
 
 Use the project's Python 3.13 environment and dependencies. From the repository root:

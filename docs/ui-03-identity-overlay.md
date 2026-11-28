@@ -4,6 +4,10 @@
 
 Prepared 21 November 2026 on `feature/ui03-ui04-emotion-integration`, in the existing isolated worktree. This is a small display addition; owner physical acceptance and independent review are pending.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Existing path and implementation
 
 The existing renderer converts/resizes BGR frames for one Tk Canvas image and draws the existing YuNet-derived source boxes as canvas rectangles. Identity, Emotion and Liveness remain in the side panel. `LiveController.visual_regions()` already supplies the displayed box, source dimensions and whether it is an unconfirmed retained outline; `StablePresentation.view()` supplies the existing strict visual-validity result.

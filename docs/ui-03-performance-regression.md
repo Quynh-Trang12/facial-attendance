@@ -6,6 +6,10 @@
 
 Work stays on `feature/ui03-ui04-emotion-integration` in `/Users/elvyx/Downloads/fa-sys03-mac/artifacts/ui03-ui04-emotion-integration`. The starting implementation had 217 passing automated tests and 15 passing controlled native checks. Source was frozen under ignored `artifacts/ui03-performance-before` before changing product code; verified SYS-05 `798f2e7` was separately read into `artifacts/ui03-performance-sys05`. No original branch, environment, model file, protected JSON or Google Sheet was changed. Nothing is staged, committed, pushed or merged.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Diagnosis: measured versus suspected
 
 **Reproduced:** under mapped native Tk, generated 1280×720 input, actual Face/Emotion weights, real CPU YuNet work and controlled jittering single-face boxes, the integrated GUI resized **56 and 58 times in two 10-second windows**. The verified SYS-05 implementation had **zero** geometry changes with the same generated source and detector workload. The integrated result panel grew beyond the preview's height: alternating Processing/results and short/long metadata text changed requested geometry. This directly matches the owner's clarified observation.

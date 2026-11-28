@@ -19,6 +19,10 @@ This is the implemented baseline preprocessing for training. The GUI owner still
 confirm face-crop handling and use the same transform when the trained adapter is integrated.
 Do not add dataset mean/std normalization or augmentation only at inference.
 
+## Current entry point
+
+This record describes an earlier emotion experiment. The [final model](emotion-finalized.md) defines the deployed Sad/Happy/Neutral classes; use the [launch guide](attendance-demo.md) for current integration. Original commands and findings below retain their historical scope.
+
 ## Run
 
 Use the project Python 3.13 environment and dependencies. From the repository root:
@@ -45,12 +49,16 @@ Face previews are local; clear those outputs before publishing the notebook.
 ## Use from training code
 
 ```python
-from facial_attendance.emotion.data_loader import EmotionLayout, load_settings, make_loaders
+from facial_attendance.emotion.data_loader import (
+    EmotionLayout,
+    load_settings,
+    make_loaders,
+)
 
-settings = load_settings(repo_root / 'configs/emotion.toml', root=repo_root)
+settings = load_settings(repo_root / "configs/emotion.toml", root=repo_root)
 layout = EmotionLayout(settings.data_root)
 loaders = make_loaders(layout, settings)
-images, targets = next(iter(loaders['train']))
+images, targets = next(iter(loaders["train"]))
 ```
 
 Decoding and collation happen on CPU. The training caller chooses when to move images and

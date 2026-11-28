@@ -10,6 +10,7 @@ liveness_data = "data/raw/liveness/celeba-spoof-full"
 camera_trials = "data/liveness/camera-trials"
 detector_model = "artifacts/detectors/face_detection_yunet_2023mar.onnx"
 emotion_data = "data/raw/emotion"
-# Generated model weights and attendance records are kept out of version control.
+# Generated training checkpoints and attendance records stay local.
+# Selected inference weights are bundled separately under artifacts/models/.
 checkpoints = "artifacts/checkpoints"
 attendance = "artifacts/attendance"

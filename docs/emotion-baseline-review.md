@@ -2,6 +2,10 @@
 
 Owner: chị Dung. Independent reviewer: Vỹ. Status: submitted for EMO-04.3 review; not independently accepted. No final test or webcam results are claimed.
 
+## Current entry point
+
+This record describes an earlier emotion experiment. The [final model](emotion-finalized.md) defines the deployed Sad/Happy/Neutral classes; use the [launch guide](attendance-demo.md) for current integration. Original commands and findings below retain their historical scope.
+
 ## Files
 
 | Item | Location |
@@ -57,17 +61,20 @@ import json
 import sys
 
 root = Path.cwd()
-sys.path.insert(0, str(root / 'src'))
+sys.path.insert(0, str(root / "src"))
 from facial_attendance.emotion.training import load_checkpoint, build_data, run_epoch
 
-checkpoint = root / 'artifacts/checkpoints/emotion-review/best.pt'
-expected = '323718881b67576a854fe714b2ba136c5aadbadc9b6676e9eb2cf16d2a86cfcd'
+checkpoint = root / "artifacts/checkpoints/emotion-review/best.pt"
+expected = "323718881b67576a854fe714b2ba136c5aadbadc9b6676e9eb2cf16d2a86cfcd"
 assert hashlib.sha256(checkpoint.read_bytes()).hexdigest() == expected
-model, _, saved = load_checkpoint(checkpoint, 'cpu')
-assert saved['epoch'] == 9
-assert saved['manifest_sha256'] == '79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b'
-layout, loaders = build_data(saved['config'], root)
-metrics = run_epoch(model, loaders['val'], 'cpu')
+model, _, saved = load_checkpoint(checkpoint, "cpu")
+assert saved["epoch"] == 9
+assert (
+    saved["manifest_sha256"]
+    == "79490d419bc9f4c05042dbdd3fcf76921bffdd73d22f855cd565ce9631c8386b"
+)
+layout, loaders = build_data(saved["config"], root)
+metrics = run_epoch(model, loaders["val"], "cpu")
 print(json.dumps(metrics, indent=2))
 ```
 

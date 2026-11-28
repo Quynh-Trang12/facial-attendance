@@ -4,6 +4,10 @@ Prepared 21 November 2026 in `feature/ui03-ui04-emotion-integration`. This stand
 
 The subsequent [status panel stability correction](ui-03-sandbox-panel-stability.md) documents fixed field positions, measured layout changes, regression checks and the targeted owner retest. Current result invalidation and model policy remain unchanged.
 
+## Current entry point
+
+This record retains the behavior, commands and environment of its original UI revision. Use the [launch guide](attendance-demo.md) and [setup](setup.md) for the current bundled-model application.
+
 ## Isolation and model verification
 
 The normal webcam application, production registration/attendance gates and all existing source files are unchanged. The sandbox has its own process entry point, camera, bounded workers, session and newly constructed empty in-memory gallery. It does not accept a production gallery path and never constructs or modifies the production attendance/enrollment controller. There is no new normal-GUI liveness bypass or sandbox toggle.
