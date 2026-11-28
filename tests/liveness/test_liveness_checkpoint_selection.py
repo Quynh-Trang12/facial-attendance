@@ -112,14 +112,16 @@ class ResumeSelectionTests(unittest.TestCase):
 
     def test_evaluation_commands_use_configured_camera_and_capped_workers(self):
         with tempfile.TemporaryDirectory() as directory:
+            nested = Path(directory) / "nested"
+            nested.mkdir()
             output = Path(directory) / "arm"
             output.mkdir()
             (output / "liveness-inference.pt").write_bytes(b"synthetic checkpoint")
             args = SimpleNamespace(
                 project_root=SCRIPTS.parent,
                 loader_workers=12,
-                trials_root=Path(directory) / "recordings",
-                detector_model=Path(directory) / "detector.onnx",
+                trials_root=nested / ".." / "recordings",
+                detector_model=nested / ".." / "detector.onnx",
             )
             publisher = SimpleNamespace(
                 state={"job_id": "fixture"},
@@ -144,10 +146,12 @@ class ResumeSelectionTests(unittest.TestCase):
             dataset, camera = [call.args[0] for call in command.call_args_list]
             self.assertEqual(dataset[dataset.index("--workers") + 1], "2")
             self.assertEqual(
-                camera[camera.index("--trials-root") + 1], str(args.trials_root)
+                camera[camera.index("--trials-root") + 1],
+                str(args.trials_root.resolve()),
             )
             self.assertEqual(
-                camera[camera.index("--detector-model") + 1], str(args.detector_model)
+                camera[camera.index("--detector-model") + 1],
+                str(args.detector_model.resolve()),
             )
 
     def test_default_plan_matches_the_four_configuration_experiment(self):

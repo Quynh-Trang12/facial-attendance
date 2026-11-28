@@ -21,8 +21,14 @@ def read_annotation_targets(dataset, annotation_file, readiness):
     """
     annotation_file = Path(annotation_file).resolve()
     receipt = json.loads(Path(readiness).read_text(encoding="utf-8"))
-    expected = receipt["source_bindings"].get(str(annotation_file))
-    if not expected or file_sha256(annotation_file) != expected:
+    # Receipts may retain a symlink or Windows short-name spelling of the same
+    # source. Conflicting bindings for aliases must still reject the release.
+    expected = {
+        digest
+        for name, digest in receipt["source_bindings"].items()
+        if Path(name).resolve() == annotation_file
+    }
+    if expected != {file_sha256(annotation_file)}:
         raise ValueError("Auxiliary annotations are not bound to the data release")
     raw = json.loads(annotation_file.read_text(encoding="utf-8"))
     targets = []

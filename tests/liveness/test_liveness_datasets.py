@@ -72,6 +72,30 @@ class MultitaskDatasetTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "not bound"):
                 read_annotation_targets(dataset, path, receipt)
 
+    def test_annotation_binding_resolves_aliases_and_rejects_conflicting_digests(self):
+        row = SimpleNamespace(relative_path="live.jpg", binary_label=0, source_type=0)
+        dataset = SimpleNamespace(samples=[row])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            (root / "nested").mkdir()
+            path = root / "annotations.json"
+            alias = root / "nested" / ".." / path.name
+            path.write_text(json.dumps({"live.jpg": [0] * 44}), encoding="utf-8")
+            receipt = root / "readiness.json"
+            bindings = {str(alias): file_sha256(path)}
+            receipt.write_text(
+                json.dumps({"source_bindings": bindings}), encoding="utf-8"
+            )
+            self.assertEqual(
+                read_annotation_targets(dataset, path, receipt)[0]["binary"], 0
+            )
+            bindings[str(path)] = "0" * 64
+            receipt.write_text(
+                json.dumps({"source_bindings": bindings}), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "not bound"):
+                read_annotation_targets(dataset, alias, receipt)
+
     def test_cohort_balances_attack_and_illumination_without_replacement(self):
         rows, targets = [], []
         for source, illumination, count in [(0, 0, 30)] + [
