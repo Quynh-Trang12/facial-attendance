@@ -4,12 +4,13 @@ from dataclasses import dataclass
 from time import monotonic
 from uuid import uuid4
 
-from ..recognition.evaluation import RecognitionEvaluation, SandboxInference, frame_fingerprint
+from ..recognition.evaluation import EvaluationResult, RecognitionEvaluation, SandboxInference, frame_fingerprint
 from ..recognition.gallery_matching import empty_gallery
 from ..recognition.inference import cosine
 from .emotion_presentation import geometry
 from .live_preview import SingleWorker
 from .liveness_preview import CHECKPOINT_SHA256, EPOCH, MODEL_ID, MODEL_VERSION, THRESHOLD, valid_spoof_score
+from .registration_pose import FacePose
 from .webcam_prototype import Completion, Context, Liveness, OperationError, CONTRACT_VERSION
 
 
@@ -39,6 +40,12 @@ class RegistrationGuidance:
     feedback: str
 
 
+@dataclass(frozen=True)
+class ReferenceResult:
+    evaluation: EvaluationResult
+    pose: FacePose | None
+
+
 class TrialProfiles:
     # Direction is expressed in the user's mirrored preview coordinates.
     POSES = (Pose("Look straight ahead"), Pose("Turn slightly left", (-1, 0)),
@@ -46,7 +53,7 @@ class TrialProfiles:
              Pose("Look slightly down", (0, 1)))
 
     def __init__(self, parent, adapters, on_gallery_change, *, store=None, loaded_gallery=None,
-                 liveness_provenance=None, liveness_preview=None):
+                 liveness_provenance=None, liveness_preview=None, pose_estimator=None):
         import tkinter as tk
         from tkinter import ttk
 
@@ -71,7 +78,14 @@ class TrialProfiles:
 
         adapters.recognition_adapter = recognize
         self.on_gallery_change = on_gallery_change
-        self.worker = SingleWorker(inference, "trial-reference")
+
+        def reference(job):
+            evaluation = inference(job)
+            pose = pose_estimator(job.request) if pose_estimator is not None else None
+            return ReferenceResult(evaluation, pose)
+
+        self.worker = SingleWorker(reference if store is not None else inference, "trial-reference")
+        self._neutral_pose = None
         self.source = None
         self._attempt_started_at = None
         self._last_face = None
@@ -270,6 +284,7 @@ class TrialProfiles:
                 self._update_controls()
             return
         current = self.source[0] if self.source is not None else None
+        evaluation = result.value
         try:
             if self.store is not None:
                 job = self.session.pending
@@ -278,22 +293,29 @@ class TrialProfiles:
                 if result.error is not None:
                     self._abort("Reference inference failed. Select Retry.")
                     return
-                if getattr(result.value, "job", None) is not job:
+                if not isinstance(result.value, ReferenceResult) or result.value.evaluation.job is not job:
                     return
+                evaluation = result.value.evaluation
                 if (not self._is_live_for_attempt(self._pending_liveness)
                         or self._pending_liveness.context != job.request.context):
                     self._abort("Reference verification failed. Select Retry.")
                     return
                 if self.session.references and not self.session.policy.accepts_cosine(
-                        cosine(self.session.references[0], result.value.vector)):
+                        cosine(self.session.references[0], evaluation.vector)):
                     self._restart("Face changed. Retake all five photos of the same person.")
                     return
+                expected = self.POSES[len(self.session.references)]
+                pose = result.value.pose
+                if pose is None:
+                    raise ValueError(f"Could not check face direction. {expected.instruction}, then capture again.")
+                if not pose.matches(expected.direction, self._neutral_pose):
+                    raise ValueError(f"Face direction does not match. {expected.instruction}, then capture again.")
                 # Newer frames may arrive while embedding this already-verified capture.
                 current = job.source
             elif result.error is not None:
                 self.session.cancel()
                 raise ValueError("Reference capture failed. Try another photo.")
-            self.session.accept(result.value, current_source=current, now=monotonic())
+            self.session.accept(evaluation, current_source=current, now=monotonic())
         except (ValueError, PermissionError) as error:
             if self.store is not None:
                 self.session.cancel()
@@ -305,6 +327,8 @@ class TrialProfiles:
             if self.store is None:
                 self.status.set(f"{count} reference photos captured. Capture more or save once you have at least three.")
             else:
+                if count == 1:
+                    self._neutral_pose = result.value.pose
                 self._accepted_liveness.append((job.request.context, self._pending_liveness))
                 message = (f"Sample accepted. {self.POSES[count].instruction}, then select Capture reference."
                            if count < len(self.POSES) else "Registration ready. Select Save profile.")
@@ -368,6 +392,7 @@ class TrialProfiles:
 
     def _clear_attempt(self):
         self.session.discard_draft()
+        self._neutral_pose = None
         self._attempt_id = None
         self.source = self._last_face = None
         self._frame_liveness = self._pending_liveness = None
