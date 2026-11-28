@@ -8,6 +8,7 @@ import unittest
 from contextlib import closing
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
@@ -23,6 +24,8 @@ from facial_attendance.liveness.datasets.selected_dataset import LivenessImages
 
 FULL_ENVIRONMENT = all(importlib.util.find_spec(name) for name in ("numpy", "cv2"))
 if FULL_ENVIRONMENT:
+    import numpy as np
+
     from facial_attendance.liveness.audit.duplicate_review import (
         assess_reviews,
         calibrate_search,
@@ -152,7 +155,7 @@ class QualityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             output = Path(name)
             (output / "selection.csv").write_text("relative_path,exclusion_reason\n")
-            with sqlite3.connect(output / "fingerprints.sqlite") as db:
+            with closing(sqlite3.connect(output / "fingerprints.sqlite")) as db, db:
                 db.execute("CREATE TABLE images(path,full_phash,crop_phash,exclusion)")
                 db.executemany(
                     "INSERT INTO images VALUES (?,?,?,?)",
@@ -225,7 +228,7 @@ class QualityTests(unittest.TestCase):
             source = Path(name) / "source"
             source.mkdir()
             index = source / "fingerprints.sqlite"
-            with sqlite3.connect(index) as db:
+            with closing(sqlite3.connect(index)) as db, db:
                 db.execute(
                     "CREATE TABLE images(path,split,source_type,label,full_phash,crop_phash,exclusion,error)"
                 )
@@ -350,12 +353,28 @@ class QualityTests(unittest.TestCase):
                 exact_duplicates(root)
 
     def test_hamming_neighbors_and_distinct_counterpart(self):
-        pairs, saturated = near_candidates(
-            ["0000000000000000", "0000000000000001", "ffffffffffffffff"]
-        )
-        self.assertEqual(pairs, [("0000000000000000", "0000000000000001", 1)])
+        signatures = ["0000000000000000", "0000000000000001", "ffffffffffffffff"]
+        expected = [(signatures[0], signatures[1], 1)]
+        pairs, saturated = near_candidates(signatures)
+        # LSH recall varies by native OpenCV build; exact search owns coverage.
+        self.assertTrue(set(pairs) <= set(expected))
+        self.assertEqual(len(pairs), len(set(pairs)))
         self.assertEqual(saturated, 0)
+        self.assertEqual(list(complete_hamming_pairs(signatures)), expected)
         self.assertEqual(near_candidates([]), ([], 0))
+
+    def test_lsh_candidates_are_filtered_and_deduplicated(self):
+        signatures = ["0000000000000000", "0000000000000001", "ffffffffffffffff"]
+        with patch(
+            "facial_attendance.liveness.audit.image_fingerprints.cv2.flann_Index"
+        ) as index:
+            index.return_value.knnSearch.return_value = (
+                np.array([[0, 1, -1], [1, 0, 2], [2, 1, 0]]),
+                np.array([[0, 1, 99], [0, 1, 63], [0, 63, 64]]),
+            )
+            pairs, saturated = near_candidates(signatures)
+        self.assertEqual(pairs, [(signatures[0], signatures[1], 1)])
+        self.assertEqual(saturated, 0)
 
     def test_scan_bound_to_source_and_stages_leave_unknowns_unverified(self):
         from facial_attendance.liveness.datasets.image_inventory import write_inventory
@@ -382,7 +401,7 @@ class QualityTests(unittest.TestCase):
             self.assertTrue(complete["search_complete"])
             self.assertEqual(complete["result"], "UNVERIFIED")
             self.assertFalse("accepted" in complete)
-            with sqlite3.connect(complete_dir / "candidates.sqlite") as graph:
+            with closing(sqlite3.connect(complete_dir / "candidates.sqlite")) as graph:
                 for view, summary in complete["views"].items():
                     members = graph.execute(
                         "SELECT path,signature FROM members WHERE view=?", (view,)

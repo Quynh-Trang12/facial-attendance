@@ -16,6 +16,7 @@ import csv
 import json
 import sqlite3
 from collections import Counter
+from contextlib import closing
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
@@ -118,7 +119,7 @@ def build(project, reviews, policy_path, output):
                     continue
             decisions[name] = candidate
 
-    with sqlite3.connect(audit_root / "crops.sqlite") as db:
+    with closing(sqlite3.connect(audit_root / "crops.sqlite")) as db:
         details = {
             name: json.loads(
                 db.execute(
