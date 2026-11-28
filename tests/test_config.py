@@ -1,11 +1,11 @@
 """Portable storage configuration must not depend on a developer's working directory."""
 
-from pathlib import Path
-from contextlib import redirect_stderr
-from io import StringIO
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stderr
+from io import StringIO
+from pathlib import Path
 
 from facial_attendance.config import load_paths
 from facial_attendance.environment import main, read_pins
@@ -55,6 +55,26 @@ class ConfigTests(unittest.TestCase):
                     load_paths(self.config, root=self.root).face_data,
                     external.resolve(),
                 )
+
+    def test_optional_camera_paths_and_cli_overrides_are_canonical(self):
+        self.write_config()
+        paths = load_paths(self.config, root=self.root)
+        self.assertEqual(
+            paths.camera_trials, (self.root / "data/liveness/camera-trials").resolve()
+        )
+        self.write_config(camera_trials="recordings", detector_model="models/face.onnx")
+        paths = load_paths(
+            self.config,
+            root=self.root,
+            overrides={"liveness_data": self.root / "external", "camera_trials": None},
+        )
+        self.assertEqual(paths.liveness_data, (self.root / "external").resolve())
+        self.assertEqual(paths.camera_trials, (self.root / "recordings").resolve())
+        self.assertEqual(
+            paths.detector_model, (self.root / "models/face.onnx").resolve()
+        )
+        with self.assertRaises(ValueError):
+            load_paths(self.config, root=self.root, overrides={"liveness_dat": "typo"})
 
     def test_repository_dataset_default_matches_download_cache(self):
         # This checks configuration coherence without requiring private data in CI.

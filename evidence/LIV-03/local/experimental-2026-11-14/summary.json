@@ -1,0 +1,205 @@
+{
+  "report_type": "experimental_readiness_summary",
+  "recorded_at": "2026-11-14T03:14:50.358141+00:00",
+  "result": "PASS",
+  "experimental_ready": true,
+  "readiness_checks": {
+    "source_annotation_mapping": "PASS",
+    "selected_input_integrity": "PASS",
+    "partition_integrity": "PASS",
+    "selected_family_coverage": "PASS",
+    "exact_deduplication": "PASS",
+    "near_candidate_policy": "PASS",
+    "sample_batch_alignment_and_traceability": "PASS"
+  },
+  "selected_rows": 339925,
+  "cleaned_subset_counts": {
+    "train": 277903,
+    "validation": 31211,
+    "test": 30811
+  },
+  "family_counts": {
+    "train": {
+      "live": 143778,
+      "print": 70623,
+      "screen": 63502
+    },
+    "validation": {
+      "live": 16116,
+      "print": 7848,
+      "screen": 7247
+    },
+    "test": {
+      "live": 19764,
+      "print": 4809,
+      "screen": 6238
+    }
+  },
+  "baseline_after_exact_deduplication": {
+    "train": 318256,
+    "validation": 35465,
+    "test": 49641,
+    "total": 403362
+  },
+  "additional_exclusions": {
+    "confirmed_near_duplicate": 27,
+    "near_candidate_quarantine": 63390,
+    "exact_crop_duplicate": 20
+  },
+  "candidate_policy": {
+    "name": "direct-pair-quarantine-v2",
+    "search_complete": true,
+    "priority": "test, validation, train; lexical path within each split",
+    "candidate_occurrences_by_view": {
+      "full_phash": 564712,
+      "crop_phash": 1053782
+    },
+    "dispositions": {
+      "confirmed_duplicate": 54,
+      "full_image_constraint": 562851,
+      "cross_split_constraint": 1121,
+      "same_split_annotation_contrast": 707,
+      "reviewed_same_split_presentation": 5,
+      "reviewed_distinct": 3,
+      "crop_similarity_diagnostic": 1053753
+    },
+    "remaining_actionable_pairs": 0,
+    "reviewed_cross_split_relations": 0,
+    "exclusion_counts": {
+      "confirmed_near_duplicate": 27,
+      "near_candidate_quarantine": 63390,
+      "exact_crop_duplicate": 20
+    },
+    "scope": "Full-image radius-6 candidates across splits and within the same split/source type, with explicit distinct/presentation exemptions; confirmed duplicates and reviewed cross-split source relations; exact face-crop redundancy/conflicts.",
+    "limits": "Unreviewed exclusions are conservative quarantine, not confirmed duplicates. Crop-only pHash similarity is diagnostic regardless of split. No media/session IDs are inferred. This does not establish recall outside radius 6 or independence of unknown source captures.",
+    "optional_review_anchors": 38243,
+    "review_requirement": "No exhaustive human review is required for readiness. Review direct anchors to consider reinstatement; each exemption needs an explicit pair decision. A preview of some members does not adjudicate unseen members."
+  },
+  "candidate_verification": {
+    "full_phash": {
+      "retained_constraints_before_review_exemptions": 4,
+      "explicit_review_exemptions": 4,
+      "remaining_actionable": 0
+    },
+    "crop_phash": {
+      "retained_cross_split_similarity_pairs_diagnostic_only": 45711,
+      "remaining_reviewed_cross_split_source_relations": 0
+    }
+  },
+  "remaining_exact_groups": {
+    "file_hash": 0,
+    "pixel_hash": 0,
+    "crop_hash": 0
+  },
+  "provenance_coverage": {
+    "source_media_known": 0,
+    "source_media_unknown": 339925,
+    "session_known": 0,
+    "session_unknown": 339925
+  },
+  "controlled_crop_diagnostic": {
+    "trials": 28,
+    "recovered": 26,
+    "readiness_effect": "informational; unchanged measurement, not a PASS claim"
+  },
+  "public_loader_verification": {
+    "result": "PASS",
+    "samples": 24,
+    "api": "Public LivenessImages with audit_file=experimental-readiness.json",
+    "counts": {
+      "train": 277903,
+      "validation": 31211,
+      "test": 30811
+    },
+    "image_shape": [
+      8,
+      3,
+      224,
+      224
+    ],
+    "image_dtype": "torch.float32",
+    "target_dtype": "torch.int64"
+  },
+  "unit_tests_passed": 89,
+  "runtime": {
+    "python": "3.13.16 (main, Oct 14 2026, 01:04:01) [Clang 23.1.3 ]",
+    "device": "CPU",
+    "packages": {
+      "torch": "2.13.0+cu126",
+      "torchvision": "0.28.0+cu126",
+      "Pillow": "11.2.1",
+      "scikit-learn": "1.9.1"
+    },
+    "decode_workers": 1
+  },
+  "git_revision": "ebe9d463989edcea5aa73f71b12b3909ff7971ab",
+  "git_branch": "feat/liv-03-anti-spoofing-audit-loader",
+  "source_state": "Uncommitted workspace implementation hashes identify this run; Git revision alone is insufficient.",
+  "execution_boundary": "Reused the bound 13 November full-scan fingerprints and 14 November complete candidate graph. Executed the experimental CLI, all selected-candidate policy checks, public loading on all three splits and 24 real tensor/target/readback checks on Linux. No raw-data copy or full raw decode was repeated.",
+  "unrun": [
+    "model training",
+    "model effectiveness/real-time integration",
+    "new Colab execution",
+    "native Windows/macOS execution",
+    "independent human review"
+  ],
+  "limitations": [
+    "Labels use published source annotations unless an evidence-bearing review rejects them; visual review is not exhaustive.",
+    "Unknown source media and capture-session IDs remain unknown; supplied IDs are checked for split overlap.",
+    "Complete radius-6 search does not establish natural-pair recall or invariance to all crops; measured pHash misses remain diagnostic.",
+    "Candidate quarantine can exclude distinct images. Crop-only pHash similarity is diagnostic in every split and is not a duplicate verdict.",
+    "These are cleaned experimental subsets; metrics must not be described as the unmodified original benchmark.",
+    "The full-scan fingerprints are reused with verified bindings; loading rechecks image/box hashes on access.",
+    "Experimental readiness does not establish model effectiveness, real-time integration or full visual/provenance verification."
+  ],
+  "full_verification": "Historical exhaustive visual/provenance assessment remains separate and incomplete; this receipt authorizes a documented training experiment only.",
+  "evidence": {
+    "experimental-readiness.json": {
+      "sha256": "b1a9f5c44057acd3875d3c5f9711ca7939829ba4f955040ecd0b6d94fdbcda03"
+    },
+    "selection.csv": {
+      "sha256": "e81e724740e1a9017ccff0d5f136d536b2cd0f1a9e9487176274682711653967"
+    },
+    "candidate-policy.json": {
+      "sha256": "d953f3398e7b630941b07ff7de5b3772c7a4f619d117eeffcd2eecba46b6c235"
+    },
+    "review-priority.csv": {
+      "sha256": "84b70119d0cc4c54cb943d182f42ac6b017c16f591b147a6ffed77fe8bef9d67"
+    },
+    "review-anchors.csv": {
+      "sha256": "fbca76e84120f7284a6042255dc5792aa749a12ded40fecfba874b5a47d352bc"
+    },
+    "public-loader-check/result.json": {
+      "sha256": "f0abcfaf0f6a7ecf92aed88edb865bff9972bebb4b6c37929f7f4d70840740bd"
+    },
+    "independent-policy-check.json": {
+      "sha256": "ed2eccc0048145d8e0b52105acb454f8e8551fdce78e280576c5aa41c054c996"
+    },
+    "tests.log": {
+      "sha256": "968b75029b6fe6a096d9225b7527abd853b2ed61beea2cfe08d492dcfad757c5"
+    },
+    "quarantine-anchor-0.json": {
+      "sha256": "031d4004c22cde008135fac25778fc0ce5dc7c0055fc84da154062f9e31afa91"
+    },
+    "quarantine-anchor-0.png": {
+      "sha256": "d9b292ca198f9c497f131dc160801cba1e554866916e4e3fabcaf85b878ec8a9"
+    }
+  },
+  "implementation_sha256": {
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/data_contract.py": "11a0527976e2bf6d8ff375f2512fee721832f2757b6275d5275eea14836e0aa1",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/data_loader.py": "bd6bbf4b0ef5e63a7afa075c2b6d4f789309f5f962ac59b3ff2f554d5108306d",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/dataset_files.py": "5258994d8e7b862226d30a936dcfb731eff659e57e7be579898e6cee32cb62bc",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/image_inventory.py": "327ff461c4559666a9d6154cbbfa200227b733ec2bfe1a935b578e8e103e84b4",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/face_crop.py": "29c33d48cc394791b791a4ba10d58b2114da30195ecda6c7727060e428db415f",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/split_rules.py": "003d41d4a641834bdbafaa03a816a9b17a4c059e2e2d9e4682e49ecc117217c8",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/dataset_audit.py": "dd310b0b0f4da868f47a5822882e5c9959bd988682659fb517740b4300aa5a40",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/audit_report.py": "a140e67466f752dcf3936c7da4c680b6112ee60d70fa59181f19764ba874785c",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/quality_audit.py": "4bf58d7054b91eed84d5d8e930258fdf30fb0c326eca408c2a0a77de6cbbbce4",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/image_fingerprints.py": "2e62a66881f98ee9c1a3c082c69c63d4acce33d5d3ad32d242fd40026d69e2a0",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/near_search.py": "f6f70e57cfac87226acbdd009c4a03ba9e45ea2c8ea9e9616ba122de1a6161d4",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/candidate_policy.py": "bcd878389afaee70ec1095e013183c91b1f9886e0fd09ba6082c25b0c5693dfa",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/experimental_readiness.py": "745a4409890cf866d5f3f5af853877220609dd24bba30db8cc6ffb9b1ce5767f",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/liveness/sample_batches.py": "02ee0684cdf3e4eb0298e4433cd91a3d3b255c1eecbc1933f8c2323b917e7812",
+    "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/src/facial_attendance/recognition/data_loader.py": "16f1c0161ecdd8e6ac65870ea92c3fb646413d53e589c7b8c5664a8939a4c3c0"
+  }
+}

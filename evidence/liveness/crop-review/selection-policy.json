@@ -1,0 +1,21 @@
+{
+  "schema": "liveness-crop-eligibility-policy-v3",
+  "detector": "Project-pinned YuNet with its existing published score/NMS settings",
+  "face_count_alone_determines_eligibility": false,
+  "zero_faces": "Review locator failure, intended ROI and input content; no automatic acceptance, quarantine or exclusion",
+  "multiple_faces": "Review intended target and label/ROI correspondence; no automatic acceptance, quarantine or exclusion",
+  "exactly_one_face": "Review supplied-box alignment and native-crop quality; detection is not sufficient for acceptance",
+  "label_usage": "Retain the original label as evidence; neither live nor spoof labels certify ROI validity",
+  "quarantine_basis": "Confirmed wrong ROI/target or confirmed unusable input, supported by source-bound review evidence",
+  "inference_gate": "Runtime uncertain for zero/multiple detected faces remains separate from training-data eligibility",
+  "historical_audit_dispositions": "All old face-count-derived proposed_disposition values remain diagnostic observations only. Eligibility comes from explicit content-review decisions under this policy; preserve historical audit receipts and source snapshots.",
+  "source_data_changes": false,
+  "training_started": false,
+  "eligibility_basis": "Source image, supplied crop, intended target/label correspondence and native input quality",
+  "detector_role": "Candidate discovery and review prioritization only; no detector confirmation is required for a source-content finding",
+  "confirmed_wrong_roi_or_target": "Quarantine directly based on recorded content-review evidence; do not require detector agreement or a replacement bbox",
+  "confirmed_unusable_crop": "Quarantine based on recorded input-quality findings; native size alone is not an unreviewed automatic cutoff",
+  "correct_roi": "Assess input quality; retain only when correct and usable are confirmed",
+  "unresolved_roi_or_quality": "Keep in review; do not equate uncertainty with a confirmed defect",
+  "filtered_dataset_reporting": "Retain original split identity and source bytes; record exclusions by split/type. Report the result as a filtered project subset, not the intact original benchmark"
+}

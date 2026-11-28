@@ -1,0 +1,315 @@
+{
+  "selection": "12 smallest native training crops among rows scanned so far; not a representative sample or complete review",
+  "scanned_rows_at_selection": 109360,
+  "candidates": [
+    {
+      "relative_path": "Data/train/1061/live/112374.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        13,
+        182,
+        23,
+        227
+      ],
+      "native_size": [
+        10,
+        45
+      ],
+      "detector_boxes": [
+        [
+          75,
+          42,
+          124,
+          107
+        ]
+      ],
+      "decision": "confirmed_wrong_roi",
+      "finding": "Supplied narrow region excludes the foreground face and crops non-face content.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-01.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    },
+    {
+      "relative_path": "Data/train/1300/live/071525.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        62,
+        345,
+        73,
+        367
+      ],
+      "native_size": [
+        11,
+        22
+      ],
+      "detector_boxes": [],
+      "decision": "confirmed_wrong_roi",
+      "finding": "Supplied region crops clothing. The intended face is concealed; no replacement ROI accepted.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-01.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    },
+    {
+      "relative_path": "Data/train/1517/live/047995.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        0,
+        3,
+        12,
+        68
+      ],
+      "native_size": [
+        12,
+        65
+      ],
+      "detector_boxes": [
+        [
+          48,
+          46,
+          95,
+          108
+        ]
+      ],
+      "decision": "partial_roi_target_unresolved",
+      "finding": "Supplied crop is a narrow partial face at the left image edge; the separate complete face is only a proposal.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-01.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "review"
+    },
+    {
+      "relative_path": "Data/train/1352/live/229315.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        0,
+        13,
+        13,
+        103
+      ],
+      "native_size": [
+        13,
+        90
+      ],
+      "detector_boxes": [
+        [
+          23,
+          46,
+          103,
+          152
+        ]
+      ],
+      "decision": "partial_roi_target_unresolved",
+      "finding": "Supplied crop is a narrow partial face at the left image edge; intended identity remains unresolved.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-01.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "review"
+    },
+    {
+      "relative_path": "Data/train/2030/live/069696.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        0,
+        98,
+        13,
+        169
+      ],
+      "native_size": [
+        13,
+        71
+      ],
+      "detector_boxes": [
+        [
+          86,
+          61,
+          151,
+          145
+        ]
+      ],
+      "decision": "partial_roi_target_unresolved",
+      "finding": "Supplied crop contains only a narrow part of a second face at the left edge; target correspondence unresolved.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-02.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "review"
+    },
+    {
+      "relative_path": "Data/train/2576/live/003864.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        10,
+        126,
+        24,
+        188
+      ],
+      "native_size": [
+        14,
+        62
+      ],
+      "detector_boxes": [
+        [
+          19,
+          30,
+          54,
+          77
+        ]
+      ],
+      "decision": "confirmed_wrong_roi",
+      "finding": "Supplied region crops torso/clothing rather than the visible foreground face.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-02.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    },
+    {
+      "relative_path": "Data/train/1728/spoof/082325.jpg",
+      "split": "train",
+      "binary_label": 1,
+      "supplied_box": [
+        291,
+        16,
+        315,
+        31
+      ],
+      "native_size": [
+        24,
+        15
+      ],
+      "detector_boxes": [],
+      "decision": "confirmed_wrong_roi",
+      "finding": "Supplied region is at the printed presentation upper edge, outside the depicted face.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-02.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    },
+    {
+      "relative_path": "Data/train/2338/spoof/109104.jpg",
+      "split": "train",
+      "binary_label": 1,
+      "supplied_box": [
+        281,
+        230,
+        305,
+        245
+      ],
+      "native_size": [
+        24,
+        15
+      ],
+      "detector_boxes": [],
+      "decision": "partial_roi_quality_review",
+      "finding": "Supplied region is a tiny partial patch of the printed head rather than a complete face ROI.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-02.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "review"
+    },
+    {
+      "relative_path": "Data/train/265/live/453860.jpg",
+      "split": "train",
+      "binary_label": 0,
+      "supplied_box": [
+        90,
+        152,
+        107,
+        215
+      ],
+      "native_size": [
+        17,
+        63
+      ],
+      "detector_boxes": [
+        [
+          41,
+          48,
+          72,
+          88
+        ]
+      ],
+      "decision": "confirmed_wrong_roi",
+      "finding": "Supplied region crops arm/body rather than the visible foreground face.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-03.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    },
+    {
+      "relative_path": "Data/train/10065/spoof/359844.jpg",
+      "split": "train",
+      "binary_label": 1,
+      "supplied_box": [
+        50,
+        171,
+        68,
+        195
+      ],
+      "native_size": [
+        18,
+        24
+      ],
+      "detector_boxes": [],
+      "decision": "confirmed_wrong_target",
+      "finding": "Supplied region selects a distant background face rather than the foreground masked presentation.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-03.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    },
+    {
+      "relative_path": "Data/train/2338/spoof/311951.jpg",
+      "split": "train",
+      "binary_label": 1,
+      "supplied_box": [
+        286,
+        186,
+        312,
+        204
+      ],
+      "native_size": [
+        26,
+        18
+      ],
+      "detector_boxes": [],
+      "decision": "partial_roi_quality_review",
+      "finding": "Supplied region captures a small partial patch of the print; a complete, trustworthy face ROI is not established.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-03.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "review"
+    },
+    {
+      "relative_path": "Data/train/2968/spoof/381595.jpg",
+      "split": "train",
+      "binary_label": 1,
+      "supplied_box": [
+        14,
+        530,
+        32,
+        564
+      ],
+      "native_size": [
+        18,
+        34
+      ],
+      "detector_boxes": [],
+      "decision": "confirmed_wrong_roi",
+      "finding": "Supplied region is on the lower edge of the print, outside its depicted face.",
+      "review_method": "Codex visual inspection of rendered original/supplied crop/detector proposals",
+      "evidence": "page-03.png",
+      "replacement_bbox_accepted": false,
+      "eligibility_decision": "quarantine"
+    }
+  ],
+  "eligibility_applied": false,
+  "limitation": "Prioritized early training examples only. Confirmed defects and unresolved partial ROIs are distinct; no inference about defect prevalence or full-dataset clearance.",
+  "eligibility_policy": "../selection-policy.json"
+}

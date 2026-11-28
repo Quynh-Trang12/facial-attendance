@@ -1,1 +1,1 @@
-"""Home for trained anti-spoofing models and their inference adapter."""
+"""Live/spoof data auditing, model training, evaluation and inference."""

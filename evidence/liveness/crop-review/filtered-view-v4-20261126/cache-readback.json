@@ -1,0 +1,59 @@
+{
+  "cache_view_sha256": "439bc14889c86c445aede82901b18b571157fc735e1f006bc7fe27e7485f622f",
+  "scope": "Sampled train and validation TAR readback; full split index alignment; not whole-cache pixel certification or GPU training",
+  "splits": {
+    "train": {
+      "samples": 444114,
+      "normal_access_without_pending": true,
+      "synthetic_teacher_index_alignment": true,
+      "readback": [
+        {
+          "view_index": 0,
+          "base_index": 0,
+          "relative_path": "Data/train/1/live/000184.jpg",
+          "pixels_and_labels_match": true
+        },
+        {
+          "view_index": 2100,
+          "base_index": 2100,
+          "relative_path": "Data/train/10034/spoof/126037.jpg",
+          "pixels_and_labels_match": true
+        },
+        {
+          "view_index": 3768,
+          "base_index": 3769,
+          "relative_path": "Data/train/10065/spoof/362971.jpg",
+          "pixels_and_labels_match": true
+        }
+      ]
+    },
+    "validation": {
+      "samples": 49479,
+      "normal_access_without_pending": true,
+      "synthetic_teacher_index_alignment": true,
+      "readback": [
+        {
+          "view_index": 0,
+          "base_index": 0,
+          "relative_path": "Data/train/10008/live/019610.jpg",
+          "pixels_and_labels_match": true
+        },
+        {
+          "view_index": 2100,
+          "base_index": 2100,
+          "relative_path": "Data/train/1317/live/225858.jpg",
+          "pixels_and_labels_match": true
+        },
+        {
+          "view_index": 4499,
+          "base_index": 4500,
+          "relative_path": "Data/train/1727/live/030219.jpg",
+          "pixels_and_labels_match": true
+        }
+      ]
+    }
+  },
+  "readback_origin_manifest_sha256": "9f7d8b1a9cf3efc05b0ae8a3f061d78e229fa79a942e033756f4dcdd720686bb",
+  "readback_origin_receipt_sha256": "f4e33de243eee4b26a6c2e93eeea3ac5a87f7174646a5e6f395c39e2ab51ecc6",
+  "reuse_basis": "Actual train/validation source-pixel readback was executed against filtered-view-v3. All split bindings and all nine row-index files are byte-identical in v4; v4 only corrects the reviewed-retained versus not-reviewed summary counts. No extra image decoding is needed for this metadata correction."
+}

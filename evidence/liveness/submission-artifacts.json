@@ -1,0 +1,109 @@
+{
+  "schema": "facial-attendance-submission-artifacts-v1",
+  "source_inventory": "configs/liveness-release.json",
+  "selected_model": {
+    "configuration": "aenet-full",
+    "selected_epoch": 18,
+    "local_path": "evidence/liveness/liveness-continuation/aenet-full-resume-20261123T092427Z-4631/liveness-inference.pt",
+    "drive_file_id": "1k-l0TXaD4ZgDKDeLgrdWsr8o3I6dyEFP",
+    "download_url": "https://drive.google.com/file/d/1k-l0TXaD4ZgDKDeLgrdWsr8o3I6dyEFP/view",
+    "bytes": 44801099,
+    "sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+    "git_distribution": "External model artifact; weight files remain ignored by Git"
+  },
+  "evidence": {
+    "comparison_15_epochs": "evidence/liveness/liveness-comparison/model-choice.json",
+    "continuation_25_epochs": "evidence/liveness/liveness-continuation/model-choice.json",
+    "public_test": "evidence/liveness/crop-review/filtered-view-v4-20261126/filtered-test-evaluation.json",
+    "public_predictions": "evidence/liveness/crop-review/filtered-view-v4-20261126/filtered-test-evaluation-predictions.csv",
+    "camera_trials": "evidence/liveness/liveness-continuation/camera-evaluation/6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430/latest.json",
+    "original_public_test": "evidence/liveness/liveness-continuation/evaluation/aenet-full/6715d53461e6d123/public-test/evaluation.json",
+    "original_public_predictions": "evidence/liveness/liveness-continuation/evaluation/aenet-full/6715d53461e6d123/public-test/predictions.csv",
+    "package_layout_verification": "evidence/liveness/package-refactor/verification.json"
+  },
+  "runtime_inputs": {
+    "camera_recordings": {
+      "path": "data/liveness/camera-trials",
+      "recordings": 25,
+      "source": "Original bytes identified by recording_sha256 in the saved camera report"
+    },
+    "prepared_face_arrays": {
+      "path": "data/liveness/face-cache/faces",
+      "location": "Shared project on Google Drive",
+      "local_mirror": false,
+      "note": "Prepared arrays are external runtime inputs, not Git source files"
+    },
+    "geometric_targets": {
+      "path": "data/liveness/face-cache/geometry/geometric-targets.npy",
+      "drive_file_id": "10FdW0rHWzK0sKr6ZBAYh856HlO8-7d7I",
+      "local_mirror": true,
+      "download_verification": {
+        "verified_on": "2026-11-28",
+        "method": "SHA-256 and NumPy header verified on the independent file at the declared project runtime path",
+        "sha256": "4874067777a9bdb7fbe43ed28e95db3edbd328288181406527f528f597893ebb",
+        "bytes": 1393503680,
+        "shape": [
+          444357,
+          4,
+          14,
+          14
+        ],
+        "dtype": "<f4",
+        "matches_release_inventory": true
+      },
+      "distribution": "Project-local runtime artifact; distributed separately from Git source because the array is 1,393,503,680 bytes. Drive is a download source, not a dependency on the Downloads directory.",
+      "download_url": "https://drive.google.com/file/d/10FdW0rHWzK0sKr6ZBAYh856HlO8-7d7I/view",
+      "receipt": {
+        "bindings": {
+          "schema": "aenet-geometric-cache-v1",
+          "data": {
+            "root": "/content/facial-attendance/data/raw/liveness/celeba-spoof-full",
+            "inventory": "/content/facial-attendance/data/raw/liveness/celeba-spoof-full/audits/current-schema-2026-11-12/inventory.csv",
+            "inventory_sha256": "b4262e03e92bddbf21e48ce29980506423ca5fbf07aa1e3d728b253dced1b35b",
+            "annotations": "/content/facial-attendance/data/raw/liveness/celeba-spoof-full/reviewed_project_train.json",
+            "annotations_sha256": "e10a6102e7f5b1ca18b192d9c2708049d343551ee6267f4bd52f04a74bd70360",
+            "samples": 444357,
+            "crop_recipe": "celeba-spoof-client-integer-coordinates-ratio-first-v1"
+          },
+          "depth_checkpoint_sha256": "e9e72855961cc7d7d98a44bbc305236e003499f4a1dd42472f0b6257832df654",
+          "reflection_checkpoint_sha256": "3f5e0701c89c5c50c215f671ce51a7ade8056d76e71883b3332e651a2b549709",
+          "mesh_sha256": {
+            "face_ind.txt": "86a7ce5131d3c827c368fd3c1236ded6b5d80802f1abd5cf98940ba0595ab231",
+            "triangles.txt": "8b220a97756a4f7265d22f7ad2b3aa3812588671b7821ab075a563d900b47074"
+          },
+          "shape": [
+            444357,
+            4,
+            14,
+            14
+          ],
+          "dtype": "<f4",
+          "row_order": "lexicographically sorted annotation paths",
+          "projection": "PRNet supplied-box 1.6 crop; min/max z; source mean-triangle z-buffer projected directly to 14x14",
+          "reflection": "Source BGR teacher; RGB 224x224 face input; clamp/uint8 quantization then bilinear 14x14",
+          "source_sha256": {
+            "geometric_cache.py": "397f40ff0a150276d658800306e0acd7f1df88488c219f9eaf1f3500573d611e",
+            "depth_teacher.py": "0f494f175a16e94b1ce5cc5961024eb9a9d39fe0b53ae5c582b4264b1b57b217",
+            "depth_projection.py": "79e85715e054278ecaa9d5934ea6ee91829f671773219b62d35a9b47550bc9d4",
+            "reflection_teacher.py": "de56a09024fdd6bd7ea3e1bd1c9affa9716ba2b0520474e6bd94f607bb6fac22",
+            "geometric_supervision.py": "559084516cc7eb8b5b9b4153a30175d041981811bacf9160f6f4d57dd74365e0",
+            "reproduction_dataset.py": "f1d97eeac4181ba639c92184a029e49b465cace72cc4bcba3c5dbfd5124eb6da"
+          }
+        },
+        "completed_rows": 444357,
+        "completed": true,
+        "current_execution_seconds": 1500.5925683660007,
+        "current_execution_rows": 9285,
+        "array_sha256": "4874067777a9bdb7fbe43ed28e95db3edbd328288181406527f528f597893ebb",
+        "base_array_sha256": "e4609d4f79cf67d3385239114454070e05f765a46dc5cefb87cd3f0d94e2b69c",
+        "correction_sha256": "4ecda5316857b8d74844779036fc13e84d30c99798631589756c239ab1c1915b"
+      },
+      "receipt_path": "data/liveness/face-cache/geometry/geometric-cache.json"
+    }
+  },
+  "limits": [
+    "No project training was rerun. Package-refactor checks use controlled CPU optimization, saved predictions and notebook inspection.",
+    "Historical reports retain their original input paths and execution metadata.",
+    "Opening external Drive files requires access to the shared project."
+  ]
+}

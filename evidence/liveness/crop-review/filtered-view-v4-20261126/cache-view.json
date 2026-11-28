@@ -1,0 +1,384 @@
+{
+  "schema": "liveness-reviewed-cache-view-v1",
+  "created_at": "2026-11-26T09:04:35.058647+00:00",
+  "scope": "Frozen confirmed exclusions from prioritized review batch; not full dataset clearance",
+  "inventory_sha256": "b4262e03e92bddbf21e48ce29980506423ca5fbf07aa1e3d728b253dced1b35b",
+  "source_audit_summary_sha256": "73de279fb478cd337f43c29f67fa2e38a0b0cc412a91deaf9e20e7e5f380e8e3",
+  "review_bindings": {
+    "evidence/liveness/crop-review/first-candidates-20261126/candidates.json": "dc2aecac211716b0af35009d47db2e75a45a82708bc10c3d4ae6f9c8d25d051a",
+    "evidence/liveness/crop-review/review-batch-20261126-v1/candidates.json": "9258c23b67fca06a8c94ba5c5bde25fd737f61e7eba4c531ac10b4d42d62a508",
+    "evidence/liveness/crop-review/completed-detector-review-20261126/candidates.json": "2dfc742d5f0db8578625952bc6467559c0aa638af3a6d2ba40f59e44acd85750",
+    "evidence/liveness/crop-review/resolved-review-20261126/candidates.json": "edd8be28ffe5f17aa5ea0b695400cb1393562a77053e3a24bb05ec579c9b6e09"
+  },
+  "policy_sha256": "4af203772196a09be76d86ebf534c46a36ccbb4f7734f634a612bf7b5deec057",
+  "quarantine_sha256": "e42712fa5ac96535efcf2dc0f2c85fc4f1eb715c321ce2e2e0adca9cded2f79f",
+  "pending_review_sha256": "99f7c32588b8c8a86b9d04ffb91fd0919924e44b15f00927da3c6caff012d3ad",
+  "base_pixels_modified": false,
+  "labels_modified": false,
+  "split_memberships_moved": false,
+  "pending_review_handling": "Not labelled as confirmed defects; normal training access blocked for an affected split unless diagnostic access is explicit",
+  "splits": {
+    "train": {
+      "annotations_sha256": "e10a6102e7f5b1ca18b192d9c2708049d343551ee6267f4bd52f04a74bd70360",
+      "base_samples": 444357,
+      "base_row_order_sha256": "e923f47ffa6c9d73b92fb8b81db0cd4d7d7361e5393dbe6b11d6d9c683dc585f",
+      "retained_samples": 444114,
+      "quarantined_samples": 243,
+      "pending_review": 0,
+      "keep_indices": "train-keep-indices.npy",
+      "keep_indices_sha256": "29afd937b96de85576be09254e872ae9d193b3896e8ad7c7c3bc0d2205e2a460"
+    },
+    "validation": {
+      "annotations_sha256": "2c509deb64114a7c23cf817083292ead63d0219856b5bca6af5b1f54c67d656c",
+      "base_samples": 49504,
+      "base_row_order_sha256": "26462aea8b044b3ccf27e4248628a777552d99533b6b99afaa967c637c3f4362",
+      "retained_samples": 49479,
+      "quarantined_samples": 25,
+      "pending_review": 0,
+      "keep_indices": "validation-keep-indices.npy",
+      "keep_indices_sha256": "fd4834e03774a8273d4a3013de8aff2b69561ff7347105f6b65b3c98c1c72301"
+    },
+    "test": {
+      "annotations_sha256": "5024238665680fd6df3a1b4b1cf00b75cc60386e6c6978822df86cfe794bd14d",
+      "base_samples": 67170,
+      "base_row_order_sha256": "f72220c9b169a32456d5314f7d7db9c2265c90b78ee6790a32a2853d4f9bc592",
+      "retained_samples": 67129,
+      "quarantined_samples": 41,
+      "pending_review": 0,
+      "keep_indices": "test-keep-indices.npy",
+      "keep_indices_sha256": "b2ddd7c2bccc79a4f48b819c0bd0b91341cbadb830add4ceff71890b83e5b4b1"
+    }
+  },
+  "counts_by_split_and_source_type": [
+    {
+      "split": "train",
+      "source_type": 0,
+      "base": 146007,
+      "quarantined": 216,
+      "pending_review": 0,
+      "retained": 145791,
+      "reviewed_retained": 15,
+      "not_reviewed_in_batch": 145776
+    },
+    {
+      "split": "train",
+      "source_type": 1,
+      "base": 31999,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 31999,
+      "reviewed_retained": 9,
+      "not_reviewed_in_batch": 31990
+    },
+    {
+      "split": "train",
+      "source_type": 2,
+      "base": 28103,
+      "quarantined": 1,
+      "pending_review": 0,
+      "retained": 28102,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 28102
+    },
+    {
+      "split": "train",
+      "source_type": 3,
+      "base": 28597,
+      "quarantined": 3,
+      "pending_review": 0,
+      "retained": 28594,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 28594
+    },
+    {
+      "split": "train",
+      "source_type": 4,
+      "base": 30510,
+      "quarantined": 1,
+      "pending_review": 0,
+      "retained": 30509,
+      "reviewed_retained": 1,
+      "not_reviewed_in_batch": 30508
+    },
+    {
+      "split": "train",
+      "source_type": 5,
+      "base": 27051,
+      "quarantined": 2,
+      "pending_review": 0,
+      "retained": 27049,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 27049
+    },
+    {
+      "split": "train",
+      "source_type": 6,
+      "base": 29647,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 29647,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 29647
+    },
+    {
+      "split": "train",
+      "source_type": 7,
+      "base": 27908,
+      "quarantined": 3,
+      "pending_review": 0,
+      "retained": 27905,
+      "reviewed_retained": 3,
+      "not_reviewed_in_batch": 27902
+    },
+    {
+      "split": "train",
+      "source_type": 8,
+      "base": 29711,
+      "quarantined": 1,
+      "pending_review": 0,
+      "retained": 29710,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 29710
+    },
+    {
+      "split": "train",
+      "source_type": 9,
+      "base": 28335,
+      "quarantined": 14,
+      "pending_review": 0,
+      "retained": 28321,
+      "reviewed_retained": 9,
+      "not_reviewed_in_batch": 28312
+    },
+    {
+      "split": "train",
+      "source_type": 10,
+      "base": 36489,
+      "quarantined": 2,
+      "pending_review": 0,
+      "retained": 36487,
+      "reviewed_retained": 1,
+      "not_reviewed_in_batch": 36486
+    },
+    {
+      "split": "validation",
+      "source_type": 0,
+      "base": 16241,
+      "quarantined": 21,
+      "pending_review": 0,
+      "retained": 16220,
+      "reviewed_retained": 2,
+      "not_reviewed_in_batch": 16218
+    },
+    {
+      "split": "validation",
+      "source_type": 1,
+      "base": 3548,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3548,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3548
+    },
+    {
+      "split": "validation",
+      "source_type": 2,
+      "base": 3118,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3118,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3118
+    },
+    {
+      "split": "validation",
+      "source_type": 3,
+      "base": 3179,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3179,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3179
+    },
+    {
+      "split": "validation",
+      "source_type": 4,
+      "base": 3137,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3137,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3137
+    },
+    {
+      "split": "validation",
+      "source_type": 5,
+      "base": 3076,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3076,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3076
+    },
+    {
+      "split": "validation",
+      "source_type": 6,
+      "base": 3598,
+      "quarantined": 1,
+      "pending_review": 0,
+      "retained": 3597,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3597
+    },
+    {
+      "split": "validation",
+      "source_type": 7,
+      "base": 3107,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3107,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3107
+    },
+    {
+      "split": "validation",
+      "source_type": 8,
+      "base": 3301,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3301,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3301
+    },
+    {
+      "split": "validation",
+      "source_type": 9,
+      "base": 3152,
+      "quarantined": 3,
+      "pending_review": 0,
+      "retained": 3149,
+      "reviewed_retained": 2,
+      "not_reviewed_in_batch": 3147
+    },
+    {
+      "split": "validation",
+      "source_type": 10,
+      "base": 4047,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 4047,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 4047
+    },
+    {
+      "split": "test",
+      "source_type": 0,
+      "base": 19923,
+      "quarantined": 36,
+      "pending_review": 0,
+      "retained": 19887,
+      "reviewed_retained": 2,
+      "not_reviewed_in_batch": 19885
+    },
+    {
+      "split": "test",
+      "source_type": 1,
+      "base": 3600,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3600,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3600
+    },
+    {
+      "split": "test",
+      "source_type": 2,
+      "base": 5421,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 5421,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 5421
+    },
+    {
+      "split": "test",
+      "source_type": 3,
+      "base": 6083,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 6083,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 6083
+    },
+    {
+      "split": "test",
+      "source_type": 4,
+      "base": 4287,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 4287,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 4287
+    },
+    {
+      "split": "test",
+      "source_type": 5,
+      "base": 6097,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 6097,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 6097
+    },
+    {
+      "split": "test",
+      "source_type": 6,
+      "base": 3530,
+      "quarantined": 1,
+      "pending_review": 0,
+      "retained": 3529,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3529
+    },
+    {
+      "split": "test",
+      "source_type": 7,
+      "base": 6477,
+      "quarantined": 4,
+      "pending_review": 0,
+      "retained": 6473,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 6473
+    },
+    {
+      "split": "test",
+      "source_type": 8,
+      "base": 3659,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3659,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3659
+    },
+    {
+      "split": "test",
+      "source_type": 9,
+      "base": 4483,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 4483,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 4483
+    },
+    {
+      "split": "test",
+      "source_type": 10,
+      "base": 3610,
+      "quarantined": 0,
+      "pending_review": 0,
+      "retained": 3610,
+      "reviewed_retained": 0,
+      "not_reviewed_in_batch": 3610
+    }
+  ]
+}

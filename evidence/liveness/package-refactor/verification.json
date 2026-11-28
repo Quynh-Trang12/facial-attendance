@@ -1,0 +1,1256 @@
+{
+  "schema": "liveness-layered-package-verification-v1",
+  "recorded_at": "2026-11-28T06:46:36.807039+00:00",
+  "runtime": {
+    "python": "3.13.16",
+    "platform": "Linux x86_64",
+    "torch": "2.13.0+cu126",
+    "optimization_device": "CPU fixtures; no new project/GPU training"
+  },
+  "source_inventory": {
+    "root": "src/facial_attendance/liveness",
+    "path_format": "package-relative POSIX paths",
+    "files": {
+      "dataset_files.py": "8a202cc7c37472d34adc4a6154b3057439a6311c88cff70fbca2f3dd38020a6a",
+      "__init__.py": "f9c019d35b658767173bfcb8ebc861c069d43ba6a508d9c6d1bc789b5484ebcc",
+      "experiments/__init__.py": "72c863e4637dc43e26612f8932637a1d88ed558c70ee0ced1fb8f1f8b64bcb4d",
+      "experiments/multitask_experiment.py": "91930e13d84f3d5a2d800ed0718820161f563e08c24c9d0b20443ebd0110fae7",
+      "experiments/binary_experiment.py": "91eef6378a5f4b5e980a558fbc65d11c5b4c001228fcc03c38ce64138f604f6b",
+      "experiments/aenet_experiment.py": "af78388031f53c2702d2f14463e9390ea4b06812ce0540b37be2ffe1ee01a143",
+      "datasets/selected_dataset.py": "3314fb447fe33ab8064090504f3b2b7177eeed14a2b268f170af272eb9c12355",
+      "datasets/image_inventory.py": "e3ff1aabcaecf7600aa7979cb43d6ebbac06ab9c95d822285884869825399804",
+      "datasets/reviewed_cache.py": "d46d95813751979efc6b2648e024e9d9bf66034987ad7a0f968a764befb58cb3",
+      "datasets/__init__.py": "ec10f04781b45a7a06c39b4e0071c39aa17071162a886fbcc634afdcae56a253",
+      "datasets/decoded_cache.py": "e9f5fc726ab38d3807fa0971822269460c1b9c8f90bece7832426991b70f0cb2",
+      "datasets/semantic_dataset.py": "c7ceab0964857118ed569e80488f6c5b41ffb1b5eecd1fcebedabf8f00dfccc5",
+      "datasets/face_crop.py": "29c33d48cc394791b791a4ba10d58b2114da30195ecda6c7727060e428db415f",
+      "datasets/geometric_cache.py": "e72890589754e4d8e07e46f527b54b365dc4860ca0126acde0be8f9adab36d8f",
+      "datasets/split_rules.py": "ccfbadd6d524c3ebec05fa28ce87551c12a64280c015cb248f2e3660a3b954ea",
+      "datasets/image_augmentation.py": "01eaad95073638b7388f049847341156ffe92d34306d0f3dd52a76f98e0ee83b",
+      "datasets/data_contract.py": "f20854922636c4c2b9c8c5cb8d1a9fc5adbcca8e3264343b273e8075bd10551e",
+      "datasets/source_dataset.py": "cf1c375ae7a75a4677ae9f0c0407cf2d61541c96bb42a8cd7969e03f8b7bbe37",
+      "training/validation.py": "512cb945873a99a242d40b25ab2e0bbfffbfdc8ec493661bedd25f5d1865d130",
+      "training/__init__.py": "4d2968e62094a42fda27e47246607810dbc8faa81e57188af0ccc9f34d3bc788",
+      "training/aenet_training.py": "153892f10bcf150c85ef5a33ea0fbbffc45d4f96b8ba4bf985592ee83755b8d9",
+      "training/loader_workers.py": "af6ceada82b4f4fa0cd616f1d8275b65ebcf8e56e60fa7858375d4fa1ab92886",
+      "training/multitask_training.py": "b37132a17bcfd20252caabc260a8bc7d5447252d1aad00526d352bd91d502ae3",
+      "training/batching.py": "a15070e52c3126446d849055b650deb98b08db8e78300e7c9297856adc30b1f7",
+      "training/binary_training.py": "9d050fa7c35230de57e01b477b68786104fbade7d3daec15c859b9dd1056a3bc",
+      "training/checkpoints.py": "e0c49de27ec48f21b3dcdd8c9a237a9874205b2019ae59103a13cb5bf230a56b",
+      "evaluation/visual_analysis.py": "0353ca9e31710d77e3814cc4eff39caf480b7eba950fcec8bcd4c63d1edf12e6",
+      "evaluation/evaluation_metrics.py": "3a7a39d5d0b489ce6243fca101770017f99f74ab915bcb55da6ed5319cdc5082",
+      "evaluation/__init__.py": "0e232c870b9a2483b91e730ace2621169ec8269bca2170139da873c0edd35c25",
+      "evaluation/presentation_evaluation.py": "c9dfc4a9feb968c0d48ae12015d6d87838e09ae52151e2f9b56bf6261b877eec",
+      "evaluation/quarantine_analysis.py": "80ddeb3bfef5a42cce2608624588afc07ad3297cff330033b07eed1c8f5fcc8f",
+      "models/reflection_teacher.py": "d6002fb41d9c36cf54051d017139f5aa44701dabb1d44631a8c265e889504685",
+      "models/binary_model.py": "5ed86f4e9430d3ef783b2ef92f3a99f8580bcb37059f77a36e6570be9ef523bc",
+      "models/__init__.py": "0149c7e9c830c3109c7e339bb04e6280e28c5b96e457cbc6de0b72e67828ab52",
+      "models/depth_teacher.py": "42e37252246ff8f0d1e6125930f6d1fba29676b04d8d2d5f0c7c3f32a6c52558",
+      "models/face_detector.py": "e4278876b78a5f43d11cb0f31225f2c6a81a46af57f21475604d17e1b77ff457",
+      "models/multitask_model.py": "2452184bf283ba01f6a2629d46028732dc8022f98eb86bd7b6224b86e3a94d47",
+      "models/tensorflow_checkpoint.py": "f4291a2ad8f925a73a97f025c5544c5c72cbb9e9674dcf2931fbd882c0747ac6",
+      "audit/crop_content_scan.py": "23203f5812f6750f9c4969f696cf55c66b34054638d18d688d091dd51a6c65de",
+      "audit/duplicate_review.py": "a52d2b807ad1ab5bd84f5ae09dcdd9a36e8a8caa94ae5d87e7e23c89700055e9",
+      "audit/__init__.py": "ac600a8953bf6ce3584b0d7cf9d1702cc842727ca07a61094e4c602bddac113d",
+      "audit/audit_report.py": "9c8f3ea735e54e46527a919f7ecef1e412f371c4c8ddfbf187f281150715b5bf",
+      "audit/image_fingerprints.py": "5894e5dfecf5829bf5adb4d670b5c0b150fc5ebf998d8a0c373c3562ff130b9d",
+      "audit/experimental_readiness.py": "4d5406f78aead4b99db6e974a5be91c2bae03ae24eae46e8aad7e9f86e51f92a",
+      "audit/candidate_policy.py": "ba606593e436e20aa8351bd4c8b1355823dfd1f33e27f115932e435cf01ea9b0",
+      "audit/duplicate_scan.py": "79a2dce77a2e80a91c29cb99ce78dbfd4757c34ac8a19fa13cd2eb88a7873d4e",
+      "audit/reproduction_protocol.py": "bb034a20d76ed0990ced58eb8d6300312e450ed03c4558faac3c63a0592189ec",
+      "audit/source_integrity_audit.py": "048667486d0f65ccf774b9eef6f6a6a0e4e0cf2753118bdd736f0c8dda7828f3",
+      "inference/__init__.py": "59db64a3061c5a8166a3771693fecc78445dfa2fb945e7bd13579d564b91bc26",
+      "inference/temporal_liveness.py": "9d46e76f8ec6c3861ebed81ba41171efb237b722b8688a4db0b677e7d2c747d1",
+      "inference/liveness_adapter.py": "721092b887d2dbb89d69cb72b41bc20981c2dc595e25e8241c4aeee427524604"
+    }
+  },
+  "cli_inventory": {
+    "scripts/audit/audit_liveness_inventory.py": "8a119a016bf526a3907d2ed6e601fa25c580921a23a27ed57ad6395e5881391a",
+    "scripts/audit/audit_liveness_selection.py": "1f2d35cab31dbc02ae6a591bb9adcd016c04bc1d1e9c4ae79f13daa3f8fb5531",
+    "scripts/audit/inspect_liveness_examples.py": "f217f504802137a442faafa2337f96c69f07daeaa96c2ab39efedcc35d76bbfb",
+    "scripts/audit/review_liveness_data.py": "b886836bde515f73f7dc0827e6bcbc60f1435c7dccb730a5f20f1e195587504e",
+    "scripts/audit/scan_liveness_crop_content.py": "5945350d00d3e124afdd14339872088049c71ed564c247f1702dd05404c63e8b",
+    "scripts/capture_liveness_trial.py": "5844884618c892526679bb6df7545f65c98aeb269787908ce8050d8306e30bd7",
+    "scripts/check_environment.py": "1992055455ffde3453b102fe58cc5cf106a1df8d0d6e4bc15c018242e148dcdb",
+    "scripts/check_face_data.py": "eff8a178e05b8f0d87f6c6ea19b78b52d9b953a6726ec310e32069e78f8a28c5",
+    "scripts/evaluation/evaluate_liveness_predictions.py": "951b9a9aa6672917dfc3857bf0d8bc03d198d4396bf075a6d0ea67ea590d3311",
+    "scripts/evaluation/score_liveness_image_split.py": "fdf5071f614907de1c63e214bba4802bf3481f6bc70fe68b7c7331fbd6e570ea",
+    "scripts/evaluation/score_liveness_mp4_folder.py": "6a94a0948c0cce6d638953f608bee053f0d129177c5e852fcba329951e0c2329",
+    "scripts/evaluation/score_liveness_trial_inventory.py": "cb7757efaf247c41af805eae9e03d5c718885b6291a98f396cd776aecafd1957",
+    "scripts/liveness_camera_inputs.py": "7ab532c54cd54d74ee3694fd1a821d2fc797ba1d44286c96793b1a4f6bb211c5",
+    "scripts/liveness_training_health.py": "ad08e483691c027b0adf8a717110da11773d0e3b94f57cb272c51693e1431fe3",
+    "scripts/preparation/build_liveness_cache_view.py": "6862a4444bacc48b4b7958ed7d96312f475bb956ef7c2aecb46cdcf3921547d8",
+    "scripts/preparation/convert_liveness_depth_teacher.py": "fb720d7dd8b4e5bf9aba14ce565063c52e6e3bf173f14c6eb5fa21fe80ca5197",
+    "scripts/preparation/convert_liveness_reflection_teacher.py": "bd2fd930d5942644d3ae0de1d8171e2ee568a32d64cf1b2de190248c2e561490",
+    "scripts/preparation/correct_liveness_caches.py": "99e450ec66a3e29b8de873ddb68887b3662f190b578c86d1241e374e269592dd",
+    "scripts/preparation/prepare_liveness_data.py": "fa7e17762a1b23b6116c775a0f4f3c6770c66caefb9cce9164117216222daeda",
+    "scripts/preparation/prepare_liveness_detector.py": "44738f24ba9c2c2de3aea5c926645bde2d31726b2f50996a1dfcbf93acac7c99",
+    "scripts/preparation/prepare_liveness_geometric_cache.py": "dd84301f16a2eada82653ec371317491017389796458e0870ced266a6680dfaf",
+    "scripts/preparation/prepare_liveness_initialization.py": "15fc8d0a348425754e08610b3326d204d2b3e46687ef0755d35a7c10aea4e7d2",
+    "scripts/release/export_liveness_checkpoint.py": "acdb9e533738c040216e271423a2cda603049c9da5c1b4377fcf7e383cacf3d2",
+    "scripts/release/package_liveness_release.py": "4f33f9f97015ac2a18a5a9a8a652e5aa0c6d0d8859b877eb0986ff7c10e2a2ce",
+    "scripts/release/transport_liveness_face_cache.py": "1f6c5845464c6feaa982eb76ae6a5e4eeaeaa249e1b7e7f219d19c3fda195a73",
+    "scripts/run_liveness_comparison.py": "e416d168510207d269c58d78b8d8b3e441459919634983fcf1bedbab48da6990",
+    "scripts/run_liveness_notebook.py": "573125df6a30192deba910f11ccc8702be9afc1a9049a279daeae2cf5e4e7d84",
+    "scripts/run_liveness_public_test.py": "00f44067de34f93f6eefbea46a94503d6cb9824210c82dbe9e5fcecd12c909f7",
+    "scripts/stage_liveness_training_runtime.py": "38d2e7d6e28c9fbe62fa829bedf69b25ae161368c91dc7374b82a91acc26d996",
+    "scripts/supervise_liveness_training_process.py": "133ec4db39f9bdf529d057dad0c503ddfba3e1a382fa94eb0b0798aeff570618",
+    "scripts/training/__init__.py": "efba971dffbb593a8fa9a869207db6d765e1b4a2a77586a2fe28c51a42e9aa99",
+    "scripts/training/train_liveness_aenet.py": "987b0e16781dc009ede72cb02647748e51581c85a95608a34d9dc17fb949f2cc",
+    "scripts/training/train_liveness_binary.py": "2e5a80e17fe7432ef683df9a10172768c261f1f75a7fac1a7db7910e7008c8c5",
+    "scripts/training/train_liveness_multitask.py": "3e70205d0867e724e48bbb652097d786fb38acd7577f9313ba86ff6152874a4a"
+  },
+  "checks": {
+    "new_package_snapshot": {
+      "result": "PASS",
+      "layout": [
+        "models/",
+        "datasets/",
+        "training/",
+        "experiments/",
+        "audit/",
+        "evaluation/",
+        "inference/"
+      ],
+      "all_copied_checksums_match": true,
+      "source_file_count": 51
+    },
+    "new_layout_resume": {
+      "result": "PASS",
+      "scope": "Controlled CPU optimizer-state fixture using a new package-tree snapshot; not a retrained project checkpoint",
+      "from_epochs": 15,
+      "to_epochs": 25,
+      "optimizer_rng_cursor_preserved": true,
+      "next_optimizer_update_equal": true,
+      "original_checkpoint_unchanged": true,
+      "receipt_schema": "liveness-screening-extension-v1"
+    },
+    "four_configuration_optimization_parity": {
+      "result": "PASS",
+      "scope": "Two real CPU optimizer updates per configuration on controlled images and labels",
+      "baseline": "Pre-refactor source retained outside the submission",
+      "baseline_result_sha256": "711ab7da8a861829a11d4eb566b389280f3a9d596d60a14852b7b97b7ee45125",
+      "current_result_sha256": "711ab7da8a861829a11d4eb566b389280f3a9d596d60a14852b7b97b7ee45125",
+      "equal_items": [
+        "losses",
+        "all weight tensors",
+        "all gradient tensors",
+        "SGD momentum/state",
+        "RNG state"
+      ],
+      "current_results": {
+        "binary": {
+          "epoch": {
+            "gradient_proof": {
+              "depth_map_head_gradient_norm": 0.0,
+              "face_attributes_head_gradient_norm": 0.0,
+              "illumination_head_gradient_norm": 0.0,
+              "reflection_map_head_gradient_norm": 0.0,
+              "spoof_type_head_gradient_norm": 0.0
+            },
+            "losses": {
+              "binary": 0.7247597873210907,
+              "total": 0.7247597873210907
+            },
+            "optimizer_updates": 2,
+            "samples": 4
+          },
+          "gradients": "6eb0be94befb5c80159931edf56753e5a4a28153b675bc41a5e16bd2ce958bc1",
+          "optimizer": "34bb0962c9dc8082b17d8825b1ae5b4561fc021880fb71d264c4e2cb38596a1e",
+          "rng": "56bce4e4d37d7b62e2fc038d43bbdcbfca8f15354f394958644cd8138abe3480",
+          "state": "40e031edef7f17cfbba97a5146eb79fac26491104e16bd8e92153b8b3a778a8d"
+        },
+        "full": {
+          "epoch": {
+            "gradient_proof": {
+              "auxiliary_only_backbone_gradient_norm": 5448.1318359375,
+              "depth_map_head_gradient_norm": 7.849934036130435e-07,
+              "face_attributes_head_gradient_norm": 1.602030634880066,
+              "illumination_head_gradient_norm": 0.1707013100385666,
+              "reflection_map_head_gradient_norm": 0.0378723107278347,
+              "spoof_type_head_gradient_norm": 1.7275983095169067
+            },
+            "losses": {
+              "binary": 0.7283755838871002,
+              "depth_map": 0.6987804025411606,
+              "face_attributes": 0.7269783616065979,
+              "illumination": 1.6487939357757568,
+              "reflection_map": 0.17306591011583805,
+              "spoof_type": 1.7236064672470093,
+              "total": 1.7313872575759888
+            },
+            "optimizer_updates": 2,
+            "samples": 4
+          },
+          "gradients": "5aa8058623d2eb096ea4eca6396259a54f80724dc0e407dfc430c88c75953409",
+          "optimizer": "e8d329b4714c72cdf5adaa0d389c6415548d9802c89452681d1d685273f05469",
+          "rng": "56bce4e4d37d7b62e2fc038d43bbdcbfca8f15354f394958644cd8138abe3480",
+          "state": "f72331f039231eba3d78e85096915d6cbdaf3eeea26848eccd319e1c7edaebc6"
+        },
+        "geometric": {
+          "epoch": {
+            "gradient_proof": {
+              "auxiliary_only_backbone_gradient_norm": 3520.539794921875,
+              "depth_map_head_gradient_norm": 7.849934036130435e-07,
+              "face_attributes_head_gradient_norm": 0.0,
+              "illumination_head_gradient_norm": 0.0,
+              "reflection_map_head_gradient_norm": 0.0378723107278347,
+              "spoof_type_head_gradient_norm": 0.0
+            },
+            "losses": {
+              "binary": 0.5108736455440521,
+              "depth_map": 0.6810407787561417,
+              "reflection_map": 0.3253631889820099,
+              "total": 0.6115140020847321
+            },
+            "optimizer_updates": 2,
+            "samples": 4
+          },
+          "gradients": "2f5c24b1f15796994ebc1ac529461d48b8d04ab92e52ae5f22094b8c65b54ba3",
+          "optimizer": "2d7e623ee41ef22c9e47700a87989536bd4167846abeea61f3428fd8798c2623",
+          "rng": "56bce4e4d37d7b62e2fc038d43bbdcbfca8f15354f394958644cd8138abe3480",
+          "state": "0e5ba7daaae56b1c9cce678e5ecff9403cb4b5f262a920a3e7d9523e93aadf2c"
+        },
+        "semantic": {
+          "epoch": {
+            "gradient_proof": {
+              "auxiliary_only_backbone_gradient_norm": 7868.4853515625,
+              "depth_map_head_gradient_norm": 0.0,
+              "face_attributes_head_gradient_norm": 1.602030634880066,
+              "illumination_head_gradient_norm": 0.1707013100385666,
+              "reflection_map_head_gradient_norm": 0.0,
+              "spoof_type_head_gradient_norm": 1.7275983095169067
+            },
+            "losses": {
+              "binary": 0.7100069224834442,
+              "face_attributes": 0.7060316205024719,
+              "illumination": 1.5982646942138672,
+              "spoof_type": 1.6098801493644714,
+              "total": 1.5930092930793762
+            },
+            "optimizer_updates": 2,
+            "samples": 4
+          },
+          "gradients": "d9d46414d8615540e819829c2a237a52bfc3eab88b41784cd20a95760c4aae84",
+          "optimizer": "6a057325cba4dfee662de4308fe29d064d4714e541b4356315d56bb344a25adb",
+          "rng": "56bce4e4d37d7b62e2fc038d43bbdcbfca8f15354f394958644cd8138abe3480",
+          "state": "56245832211255962d6aee21e4c1e92c0ed5215d1a8a4fdc9e4662e4cef81b93"
+        }
+      }
+    },
+    "saved_prediction_reports": {
+      "result": "PASS",
+      "retained_test_rows": 67129,
+      "all_prediction_rows_equal": true,
+      "validation_and_test_metrics_equal": true,
+      "comparison_excludes": [
+        "producing source checksum",
+        "elapsed recalculation time"
+      ]
+    },
+    "source_snapshot_cli_layouts": {
+      "result": "PASS",
+      "verified_layouts": [
+        "historical flat",
+        "previous four packages",
+        "current seven packages"
+      ],
+      "scope": "Verified all declared source checksums then executed evaluation CLI help; no new evaluation run"
+    },
+    "native_cpu_inference_cache": {
+      "result": "PASS",
+      "scope": "Actual selected trained checkpoint, one face crop and one recorded clip through the shared CLI. No retraining, live webcam or native Windows/macOS execution.",
+      "fresh_inferred": 1,
+      "reused": 1,
+      "actual_recorded_frames_scored": 55,
+      "trial_outputs_and_threshold_equal": true,
+      "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430"
+    },
+    "curated_submission_inspection": {
+      "training": {
+        "result": "PASS",
+        "available_liveness_evidence_files": 185
+      },
+      "data": {
+        "result": "PASS",
+        "available_liveness_evidence_files": 185
+      },
+      "excluded_evidence_read_audit": "PASS"
+    },
+    "root_layout": {
+      "implementation_files": [
+        "dataset_files.py"
+      ],
+      "package_initializer": "__init__.py",
+      "public_adapter_import_preserved": true
+    },
+    "git_evidence_policy": {
+      "result": "PASS",
+      "current_evidence_files": 185,
+      "default": "Ignore liveness outputs unless explicitly selected in the current release inventory",
+      "raw_historical_source_copies_in_git_status": 0,
+      "tracked_files_matching_ignore_rules": 0
+    },
+    "unit_suite": {
+      "result": "PASS",
+      "command": "PYTHONPATH=src MPLCONFIGDIR=/tmp/liveness-curated-mpl XDG_CACHE_HOME=/tmp/liveness-curated-cache OMP_NUM_THREADS=1 .venv/bin/python -m unittest discover -s tests -t . -v",
+      "tests": 292,
+      "failures": 0,
+      "errors": 0,
+      "summary": "Ran 292 tests in 30.971s\n\nOK",
+      "log_sha256": "cea9184e5bd4e3724918eb54507f4bb154ab79e9c5c64e4d1bb8d041375b8f2e",
+      "disk_capacity_in_cache_publication_test": "Actual filesystem capacity; no added disk-usage mock",
+      "test_file_sha256": "80ed7e40d81fb33e7571bbc9412de3fa4132985944281837edb7201ce4239a79",
+      "skipped": 0,
+      "storage_test_module": "tests.liveness.test_liveness_runtime_staging.TrainingRestoreTests.test_cache_publication_and_staging_verify_bytes_and_reject_corruption"
+    },
+    "submission_consistency": {
+      "result": "PASS",
+      "release_inventory_files": 345,
+      "curated_liveness_evidence_files": 185,
+      "test_files": 27,
+      "missing_repository_files": 0,
+      "checksum_mismatches": 0,
+      "unexpected_visible_liveness_evidence_files": 0,
+      "tracked_ignored_files": 0,
+      "documentation_link_targets": "PASS: README, architecture, liveness data/training guides and evidence README",
+      "python_syntax": "PASS: all source, scripts and tests",
+      "external_inputs_without_local_mirror": [],
+      "external_geometry_note": "Present as an independent regular file at the declared project runtime path; checksum and array header verified locally.",
+      "lint": "PASS: Ruff check and format check",
+      "test_package_initializers": 3
+    },
+    "ruff": {
+      "version": "0.17.6",
+      "lint": {
+        "command": "ruff check .",
+        "result": "PASS",
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "format": {
+        "command": "ruff format --check .",
+        "result": "PASS",
+        "files": 139,
+        "log_sha256": "def7d5fe293998feda91cfaff6149deb141c94f9f83de6ae65bf83b362fab66d"
+      },
+      "execution": "Isolated uv tool under /tmp; project ML environment unchanged."
+    },
+    "actual_geometric_targets": {
+      "result": "PASS",
+      "array_sha256": "4874067777a9bdb7fbe43ed28e95db3edbd328288181406527f528f597893ebb",
+      "bytes": 1393503680,
+      "shape": [
+        444357,
+        4,
+        14,
+        14
+      ],
+      "dtype": "<f4",
+      "current_source_rows": 444357,
+      "current_retained_rows": 444114,
+      "inventory_annotations_crop_recipe_match": true,
+      "all_retained_indices_verified_by_current_ReviewedCacheView": true,
+      "sampled_actual_target_row_parity": true,
+      "producer_source_hashes_preserved": {
+        "geometric_cache.py": "397f40ff0a150276d658800306e0acd7f1df88488c219f9eaf1f3500573d611e",
+        "depth_teacher.py": "0f494f175a16e94b1ce5cc5961024eb9a9d39fe0b53ae5c582b4264b1b57b217",
+        "depth_projection.py": "79e85715e054278ecaa9d5934ea6ee91829f671773219b62d35a9b47550bc9d4",
+        "reflection_teacher.py": "de56a09024fdd6bd7ea3e1bd1c9affa9716ba2b0520474e6bd94f607bb6fac22",
+        "geometric_supervision.py": "559084516cc7eb8b5b9b4153a30175d041981811bacf9160f6f4d57dd74365e0",
+        "reproduction_dataset.py": "f1d97eeac4181ba639c92184a029e49b465cace72cc4bcba3c5dbfd5124eb6da"
+      },
+      "scope": "Whole-file checksum, actual current source metadata/row gate and four actual target rows; no teacher regeneration or GPU training.",
+      "physical_input": "data/liveness/face-cache/geometry/geometric-targets.npy",
+      "historical_path_metadata": "Original receipt has Colab absolute paths; this check compares content identifiers without rewriting historical provenance.",
+      "independent_project_file": true,
+      "downloads_required": false
+    },
+    "source_zip_marker_route": {
+      "result": "PASS",
+      "selection": "Existing files reported by git ls-files --cached --others --exclude-standard; deleted tracked paths omitted. No Git writes or actual merged-main ZIP download.",
+      "initial_findings": [
+        "Training inspect required ignored validation annotations.",
+        "Training inspect required ignored geometric receipt."
+      ],
+      "fix": "Inspect reads checksum-bound saved validation examples and the source-distributed original receipt instead of external dataset/cache files.",
+      "excluded_runtime_inputs": [
+        "raw dataset",
+        "training face arrays",
+        "geometric array",
+        "teacher weights",
+        "model weights"
+      ],
+      "source_only_training_inspect": "PASS",
+      "source_only_data_inspect": "PASS",
+      "cpu_inference_with_selected_checkpoint": {
+        "result": "PASS",
+        "input": "One existing saved validation crop decoded from source-distributed report",
+        "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+        "checkpoint_delivery": "Copied verified bytes to simulate manual asset download; Drive public access was not exercised",
+        "result_json": {
+          "status": "live",
+          "spoof_score": 0.0018070790683850646,
+          "live_score": 0.9981929209316149,
+          "threshold": 0.46483826637268066,
+          "allow_attendance": true,
+          "model_id": "liveness-resnet18-aenet-full",
+          "model_version": "f16fbfaf36046f75",
+          "precision": "cpu_float32"
+        },
+        "current_result": {
+          "status": "live",
+          "spoof_score": 0.0018070790683850646,
+          "live_score": 0.9981929209316149,
+          "threshold": 0.46483826637268066,
+          "allow_attendance": true,
+          "model_id": "liveness-resnet18-aenet-full",
+          "model_version": "f16fbfaf36046f75",
+          "precision": "cpu_float32"
+        }
+      },
+      "affected_suite": {
+        "tests": 292,
+        "skipped": 0,
+        "result": "PASS",
+        "log_sha256": "f7dd2d25470f8107c7ee26b43901c77e05407cbba8f54137d920fcf51d821231"
+      },
+      "handoff_notebook_sha256": {
+        "liveness-training-and-evaluation.ipynb": "d4d4a762350845a5fb1bba0f04b6fb222434414f6098f9fc43c583408f126d5a",
+        "liveness-data-preparation-and-audit.ipynb": "5cd918ee391a3aaa9c3fb71d0109675837813cf81053d3d803f47fa44ac86504"
+      },
+      "limits": [
+        "Existing Python 3.13 environment reused; fresh dependency installation was not exercised.",
+        "Commenter/private-MyDrive routing is fixture-tested; no native Commenter-account Colab run was executed.",
+        "Native Windows/macOS CI and the actual merged-main ZIP remain unexecuted here.",
+        "Liveness checks do not complete recognition/emotion/UI scaffolds or separate report/video requirements."
+      ],
+      "current_source_only_inspection": {
+        "result": "PASS",
+        "checks": {
+          "training": 0,
+          "data": 0
+        },
+        "scope": "Current Git-visible source representation; no dataset/cache/model assets required for saved inspect."
+      }
+    },
+    "pr_ci_audit": {
+      "recorded_at": "2026-11-28T03:57:02.285476+00:00",
+      "result": "LOCAL_CHECKS_PASS; NATIVE_WINDOWS_MACOS_CI_PENDING",
+      "workflow_path": ".github/workflows/checks.yml",
+      "workflow_sha256": "7344775306807fe34b2368c9ba30f9e05297e84b003a55ba07e02690c0aec87f",
+      "changes": [
+        "Linux installs the full pinned CPU runtime; unguarded ML imports no longer depend on Pillow-only installation.",
+        "Pinned Ruff lint and format checks execute on Linux.",
+        "Both notebook inspect routes and shared CLI CPU inference execute explicitly on Linux, Windows and macOS jobs.",
+        "Linux/Colab staging tests explicitly skip other OSs before importing fcntl; only POSIX evaluation-staging cases skip Windows.",
+        "Portable checkpoint helpers no longer require importing fcntl on Windows.",
+        "Symlink privileges are handled explicitly; portable relocation still runs without them.",
+        "Feature-owned tests are imported through tests.liveness/tests.recognition, with repository-root unittest discovery.",
+        "Each job prepares the pinned detector so OpenCV API/full-image and face-crop inference paths are exercised.",
+        "Audit notebook calls existing test modules/classes directly; a stale filename can no longer silently run zero tests."
+      ],
+      "source_only_notebook_inspection": {
+        "training": "PASS",
+        "data": "PASS"
+      },
+      "retired_workflow_scan": "No active work/rest scheduler or 50-epoch default in current AENet training/comparison. Historical published recipe and negative-input tests retain 50 as attributed/reference data.",
+      "portable_path_scan": "No /home, /content, /dev, /proc or nvidia-smi dependency found in shared inspect/image-inference entry point or inference package. Linux training/runtime staging keeps platform-specific code.",
+      "script_naming": "Phase folders shared across modules; feature-qualified filenames distinguish liveness, recognition and emotion commands. No speculative script-tree move.",
+      "verified_action_metadata": {
+        "checkout@v7": "node24",
+        "setup-python@v7": "node24",
+        "upload-artifact@v7.0.2": "node24"
+      },
+      "limits": [
+        "Prepared workflow is local; native Windows/macOS CI and exact PR revision have not run here.",
+        "GPU training, native Colab and webcam behavior are not established by hosted CPU checks."
+      ],
+      "current_complete_suite": {
+        "result": "PASS",
+        "command": "PYTHONPATH=src MPLCONFIGDIR=/tmp/liveness-curated-mpl XDG_CACHE_HOME=/tmp/liveness-curated-cache OMP_NUM_THREADS=1 .venv/bin/python -m unittest discover -s tests -t . -v",
+        "tests": 292,
+        "failures": 0,
+        "errors": 0,
+        "summary": "Ran 292 tests in 30.971s\n\nOK",
+        "log_sha256": "cea9184e5bd4e3724918eb54507f4bb154ab79e9c5c64e4d1bb8d041375b8f2e",
+        "disk_capacity_in_cache_publication_test": "Actual filesystem capacity; no added disk-usage mock",
+        "test_file_sha256": "80ed7e40d81fb33e7571bbc9412de3fa4132985944281837edb7201ce4239a79",
+        "skipped": 0,
+        "storage_test_module": "tests.liveness.test_liveness_runtime_staging.TrainingRestoreTests.test_cache_publication_and_staging_verify_bytes_and_reject_corruption"
+      },
+      "previous_targeted_tests": {
+        "tests": 82,
+        "result": "PASS",
+        "log_sha256": "8067caeae61eb0d4a4682fab901b979dc55d9320e77f8fbc5b96e2fccacaacdc"
+      }
+    },
+    "current_workflow_cleanup": {
+      "result": "PASS",
+      "retired_files": [
+        "scripts/preparation/prepare_liveness_ablation.py",
+        "scripts/evaluation/compare_liveness_quarantine.py",
+        "scripts/audit/analyze_liveness_readiness.py",
+        "tests/test_liveness_comparison.py",
+        "tests/test_liveness_readiness_analysis.py"
+      ],
+      "retired_location": ".local-retired/liveness (ignored; not included in GitHub source ZIP)",
+      "retired_features": [
+        "Superseded training-quarantine restoration experiment",
+        "Baseline/restored data-policy comparison",
+        "Exploratory calibration/readiness runner tied to old camera archive"
+      ],
+      "behavior_tests_preserved": [
+        "Temporal live admission requires both frame count and elapsed time",
+        "Track/gap/clock-reversal handling cannot inherit acceptance",
+        "Real cache-publication disk-capacity prerequisite retained without an added mock"
+      ],
+      "new_behavior_regression": "Camera sidecar metadata defaults to the selected recording folder; explicit metadata-root override remains available",
+      "active_camera_metadata_default": "<output-root>/metadata",
+      "stale_statement_corrected": "Selected camera report includes eight print recordings; removed the claim that print trials are unavailable.",
+      "current_scripts": 34,
+      "current_test_files": 27,
+      "current_test_cases": 292,
+      "source_only_notebook_inspection": {
+        "training": "PASS",
+        "data": "PASS"
+      },
+      "historical_results_unchanged": true,
+      "authorized_cleanup": {
+        "deleted_staging_copies": [
+          "/tmp/liveness-curated-view-7oavm126",
+          "/tmp/liveness-curated-view-_iznf48e",
+          "/tmp/liveness-curated-view-mk6khhii",
+          "/tmp/liveness-curated-view-pxir6_bn"
+        ],
+        "project_inputs_and_test_logs_preserved": true
+      },
+      "scope": "Supported frozen-selection workflow, inspection, CPU inference and Colab preparation/training entry points; not a claim of native Colab, Windows/macOS CI or webcam verification."
+    },
+    "test_package_layout": {
+      "result": "PASS",
+      "moves": {
+        "tests/test_liveness_experiment.py": "tests/liveness/test_liveness_experiment.py",
+        "tests/test_liveness_data.py": "tests/liveness/test_liveness_data.py",
+        "tests/test_face_data.py": "tests/recognition/test_face_data.py",
+        "tests/test_liveness_decoded_cache.py": "tests/liveness/test_liveness_decoded_cache.py",
+        "tests/test_liveness_geometric_supervision.py": "tests/liveness/test_liveness_geometric_supervision.py",
+        "tests/test_liveness_quality.py": "tests/liveness/test_liveness_quality.py",
+        "tests/test_liveness_runtime_staging.py": "tests/liveness/test_liveness_runtime_staging.py",
+        "tests/test_liveness_checkpoint_selection.py": "tests/liveness/test_liveness_checkpoint_selection.py",
+        "tests/test_liveness_public_test_workflow.py": "tests/liveness/test_liveness_public_test_workflow.py",
+        "tests/test_liveness_inference.py": "tests/liveness/test_liveness_inference.py",
+        "tests/test_liveness_tensorflow_checkpoint.py": "tests/liveness/test_liveness_tensorflow_checkpoint.py",
+        "tests/test_liveness_cache_corrections.py": "tests/liveness/test_liveness_cache_corrections.py",
+        "tests/test_liveness_face_transport.py": "tests/liveness/test_liveness_face_transport.py",
+        "tests/test_data_cli.py": "tests/recognition/test_data_cli.py",
+        "tests/test_liveness_datasets.py": "tests/liveness/test_liveness_datasets.py",
+        "tests/test_liveness_release_package.py": "tests/liveness/test_liveness_release_package.py",
+        "tests/test_liveness_crop_content.py": "tests/liveness/test_liveness_crop_content.py",
+        "tests/test_notebook_drive_resolver.py": "tests/liveness/test_notebook_drive_resolver.py",
+        "tests/test_liveness_run_health.py": "tests/liveness/test_liveness_run_health.py",
+        "tests/test_liveness_model.py": "tests/liveness/test_liveness_model.py",
+        "tests/test_reviewed_selection_audit.py": "tests/liveness/test_reviewed_selection_audit.py",
+        "tests/test_liveness_camera_inputs.py": "tests/liveness/test_liveness_camera_inputs.py",
+        "tests/test_liveness_aenet_training.py": "tests/liveness/test_liveness_aenet_training.py",
+        "tests/test_liveness_multitask_model.py": "tests/liveness/test_liveness_multitask_model.py"
+      },
+      "shared_tests": [
+        "tests/test_config.py",
+        "tests/test_runtime.py",
+        "tests/test_notebook_runtime.py"
+      ],
+      "feature_test_modules": {
+        "liveness": 22,
+        "recognition": 2
+      },
+      "package_initializers": [
+        "tests/__init__.py",
+        "tests/liveness/__init__.py",
+        "tests/recognition/__init__.py"
+      ],
+      "test_count_before": 292,
+      "test_count_after": 292,
+      "source_zip_view_suite": {
+        "result": "PASS",
+        "tests": 292,
+        "skipped": 0,
+        "additional_asset": "Only the pinned YuNet detector downloaded through the documented preparation CLI",
+        "absent": [
+          "dataset",
+          "model checkpoints",
+          "training caches",
+          ".local-retired"
+        ],
+        "runtime": "Existing Python 3.13 environment"
+      },
+      "pure_source_without_optional_detector": {
+        "discovered": 292,
+        "passed": 291,
+        "skipped": 1,
+        "reason": "Optional YuNet asset not prepared"
+      },
+      "documented_detector_preparation": {
+        "result": "PASS",
+        "download_and_checksum_verification": "Native execution of the documented pinned detector preparation CLI",
+        "installed_opencv_detector_api": "PASS after preparing the asset; no skip"
+      },
+      "audit_notebook_regression": "Actual audit-stage commands resolve nonempty suites through the existing staging test; stale test_liveness_reviewed_cache.py pattern removed.",
+      "qualified_audit_suites": {
+        "result": "PASS",
+        "tests": 12,
+        "log_sha256": "1ec6c022029b4d9b147a9dd0641aeac517b18184e0f2960bdfd7f0deb7f4ac8b"
+      },
+      "qualified_ci_face_crop_cli": {
+        "result": "PASS",
+        "tests": 1,
+        "log_sha256": "6dc57692f79868d82db5efc87928a2bdaea7ebd55862c09fc1abc95478a28d7f"
+      },
+      "native_full_image_cli": "PASS within the final complete suite with the prepared pinned detector",
+      "handoff_visual_outputs": {
+        "liveness-training-and-evaluation.ipynb": 24,
+        "liveness-data-preparation-and-audit.ipynb": 3
+      }
+    },
+    "native_current_cpu_inference": {
+      "result": "PASS",
+      "device": "Linux x86_64 CPU float32",
+      "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+      "face_crop": {
+        "result": "PASS",
+        "current_result": {
+          "status": "live",
+          "spoof_score": 0.0018070790683850646,
+          "live_score": 0.9981929209316149,
+          "threshold": 0.46483826637268066,
+          "allow_attendance": true,
+          "model_id": "liveness-resnet18-aenet-full",
+          "model_version": "f16fbfaf36046f75",
+          "precision": "cpu_float32"
+        },
+        "exact_before_after_json": true,
+        "input": "Existing saved validation crop decoded from the source-distributed report"
+      },
+      "mp4": {
+        "result": "PASS",
+        "recording": "An-20261124_112527-print-bright.mp4",
+        "recording_sha256": "9f46046ece1c557f0fa942734f65660d31b10ab1510da3bb70e99077a6bf6f1a",
+        "fresh_inferred": 1,
+        "cache_reused": 1,
+        "exact_before_after_scores_decisions_threshold": true,
+        "current_trials": [
+          {
+            "trial_id": "An-20261124_112527-print-bright",
+            "sampled_frames": 55,
+            "scored_frames": 55,
+            "median_spoof_score": 0.999988317489624,
+            "status": "spoof",
+            "allow_attendance": false,
+            "recording_sha256": "9f46046ece1c557f0fa942734f65660d31b10ab1510da3bb70e99077a6bf6f1a"
+          }
+        ]
+      },
+      "scope": "Actual selected trained checkpoint, one face crop and one recorded clip through the shared CLI. No retraining, live webcam or native Windows/macOS execution."
+    },
+    "comment_contract_review": {
+      "result": "PASS",
+      "changed_files": [
+        "scripts/run_liveness_notebook.py",
+        "src/facial_attendance/liveness/datasets/reviewed_cache.py",
+        "src/facial_attendance/liveness/datasets/source_dataset.py",
+        "src/facial_attendance/liveness/inference/liveness_adapter.py",
+        "src/facial_attendance/liveness/inference/temporal_liveness.py",
+        "src/facial_attendance/liveness/models/binary_model.py",
+        "src/facial_attendance/liveness/models/multitask_model.py"
+      ],
+      "executable_ast_unchanged_after_removing_docstrings": true,
+      "review_scope": [
+        "Shared inference CLI and adapter",
+        "Per-track temporal admission",
+        "Binary and multitask model contracts",
+        "Original dataset row order and reviewed image/teacher-map selection",
+        "Existing training resume, batching and checkpoint comments inspected; no redundant narration added"
+      ],
+      "clarified_boundaries": [
+        "One temporal gate instance retains one active track; frames must arrive in monotonic order.",
+        "A frame contributes live evidence only when status, score threshold and permission agree.",
+        "Stable admission needs elapsed time as well as frame count.",
+        "Kept sample positions map to original rows shared by images and teacher maps.",
+        "Inference uses checkpoint preprocessing and threshold, not input-specific model/threshold selection."
+      ],
+      "style": "Brief responsibility/input-output contracts in docstrings; reasons and failure boundaries beside consequential operations; straightforward assignments and conventional methods need no syntax narration.",
+      "source_transition": "liveness-contract-comments-v13",
+      "limits": "This review covers the listed code-reading paths; it is not a claim that every helper needs or has a comment."
+    },
+    "inference_instructions": {
+      "result": "PASS",
+      "entry": "docs/liveness-training-and-evaluation.md#portable-inference-and-saved-inspection",
+      "coverage": [
+        "OS-specific CPU environment setup link",
+        "Selected checkpoint download destination and whole-file SHA-256 check",
+        "Pinned detector download/checksum CLI",
+        "Own face-crop/full-image input commands",
+        "Own MP4 folder command, required filename labels, explicit cache destination and expected outputs"
+      ],
+      "private_recordings_required": false,
+      "verification": "Documentation commands/options checked against existing entry points and current native CPU face-crop/MP4 evidence; this prose-only change does not establish a new OS execution result.",
+      "project_entry": "README.md#start-here"
+    },
+    "project_usage_documentation": {
+      "result": "PASS",
+      "root_heading": "Start here",
+      "module_sections": [
+        "Face recognition",
+        "Liveness",
+        "Emotion",
+        "Attendance UI"
+      ],
+      "detailed_liveness_commands": "docs/liveness-training-and-evaluation.md#portable-inference-and-saved-inspection",
+      "scope": "Shared navigation and module responsibilities; no inferred status of teammates\u2019 modules."
+    },
+    "responsibility_spacing": {
+      "result": "PASS",
+      "scope": "Blank lines between reviewed preparation, execution, validation, checkpoint, reporting and CLI phases; existing related statements remain grouped.",
+      "proof": {
+        "changed_files": [
+          "scripts/audit/audit_liveness_selection.py",
+          "scripts/audit/inspect_liveness_examples.py",
+          "scripts/audit/review_liveness_data.py",
+          "scripts/audit/scan_liveness_crop_content.py",
+          "scripts/evaluation/evaluate_liveness_predictions.py",
+          "scripts/evaluation/score_liveness_image_split.py",
+          "scripts/evaluation/score_liveness_mp4_folder.py",
+          "scripts/evaluation/score_liveness_trial_inventory.py",
+          "scripts/preparation/build_liveness_cache_view.py",
+          "scripts/preparation/convert_liveness_depth_teacher.py",
+          "scripts/preparation/convert_liveness_reflection_teacher.py",
+          "scripts/preparation/correct_liveness_caches.py",
+          "scripts/preparation/prepare_liveness_data.py",
+          "scripts/preparation/prepare_liveness_detector.py",
+          "scripts/preparation/prepare_liveness_geometric_cache.py",
+          "scripts/preparation/prepare_liveness_initialization.py",
+          "scripts/release/export_liveness_checkpoint.py",
+          "scripts/release/package_liveness_release.py",
+          "scripts/release/transport_liveness_face_cache.py",
+          "scripts/run_liveness_comparison.py",
+          "scripts/run_liveness_notebook.py",
+          "scripts/run_liveness_public_test.py",
+          "scripts/stage_liveness_training_runtime.py",
+          "scripts/supervise_liveness_training_process.py",
+          "scripts/training/train_liveness_aenet.py",
+          "scripts/training/train_liveness_binary.py",
+          "scripts/training/train_liveness_multitask.py",
+          "src/facial_attendance/liveness/audit/duplicate_review.py",
+          "src/facial_attendance/liveness/audit/experimental_readiness.py",
+          "src/facial_attendance/liveness/datasets/decoded_cache.py",
+          "src/facial_attendance/liveness/datasets/geometric_cache.py",
+          "src/facial_attendance/liveness/datasets/image_inventory.py",
+          "src/facial_attendance/liveness/evaluation/presentation_evaluation.py",
+          "src/facial_attendance/liveness/experiments/aenet_experiment.py",
+          "src/facial_attendance/liveness/experiments/binary_experiment.py",
+          "src/facial_attendance/liveness/experiments/multitask_experiment.py",
+          "src/facial_attendance/liveness/inference/liveness_adapter.py",
+          "src/facial_attendance/liveness/inference/temporal_liveness.py",
+          "src/facial_attendance/liveness/training/aenet_training.py",
+          "src/facial_attendance/liveness/training/binary_training.py",
+          "src/facial_attendance/liveness/training/multitask_training.py"
+        ],
+        "non_whitespace_content_identical": true,
+        "ast_identical": true,
+        "after_hashes": {
+          "scripts/evaluation/score_liveness_mp4_folder.py": "6a94a0948c0cce6d638953f608bee053f0d129177c5e852fcba329951e0c2329",
+          "src/facial_attendance/liveness/inference/liveness_adapter.py": "721092b887d2dbb89d69cb72b41bc20981c2dc595e25e8241c4aeee427524604",
+          "scripts/run_liveness_public_test.py": "00f44067de34f93f6eefbea46a94503d6cb9824210c82dbe9e5fcecd12c909f7",
+          "src/facial_attendance/liveness/audit/duplicate_review.py": "a52d2b807ad1ab5bd84f5ae09dcdd9a36e8a8caa94ae5d87e7e23c89700055e9",
+          "scripts/preparation/convert_liveness_reflection_teacher.py": "bd2fd930d5942644d3ae0de1d8171e2ee568a32d64cf1b2de190248c2e561490",
+          "scripts/audit/review_liveness_data.py": "b886836bde515f73f7dc0827e6bcbc60f1435c7dccb730a5f20f1e195587504e",
+          "src/facial_attendance/liveness/audit/experimental_readiness.py": "4d5406f78aead4b99db6e974a5be91c2bae03ae24eae46e8aad7e9f86e51f92a",
+          "scripts/audit/audit_liveness_selection.py": "1f2d35cab31dbc02ae6a591bb9adcd016c04bc1d1e9c4ae79f13daa3f8fb5531",
+          "src/facial_attendance/liveness/experiments/aenet_experiment.py": "af78388031f53c2702d2f14463e9390ea4b06812ce0540b37be2ffe1ee01a143",
+          "scripts/audit/inspect_liveness_examples.py": "f217f504802137a442faafa2337f96c69f07daeaa96c2ab39efedcc35d76bbfb",
+          "scripts/stage_liveness_training_runtime.py": "38d2e7d6e28c9fbe62fa829bedf69b25ae161368c91dc7374b82a91acc26d996",
+          "src/facial_attendance/liveness/datasets/image_inventory.py": "e3ff1aabcaecf7600aa7979cb43d6ebbac06ab9c95d822285884869825399804",
+          "src/facial_attendance/liveness/experiments/binary_experiment.py": "91eef6378a5f4b5e980a558fbc65d11c5b4c001228fcc03c38ce64138f604f6b",
+          "scripts/preparation/prepare_liveness_geometric_cache.py": "dd84301f16a2eada82653ec371317491017389796458e0870ced266a6680dfaf",
+          "src/facial_attendance/liveness/inference/temporal_liveness.py": "9d46e76f8ec6c3861ebed81ba41171efb237b722b8688a4db0b677e7d2c747d1",
+          "scripts/preparation/prepare_liveness_data.py": "fa7e17762a1b23b6116c775a0f4f3c6770c66caefb9cce9164117216222daeda",
+          "scripts/training/train_liveness_multitask.py": "3e70205d0867e724e48bbb652097d786fb38acd7577f9313ba86ff6152874a4a",
+          "scripts/run_liveness_notebook.py": "573125df6a30192deba910f11ccc8702be9afc1a9049a279daeae2cf5e4e7d84",
+          "scripts/release/export_liveness_checkpoint.py": "acdb9e533738c040216e271423a2cda603049c9da5c1b4377fcf7e383cacf3d2",
+          "scripts/evaluation/score_liveness_trial_inventory.py": "cb7757efaf247c41af805eae9e03d5c718885b6291a98f396cd776aecafd1957",
+          "scripts/audit/scan_liveness_crop_content.py": "5945350d00d3e124afdd14339872088049c71ed564c247f1702dd05404c63e8b",
+          "scripts/evaluation/evaluate_liveness_predictions.py": "951b9a9aa6672917dfc3857bf0d8bc03d198d4396bf075a6d0ea67ea590d3311",
+          "scripts/preparation/prepare_liveness_detector.py": "44738f24ba9c2c2de3aea5c926645bde2d31726b2f50996a1dfcbf93acac7c99",
+          "src/facial_attendance/liveness/datasets/geometric_cache.py": "e72890589754e4d8e07e46f527b54b365dc4860ca0126acde0be8f9adab36d8f",
+          "src/facial_attendance/liveness/training/aenet_training.py": "153892f10bcf150c85ef5a33ea0fbbffc45d4f96b8ba4bf985592ee83755b8d9",
+          "scripts/release/transport_liveness_face_cache.py": "1f6c5845464c6feaa982eb76ae6a5e4eeaeaa249e1b7e7f219d19c3fda195a73",
+          "src/facial_attendance/liveness/training/binary_training.py": "9d050fa7c35230de57e01b477b68786104fbade7d3daec15c859b9dd1056a3bc",
+          "scripts/preparation/prepare_liveness_initialization.py": "15fc8d0a348425754e08610b3326d204d2b3e46687ef0755d35a7c10aea4e7d2",
+          "scripts/preparation/correct_liveness_caches.py": "99e450ec66a3e29b8de873ddb68887b3662f190b578c86d1241e374e269592dd",
+          "src/facial_attendance/liveness/datasets/decoded_cache.py": "e9f5fc726ab38d3807fa0971822269460c1b9c8f90bece7832426991b70f0cb2",
+          "scripts/run_liveness_comparison.py": "e416d168510207d269c58d78b8d8b3e441459919634983fcf1bedbab48da6990",
+          "scripts/release/package_liveness_release.py": "4f33f9f97015ac2a18a5a9a8a652e5aa0c6d0d8859b877eb0986ff7c10e2a2ce",
+          "scripts/evaluation/score_liveness_image_split.py": "fdf5071f614907de1c63e214bba4802bf3481f6bc70fe68b7c7331fbd6e570ea",
+          "scripts/supervise_liveness_training_process.py": "133ec4db39f9bdf529d057dad0c503ddfba3e1a382fa94eb0b0798aeff570618",
+          "scripts/preparation/convert_liveness_depth_teacher.py": "fb720d7dd8b4e5bf9aba14ce565063c52e6e3bf173f14c6eb5fa21fe80ca5197",
+          "src/facial_attendance/liveness/evaluation/presentation_evaluation.py": "c9dfc4a9feb968c0d48ae12015d6d87838e09ae52151e2f9b56bf6261b877eec",
+          "scripts/training/train_liveness_binary.py": "2e5a80e17fe7432ef683df9a10172768c261f1f75a7fac1a7db7910e7008c8c5",
+          "scripts/preparation/build_liveness_cache_view.py": "6862a4444bacc48b4b7958ed7d96312f475bb956ef7c2aecb46cdcf3921547d8",
+          "src/facial_attendance/liveness/experiments/multitask_experiment.py": "91930e13d84f3d5a2d800ed0718820161f563e08c24c9d0b20443ebd0110fae7",
+          "src/facial_attendance/liveness/training/multitask_training.py": "b37132a17bcfd20252caabc260a8bc7d5447252d1aad00526d352bd91d502ae3",
+          "scripts/training/train_liveness_aenet.py": "987b0e16781dc009ede72cb02647748e51581c85a95608a34d9dc17fb949f2cc"
+        },
+        "ruff_format_preserved_all_changed_files": true
+      },
+      "source_transition": "liveness-responsibility-spacing-v15",
+      "cache_compatibility": "Explicit original/current before-and-after fingerprints; historical inference results remain attributed to their original sources."
+    }
+  },
+  "limits": [
+    "CPU fixtures do not establish a new GPU training result or unchanged runtime performance.",
+    "Native Windows, macOS, Colab and webcam execution remain unverified for this revision.",
+    "Historical selected-model reports retain their original producing code/input attribution; no source snapshots or resume checkpoints from those runs are republished here."
+  ],
+  "test_inventory": {
+    "tests/__init__.py": "1ba1eeeaf51029a7ca979261992c7acf06357fb0387678a6abb87fef3dd9d645",
+    "tests/liveness/__init__.py": "4a8e30808c5dc958f9af0c1dac170946d3edfa5357f88944599baafc1154896c",
+    "tests/liveness/test_liveness_aenet_training.py": "0d53360f3ee1e9538aca87b90ee2f29a321d543d2178c03abbb3b27f9bcc8b3a",
+    "tests/liveness/test_liveness_cache_corrections.py": "bb3ae321797b8ae11a924e0163497412cac1d84792a61610714c1a28236e0c5d",
+    "tests/liveness/test_liveness_camera_inputs.py": "06af0e3e35b3a632fb063f396121bb4e5b96ae3a4c73ddc6ab279d64f2f96da4",
+    "tests/liveness/test_liveness_checkpoint_selection.py": "a654daab1f085dd5bb72a240f8352209902376902c5c45efafa8f77b0e6298de",
+    "tests/liveness/test_liveness_crop_content.py": "af02eaef2d17b767ecbc5e1567e74cae16740de7888be0b842b85062bfd82494",
+    "tests/liveness/test_liveness_data.py": "ae5ab6707cd1b68f6f6b49bf870332b3922a6fbfee944ccb9e131954fc086bb1",
+    "tests/liveness/test_liveness_datasets.py": "ec710c30902b3421999f9c7ceb659dca10c52728f6688fdfe95d807d35de881a",
+    "tests/liveness/test_liveness_decoded_cache.py": "8c49d94c184fa014fbafffb61837f4cde58ed3e9649678effbcb559e00bb1a0c",
+    "tests/liveness/test_liveness_experiment.py": "c0476e05fcbb2379082087c89e4bec64016b140d1804f261ff7e218fb57e34cb",
+    "tests/liveness/test_liveness_face_transport.py": "8166e189e03fa5206c4f086c07b16116fd731af42646a7477304b63eee06f6d1",
+    "tests/liveness/test_liveness_geometric_supervision.py": "e0e95bedde0676c25060a880db527ddc76c645840c5ac8a3a286fc3ab72eb71f",
+    "tests/liveness/test_liveness_inference.py": "3c060f0bfa26698be6747cf11121aa7c917f5a68cf28471028a5b7a18824ddb7",
+    "tests/liveness/test_liveness_model.py": "e4865f94987d33862aeb3e4ac5422fb2c43ed5e30efcb56b0fb956c9d1a3d827",
+    "tests/liveness/test_liveness_multitask_model.py": "7485639e30309665291af58bbc832726eaa99fd2efd77eed965238a03afcd0ae",
+    "tests/liveness/test_liveness_public_test_workflow.py": "fdbb07b4c7291cba95b4050446508da6d9299a0511ef090c9884e5b5ea9cc279",
+    "tests/liveness/test_liveness_quality.py": "edabf0e807a5b97f4908b4799a55f026092d0e972ba0501876ba4ebe8820f771",
+    "tests/liveness/test_liveness_release_package.py": "7d000ea7a9e94da4702978f4312d5509a30d15088dbdd09bd116211b6f09c841",
+    "tests/liveness/test_liveness_run_health.py": "fa17912cf1bcf3feeb66eaeb5453db9f0aa5e4487731364d8102615c6f9bb48b",
+    "tests/liveness/test_liveness_runtime_staging.py": "80ed7e40d81fb33e7571bbc9412de3fa4132985944281837edb7201ce4239a79",
+    "tests/liveness/test_liveness_tensorflow_checkpoint.py": "26d54df2528c95987f437ed2e1d95ce06d0538950cc38ec41d6ca2ea7b492a62",
+    "tests/liveness/test_notebook_drive_resolver.py": "2104360630595b473cb5512c965f5f55f743a20e046ea7346d45ce1f3d099eea",
+    "tests/liveness/test_reviewed_selection_audit.py": "96bda4767f4593441ea7711baaea4921dc3fe63ba3292f83cd50830c46c9909d",
+    "tests/recognition/__init__.py": "56fdb2fbdc7ed5bf1d84c78db15adfa99b14a19d42ca3687ae5275cc5a540644",
+    "tests/recognition/test_data_cli.py": "8ecbbc03aa4d806678a6902f15d1e260b5dbfd29fd647b8c454d68c4136c36dd",
+    "tests/recognition/test_face_data.py": "d630d9652f02032a7d4746252db146446ff8131b1faca34e2b063b61a24990d8",
+    "tests/test_config.py": "365c93a2b18cecb873d83ea6fb2e36e4c803f34b0234de886557c42243b50487",
+    "tests/test_notebook_runtime.py": "1a0c20dab68cfb89284ec7c1127f508c4151b249fbb3e515d608c36661cd2ac2",
+    "tests/test_runtime.py": "dfd0f12530721c50ec9e38584c825ebd27740953735bc5dcfaf55a302bd38802"
+  },
+  "historical_full_source_audit": {
+    "original_path": "evidence/runs/LIV-03/local/reviewed-20261127T154639014618Z/summary.json",
+    "original_sha256": "59d6d8c5781d4fcc294fe7f65b4867d7f74624285dc59c1edbd783318721c4e5",
+    "attribution": "Original full-source audit, 27 November 2026; preserved historical execution, not a new run.",
+    "summary": {
+      "schema": "liveness-reviewed-selection-audit-v1",
+      "created_at": "2026-11-27T15:46:41.195913+00:00",
+      "mode": "audit",
+      "completed": true,
+      "cache_view_sha256": "439bc14889c86c445aede82901b18b571157fc735e1f006bc7fe27e7485f622f",
+      "quarantine_sha256": "e42712fa5ac96535efcf2dc0f2c85fc4f1eb715c321ce2e2e0adca9cded2f79f",
+      "inventory_sha256": "b4262e03e92bddbf21e48ce29980506423ca5fbf07aa1e3d728b253dced1b35b",
+      "splits": {
+        "train": {
+          "annotations_sha256": "e10a6102e7f5b1ca18b192d9c2708049d343551ee6267f4bd52f04a74bd70360",
+          "base_samples": 444357,
+          "retained_samples": 444114,
+          "quarantined_samples": 243,
+          "pending_review": 0,
+          "integrity_checked_rows": 444114,
+          "preview_checked_rows": 11,
+          "counts_by_binary_label": {
+            "0": 145791,
+            "1": 298323
+          },
+          "counts_by_source_type": {
+            "0": 145791,
+            "1": 31999,
+            "7": 27905,
+            "10": 36487,
+            "2": 28102,
+            "3": 28594,
+            "4": 30509,
+            "5": 27049,
+            "6": 29647,
+            "8": 29710,
+            "9": 28321
+          },
+          "examples": [
+            {
+              "relative_path": "Data/train/1/live/000184.jpg",
+              "base_index": 0,
+              "binary_label": 0,
+              "source_type": 0,
+              "source_sha256": "f7838eedcfe53b51a555a7b11718fdfef67338812156691b2603552d3cff9318",
+              "bbox_sha256": "21ef08b6f01dbf09db7091c78f4f7bd08438f0d9eddb5aad3c90b846e3726509"
+            },
+            {
+              "relative_path": "Data/train/1/spoof/000390.jpg",
+              "base_index": 29,
+              "binary_label": 1,
+              "source_type": 1,
+              "source_sha256": "fcff90a1090f34a9ac38f91b6aca7080bb6c5f7e4ae098d536e99b0cbcbce568",
+              "bbox_sha256": "a0c1d8c4da38574c0274876e3ee88cdd93b536da39985e2a854718ca2d16d75c"
+            },
+            {
+              "relative_path": "Data/train/1016/spoof/006929.jpg",
+              "base_index": 9229,
+              "binary_label": 1,
+              "source_type": 2,
+              "source_sha256": "8cc2ed6f0ce9e610f576e9d4cc56011e70f70251ceac2203813e42bceaed3c2f",
+              "bbox_sha256": "12034d6ba151067adc2f83f058666e04966108105f1b7f808b4d7027af7e65f0"
+            },
+            {
+              "relative_path": "Data/train/2056/spoof/013217.jpg",
+              "base_index": 60752,
+              "binary_label": 1,
+              "source_type": 3,
+              "source_sha256": "cd0dc74c2c4f0d9b74d2bb2c60890728e57b518806c44b6fd148af9abaefdb0e",
+              "bbox_sha256": "8e2e3f2e9118a9c4a4f45d7f6c806a7d0300d2c413dc15c6d0e9948fc0b20ddb"
+            },
+            {
+              "relative_path": "Data/train/3097/spoof/007270.jpg",
+              "base_index": 109584,
+              "binary_label": 1,
+              "source_type": 4,
+              "source_sha256": "800c1c47b344279cb7db56e65d68a20e85f5f3cd4dd6e4f567ceb080f87b40d0",
+              "bbox_sha256": "31f824f47f6a9e4e64d55b526385661fcd92c1ea64f86c1656f32f4b4f5b7ac7"
+            },
+            {
+              "relative_path": "Data/train/4118/spoof/018886.jpg",
+              "base_index": 159915,
+              "binary_label": 1,
+              "source_type": 5,
+              "source_sha256": "8cbd5fe944105c3df4f49050248354b79fe36e037e8e228cc3e5dabac30bee56",
+              "bbox_sha256": "cf77ebc745ca4dd21331cd28da84dc26e0f844100204504206151bd093066518"
+            },
+            {
+              "relative_path": "Data/train/5112/spoof/002303.jpg",
+              "base_index": 209543,
+              "binary_label": 1,
+              "source_type": 6,
+              "source_sha256": "8517ed52f52de1f50009d41f0bace8ece2fe209e1c6ca2c9b7865194dfc5f38d",
+              "bbox_sha256": "82d5d24b869c3b8dffaa1ae07edbfef8e8c3d049fc6e809fd2993bcdcfc9f6ce"
+            },
+            {
+              "relative_path": "Data/train/1/spoof/160943.jpg",
+              "base_index": 43,
+              "binary_label": 1,
+              "source_type": 7,
+              "source_sha256": "66ee65439b9235f4d1446aad692a982f82691ab3779af6e7ebf91ce084ec09da",
+              "bbox_sha256": "0b7cd1ee377fe8d24888471c4e7fc931031495b40e63fb63cbe4c8a05118bc3e"
+            },
+            {
+              "relative_path": "Data/train/7151/spoof/005177.jpg",
+              "base_index": 303740,
+              "binary_label": 1,
+              "source_type": 8,
+              "source_sha256": "2292d6667cfcbb1074e33def2a674779108daf421c13ec4aa08a92641fa0046d",
+              "bbox_sha256": "61d3326b0a006d5c747b8293e829aeedad838d0e09e8cb58740c5125c7d5c0e7"
+            },
+            {
+              "relative_path": "Data/train/8151/spoof/001518.jpg",
+              "base_index": 352356,
+              "binary_label": 1,
+              "source_type": 9,
+              "source_sha256": "8e89416b60e7ac07d19a48ab3ed2ee0f79dacab3be2933d6aa8dee358ae518d1",
+              "bbox_sha256": "da543dc08bc2eb0ad3f24c0f01b0ca1c86c639a55ab55fb92d56262d3ad3126c"
+            },
+            {
+              "relative_path": "Data/train/10000/spoof/007425.jpg",
+              "base_index": 210,
+              "binary_label": 1,
+              "source_type": 10,
+              "source_sha256": "9d861c73ccad392d0a6b503b10f24b4fcbeecf7b84974f2330655f08a899d284",
+              "bbox_sha256": "9aab0b58b354de8518253dcdf5be15835761278ce3ef55ad2b046451b389be90"
+            }
+          ]
+        },
+        "validation": {
+          "annotations_sha256": "2c509deb64114a7c23cf817083292ead63d0219856b5bca6af5b1f54c67d656c",
+          "base_samples": 49504,
+          "retained_samples": 49479,
+          "quarantined_samples": 25,
+          "pending_review": 0,
+          "integrity_checked_rows": 49479,
+          "preview_checked_rows": 11,
+          "counts_by_binary_label": {
+            "0": 16220,
+            "1": 33259
+          },
+          "counts_by_source_type": {
+            "0": 16220,
+            "10": 4047,
+            "1": 3548,
+            "2": 3118,
+            "7": 3107,
+            "3": 3179,
+            "4": 3137,
+            "5": 3076,
+            "6": 3597,
+            "8": 3301,
+            "9": 3149
+          },
+          "examples": [
+            {
+              "relative_path": "Data/train/10008/live/019610.jpg",
+              "base_index": 0,
+              "binary_label": 0,
+              "source_type": 0,
+              "source_sha256": "433749abeb318909a976817860cf6361f4d1ba45101f0f579e3b5a0dabc76bd5",
+              "bbox_sha256": "fec4cf1f20176d33dc5817c3df7dd0407405211c64f3bfdbab21d9a1b4f62a7b"
+            },
+            {
+              "relative_path": "Data/train/1012/spoof/006757.jpg",
+              "base_index": 436,
+              "binary_label": 1,
+              "source_type": 1,
+              "source_sha256": "89a40fe5f0f732eed35ffe72c4802fe16146d6e3ccf595cf64eb693ece070445",
+              "bbox_sha256": "6b1261ff3492c485675bb338d5920e3063302addb44ba855581f09e6948622b7"
+            },
+            {
+              "relative_path": "Data/train/1050/spoof/030901.jpg",
+              "base_index": 825,
+              "binary_label": 1,
+              "source_type": 2,
+              "source_sha256": "03cb2e4b9e65b9936cd8471f87d9b5bbb52abbd217100a8535cc2a6dfec890de",
+              "bbox_sha256": "834e867d97aec9975fa641044144753bd542bf1054bd3144e0e59e5013122008"
+            },
+            {
+              "relative_path": "Data/train/2073/spoof/006191.jpg",
+              "base_index": 6057,
+              "binary_label": 1,
+              "source_type": 3,
+              "source_sha256": "4f1f8c2ec990e0bd1d2f17178f2e89cea360660e6f3896c073ddc97329f17ca2",
+              "bbox_sha256": "d542359c2be36322bccb8b72beaeeab3f9de579bf147bbe1713fbaa3314b6828"
+            },
+            {
+              "relative_path": "Data/train/3101/spoof/000932.jpg",
+              "base_index": 11653,
+              "binary_label": 1,
+              "source_type": 4,
+              "source_sha256": "d9ed2e7337532368a838edad79d0728793a64c6b346ea31a889fdefd93127a84",
+              "bbox_sha256": "690b7d99af32e4289fa051c606e37408da319f125a09b6a9a9ed3b1d9eea4630"
+            },
+            {
+              "relative_path": "Data/train/4152/spoof/008001.jpg",
+              "base_index": 16695,
+              "binary_label": 1,
+              "source_type": 5,
+              "source_sha256": "aaecf66a3d69c96d65caf1d3984a7fd5c16b98ea5eab364562921fa4f4c2f28f",
+              "bbox_sha256": "331c38d9e02983e31995a124ae27194906e32a182cc96b0366c9d3e0f7ad800a"
+            },
+            {
+              "relative_path": "Data/train/5123/spoof/009776.jpg",
+              "base_index": 22423,
+              "binary_label": 1,
+              "source_type": 6,
+              "source_sha256": "a05fd48f908f4295b8a885c102a19716b7c04fadf7d775880cea19da9890783f",
+              "bbox_sha256": "7c4ea80b43c2be722edc2d2d1dce10d696f50ccda69c5237dec6a9180293be91"
+            },
+            {
+              "relative_path": "Data/train/113/spoof/121774.jpg",
+              "base_index": 1368,
+              "binary_label": 1,
+              "source_type": 7,
+              "source_sha256": "82ae351f4c37ec67019e1b5d08904b479a7ad840deee8dbcb6b87ee814ace2f7",
+              "bbox_sha256": "d3e58573c50a1ddecb9db09885adf3a2e775b1c267c71d5ce8973de1f28f0536"
+            },
+            {
+              "relative_path": "Data/train/7150/spoof/005170.jpg",
+              "base_index": 33336,
+              "binary_label": 1,
+              "source_type": 8,
+              "source_sha256": "54285322ee334772e2ad2fccc858a6ba8182c353ac9e7d593fb3bb8b06d94940",
+              "bbox_sha256": "9bd3c2a65939aa490d23b8b4cc23a1e8e8e0becdb1c71c19a5a7b2750caefb9e"
+            },
+            {
+              "relative_path": "Data/train/8158/spoof/000851.jpg",
+              "base_index": 38748,
+              "binary_label": 1,
+              "source_type": 9,
+              "source_sha256": "be3f47291084dbdf321827ce02632a0131cde0c0a086406fde5f17338203156e",
+              "bbox_sha256": "5e4ae5a71a9d7c8a3936f7b345509a8abff94d279de39ced53c3dd2407c6b36a"
+            },
+            {
+              "relative_path": "Data/train/10008/spoof/001065.jpg",
+              "base_index": 30,
+              "binary_label": 1,
+              "source_type": 10,
+              "source_sha256": "77b57bb02efa26c4f4c20ffdc05062b48e234ccad9517cfd989b359db4f3ddb8",
+              "bbox_sha256": "2a8f4fb6d764634698cbc66c18c05f8b40b965bc0c3fb409353109dad8847892"
+            }
+          ]
+        },
+        "test": {
+          "annotations_sha256": "5024238665680fd6df3a1b4b1cf00b75cc60386e6c6978822df86cfe794bd14d",
+          "base_samples": 67170,
+          "retained_samples": 67129,
+          "quarantined_samples": 41,
+          "pending_review": 0,
+          "integrity_checked_rows": 67129,
+          "preview_checked_rows": 11,
+          "counts_by_binary_label": {
+            "0": 19887,
+            "1": 47242
+          },
+          "counts_by_source_type": {
+            "0": 19887,
+            "10": 3610,
+            "7": 6473,
+            "5": 6097,
+            "1": 3600,
+            "2": 5421,
+            "3": 6083,
+            "4": 4287,
+            "6": 3529,
+            "8": 3659,
+            "9": 4483
+          },
+          "examples": [
+            {
+              "relative_path": "Data/test/10001/live/496120.png",
+              "base_index": 0,
+              "binary_label": 0,
+              "source_type": 0,
+              "source_sha256": "6314e20bb5f6ca079057c9d172ec1c693acd36f1d2e425c63d42b970faec8ba3",
+              "bbox_sha256": "07069185510612e49a175350b940321f2442e52a1cdad2eac8055e7fa935f405"
+            },
+            {
+              "relative_path": "Data/test/4930/spoof/495600.png",
+              "base_index": 2276,
+              "binary_label": 1,
+              "source_type": 1,
+              "source_sha256": "3daf662b797324f378cc806de4bbf66957afd63945f402001dbe35e3408a6568",
+              "bbox_sha256": "9b5a248b583da35cdba4ed5d8e29867ccab129470aea9f17a117ce84c45f7233"
+            },
+            {
+              "relative_path": "Data/test/5478/spoof/494447.png",
+              "base_index": 13960,
+              "binary_label": 1,
+              "source_type": 2,
+              "source_sha256": "1d03da49285706f5fafa88d3ab7290f5da9982650a9ff8c8982eb1127d7fe4bc",
+              "bbox_sha256": "8c33abec701758736cef7570ab622fa67a573ecd9cd7677d5dec241c31b01f82"
+            },
+            {
+              "relative_path": "Data/test/6011/spoof/494621.png",
+              "base_index": 23909,
+              "binary_label": 1,
+              "source_type": 3,
+              "source_sha256": "2c4c65500fdf18e2b4041222b5360576ad850c1325bad6c3e3f59a3fca94ed74",
+              "bbox_sha256": "8b8fd8bfc9db033c0774f5e9c95ec9f5453e9a34b3b1ec5d7be6fe79d23b5c7c"
+            },
+            {
+              "relative_path": "Data/test/6533/spoof/497651.png",
+              "base_index": 32678,
+              "binary_label": 1,
+              "source_type": 4,
+              "source_sha256": "12c69de317a0409f61bfcad090e91a9accf9c0dc63d4e6ea32599b7400fc7597",
+              "bbox_sha256": "e0c4c9b770c2913cd5e6cc0a787e406bef5325218bb7ae651e9d846267f1f03f"
+            },
+            {
+              "relative_path": "Data/test/3613/spoof/511091.png",
+              "base_index": 2244,
+              "binary_label": 1,
+              "source_type": 5,
+              "source_sha256": "31727601da5a7cab05e72bedac1d60601f400b26cd520f6cafc869b6ec1f1ac5",
+              "bbox_sha256": "d9c4d186d552cc8834e02b26ce257a9baa733a504792640bf96b3b62814951bb"
+            },
+            {
+              "relative_path": "Data/test/7545/spoof/494486.png",
+              "base_index": 42471,
+              "binary_label": 1,
+              "source_type": 6,
+              "source_sha256": "8b4c1ec7b4bdfc1e63c3e97e0042dbaaf4b284aecd49ed847503f92db562884d",
+              "bbox_sha256": "4e80d37b334b4669b16edf9199713aab234d23c1436890a781dda5e75b6ff55f"
+            },
+            {
+              "relative_path": "Data/test/10001/spoof/496659.png",
+              "base_index": 31,
+              "binary_label": 1,
+              "source_type": 7,
+              "source_sha256": "21e3a66eb0044378529d0109a9ebfb7e9053b9297fbc0292f26446baf3ffb9a3",
+              "bbox_sha256": "bde9c9995f9a89bc2bfc2ad2d39feb724ee2302fa7d687137a5626fd52be5cad"
+            },
+            {
+              "relative_path": "Data/test/8611/spoof/503419.png",
+              "base_index": 50090,
+              "binary_label": 1,
+              "source_type": 8,
+              "source_sha256": "e5dfa47b073eebf5ebb22adf3b465e5ffc97c0d44a3abfafcebd31de7d81e1ce",
+              "bbox_sha256": "eedc1c5dabcf044b831897ed8ac781324309a4c5402180e2dd9808b8753330aa"
+            },
+            {
+              "relative_path": "Data/test/9146/spoof/495780.png",
+              "base_index": 56516,
+              "binary_label": 1,
+              "source_type": 9,
+              "source_sha256": "f97d469a44699f72bab79cb69da5d1a9c7cc1c097f613123d8ca774470829413",
+              "bbox_sha256": "e76e1fe19b20fbf8910f519235cdf873a73a9b6c4f083c6139aeea4a1d4e12c8"
+            },
+            {
+              "relative_path": "Data/test/10001/spoof/496397.png",
+              "base_index": 30,
+              "binary_label": 1,
+              "source_type": 10,
+              "source_sha256": "3e8e1fd6ba6127c389992b6484bd099124ff8b6c84dcfd9b6d402b03d3c34207",
+              "bbox_sha256": "50876d7ccc51431d692a805ced0f39fd9079031557a1267c049a00005d756507"
+            }
+          ]
+        }
+      },
+      "limits": [
+        "Preview examples do not establish semantic correctness of unseen crops or labels.",
+        "Source-video independence remains unverified due to unavailable source-video IDs.",
+        "This run does not train, evaluate or modify checkpoints, frozen exclusions or split assignments.",
+        "Inspect checks metadata and preview inputs only; audit additionally checks every retained image and box."
+      ]
+    }
+  },
+  "prose_review": {
+    "scope": "Current liveness guides, notebook explanations, shared navigation and runtime messages",
+    "checks": {
+      "unit_suite": "292 tests passed in 32.389 seconds",
+      "links": "14 Markdown/notebook documents; zero local target or anchor issues",
+      "code_changes": "Error wording and comments only; normalized AST equivalence checked",
+      "scientific_evidence": "Original model results and notebook figures retained; equal-budget comparison moved beside model selection"
+    },
+    "other_modules": "Navigation and responsibilities only; no inferred implementation or merge status.",
+    "notebook_review": {
+      "comment_flags": "Reviewed as heuristics: Drive helpers already explain pagination, query escaping, access and ownership boundaries; obvious table construction needs no syntax narration. Added rationale at prediction alignment, checksum binding, deterministic example selection and stale decision checks.",
+      "output_flags": "Counts and three split previews are one output group, introduced together; added explicit distinction between illustrative previews and a complete integrity audit.",
+      "instruction_flags": "Setup and execution instructions intentionally use imperatives. Scientific findings remain report prose.",
+      "images": {
+        "liveness-training-and-evaluation.ipynb": 24,
+        "liveness-data-preparation-and-audit.ipynb": 3
+      }
+    }
+  },
+  "current_cuda_inference": {
+    "job_id": "f24abdbc2ddb4c3ba3d8cf8049a3f5d7",
+    "scope": "One selected-checkpoint face crop; no retraining or accuracy evaluation",
+    "result": {
+      "result": "PASS",
+      "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "torch": "2.13.0+cu126",
+      "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+      "input": "Data/train/1598/live/355373.jpg",
+      "prediction": {
+        "status": "live",
+        "spoof_score": 0.0018139025196433067,
+        "live_score": 0.9981860974803567,
+        "threshold": 0.46483826637268066,
+        "allow_attendance": true,
+        "model_id": "liveness-resnet18-aenet-full",
+        "model_version": "f16fbfaf36046f75",
+        "precision": "cuda_float32"
+      },
+      "scope": "One existing validation face crop through the selected trained checkpoint and shared CUDA inference CLI. No training, webcam, OS-portability or population-accuracy claim."
+    }
+  }
+}

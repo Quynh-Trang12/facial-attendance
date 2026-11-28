@@ -1,0 +1,231 @@
+{
+  "split": "test",
+  "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+  "model_version": "f16fbfaf36046f75",
+  "inference_precision": "float32",
+  "threshold_source": "validation EER operating point",
+  "metrics": {
+    "samples": 67170,
+    "live": 19923,
+    "spoof": 47247,
+    "attack_accepted_as_live": 5779,
+    "live_rejected_as_spoof": 27,
+    "threshold": 0.46483826637268066,
+    "APCER": 0.12231464431604123,
+    "BPCER": 0.001355217587712694,
+    "ACER": 0.06183493095187696,
+    "accuracy": 0.9135626023522406,
+    "ROC_AUC": 0.9985151688531293
+  },
+  "unweighted_BCE": 0.391459806650049,
+  "by_attack": {
+    "print": {
+      "samples": 15104,
+      "live": 0,
+      "spoof": 15104,
+      "attack_accepted_as_live": 1869,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.12374205508474577,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.8762579449152542,
+      "ROC_AUC": null
+    },
+    "screen": {
+      "samples": 14619,
+      "live": 0,
+      "spoof": 14619,
+      "attack_accepted_as_live": 3690,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.2524112456392366,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.7475887543607634,
+      "ROC_AUC": null
+    }
+  },
+  "evaluation_seconds": 8.745223315000658,
+  "by_source_type": {
+    "0": {
+      "samples": 19923,
+      "live": 19923,
+      "spoof": 0,
+      "attack_accepted_as_live": 0,
+      "live_rejected_as_spoof": 27,
+      "threshold": 0.46483826637268066,
+      "APCER": null,
+      "BPCER": 0.001355217587712694,
+      "ACER": null,
+      "accuracy": 0.9986447824122873,
+      "ROC_AUC": null
+    },
+    "1": {
+      "samples": 3600,
+      "live": 0,
+      "spoof": 3600,
+      "attack_accepted_as_live": 125,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.034722222222222224,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9652777777777778,
+      "ROC_AUC": null
+    },
+    "2": {
+      "samples": 5421,
+      "live": 0,
+      "spoof": 5421,
+      "attack_accepted_as_live": 507,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.09352517985611511,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9064748201438849,
+      "ROC_AUC": null
+    },
+    "3": {
+      "samples": 6083,
+      "live": 0,
+      "spoof": 6083,
+      "attack_accepted_as_live": 1237,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.20335360841689956,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.7966463915831005,
+      "ROC_AUC": null
+    },
+    "4": {
+      "samples": 4287,
+      "live": 0,
+      "spoof": 4287,
+      "attack_accepted_as_live": 54,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.012596221133659902,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9874037788663401,
+      "ROC_AUC": null
+    },
+    "5": {
+      "samples": 6097,
+      "live": 0,
+      "spoof": 6097,
+      "attack_accepted_as_live": 68,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.011153026078399212,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9888469739216008,
+      "ROC_AUC": null
+    },
+    "6": {
+      "samples": 3530,
+      "live": 0,
+      "spoof": 3530,
+      "attack_accepted_as_live": 87,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.024645892351274786,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9753541076487252,
+      "ROC_AUC": null
+    },
+    "7": {
+      "samples": 6477,
+      "live": 0,
+      "spoof": 6477,
+      "attack_accepted_as_live": 3239,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.5000771962328239,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.4999228037671762,
+      "ROC_AUC": null
+    },
+    "8": {
+      "samples": 3659,
+      "live": 0,
+      "spoof": 3659,
+      "attack_accepted_as_live": 173,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.04728067778081443,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9527193222191855,
+      "ROC_AUC": null
+    },
+    "9": {
+      "samples": 4483,
+      "live": 0,
+      "spoof": 4483,
+      "attack_accepted_as_live": 278,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.062012045505242024,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.937987954494758,
+      "ROC_AUC": null
+    },
+    "10": {
+      "samples": 3610,
+      "live": 0,
+      "spoof": 3610,
+      "attack_accepted_as_live": 11,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.0030470914127423824,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9969529085872576,
+      "ROC_AUC": null
+    }
+  },
+  "scope": "Frozen checkpoint and threshold; no model/threshold selection",
+  "published_benchmark": {
+    "TPR_at_FPR": {
+      "0.01": {
+        "threshold_descriptive_only": 0.0021407848689705133,
+        "observed_FPR": 0.009938262309893088,
+        "TPR": 0.9692467246597668
+      },
+      "0.005": {
+        "threshold_descriptive_only": 0.013821078464388847,
+        "observed_FPR": 0.0049189379109571855,
+        "TPR": 0.9438271212987068
+      },
+      "0.001": {
+        "threshold_descriptive_only": 0.7645379900932312,
+        "observed_FPR": 0.0009034783918084626,
+        "TPR": 0.8529642093677905
+      }
+    },
+    "nearest_discrete_EER": 0.016877445623903344,
+    "descriptive_EER_operating_point": {
+      "samples": 67170,
+      "live": 19923,
+      "spoof": 47247,
+      "attack_accepted_as_live": 798,
+      "live_rejected_as_spoof": 336,
+      "threshold": 0.0005066144512966275,
+      "APCER": 0.016889961267382056,
+      "BPCER": 0.016864929980424635,
+      "ACER": 0.016877445623903344,
+      "accuracy": 0.9831174631531934,
+      "ROC_AUC": 0.9985151688531293
+    },
+    "source": "https://github.com/ZhangYuanhan-AI/CelebA-Spoof/blob/master/intra_dataset_code/client.py",
+    "scope": "Descriptive test-set threshold sweeps only; deployment threshold remains frozen from validation"
+  }
+}

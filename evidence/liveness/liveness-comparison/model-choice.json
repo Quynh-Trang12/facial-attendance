@@ -1,0 +1,89 @@
+{
+  "chosen": "aenet-full",
+  "basis": "validation selection keys",
+  "test_or_physical_used_for_choice": false,
+  "arms": {
+    "binary-classification": {
+      "phase": "screening",
+      "arm": "binary-classification",
+      "completed_epochs": 15,
+      "selected_epoch": 13,
+      "optimizer_updates": 26040,
+      "selected_optimizer_updates": 22568,
+      "selection_key": [
+        0.0028291503458480515,
+        0.015658066409272874
+      ],
+      "checkpoint_sha256": "896525265c0ade477d3331e906ff6b7ff0c04a6cd0521bda03783350745d3ca7",
+      "threshold": 0.11257407814264297,
+      "elapsed_seconds_this_execution": 1174.9871639540002,
+      "full_training_completed": false,
+      "screening_completed": true,
+      "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-classification-epoch-checkpoints",
+      "test_or_physical_used_for_selection": false
+    },
+    "binary-semantic": {
+      "phase": "screening",
+      "arm": "binary-semantic",
+      "completed_epochs": 15,
+      "selected_epoch": 15,
+      "optimizer_updates": 26040,
+      "selected_optimizer_updates": 26040,
+      "selection_key": [
+        0.0023423526220215053,
+        0.008976386104077697
+      ],
+      "checkpoint_sha256": "cdd00432f32c6a451f6b013ea8785bf1448f2ba66e8cd462fd03a62532a87a7f",
+      "threshold": 0.9254177212715149,
+      "elapsed_seconds_this_execution": 2220.0788068710003,
+      "full_training_completed": false,
+      "screening_completed": true,
+      "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-semantic-epoch-checkpoints",
+      "test_or_physical_used_for_selection": false
+    },
+    "binary-geometric": {
+      "phase": "screening",
+      "arm": "binary-geometric",
+      "completed_epochs": 15,
+      "selected_epoch": 11,
+      "optimizer_updates": 26040,
+      "selected_optimizer_updates": 19096,
+      "selection_key": [
+        0.0026616329163358034,
+        0.009048403580309436
+      ],
+      "checkpoint_sha256": "e749ebd185a286dda051b55e2af0a07f8f243bbf34b4acee0b4acc0b23d54129",
+      "threshold": 0.5738105773925781,
+      "elapsed_seconds_this_execution": 2250.5153632190004,
+      "full_training_completed": false,
+      "screening_completed": true,
+      "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-geometric-epoch-checkpoints",
+      "test_or_physical_used_for_selection": false
+    },
+    "aenet-full": {
+      "phase": "screening",
+      "arm": "aenet-full",
+      "completed_epochs": 15,
+      "selected_epoch": 13,
+      "optimizer_updates": 26040,
+      "selected_optimizer_updates": 22568,
+      "selection_key": [
+        0.001977254329151596,
+        0.015064756814196188
+      ],
+      "checkpoint_sha256": "f002340a37899043fefe3530c1e495645ddc9c865984a2b5ef02df6f7a8b52b3",
+      "threshold": 0.030348068103194237,
+      "elapsed_seconds_this_execution": 2254.34928185,
+      "full_training_completed": false,
+      "screening_completed": true,
+      "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/aenet-full-epoch-checkpoints",
+      "test_or_physical_used_for_selection": false
+    }
+  },
+  "directories": {
+    "binary-classification": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-classification-resume-20261122T170655Z-9296",
+    "binary-semantic": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-semantic",
+    "binary-geometric": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/binary-geometric",
+    "aenet-full": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/aenet-full"
+  }
+}

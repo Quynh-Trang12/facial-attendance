@@ -1,0 +1,75 @@
+test_cli_preserves_existing_evidence (test_config.ConfigTests.test_cli_preserves_existing_evidence) ... ok
+test_exact_pins_accept_comments_and_cuda_versions (test_config.ConfigTests.test_exact_pins_accept_comments_and_cuda_versions) ... ok
+test_rejects_empty_path (test_config.ConfigTests.test_rejects_empty_path) ... ok
+test_rejects_missing_paths (test_config.ConfigTests.test_rejects_missing_paths) ... ok
+test_rejects_unpinned_dependencies (test_config.ConfigTests.test_rejects_unpinned_dependencies) ... ok
+test_repository_dataset_default_matches_download_cache (test_config.ConfigTests.test_repository_dataset_default_matches_download_cache) ... ok
+test_resolves_paths_without_creating_data (test_config.ConfigTests.test_resolves_paths_without_creating_data) ... ok
+test_supports_external_dataset_storage (test_config.ConfigTests.test_supports_external_dataset_storage) ... ok
+test_api_mode_uses_configured_cache (test_data_cli.DataCliTests.test_api_mode_uses_configured_cache) ... ok
+test_explicit_dataset_path_overrides_config (test_data_cli.DataCliTests.test_explicit_dataset_path_overrides_config) ... ok
+test_no_input_flag_uses_configured_dataset (test_data_cli.DataCliTests.test_no_input_flag_uses_configured_dataset) ... ok
+test_absolute_pair_path_is_rejected (test_face_data.FaceDataTests.test_absolute_pair_path_is_rejected) ... ok
+test_boolean_targets_are_not_accepted_as_integer_class_ids (test_face_data.FaceDataTests.test_boolean_targets_are_not_accepted_as_integer_class_ids) ... ok
+test_classification_converts_grayscale_to_rgb_and_maps_ids (test_face_data.FaceDataTests.test_classification_converts_grayscale_to_rgb_and_maps_ids) ... ok
+test_corrupt_image_fails_at_decode (test_face_data.FaceDataTests.test_corrupt_image_fails_at_decode) ... ok
+test_discovers_enclosing_directory (test_face_data.FaceDataTests.test_discovers_enclosing_directory) ... ok
+test_download_calls_assigned_competition_and_restores_cache_environment (test_face_data.FaceDataTests.test_download_calls_assigned_competition_and_restores_cache_environment) ... ok
+test_download_failure_preserves_original_error (test_face_data.FaceDataTests.test_download_failure_preserves_original_error) ... ok
+test_empty_identity_is_rejected (test_face_data.FaceDataTests.test_empty_identity_is_rejected) ... ok
+test_empty_pair_dataset_is_rejected (test_face_data.FaceDataTests.test_empty_pair_dataset_is_rejected) ... ok
+test_invalid_pair_label_is_rejected (test_face_data.FaceDataTests.test_invalid_pair_label_is_rejected) ... ok
+test_missing_pair_image_is_rejected (test_face_data.FaceDataTests.test_missing_pair_image_is_rejected) ... ok
+test_pairs_preserve_order_labels_and_both_path_styles (test_face_data.FaceDataTests.test_pairs_preserve_order_labels_and_both_path_styles) ... ok
+test_path_traversal_is_rejected (test_face_data.FaceDataTests.test_path_traversal_is_rejected) ... ok
+test_rejects_incomplete_layout (test_face_data.FaceDataTests.test_rejects_incomplete_layout) ... ok
+test_sampled_pairs_load_actual_images (test_face_data.FaceDataTests.test_sampled_pairs_load_actual_images) ... ok
+test_sampling_does_not_use_validation (test_face_data.FaceDataTests.test_sampling_does_not_use_validation) ... ok
+test_sampling_is_balanced_reproducible_and_identity_correct (test_face_data.FaceDataTests.test_sampling_is_balanced_reproducible_and_identity_correct) ... ok
+test_unknown_validation_identity_is_rejected (test_face_data.FaceDataTests.test_unknown_validation_identity_is_rejected) ... ok
+test_validation_reuses_training_mapping (test_face_data.FaceDataTests.test_validation_reuses_training_mapping) ... ok
+test_wrong_column_count_is_rejected (test_face_data.FaceDataTests.test_wrong_column_count_is_rejected) ... ok
+test_box_geometry_rgb_and_grayscale (test_liveness_data.LivenessDataTests.test_box_geometry_rgb_and_grayscale) ... ok
+test_changed_image_or_box_after_audit_rejected (test_liveness_data.LivenessDataTests.test_changed_image_or_box_after_audit_rejected) ... ok
+test_corrupt_image_and_box_are_reported_without_silent_removal (test_liveness_data.LivenessDataTests.test_corrupt_image_and_box_are_reported_without_silent_removal) ... ok
+test_cpu_workers_preserve_inventory_order_and_hashes (test_liveness_data.LivenessDataTests.test_cpu_workers_preserve_inventory_order_and_hashes) ... ok
+test_derived_validation_keeps_original_annotations_and_enforces_assignment (test_liveness_data.LivenessDataTests.test_derived_validation_keeps_original_annotations_and_enforces_assignment) ... ok
+test_duplicate_json_paths_are_rejected (test_liveness_data.LivenessDataTests.test_duplicate_json_paths_are_rejected) ... ok
+test_each_overlap_key_is_checked_before_filtering (test_liveness_data.LivenessDataTests.test_each_overlap_key_is_checked_before_filtering) ... ok
+test_empty_box_for_preexcluded_mask_preserves_pixel_integrity_audit (test_liveness_data.LivenessDataTests.test_empty_box_for_preexcluded_mask_preserves_pixel_integrity_audit) ... ok
+test_full_dataset_preparation_reuses_fixed_subjects_with_empty_quarantine (test_liveness_data.LivenessDataTests.test_full_dataset_preparation_reuses_fixed_subjects_with_empty_quarantine) ... {"train": 11, "validation": 11, "test": 11, "quarantine": 0}
+ok
+test_full_inventory_retains_subject_quarantine_but_loader_excludes_it (test_liveness_data.LivenessDataTests.test_full_inventory_retains_subject_quarantine_but_loader_excludes_it) ... ok
+test_known_video_frames_leak_even_when_subjects_and_hashes_differ (test_liveness_data.LivenessDataTests.test_known_video_frames_leak_even_when_subjects_and_hashes_differ) ... ok
+test_mapping_exclusions_and_fixed_splits (test_liveness_data.LivenessDataTests.test_mapping_exclusions_and_fixed_splits) ... ok
+test_missing_project_validation_is_not_invented (test_liveness_data.LivenessDataTests.test_missing_project_validation_is_not_invented) ... ok
+test_multipart_reader_crosses_boundaries_and_seeks (test_liveness_data.LivenessDataTests.test_multipart_reader_crosses_boundaries_and_seeks) ... ok
+test_paths_reject_traversal_and_external_symlink_accept_internal_alias (test_liveness_data.LivenessDataTests.test_paths_reject_traversal_and_external_symlink_accept_internal_alias) ... ok
+test_real_cli_tensor_alignment_and_saved_inventory (test_liveness_data.LivenessDataTests.test_real_cli_tensor_alignment_and_saved_inventory) ... Project train, validation and test annotation files are required; split assignments are never inferred
+ok
+test_renamed_identical_files_across_splits_rejected (test_liveness_data.LivenessDataTests.test_renamed_identical_files_across_splits_rejected) ... ok
+test_rich_json_labels_override_misleading_folder_name (test_liveness_data.LivenessDataTests.test_rich_json_labels_override_misleading_folder_name) ... ok
+test_source_type_and_binary_disagreement_or_unknown_rejected (test_liveness_data.LivenessDataTests.test_source_type_and_binary_disagreement_or_unknown_rejected) ... ok
+test_validation_validation_subject_file_cannot_take_test_subjects (test_liveness_data.LivenessDataTests.test_validation_validation_subject_file_cannot_take_test_subjects) ... ok
+test_available_gpu_is_selected (test_runtime.RuntimeTests.test_available_gpu_is_selected) ... ok
+test_cpu_is_explicitly_supported_without_cuda (test_runtime.RuntimeTests.test_cpu_is_explicitly_supported_without_cuda) ... ok
+test_install_profiles_match_shared_public_versions (test_runtime.RuntimeTests.test_install_profiles_match_shared_public_versions) ... ok
+test_mac_cuda_is_rejected_without_cpu_fallback (test_runtime.RuntimeTests.test_mac_cuda_is_rejected_without_cpu_fallback) ... ok
+test_mac_intel_and_rosetta_are_rejected_before_imports (test_runtime.RuntimeTests.test_mac_intel_and_rosetta_are_rejected_before_imports) ... ok
+test_mac_requires_supported_os_release (test_runtime.RuntimeTests.test_mac_requires_supported_os_release) ... ok
+test_missing_ml_stack_produces_failed_report (test_runtime.RuntimeTests.test_missing_ml_stack_produces_failed_report) ... ok
+test_public_version_accepts_cpu_and_cuda_builds (test_runtime.RuntimeTests.test_public_version_accepts_cpu_and_cuda_builds) ... ok
+test_removed_snapshot_flag_is_rejected_before_execution (test_runtime.RuntimeTests.test_removed_snapshot_flag_is_rejected_before_execution) ... ok
+test_supported_platform_targets (test_runtime.RuntimeTests.test_supported_platform_targets) ... ok
+test_team_python_accepts_313_patches_only (test_runtime.RuntimeTests.test_team_python_accepts_313_patches_only) ... ok
+test_unavailable_requested_gpu_does_not_fall_back (test_runtime.RuntimeTests.test_unavailable_requested_gpu_does_not_fall_back) ... ok
+test_unknown_device_is_rejected (test_runtime.RuntimeTests.test_unknown_device_is_rejected) ... ok
+test_unsupported_architecture_or_os_has_clear_error (test_runtime.RuntimeTests.test_unsupported_architecture_or_os_has_clear_error) ... ok
+test_versions_only_require_shared_pins (test_runtime.RuntimeTests.test_versions_only_require_shared_pins) ... ok
+
+----------------------------------------------------------------------
+Ran 66 tests in 2.184s
+
+OK
+PASS: /tmp/liveness-fixture-gax4s168/audit/audit.json
+FAIL: /tmp/liveness-fixture-gax4s168/failed-audit/audit.json

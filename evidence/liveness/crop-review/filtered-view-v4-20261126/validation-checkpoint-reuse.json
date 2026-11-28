@@ -1,0 +1,137 @@
+{
+  "method": "SHA-verified saved validation scores; frozen historical best checkpoints and thresholds; no new inference, threshold fitting or training",
+  "limitations": "Only confirmed exclusions are removed. The declared review queue is closed, without full dataset semantic clearance. Training defects remain in historical checkpoint provenance; their effect on learned weights is unmeasured. Validation has prior model-selection exposure; this is not an independent test result.",
+  "cache_view_sha256": "439bc14889c86c445aede82901b18b571157fc735e1f006bc7fe27e7485f622f",
+  "pending_validation_review": 0,
+  "source_sha256": "2cd67b1df0bc5ede11fd46c225a74261bb040e660965a1a21af002ba4edfc0e0",
+  "models": {
+    "binary-classification": {
+      "epoch": 13,
+      "receipt": "evidence/liveness/liveness-comparison/binary-classification-epoch-checkpoints/epoch-013.json",
+      "receipt_sha256": "d4120e58b4aac08f8576356265b35ff84b7665b562456692bfec6c34e197d55a",
+      "validation_predictions_sha256": "179431b25a5b8bba7f7454e61ba6c358d68f63b6b15363297a00e5cc2de2e98a",
+      "original": {
+        "samples": 49504,
+        "live": 16241,
+        "spoof": 33263,
+        "attack_accepted_as_live": 94,
+        "live_rejected_as_spoof": 46,
+        "threshold": 0.11257407814264297,
+        "APCER": 0.0028259627814688996,
+        "BPCER": 0.002832337910227203,
+        "ACER": 0.0028291503458480515,
+        "accuracy": 0.9971719457013575,
+        "ROC_AUC": 0.9998955063825766
+      },
+      "filtered": {
+        "samples": 49479,
+        "live": 16220,
+        "spoof": 33259,
+        "attack_accepted_as_live": 92,
+        "live_rejected_as_spoof": 44,
+        "threshold": 0.11257407814264297,
+        "APCER": 0.0027661685558796117,
+        "BPCER": 0.0027127003699136867,
+        "ACER": 0.002739434462896649,
+        "accuracy": 0.997251359162473,
+        "ROC_AUC": 0.9998963873160946
+      }
+    },
+    "binary-geometric": {
+      "epoch": 11,
+      "receipt": "evidence/liveness/liveness-comparison/binary-geometric-epoch-checkpoints/epoch-011.json",
+      "receipt_sha256": "0a40b014f465c87bdade65c92d107cbbb0f5175055f4ea31e6893835b12d3e82",
+      "validation_predictions_sha256": "77570cb18f5e52ebed2c5aebf79003fbe0c7a7900b173a160b840e8d8ecb6aca",
+      "original": {
+        "samples": 49504,
+        "live": 16241,
+        "spoof": 33263,
+        "attack_accepted_as_live": 89,
+        "live_rejected_as_spoof": 43,
+        "threshold": 0.5738105773925781,
+        "APCER": 0.00267564561224183,
+        "BPCER": 0.0026476202204297767,
+        "ACER": 0.0026616329163358034,
+        "accuracy": 0.997333548804137,
+        "ROC_AUC": 0.9999154212556156
+      },
+      "filtered": {
+        "samples": 49479,
+        "live": 16220,
+        "spoof": 33259,
+        "attack_accepted_as_live": 86,
+        "live_rejected_as_spoof": 43,
+        "threshold": 0.5738105773925781,
+        "APCER": 0.002585766258757028,
+        "BPCER": 0.0026510480887792847,
+        "ACER": 0.0026184071737681567,
+        "accuracy": 0.997392833323228,
+        "ROC_AUC": 0.9999163526155311
+      }
+    },
+    "binary-semantic": {
+      "epoch": 21,
+      "receipt": "evidence/liveness/liveness-continuation/binary-semantic-epoch-checkpoints/epoch-021.json",
+      "receipt_sha256": "3f43de928433d6236c1315e9cd3c66de22a56e190e9ba5216b1f1adbd98b3000",
+      "validation_predictions_sha256": "5de4e5dd0664976a1805fb89dac473e49284399408b282cebb2ac5872bf98ce9",
+      "original": {
+        "samples": 49504,
+        "live": 16241,
+        "spoof": 33263,
+        "attack_accepted_as_live": 65,
+        "live_rejected_as_spoof": 32,
+        "threshold": 0.5147386193275452,
+        "APCER": 0.0019541231999518987,
+        "BPCER": 0.00197032202450588,
+        "ACER": 0.0019622226122288896,
+        "accuracy": 0.9980405623787977,
+        "ROC_AUC": 0.9999245767105629
+      },
+      "filtered": {
+        "samples": 49479,
+        "live": 16220,
+        "spoof": 33259,
+        "attack_accepted_as_live": 63,
+        "live_rejected_as_spoof": 32,
+        "threshold": 0.5147386193275452,
+        "APCER": 0.0018942241197871252,
+        "BPCER": 0.001972872996300863,
+        "ACER": 0.001933548558043994,
+        "accuracy": 0.9980799935326098,
+        "ROC_AUC": 0.9999249973556938
+      }
+    },
+    "aenet-full": {
+      "epoch": 18,
+      "receipt": "evidence/liveness/liveness-continuation/aenet-full-epoch-checkpoints/epoch-018.json",
+      "receipt_sha256": "db47ad41fee9ecbaa3541640037745de849727d845bc4a42b3e66a40e35a01de",
+      "validation_predictions_sha256": "2dbe975e3c84dd9c794069e64c37a80ecd911bcb771c7470ca5a9dcca725f35d",
+      "original": {
+        "samples": 49504,
+        "live": 16241,
+        "spoof": 33263,
+        "attack_accepted_as_live": 58,
+        "live_rejected_as_spoof": 28,
+        "threshold": 0.46483826637268066,
+        "APCER": 0.0017436791630340018,
+        "BPCER": 0.0017240317714426452,
+        "ACER": 0.0017338554672383234,
+        "accuracy": 0.9982627666451196,
+        "ROC_AUC": 0.9999325965262846
+      },
+      "filtered": {
+        "samples": 49479,
+        "live": 16220,
+        "spoof": 33259,
+        "attack_accepted_as_live": 56,
+        "live_rejected_as_spoof": 27,
+        "threshold": 0.46483826637268066,
+        "APCER": 0.0016837547731441114,
+        "BPCER": 0.0016646115906288532,
+        "ACER": 0.0016741831818864823,
+        "accuracy": 0.9983225206653328,
+        "ROC_AUC": 0.9999334344812112
+      }
+    }
+  }
+}

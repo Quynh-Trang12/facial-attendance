@@ -1,0 +1,8 @@
+{
+  "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+  "input_signature": "6a603084ee641d9bf258521e1acc6289bbc5fa1aa4a59f38e2e667c333baa91c",
+  "results": {
+    "public-test": "public-test",
+    "physical-trials": "physical-trials"
+  }
+}

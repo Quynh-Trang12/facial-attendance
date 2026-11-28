@@ -1,0 +1,19 @@
+{
+  "phase": "screening",
+  "arm": "aenet-full",
+  "completed_epochs": 15,
+  "selected_epoch": 13,
+  "optimizer_updates": 26040,
+  "selected_optimizer_updates": 22568,
+  "selection_key": [
+    0.001977254329151596,
+    0.015064756814196188
+  ],
+  "checkpoint_sha256": "f002340a37899043fefe3530c1e495645ddc9c865984a2b5ef02df6f7a8b52b3",
+  "threshold": 0.030348068103194237,
+  "elapsed_seconds_this_execution": 2254.34928185,
+  "full_training_completed": false,
+  "screening_completed": true,
+  "epoch_checkpoint_directory": "/content/drive/MyDrive/Swinburne/Y3-2026/S1-Y3/COS30082-Applied-Machine-Learning/Project/facial-attendance/evidence/liveness/liveness-comparison/aenet-full-epoch-checkpoints",
+  "test_or_physical_used_for_selection": false
+}

@@ -5,8 +5,10 @@
 [paths]
 kaggle_cache = "data/.kagglehub"
 face_data = "data/.kagglehub/competitions/11-785-fall-20-homework-2-part-2"
-# Reserved paths: liveness/emotion datasets have not been selected or downloaded.
-liveness_data = "data/raw/liveness"
+# CelebA-Spoof acquisition/audit: docs/liveness-data-preparation-and-audit.md; emotion remains reserved here.
+liveness_data = "data/raw/liveness/celeba-spoof-full"
+camera_trials = "data/liveness/camera-trials"
+detector_model = "artifacts/detectors/face_detection_yunet_2023mar.onnx"
 emotion_data = "data/raw/emotion"
 # Generated model weights and attendance records are kept out of version control.
 checkpoints = "artifacts/checkpoints"
