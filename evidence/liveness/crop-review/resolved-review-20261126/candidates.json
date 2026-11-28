@@ -1,0 +1,3694 @@
+{
+  "scope": "Second-pass enlarged inspection of all 66 unresolved cases from filtered-view-v2; no automatic size or detector-count exclusions",
+  "candidates": [
+    {
+      "relative_path": "Data/test/6399/live/509289.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The box selects a secondary person at lower left; a face is visible, but the intended annotated identity cannot be established from this preview.",
+      "supplied_bbox_pixels": "[10, 222, 96, 322]",
+      "crop_width": "86",
+      "crop_height": "100",
+      "source_sha256": "72720326a306854461ff5a1425aa20910fc6d5783c8594a225a814c02d27e520",
+      "bbox_sha256": "ffa861bfd4080351eb0f82fe949de823352c2cd6b3b0a8724d2b68c887325768",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-01.png",
+      "review_id": 1,
+      "previous_finding": "The box selects a secondary person at lower left; a face is visible, but the intended annotated identity cannot be established from this preview.",
+      "evidence_sha256": "44a14001771b1b4077de983e9f6e729c8ed451391dacd0aaad400963f30ba20f",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/6399/live/495442.png",
+          "crop_box": [
+            168,
+            100,
+            324,
+            352
+          ],
+          "source_sha256": "122ec020df3793ac3fe6e9926829de2e3fcdd436c866f326405567dca3eb52f1"
+        },
+        {
+          "relative_path": "Data/test/6399/live/499994.png",
+          "crop_box": [
+            115,
+            57,
+            190,
+            152
+          ],
+          "source_sha256": "72827b8a261889849b6fabae3f5df8464f0dcb7c65ab46df18aa6650fea9c10d"
+        },
+        {
+          "relative_path": "Data/test/6399/live/503873.png",
+          "crop_box": [
+            187,
+            68,
+            301,
+            267
+          ],
+          "source_sha256": "23f82df4cac8e50b91fcf2f621aaddc6fb54586253c839f0659acadd274de40c"
+        }
+      ],
+      "subject_evidence": "subject-01.png",
+      "subject_evidence_sha256": "f0a29b06dc1b574d289f24e32d13064a532b84ab43a6478613b33655fc8e89fe",
+      "finding": "The ROI selects the peripheral person behind the foreground portrait and excludes the clearly presented foreground face; this is a source-context target error, not a multiple-face count rule.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/test/7407/spoof/531948.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "7",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The supplied ROI selects a secondary depicted face within the same spoof presentation; target attribution and usability require closer review, not exclusion from detector disagreement alone.",
+      "supplied_bbox_pixels": "[135, 77, 162, 119]",
+      "crop_width": "27",
+      "crop_height": "42",
+      "source_sha256": "d21c3bcbf0eef1a76f644baa4b74deb5f06627c7fd97674b408b73090cfe03dc",
+      "bbox_sha256": "e75a863b755fb834f9dd5b58eb7d16c5669ec381b6a3b3995efccd7aafc5c203",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-01.png",
+      "review_id": 2,
+      "previous_finding": "The supplied ROI selects a secondary depicted face within the same spoof presentation; target attribution and usability require closer review, not exclusion from detector disagreement alone.",
+      "evidence_sha256": "44a14001771b1b4077de983e9f6e729c8ed451391dacd0aaad400963f30ba20f",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/7407/live/496392.png",
+          "crop_box": [
+            51,
+            38,
+            142,
+            177
+          ],
+          "source_sha256": "bd78670ee6c8379d999970cc1fbd8e0d013c9ba86484ddbe667b4c7be7060f7c"
+        },
+        {
+          "relative_path": "Data/test/7407/live/499212.png",
+          "crop_box": [
+            108,
+            72,
+            174,
+            173
+          ],
+          "source_sha256": "7eddc4a1db251eaac2520af579b96668f423eb478908d83d11429f64edf9f6af"
+        },
+        {
+          "relative_path": "Data/test/7407/live/505532.png",
+          "crop_box": [
+            28,
+            86,
+            103,
+            217
+          ],
+          "source_sha256": "cc6c9ace1269c8b2aa92382bb811497920ab6aeea79a8f8ba81cfd276bae7f2d"
+        }
+      ],
+      "subject_evidence": "subject-01.png",
+      "subject_evidence_sha256": "f0a29b06dc1b574d289f24e32d13064a532b84ab43a6478613b33655fc8e89fe",
+      "finding": "The ROI is on a tiny background depicted head behind the central spoof portrait; the enlarged/native-pixel views show severe blur and missing usable facial detail rather than the presented central face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/test/7407/spoof/540234.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "7",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A secondary depicted face inside the spoof image is selected; the correct spoof target and sufficient facial detail remain unresolved.",
+      "supplied_bbox_pixels": "[137, 77, 162, 122]",
+      "crop_width": "25",
+      "crop_height": "45",
+      "source_sha256": "c5557086b9382025558f998c52c51f51d623f40ca91727ea1734edc04d8d3b8e",
+      "bbox_sha256": "e4d5690d8bff310fdab14969e87cca47068e2f1f57fbd1ecb55d94d2dfff0062",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-01.png",
+      "review_id": 3,
+      "previous_finding": "A secondary depicted face inside the spoof image is selected; the correct spoof target and sufficient facial detail remain unresolved.",
+      "evidence_sha256": "44a14001771b1b4077de983e9f6e729c8ed451391dacd0aaad400963f30ba20f",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/7407/live/496392.png",
+          "crop_box": [
+            51,
+            38,
+            142,
+            177
+          ],
+          "source_sha256": "bd78670ee6c8379d999970cc1fbd8e0d013c9ba86484ddbe667b4c7be7060f7c"
+        },
+        {
+          "relative_path": "Data/test/7407/live/499212.png",
+          "crop_box": [
+            108,
+            72,
+            174,
+            173
+          ],
+          "source_sha256": "7eddc4a1db251eaac2520af579b96668f423eb478908d83d11429f64edf9f6af"
+        },
+        {
+          "relative_path": "Data/test/7407/live/505532.png",
+          "crop_box": [
+            28,
+            86,
+            103,
+            217
+          ],
+          "source_sha256": "cc6c9ace1269c8b2aa92382bb811497920ab6aeea79a8f8ba81cfd276bae7f2d"
+        }
+      ],
+      "subject_evidence": "subject-01.png",
+      "subject_evidence_sha256": "f0a29b06dc1b574d289f24e32d13064a532b84ab43a6478613b33655fc8e89fe",
+      "finding": "The ROI selects a severely blurred peripheral depicted head behind the central spoof face; usable facial structure is not preserved by enlargement.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/test/7407/spoof/546228.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "7",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A secondary depicted face inside the spoof image is selected; the correct spoof target and sufficient facial detail remain unresolved.",
+      "supplied_bbox_pixels": "[137, 77, 162, 122]",
+      "crop_width": "25",
+      "crop_height": "45",
+      "source_sha256": "c3e52755dc2c0624c3d104d88e9de1d626ba35549112bf6b0dfb81ee97efa1b1",
+      "bbox_sha256": "f9b433296439331a0b46d65f8cccb3e0189debbd5572d7b86c6c05d7dfdba49b",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-02.png",
+      "review_id": 4,
+      "previous_finding": "A secondary depicted face inside the spoof image is selected; the correct spoof target and sufficient facial detail remain unresolved.",
+      "evidence_sha256": "3dce3c9c227bdca193032873a93ca5c0f9908130c44df4e2c33a32473463002b",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/7407/live/496392.png",
+          "crop_box": [
+            51,
+            38,
+            142,
+            177
+          ],
+          "source_sha256": "bd78670ee6c8379d999970cc1fbd8e0d013c9ba86484ddbe667b4c7be7060f7c"
+        },
+        {
+          "relative_path": "Data/test/7407/live/499212.png",
+          "crop_box": [
+            108,
+            72,
+            174,
+            173
+          ],
+          "source_sha256": "7eddc4a1db251eaac2520af579b96668f423eb478908d83d11429f64edf9f6af"
+        },
+        {
+          "relative_path": "Data/test/7407/live/505532.png",
+          "crop_box": [
+            28,
+            86,
+            103,
+            217
+          ],
+          "source_sha256": "cc6c9ace1269c8b2aa92382bb811497920ab6aeea79a8f8ba81cfd276bae7f2d"
+        }
+      ],
+      "subject_evidence": "subject-02.png",
+      "subject_evidence_sha256": "b09f9b4e5ba88dace04d23c405029f2437c22567b2bbb6936abce9dfb62cea7c",
+      "finding": "The peripheral depicted head in the supplied ROI is severely blurred and incomplete at native scale; the clear central spoof face is excluded.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/test/7407/spoof/550667.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "7",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A secondary depicted face inside the spoof image is selected; the correct spoof target and sufficient facial detail remain unresolved.",
+      "supplied_bbox_pixels": "[137, 77, 162, 122]",
+      "crop_width": "25",
+      "crop_height": "45",
+      "source_sha256": "04703e1a9f384e7e0360a6554be4b718a898633a0a738b2370c1a150a1490fbf",
+      "bbox_sha256": "450aa606555cfe68c2a59ee21a4aea479def18a03bca88a6f10de6274c99dc25",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-02.png",
+      "review_id": 5,
+      "previous_finding": "A secondary depicted face inside the spoof image is selected; the correct spoof target and sufficient facial detail remain unresolved.",
+      "evidence_sha256": "3dce3c9c227bdca193032873a93ca5c0f9908130c44df4e2c33a32473463002b",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/7407/live/496392.png",
+          "crop_box": [
+            51,
+            38,
+            142,
+            177
+          ],
+          "source_sha256": "bd78670ee6c8379d999970cc1fbd8e0d013c9ba86484ddbe667b4c7be7060f7c"
+        },
+        {
+          "relative_path": "Data/test/7407/live/499212.png",
+          "crop_box": [
+            108,
+            72,
+            174,
+            173
+          ],
+          "source_sha256": "7eddc4a1db251eaac2520af579b96668f423eb478908d83d11429f64edf9f6af"
+        },
+        {
+          "relative_path": "Data/test/7407/live/505532.png",
+          "crop_box": [
+            28,
+            86,
+            103,
+            217
+          ],
+          "source_sha256": "cc6c9ace1269c8b2aa92382bb811497920ab6aeea79a8f8ba81cfd276bae7f2d"
+        }
+      ],
+      "subject_evidence": "subject-02.png",
+      "subject_evidence_sha256": "b09f9b4e5ba88dace04d23c405029f2437c22567b2bbb6936abce9dfb62cea7c",
+      "finding": "The supplied crop is a severely blurred background depicted head patch; enlargement does not recover the facial detail present in the central spoof target.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/test/7664/live/543480.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary person's face at left is selected rather than the prominent woman; annotation identity and target suitability remain unresolved.",
+      "supplied_bbox_pixels": "[48, 128, 76, 168]",
+      "crop_width": "28",
+      "crop_height": "40",
+      "source_sha256": "6a3645839b670c272f37f5bea0dde103ff5811095bccf1b5a36f5f87a572ec06",
+      "bbox_sha256": "eb2d744cf976b102263deeca2b495e683170c07d813fb2661dc54c7d1a872506",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-02.png",
+      "review_id": 6,
+      "previous_finding": "A secondary person's face at left is selected rather than the prominent woman; annotation identity and target suitability remain unresolved.",
+      "evidence_sha256": "3dce3c9c227bdca193032873a93ca5c0f9908130c44df4e2c33a32473463002b",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/7664/live/497182.png",
+          "crop_box": [
+            953,
+            171,
+            1153,
+            499
+          ],
+          "source_sha256": "ca34e69cdfad4c9282fd116c41f2d7deca643d931cd3122aa5a08992fdcc057f"
+        },
+        {
+          "relative_path": "Data/test/7664/live/517920.png",
+          "crop_box": [
+            177,
+            297,
+            405,
+            663
+          ],
+          "source_sha256": "8903ae0cd0b99d56471dc2b170c801678415078ae801965fb4cd006d7a6adf13"
+        },
+        {
+          "relative_path": "Data/test/7664/live/524880.png",
+          "crop_box": [
+            197,
+            209,
+            305,
+            389
+          ],
+          "source_sha256": "c9629498b2db34408c56ddbad04636ddb259cda9697b9e20ca7a35463b9a6976"
+        }
+      ],
+      "subject_evidence": "subject-02.png",
+      "subject_evidence_sha256": "b09f9b4e5ba88dace04d23c405029f2437c22567b2bbb6936abce9dfb62cea7c",
+      "finding": "The ROI selects a peripheral background person left of the foreground fashion portrait and excludes the foreground face; the decision is based on scene context, not face count.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/test/7760/live/506007.png",
+      "split": "test",
+      "original_split": "test",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The box contains the second person's visible face at the upper-right edge; multiple people alone do not establish that this is an incorrect target.",
+      "supplied_bbox_pixels": "[129, 0, 173, 93]",
+      "crop_width": "44",
+      "crop_height": "93",
+      "source_sha256": "9cac2421cbee60107801a26c793c55458621ec5566d5fd2001596ab3ff5656cb",
+      "bbox_sha256": "1e20364d8310e43c6cfcd42c116f27844ee8f8febac42a5cb29137e1b2d79182",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-03.png",
+      "review_id": 7,
+      "previous_finding": "The box contains the second person's visible face at the upper-right edge; multiple people alone do not establish that this is an incorrect target.",
+      "evidence_sha256": "59706ba61977485f09e3ed396bbb004b7c790a8312c9cef5eecc759b4cfd94c1",
+      "subject_references": [
+        {
+          "relative_path": "Data/test/7760/live/495654.png",
+          "crop_box": [
+            156,
+            100,
+            271,
+            272
+          ],
+          "source_sha256": "fcc7200fbc4ca706a216e6004b8d51c756e8961abc6f9fe3d1bc97ea8fbb15b7"
+        },
+        {
+          "relative_path": "Data/test/7760/live/500024.png",
+          "crop_box": [
+            214,
+            190,
+            388,
+            463
+          ],
+          "source_sha256": "e945385c39554219be311f711b646f820b3469adc4f7853031b43390c157e698"
+        },
+        {
+          "relative_path": "Data/test/7760/live/501585.png",
+          "crop_box": [
+            145,
+            103,
+            264,
+            220
+          ],
+          "source_sha256": "5ee833970a28685c78de1a06e5d5627a33304d6e19260360caceea503cbc165f"
+        }
+      ],
+      "subject_evidence": "subject-03.png",
+      "subject_evidence_sha256": "0c2bc1a2895f7a94404cde4c71be8d4e2fbef382c281bad742939b1932b577fd",
+      "finding": "The ROI selects a cut-off peripheral face at the upper-right boundary rather than the foreground portrait in the supplied source.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/1612/live/043313.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a visible secondary face at the restaurant table; the intended annotated person is unresolved, so multiple faces alone do not justify exclusion.",
+      "supplied_bbox_pixels": "[399, 97, 435, 144]",
+      "crop_width": "36",
+      "crop_height": "47",
+      "source_sha256": "9694aefae6bbeb6e6f26e38bdb2f52174f39ccff641a6c66453e4832a93f08aa",
+      "bbox_sha256": "58390512f701d44c0494f937281b1b68f64dafd59ce23a42f8f2ad288203fc74",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-03.png",
+      "review_id": 8,
+      "previous_finding": "The crop contains a visible secondary face at the restaurant table; the intended annotated person is unresolved, so multiple faces alone do not justify exclusion.",
+      "evidence_sha256": "59706ba61977485f09e3ed396bbb004b7c790a8312c9cef5eecc759b4cfd94c1",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/1612/live/025828.jpg",
+          "crop_box": [
+            211,
+            100,
+            342,
+            323
+          ],
+          "source_sha256": "dc10ff605a3890a2e77e854cb1e62931ead2a69cc8dd90ca336a3f08369bdf59"
+        },
+        {
+          "relative_path": "Data/train/1612/live/085672.jpg",
+          "crop_box": [
+            645,
+            51,
+            960,
+            388
+          ],
+          "source_sha256": "9162f732086dbb2db1e3fe6f255e10c04a9bfa5df1c0137b01e8346fc8588be4"
+        },
+        {
+          "relative_path": "Data/train/1612/live/112896.jpg",
+          "crop_box": [
+            186,
+            95,
+            346,
+            350
+          ],
+          "source_sha256": "8edfb846a74168883f1cad8584afac38cd67203b5d57e3a78799a0421f18edf2"
+        }
+      ],
+      "subject_evidence": "subject-03.png",
+      "subject_evidence_sha256": "0c2bc1a2895f7a94404cde4c71be8d4e2fbef382c281bad742939b1932b577fd",
+      "finding": "The ROI selects a background table guest behind the foreground portrait; it does not cover the prominently presented foreground face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/1813/live/463210.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary person at left has a recognizable face in the crop; intended annotation identity remains unresolved.",
+      "supplied_bbox_pixels": "[118, 207, 179, 267]",
+      "crop_width": "61",
+      "crop_height": "60",
+      "source_sha256": "f7439e984c30d681a9732727f277fdc182fa576b95ab740740db3e314e4b81b7",
+      "bbox_sha256": "3db4e2fb7b24ee7411b6035bf803c8c580a6c5cbe3b305af1032823a9b1d6e79",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-03.png",
+      "review_id": 9,
+      "previous_finding": "A secondary person at left has a recognizable face in the crop; intended annotation identity remains unresolved.",
+      "evidence_sha256": "59706ba61977485f09e3ed396bbb004b7c790a8312c9cef5eecc759b4cfd94c1",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/1813/live/080211.jpg",
+          "crop_box": [
+            154,
+            60,
+            254,
+            174
+          ],
+          "source_sha256": "f9aa969ac39346a0fb3e3a02e0c029bc012e79060558371dadcb224c424d4fc5"
+        },
+        {
+          "relative_path": "Data/train/1813/live/103011.jpg",
+          "crop_box": [
+            0,
+            169,
+            98,
+            362
+          ],
+          "source_sha256": "21f9f6d64b7b443ccd48015be9b3514d9a5c71da88f0440b35fa1e467b615044"
+        },
+        {
+          "relative_path": "Data/train/1813/live/135296.jpg",
+          "crop_box": [
+            225,
+            146,
+            295,
+            261
+          ],
+          "source_sha256": "a723131d1de7f979e289a7af6ee4117382e9e8d8692fd6a1751ea8c0a3400e44"
+        }
+      ],
+      "subject_evidence": "subject-03.png",
+      "subject_evidence_sha256": "0c2bc1a2895f7a94404cde4c71be8d4e2fbef382c281bad742939b1932b577fd",
+      "finding": "The supplied ROI selects a background group member at left instead of the prominent foreground portrait; foreground facial content is entirely outside the ROI.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/1875/live/458699.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary woman\u2019s recognizable profile at left; foreground prominence alone is insufficient to establish wrong annotation identity.",
+      "supplied_bbox_pixels": "[53, 225, 173, 365]",
+      "crop_width": "120",
+      "crop_height": "140",
+      "source_sha256": "17016d60d66a5988705f2ad16de36771b04603a296d13c5feab24948c4ad2ff5",
+      "bbox_sha256": "3c51f1ba480d59d5e1d6752e0205dbe0751f12b8a5d3dd8a042a8e5abdb522de",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-04.png",
+      "review_id": 10,
+      "previous_finding": "The ROI contains a secondary woman\u2019s recognizable profile at left; foreground prominence alone is insufficient to establish wrong annotation identity.",
+      "evidence_sha256": "0fd3fe6cd4e2402b46eca3cdd5748558ca249c1c733b9549fad8ab851ddf813c",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/1875/live/002527.jpg",
+          "crop_box": [
+            257,
+            64,
+            439,
+            302
+          ],
+          "source_sha256": "45ef353cb375e5595f389f0a678e980d98ebc78f4d76542a153f9097e9704b90"
+        },
+        {
+          "relative_path": "Data/train/1875/live/008271.jpg",
+          "crop_box": [
+            242,
+            248,
+            347,
+            423
+          ],
+          "source_sha256": "966f33b8d26a8ce11a1a341e9f10ca3be8c00f25436f46996fd69d337e495d0b"
+        },
+        {
+          "relative_path": "Data/train/1875/live/018362.jpg",
+          "crop_box": [
+            147,
+            37,
+            221,
+            157
+          ],
+          "source_sha256": "ae71c3347114715aebb04734fc6c78899bc1eb762003f782e74c5612a8e47db8"
+        }
+      ],
+      "subject_evidence": "subject-04.png",
+      "subject_evidence_sha256": "fbdf211e4c590747b434a9ae47caaa97c9cc0ef4b89fbdd49b296a57fe96180a",
+      "finding": "The supplied ROI selects a background side-face behind the foreground portrait and excludes the foreground target.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2209/live/206477.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The selected rear person has facial structure but target identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[8, 231, 57, 296]",
+      "crop_width": "49",
+      "crop_height": "65",
+      "source_sha256": "63cfea3b5b404147afdf5a8734dafbbec42418bdcb057bb4a22cefec8c96495b",
+      "bbox_sha256": "4a82d449ee8b6d92a490aa61c493a2d0fae6575f3ae590ae19f89544c4c248ae",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-04.png",
+      "review_id": 11,
+      "previous_finding": "The selected rear person has facial structure but target identity and blur suitability remain unresolved.",
+      "evidence_sha256": "0fd3fe6cd4e2402b46eca3cdd5748558ca249c1c733b9549fad8ab851ddf813c",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2209/live/006838.jpg",
+          "crop_box": [
+            109,
+            49,
+            221,
+            240
+          ],
+          "source_sha256": "919ae28fe3cc63c350e59a16d9651315a31d9565b0458587f0bd9474e8fe6f6e"
+        },
+        {
+          "relative_path": "Data/train/2209/live/010922.jpg",
+          "crop_box": [
+            122,
+            66,
+            192,
+            186
+          ],
+          "source_sha256": "4ecbdc7bd7c4e3bbb5dd864ba86e874b4badf2d4dbd30ec6028c73f5a1cb6d2f"
+        },
+        {
+          "relative_path": "Data/train/2209/live/069582.jpg",
+          "crop_box": [
+            155,
+            31,
+            253,
+            168
+          ],
+          "source_sha256": "360bce41e53211b3526afc1125fc577083091412aec5f8db24e47066d40e76ca"
+        }
+      ],
+      "subject_evidence": "subject-04.png",
+      "subject_evidence_sha256": "fbdf211e4c590747b434a9ae47caaa97c9cc0ef4b89fbdd49b296a57fe96180a",
+      "finding": "The supplied ROI selects the peripheral rear person behind the foreground portrait rather than the presented foreground face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2221/live/483299.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The box contains a secondary person\u2019s side face; target identity remains unresolved rather than invalid merely because several faces exist.",
+      "supplied_bbox_pixels": "[32, 283, 107, 408]",
+      "crop_width": "75",
+      "crop_height": "125",
+      "source_sha256": "65f3248269ac7f3f8e1aabe067fdffa8368102736a544c6a36f91770cdeea17f",
+      "bbox_sha256": "0b44a123aebfd87d13d978a685fd1f2ddad8ed1a22e2194a4078cc42448ee8cc",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-04.png",
+      "review_id": 12,
+      "previous_finding": "The box contains a secondary person\u2019s side face; target identity remains unresolved rather than invalid merely because several faces exist.",
+      "evidence_sha256": "0fd3fe6cd4e2402b46eca3cdd5748558ca249c1c733b9549fad8ab851ddf813c",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2221/live/013587.jpg",
+          "crop_box": [
+            259,
+            132,
+            449,
+            453
+          ],
+          "source_sha256": "dad5a47e76707e7e4b1dc39af25ceb6a12a600f8e46b40d255f77ff1450fbd58"
+        },
+        {
+          "relative_path": "Data/train/2221/live/045271.jpg",
+          "crop_box": [
+            437,
+            723,
+            1517,
+            2330
+          ],
+          "source_sha256": "15931d4e85fe9ad6cf5ac45d347cfddc4bfa83767ed2d7d700c9b2f5a9f8fdd0"
+        },
+        {
+          "relative_path": "Data/train/2221/live/064795.jpg",
+          "crop_box": [
+            185,
+            106,
+            295,
+            295
+          ],
+          "source_sha256": "941d0783c9f0dc0a7cd3ee77a3736bd7c50c1641dce47e6526623e4d0af96bd3"
+        }
+      ],
+      "subject_evidence": "subject-04.png",
+      "subject_evidence_sha256": "fbdf211e4c590747b434a9ae47caaa97c9cc0ef4b89fbdd49b296a57fe96180a",
+      "finding": "The supplied ROI selects a background person left of the foreground portrait and excludes the foreground face; multiple-face presence itself is not the exclusion reason.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2338/spoof/311951.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "3",
+      "attack_family": "print",
+      "binary_label": "1",
+      "decision": "confirmed_wrong_roi",
+      "reason_code": "roi",
+      "reason": "Supplied region captures a small partial patch of the print; a complete, trustworthy face ROI is not established.",
+      "supplied_bbox_pixels": "[286, 186, 312, 204]",
+      "crop_width": "26",
+      "crop_height": "18",
+      "source_sha256": "a7f7a4ffaffa1f38032f5b15e9973bf4b6a6f170d6fecff8937db83fe9a85ad0",
+      "bbox_sha256": "75dbbb93be6c7a623a4d7e69d159ffe02d6f625be34e6e09b12d865be2435fb9",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-05.png",
+      "review_id": 13,
+      "previous_finding": "Supplied region captures a small partial patch of the print; a complete, trustworthy face ROI is not established.",
+      "evidence_sha256": "8e7049152634ca71fc4f014d685fbb269e116c426d0996545dbbcfb7e696915a",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2338/live/007262.jpg",
+          "crop_box": [
+            167,
+            26,
+            296,
+            189
+          ],
+          "source_sha256": "342ce1f4b981a6eebc4d5bed33d1abd437731e68ea04c706d4cea1dca5c588a6"
+        },
+        {
+          "relative_path": "Data/train/2338/live/007382.jpg",
+          "crop_box": [
+            66,
+            75,
+            297,
+            432
+          ],
+          "source_sha256": "c68ccff999153f8e32106a6ff532d278bdd4ea2e9fd1f3797fd83ae37c8adef9"
+        },
+        {
+          "relative_path": "Data/train/2338/live/022795.jpg",
+          "crop_box": [
+            120,
+            4,
+            240,
+            203
+          ],
+          "source_sha256": "b2361281119faa1150dec2621c11aae54898438f3d798c9e167957a52be20870"
+        }
+      ],
+      "subject_evidence": "subject-05.png",
+      "subject_evidence_sha256": "141ca6f0c69233e08d79cb7007af91f0a508730dab40516f4c6385bbc46f6a2e",
+      "finding": "The ROI covers a small hair/ear-side patch of the sideways printed head, not its complete depicted face; both enlargement modes confirm the missing facial region.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2364/live/319164.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary background man\u2019s face; intended annotated identity and image quality remain unresolved.",
+      "supplied_bbox_pixels": "[79, 22, 126, 91]",
+      "crop_width": "47",
+      "crop_height": "69",
+      "source_sha256": "09a0033f1e99faa8058c319f4564a36a8831d469f64c0b38b3310e60f12a314d",
+      "bbox_sha256": "216354e4ae1bb973365c2397cc39e8692472b757d36df9a80063284e0f0be56e",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-05.png",
+      "review_id": 14,
+      "previous_finding": "The ROI contains a secondary background man\u2019s face; intended annotated identity and image quality remain unresolved.",
+      "evidence_sha256": "8e7049152634ca71fc4f014d685fbb269e116c426d0996545dbbcfb7e696915a",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2364/live/022993.jpg",
+          "crop_box": [
+            73,
+            65,
+            182,
+            220
+          ],
+          "source_sha256": "acd8946d22b0f579af79d7cf413a7311fbdf81201c7d674cf99450174034728e"
+        },
+        {
+          "relative_path": "Data/train/2364/live/026491.jpg",
+          "crop_box": [
+            65,
+            65,
+            163,
+            211
+          ],
+          "source_sha256": "08865b57f03469302565bdf3f160096da8df9fad113584cf26c43930c6a01778"
+        },
+        {
+          "relative_path": "Data/train/2364/live/056055.jpg",
+          "crop_box": [
+            56,
+            54,
+            130,
+            166
+          ],
+          "source_sha256": "ccc813e73b46bb84e7ddd4d76fb446021cb506bef47823b9e18709551bd332ae"
+        }
+      ],
+      "subject_evidence": "subject-05.png",
+      "subject_evidence_sha256": "141ca6f0c69233e08d79cb7007af91f0a508730dab40516f4c6385bbc46f6a2e",
+      "finding": "The supplied ROI selects the background spectator behind the foreground seated portrait, excluding the presented foreground face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2570/live/177488.jpg",
+      "split": "validation",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a secondary woman\u2019s visible sunglasses face behind the foreground man; intended annotated identity remains unresolved.",
+      "supplied_bbox_pixels": "[53, 257, 144, 344]",
+      "crop_width": "91",
+      "crop_height": "87",
+      "source_sha256": "8e6a209dd7f7039fe228e965cddb1443d6240fb41af50bb5a1d431e01cc8d22f",
+      "bbox_sha256": "5c7859644c628cf5f358249b4c462b989ec13db6848d476f8b29841a91a8c561",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-05.png",
+      "review_id": 15,
+      "previous_finding": "The crop contains a secondary woman\u2019s visible sunglasses face behind the foreground man; intended annotated identity remains unresolved.",
+      "evidence_sha256": "8e7049152634ca71fc4f014d685fbb269e116c426d0996545dbbcfb7e696915a",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2570/live/018856.jpg",
+          "crop_box": [
+            181,
+            20,
+            267,
+            154
+          ],
+          "source_sha256": "310e520a859a5478c380290a5a50eec85c6de6957cf56c9b76968b04eb2f427c"
+        },
+        {
+          "relative_path": "Data/train/2570/live/019168.jpg",
+          "crop_box": [
+            541,
+            312,
+            826,
+            785
+          ],
+          "source_sha256": "e698d331f7515c4d88a401d181903a9d75ea5d1ad5708f760c489f6189a8b37c"
+        },
+        {
+          "relative_path": "Data/train/2570/live/020049.jpg",
+          "crop_box": [
+            141,
+            34,
+            214,
+            169
+          ],
+          "source_sha256": "eb04d7497b255c7e628c4004789f36783544d933d35eaf5fdda8cdba73c05a31"
+        }
+      ],
+      "subject_evidence": "subject-05.png",
+      "subject_evidence_sha256": "141ca6f0c69233e08d79cb7007af91f0a508730dab40516f4c6385bbc46f6a2e",
+      "finding": "The supplied ROI selects the bystander at lower left rather than the foreground portrait; the clear foreground face is entirely outside the box.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2612/live/038696.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary person\u2019s side face is visible behind the foreground woman; target attribution remains unresolved.",
+      "supplied_bbox_pixels": "[148, 204, 211, 312]",
+      "crop_width": "63",
+      "crop_height": "108",
+      "source_sha256": "f3d550e97338217f0e340dee035eca5080ab15847bd835f8c5db2b3782b25bb6",
+      "bbox_sha256": "d6cdefe390c6fb96c13da82cc6255d7c11f02a311bbd8cb9b3eda340b51dc80f",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-06.png",
+      "review_id": 16,
+      "previous_finding": "A secondary person\u2019s side face is visible behind the foreground woman; target attribution remains unresolved.",
+      "evidence_sha256": "65108b4c46716a9a340ad28a7d4d48c82622d1a03c8ddbb92ee77a713585457d",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2612/live/008768.jpg",
+          "crop_box": [
+            318,
+            180,
+            420,
+            360
+          ],
+          "source_sha256": "f7fc7f99e195b6e6007bcdafeaa4486b103dd07570bdd707b4e6bb460153b4d7"
+        },
+        {
+          "relative_path": "Data/train/2612/live/013544.jpg",
+          "crop_box": [
+            146,
+            78,
+            224,
+            205
+          ],
+          "source_sha256": "0f366fe1130d31372a5a602b874e48c428fe4d1b9face3b8a53b8fed2a2cce27"
+        },
+        {
+          "relative_path": "Data/train/2612/live/042018.jpg",
+          "crop_box": [
+            156,
+            120,
+            243,
+            230
+          ],
+          "source_sha256": "9b749465af2ac8e1bb2732865fcf032fa91addb0ba03227906e216cf77b7a45e"
+        }
+      ],
+      "subject_evidence": "subject-06.png",
+      "subject_evidence_sha256": "0be9cdc83f38afdc0f774c63eb327866723168363ca079f08984ae6e50198770",
+      "finding": "The supplied ROI selects a peripheral person behind the foreground woman and crops away part of that background head; it excludes the foreground portrait face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2645/live/443918.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a secondary background person\u2019s recognizable face; foreground prominence alone does not resolve annotation identity.",
+      "supplied_bbox_pixels": "[14, 132, 62, 191]",
+      "crop_width": "48",
+      "crop_height": "59",
+      "source_sha256": "0d84d422d164d4e271857d49fdf4ad4db3ff75eccee833e761a2002245c8b68b",
+      "bbox_sha256": "226fb87d320ff215fecca4dede1c3dccaacf6b4ec11a5c42d82b7231943207c8",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-06.png",
+      "review_id": 17,
+      "previous_finding": "The crop contains a secondary background person\u2019s recognizable face; foreground prominence alone does not resolve annotation identity.",
+      "evidence_sha256": "65108b4c46716a9a340ad28a7d4d48c82622d1a03c8ddbb92ee77a713585457d",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2645/live/237132.jpg",
+          "crop_box": [
+            160,
+            111,
+            294,
+            320
+          ],
+          "source_sha256": "214d2e86512627ec2af95977a00832d28ad79ece051821b0effa86f1ce132e52"
+        },
+        {
+          "relative_path": "Data/train/2645/live/351291.jpg",
+          "crop_box": [
+            151,
+            77,
+            298,
+            236
+          ],
+          "source_sha256": "0cafd38fa4daa74cc905983d063b5773f1d4379cda470020b624dfca8e22d60e"
+        },
+        {
+          "relative_path": "Data/train/2645/live/463507.jpg",
+          "crop_box": [
+            107,
+            64,
+            217,
+            262
+          ],
+          "source_sha256": "91719cb4aecca93ba073aac4a7332f962dd79fdf9d4b9d4b2cfae46318abef28"
+        }
+      ],
+      "subject_evidence": "subject-06.png",
+      "subject_evidence_sha256": "0be9cdc83f38afdc0f774c63eb327866723168363ca079f08984ae6e50198770",
+      "finding": "The supplied ROI selects the rear bystander left of the foreground portrait, excluding its prominent face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2813/live/203266.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary background man\u2019s face is visible; target attribution and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[471, 250, 533, 304]",
+      "crop_width": "62",
+      "crop_height": "54",
+      "source_sha256": "d092cb8ce2d9cf927d426a0340ec7c295d1d7af29a0f45768b4651abc467a646",
+      "bbox_sha256": "555e591cb0b015fb2b2513cca83f693ab7ed375ec046b7bd4609b6b0cf2a9a15",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-06.png",
+      "review_id": 18,
+      "previous_finding": "A secondary background man\u2019s face is visible; target attribution and blur suitability remain unresolved.",
+      "evidence_sha256": "65108b4c46716a9a340ad28a7d4d48c82622d1a03c8ddbb92ee77a713585457d",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2813/live/007346.jpg",
+          "crop_box": [
+            134,
+            39,
+            250,
+            188
+          ],
+          "source_sha256": "5119a25296b8dffb1e5dd49b240d77c6faef9f27bb6d78ed40ef83a4287f53bb"
+        },
+        {
+          "relative_path": "Data/train/2813/live/031131.jpg",
+          "crop_box": [
+            95,
+            20,
+            195,
+            152
+          ],
+          "source_sha256": "131ecbb89b8b04532e8b1657151ca1e4667cde4d94d0deff39838b9df77e31f8"
+        },
+        {
+          "relative_path": "Data/train/2813/live/034207.jpg",
+          "crop_box": [
+            144,
+            30,
+            224,
+            130
+          ],
+          "source_sha256": "4cf4e68b93806a39e0b067c6befc90df0142bb968b2748dbac6dc53c33e7d566"
+        }
+      ],
+      "subject_evidence": "subject-06.png",
+      "subject_evidence_sha256": "0be9cdc83f38afdc0f774c63eb327866723168363ca079f08984ae6e50198770",
+      "finding": "The supplied ROI selects a peripheral background guest at lower right rather than the clearly presented foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/2865/live/279243.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The input is a magazine page and the ROI selects a secondary inset portrait; the live label and intended target require source-content review before deciding eligibility.",
+      "supplied_bbox_pixels": "[29, 51, 77, 132]",
+      "crop_width": "48",
+      "crop_height": "81",
+      "source_sha256": "7ff7efca9bc50130a5914e28021056db96736ede81a21442efd7faad9d4a6080",
+      "bbox_sha256": "88c0c0058dc67d1b1cb536bcd86250bffc739eb11df9c46a4570f3d5d58e6bc3",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-07.png",
+      "review_id": 19,
+      "previous_finding": "The input is a magazine page and the ROI selects a secondary inset portrait; the live label and intended target require source-content review before deciding eligibility.",
+      "evidence_sha256": "4af50902645e9f2b497390579b7e44961cab31980960c47e1e804fc605912a58",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/2865/live/034703.jpg",
+          "crop_box": [
+            248,
+            0,
+            380,
+            220
+          ],
+          "source_sha256": "2840f39092f4579fc1cd1199c3fbdaba0641f93ddc9e232424bebf3a417a29fb"
+        },
+        {
+          "relative_path": "Data/train/2865/live/037917.jpg",
+          "crop_box": [
+            274,
+            27,
+            489,
+            353
+          ],
+          "source_sha256": "f639ba8ceede1fafd952c6865d58abdcb8c7154da6f89a2f702f420fc6f8ffa3"
+        },
+        {
+          "relative_path": "Data/train/2865/live/087202.jpg",
+          "crop_box": [
+            198,
+            0,
+            279,
+            121
+          ],
+          "source_sha256": "7451c1b769eafbd75a44bb8449322c7b98bc81b445525322b96732eb024fbf3d"
+        }
+      ],
+      "subject_evidence": "subject-07.png",
+      "subject_evidence_sha256": "190244aa3c4a9f472d0ef69a7f67e53ef2093f8b018d1f30ce6e34b1036cf2e6",
+      "finding": "The source is a magazine page and the ROI selects the separate inset portrait at upper left instead of the main portrait; inherited live annotation does not establish validity of this inset selection.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/3278/live/021159.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The selected backing performer has a visible profile; target attribution and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[210, 438, 274, 510]",
+      "crop_width": "64",
+      "crop_height": "72",
+      "source_sha256": "fdf456b85ce6e5461d5283187f14b6718c64c9a248f5db70fd8f22658e34c003",
+      "bbox_sha256": "312de1cd91692810e54eeb3225e113307c02fa30fbde93b6335d8c1efb38a399",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-07.png",
+      "review_id": 20,
+      "previous_finding": "The selected backing performer has a visible profile; target attribution and blur suitability remain unresolved.",
+      "evidence_sha256": "4af50902645e9f2b497390579b7e44961cab31980960c47e1e804fc605912a58",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/3278/live/001729.jpg",
+          "crop_box": [
+            140,
+            37,
+            214,
+            155
+          ],
+          "source_sha256": "fd097d1f5305fab29d8c1c44ad3b530f6c7a1d4afb9fc70b689fc95ebc29c002"
+        },
+        {
+          "relative_path": "Data/train/3278/live/009568.jpg",
+          "crop_box": [
+            107,
+            68,
+            262,
+            315
+          ],
+          "source_sha256": "6677a68603298d08ddf92f025ce516b3a190bee300b2916ff07359626d352290"
+        },
+        {
+          "relative_path": "Data/train/3278/live/036920.jpg",
+          "crop_box": [
+            111,
+            80,
+            272,
+            339
+          ],
+          "source_sha256": "2d1773a7e9bb3c335ef09ecf6fb2a252f0ae7a266ceb796b6d680d1004e057c2"
+        }
+      ],
+      "subject_evidence": "subject-07.png",
+      "subject_evidence_sha256": "190244aa3c4a9f472d0ef69a7f67e53ef2093f8b018d1f30ce6e34b1036cf2e6",
+      "finding": "The supplied ROI selects the backing performer behind the foreground singer; the foreground face that anchors the source is excluded.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/3356/live/076479.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary musician\u2019s side face is selected rather than the foreground singer; intended annotated identity and detail remain unresolved.",
+      "supplied_bbox_pixels": "[859, 579, 923, 647]",
+      "crop_width": "64",
+      "crop_height": "68",
+      "source_sha256": "456e427ef2dc1242dd6e1f36d599a04fb998e2557e01e308f53623e64d7a8f46",
+      "bbox_sha256": "a94e93a3ad2016a8a39371f374d5b5be6f10b04436347436b9036f793965cf9d",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-07.png",
+      "review_id": 21,
+      "previous_finding": "A secondary musician\u2019s side face is selected rather than the foreground singer; intended annotated identity and detail remain unresolved.",
+      "evidence_sha256": "4af50902645e9f2b497390579b7e44961cab31980960c47e1e804fc605912a58",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/3356/live/042924.jpg",
+          "crop_box": [
+            222,
+            71,
+            382,
+            296
+          ],
+          "source_sha256": "3fd79f3f4488d704f8893ff587f513d02e98d511e05620f18fc4487207e81774"
+        },
+        {
+          "relative_path": "Data/train/3356/live/051244.jpg",
+          "crop_box": [
+            1146,
+            381,
+            1635,
+            971
+          ],
+          "source_sha256": "13560bda6828bbdbf92eec6f2f99e9ba3fdcb20de37e5f8b14e0ccc1c12c6125"
+        },
+        {
+          "relative_path": "Data/train/3356/live/059432.jpg",
+          "crop_box": [
+            151,
+            75,
+            250,
+            231
+          ],
+          "source_sha256": "75a1f94d402b04b6073272598c00bcd1d97120f645e812ef1a06ae837065d9c8"
+        }
+      ],
+      "subject_evidence": "subject-07.png",
+      "subject_evidence_sha256": "190244aa3c4a9f472d0ef69a7f67e53ef2093f8b018d1f30ce6e34b1036cf2e6",
+      "finding": "The supplied ROI selects the small backing musician at lower right instead of the prominent foreground singer.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/3386/live/428924.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a secondary person\u2019s face at right; multiple faces and foreground prominence alone do not resolve the target.",
+      "supplied_bbox_pixels": "[559, 169, 639, 324]",
+      "crop_width": "80",
+      "crop_height": "155",
+      "source_sha256": "3d1d1edb60ea5368a0532589c1b123b6d2f48ac906024d9949fb3f21c2b7dc43",
+      "bbox_sha256": "d6110800d20283bcaa354e85b42523c48e9278436b2c0d113894834c993209fe",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-08.png",
+      "review_id": 22,
+      "previous_finding": "The crop contains a secondary person\u2019s face at right; multiple faces and foreground prominence alone do not resolve the target.",
+      "evidence_sha256": "b1238d62ffa42aa2e0692f4405fa1b8f87e169daa9160791627cb14194ee2696",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/3386/live/023986.jpg",
+          "crop_box": [
+            101,
+            57,
+            167,
+            162
+          ],
+          "source_sha256": "03f786e0afc24f7aeb75ed1a1de3209b397382fb9a58f9e3cedb74fe19e4eb47"
+        },
+        {
+          "relative_path": "Data/train/3386/live/041825.jpg",
+          "crop_box": [
+            149,
+            63,
+            226,
+            198
+          ],
+          "source_sha256": "70268c25058b1df1715b9f28fd76c04856461bbe84ac10a6812b3ccce1a4c29a"
+        },
+        {
+          "relative_path": "Data/train/3386/live/049148.jpg",
+          "crop_box": [
+            132,
+            76,
+            277,
+            314
+          ],
+          "source_sha256": "c45906e9fe3cf4ac21f7b6c6506241638112db94156f2f4f334450333cc15a90"
+        }
+      ],
+      "subject_evidence": "subject-08.png",
+      "subject_evidence_sha256": "206d52db37ff0d0ed5623a3827370e70c7aed0948aa5756ce563425ba44f3a63",
+      "finding": "The supplied ROI selects a peripheral person at the right boundary behind the foreground portrait, excluding the foreground face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/3400/live/142482.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The background person\u2019s face is visible but target attribution and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[479, 98, 532, 170]",
+      "crop_width": "53",
+      "crop_height": "72",
+      "source_sha256": "bc489f593b771109caadd3c4492c459b932580e6c5725fe201ccfc413055e4ed",
+      "bbox_sha256": "ae5a6b25d602b86ce11b6e67492f0f82571695a6d3f4a76548c927807ae42373",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-08.png",
+      "review_id": 23,
+      "previous_finding": "The background person\u2019s face is visible but target attribution and blur suitability remain unresolved.",
+      "evidence_sha256": "b1238d62ffa42aa2e0692f4405fa1b8f87e169daa9160791627cb14194ee2696",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/3400/live/005860.jpg",
+          "crop_box": [
+            115,
+            53,
+            244,
+            258
+          ],
+          "source_sha256": "3d071a70dd2b10a6b70299300ed05951cff72fa0bf84f83c3183190012703ff9"
+        },
+        {
+          "relative_path": "Data/train/3400/live/016136.jpg",
+          "crop_box": [
+            204,
+            71,
+            287,
+            205
+          ],
+          "source_sha256": "20b92221943da22f2a7ec736c60b069383f34aef0bbab5adc3667a0df9999d73"
+        },
+        {
+          "relative_path": "Data/train/3400/live/018480.jpg",
+          "crop_box": [
+            150,
+            80,
+            308,
+            311
+          ],
+          "source_sha256": "9ce07132a59b9b16e1429e301ca040c8a2972c2b99fea88ce67ece7bacd2a249"
+        }
+      ],
+      "subject_evidence": "subject-08.png",
+      "subject_evidence_sha256": "206d52db37ff0d0ed5623a3827370e70c7aed0948aa5756ce563425ba44f3a63",
+      "finding": "The supplied ROI selects the background bystander at upper right instead of the clearly presented foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/4153/live/293248.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary background face is visible; intended annotated identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[45, 97, 79, 152]",
+      "crop_width": "34",
+      "crop_height": "55",
+      "source_sha256": "b3c98a075c623202984c2db283e59913ce99fa2444a2f5a6e63697a29d187e33",
+      "bbox_sha256": "bb6a7d35d35ee993e5b545fceb3e3838e454eacd918605113d8fa44c0d8c7b44",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-08.png",
+      "review_id": 24,
+      "previous_finding": "A secondary background face is visible; intended annotated identity and blur suitability remain unresolved.",
+      "evidence_sha256": "b1238d62ffa42aa2e0692f4405fa1b8f87e169daa9160791627cb14194ee2696",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/4153/live/012205.jpg",
+          "crop_box": [
+            185,
+            79,
+            268,
+            219
+          ],
+          "source_sha256": "d9bf46b4e9ff4211fa1f094880739d4b0f5a3afd9906c5231beea56eb597d00b"
+        },
+        {
+          "relative_path": "Data/train/4153/live/013704.jpg",
+          "crop_box": [
+            176,
+            71,
+            271,
+            235
+          ],
+          "source_sha256": "4c553e03912a5c02c2019e1a2bcaec87798f928b26266789529d99563ad23852"
+        },
+        {
+          "relative_path": "Data/train/4153/live/026076.jpg",
+          "crop_box": [
+            173,
+            128,
+            321,
+            348
+          ],
+          "source_sha256": "6aa4485ab12a6483ff4b17e987af010b061a77f14426b90d1912baeab3fd26eb"
+        }
+      ],
+      "subject_evidence": "subject-08.png",
+      "subject_evidence_sha256": "206d52db37ff0d0ed5623a3827370e70c7aed0948aa5756ce563425ba44f3a63",
+      "finding": "The supplied ROI selects the background bystander at upper left instead of the foreground portrait; its enlarged face is also substantially blurred.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/4164/live/233084.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The source is a portrait montage and the box selects a small inset face; source target attribution is unresolved rather than inferred from size.",
+      "supplied_bbox_pixels": "[11, 411, 40, 458]",
+      "crop_width": "29",
+      "crop_height": "47",
+      "source_sha256": "252aad863320f78be5e0d1311b8cd90bcb492962bd7172250b71248e1fcddf89",
+      "bbox_sha256": "38cd5bbfa4045a6d0de302ee2f88f18a8e4d72aa06a8aacceb30dd7d253bb72e",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-09.png",
+      "review_id": 25,
+      "previous_finding": "The source is a portrait montage and the box selects a small inset face; source target attribution is unresolved rather than inferred from size.",
+      "evidence_sha256": "cf581a8aa3b649737c804ea860bb70e06e0a436f3b187022c743ff395257fcff",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/4164/live/013982.jpg",
+          "crop_box": [
+            183,
+            75,
+            349,
+            335
+          ],
+          "source_sha256": "73627f0ba93aad45cc9768786dd31c1c38ac07929035127bec89cfb37fcad677"
+        },
+        {
+          "relative_path": "Data/train/4164/live/037591.jpg",
+          "crop_box": [
+            71,
+            61,
+            179,
+            224
+          ],
+          "source_sha256": "a84d23700d1f50d68ae1857d148ec1eaed57c89fc8778464b6e12680c58f2649"
+        },
+        {
+          "relative_path": "Data/train/4164/live/049178.jpg",
+          "crop_box": [
+            150,
+            47,
+            223,
+            173
+          ],
+          "source_sha256": "f7d211a8953295da249c83600e1999be712f168d48ddd15e9193bb192c2ac691"
+        }
+      ],
+      "subject_evidence": "subject-09.png",
+      "subject_evidence_sha256": "5671bc19bee91b1abe513b34ae6993568b1512655283ac87ca4134eae663383f",
+      "finding": "The supplied rectangle selects the small thumbnail strip below the main portrait rather than its presented face; this is a separate inset-image ROI, not the main portrait region.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/4628/live/051153.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The source is a composite promotional graphic and the ROI selects an inset portrait; live-label interpretation and target attribution remain unresolved.",
+      "supplied_bbox_pixels": "[32, 242, 72, 284]",
+      "crop_width": "40",
+      "crop_height": "42",
+      "source_sha256": "5eb96eef884e409f84060601f0e8907f38142eb77eb2c4964f604764b2cc7897",
+      "bbox_sha256": "1196fd20dc0048c0be419859508b8ead77e3e7905fc3d48f278b72aee96aff4d",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-09.png",
+      "review_id": 26,
+      "previous_finding": "The source is a composite promotional graphic and the ROI selects an inset portrait; live-label interpretation and target attribution remain unresolved.",
+      "evidence_sha256": "cf581a8aa3b649737c804ea860bb70e06e0a436f3b187022c743ff395257fcff",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/4628/live/003316.jpg",
+          "crop_box": [
+            105,
+            37,
+            186,
+            148
+          ],
+          "source_sha256": "37b8cb9f5d24c35ec7c345d43f8da75781d6bfa1b3beecf3fa4da67cdcf157aa"
+        },
+        {
+          "relative_path": "Data/train/4628/live/010173.jpg",
+          "crop_box": [
+            132,
+            169,
+            371,
+            543
+          ],
+          "source_sha256": "6407680f3673e75b7a287edde171ba9a6d5c90167eb954d1f8f88748464812ac"
+        },
+        {
+          "relative_path": "Data/train/4628/live/030331.jpg",
+          "crop_box": [
+            297,
+            84,
+            506,
+            319
+          ],
+          "source_sha256": "42b1c4f4822e43ea59c6001e508abec921df8ac49f8c4ea1b27ab47f9eefe8d3"
+        }
+      ],
+      "subject_evidence": "subject-09.png",
+      "subject_evidence_sha256": "5671bc19bee91b1abe513b34ae6993568b1512655283ac87ca4134eae663383f",
+      "finding": "The supplied rectangle selects a separate inset promotional headshot rather than the main presented portrait on the graphic; the inset is not the declared central target region.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/4874/live/055608.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A secondary spectator\u2019s face is visible but intended identity and crop quality remain unresolved.",
+      "supplied_bbox_pixels": "[351, 0, 389, 44]",
+      "crop_width": "38",
+      "crop_height": "44",
+      "source_sha256": "44e9450cc741e6dccf000a43517732df7f89436c495bb2a2b678d450cfa4ed39",
+      "bbox_sha256": "c949f9cf486f0238cb6521c728aaad4b340cd1d0c7afdadbc02f3c5e48674e3c",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-09.png",
+      "review_id": 27,
+      "previous_finding": "A secondary spectator\u2019s face is visible but intended identity and crop quality remain unresolved.",
+      "evidence_sha256": "cf581a8aa3b649737c804ea860bb70e06e0a436f3b187022c743ff395257fcff",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/4874/live/003448.jpg",
+          "crop_box": [
+            94,
+            35,
+            165,
+            151
+          ],
+          "source_sha256": "2a9dd06c51d87980200371851cb0ab0f284f8436284b7c0594f5fde3f399061d"
+        },
+        {
+          "relative_path": "Data/train/4874/live/008900.jpg",
+          "crop_box": [
+            84,
+            76,
+            210,
+            262
+          ],
+          "source_sha256": "132ec0a5477077d2ace5545d23160d0febda77a82d41b91dfabb41589be0f819"
+        },
+        {
+          "relative_path": "Data/train/4874/live/026587.jpg",
+          "crop_box": [
+            197,
+            77,
+            343,
+            314
+          ],
+          "source_sha256": "6a2f2d2a3b3c9e0d28279fabb396517c2e5e106d808a64fb692abe3d329d2afe"
+        }
+      ],
+      "subject_evidence": "subject-09.png",
+      "subject_evidence_sha256": "5671bc19bee91b1abe513b34ae6993568b1512655283ac87ca4134eae663383f",
+      "finding": "The background spectator crop is truncated at the upper image boundary and blurred, lacking complete usable facial structure.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/509/live/002545.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a secondary person\u2019s visible profile at upper right; intended annotation identity remains unresolved.",
+      "supplied_bbox_pixels": "[816, 10, 963, 150]",
+      "crop_width": "147",
+      "crop_height": "140",
+      "source_sha256": "6f2ba0a70b168a75b7679655668c543176c3b8f675743c418d3dd0673b604543",
+      "bbox_sha256": "02b5cafa0988a136a8f731fe3da5fe387cc9878bbcfb00c7261b2b007a54d99d",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-10.png",
+      "review_id": 28,
+      "previous_finding": "The crop contains a secondary person\u2019s visible profile at upper right; intended annotation identity remains unresolved.",
+      "evidence_sha256": "97109edb8a218676d46dea5058aa7acaf5e80e1713b4d95982161a3c6161aa4c",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/509/live/054764.jpg",
+          "crop_box": [
+            406,
+            72,
+            529,
+            263
+          ],
+          "source_sha256": "e052c8fab064e65a0a51cb09b10f145363ae4194398468f97cae008027afdba0"
+        },
+        {
+          "relative_path": "Data/train/509/live/071785.jpg",
+          "crop_box": [
+            58,
+            17,
+            166,
+            167
+          ],
+          "source_sha256": "c60ac0c8fc2916deeb18bdd4f943c4bd51a9fc7507fac7395f6600f69a9cc5b3"
+        },
+        {
+          "relative_path": "Data/train/509/live/124243.jpg",
+          "crop_box": [
+            288,
+            71,
+            388,
+            233
+          ],
+          "source_sha256": "63ee359016a539d0dacf0f3430f3220d32f18e93951c03671cd1244c753c3833"
+        }
+      ],
+      "subject_evidence": "subject-10.png",
+      "subject_evidence_sha256": "6ddc3f4f1656b14893ca97c54a606a9df9cd185713a413cf9b4095649da157e2",
+      "finding": "The supplied rectangle selects the peripheral attendee leaning into the upper-right frame rather than the foreground seated portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/5131/live/004180.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary person\u2019s side face at right; multiple faces alone do not establish target invalidity.",
+      "supplied_bbox_pixels": "[531, 181, 608, 261]",
+      "crop_width": "77",
+      "crop_height": "80",
+      "source_sha256": "b874dffb59fd453120d9bee2bad1cb2d94ef4e875207a4b5e4f55743d521fabb",
+      "bbox_sha256": "bf9b62be561f2d5f8da4165aef4fbe4c60ef79df619a19147bbf2bdf50bebd99",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-10.png",
+      "review_id": 29,
+      "previous_finding": "The ROI contains a secondary person\u2019s side face at right; multiple faces alone do not establish target invalidity.",
+      "evidence_sha256": "97109edb8a218676d46dea5058aa7acaf5e80e1713b4d95982161a3c6161aa4c",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/5131/live/041267.jpg",
+          "crop_box": [
+            280,
+            61,
+            362,
+            156
+          ],
+          "source_sha256": "b600a7f8ffdca88b5eb6c5377cb02446b0a5060d1d24a95bc8ff626c635a7038"
+        },
+        {
+          "relative_path": "Data/train/5131/live/046637.jpg",
+          "crop_box": [
+            213,
+            58,
+            433,
+            407
+          ],
+          "source_sha256": "faf88244adf766cbfb2fd7fe497b897d4d9b774cf9f19535a2d0017ea708e742"
+        },
+        {
+          "relative_path": "Data/train/5131/live/059566.jpg",
+          "crop_box": [
+            245,
+            62,
+            329,
+            147
+          ],
+          "source_sha256": "57144c0d959f972b8730bddb716e85c19ccc7bf0d4ff9034518ec65c7f25c6cb"
+        }
+      ],
+      "subject_evidence": "subject-10.png",
+      "subject_evidence_sha256": "6ddc3f4f1656b14893ca97c54a606a9df9cd185713a413cf9b4095649da157e2",
+      "finding": "The supplied rectangle selects the peripheral person at lower right rather than the prominent foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/5484/live/300985.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary rear person\u2019s face is visible at lower right; intended annotation identity and quality remain unresolved.",
+      "supplied_bbox_pixels": "[320, 166, 425, 283]",
+      "crop_width": "105",
+      "crop_height": "117",
+      "source_sha256": "e659a3b872dbe6e09a159412016715dac0319eee41cac93fdf17e316a304e909",
+      "bbox_sha256": "9ce53149ff36bf938bc0faf53181d4166a434597c830bbea699c26a8aa9452ee",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-10.png",
+      "review_id": 30,
+      "previous_finding": "A secondary rear person\u2019s face is visible at lower right; intended annotation identity and quality remain unresolved.",
+      "evidence_sha256": "97109edb8a218676d46dea5058aa7acaf5e80e1713b4d95982161a3c6161aa4c",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/5484/live/023406.jpg",
+          "crop_box": [
+            257,
+            91,
+            481,
+            373
+          ],
+          "source_sha256": "e342c05d626c108988b438ff631cc204d27669b40001255161bde7d2359c7b6f"
+        },
+        {
+          "relative_path": "Data/train/5484/live/025455.jpg",
+          "crop_box": [
+            158,
+            69,
+            318,
+            237
+          ],
+          "source_sha256": "46573608230e9e4be8da8886a4fb78e217181c8a694e170b3cd439827d217d74"
+        },
+        {
+          "relative_path": "Data/train/5484/live/026292.jpg",
+          "crop_box": [
+            158,
+            62,
+            322,
+            225
+          ],
+          "source_sha256": "c2d18c5825d1443a9aa078fd7ac1ca6cd91a6d69b35a52422ee59191f47f7475"
+        }
+      ],
+      "subject_evidence": "subject-10.png",
+      "subject_evidence_sha256": "6ddc3f4f1656b14893ca97c54a606a9df9cd185713a413cf9b4095649da157e2",
+      "finding": "The supplied rectangle selects the rear person cut by the lower-right frame edge instead of the foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/587/live/402701.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains the background guard\u2019s visible profile; intended annotation identity remains unresolved.",
+      "supplied_bbox_pixels": "[149, 4, 226, 76]",
+      "crop_width": "77",
+      "crop_height": "72",
+      "source_sha256": "9105dda856422d8b3ef134f4f0f8a80625bb36a8a4dbfe971aa13b3caacb3540",
+      "bbox_sha256": "da83c8b674100d1651f2ea6645aaba857f0a43c9baea790160962211a7caa329",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-11.png",
+      "review_id": 31,
+      "previous_finding": "The crop contains the background guard\u2019s visible profile; intended annotation identity remains unresolved.",
+      "evidence_sha256": "c08324a0be712d52833c432790d6d0532394707c72e931365198bb191d5938a0",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/587/live/065466.jpg",
+          "crop_box": [
+            168,
+            14,
+            286,
+            148
+          ],
+          "source_sha256": "0a94b3a61d8ade1df15aeae74ddb5a1d1f68d474cef58cfc5f1adbe4e2bcf70a"
+        },
+        {
+          "relative_path": "Data/train/587/live/070464.jpg",
+          "crop_box": [
+            261,
+            65,
+            367,
+            180
+          ],
+          "source_sha256": "b7298fe1cf8b8a4dc2448589d4cade258d7e2c17fb4c4ab4c890852c730e4f75"
+        },
+        {
+          "relative_path": "Data/train/587/live/128295.jpg",
+          "crop_box": [
+            211,
+            35,
+            406,
+            351
+          ],
+          "source_sha256": "68a3d141bf150883e87b6e17a9b0f70e390079488cad2e61d04ecefcbf27194b"
+        }
+      ],
+      "subject_evidence": "subject-11.png",
+      "subject_evidence_sha256": "e38e1cde7a93c004392bf632fcdddd4a099b7d64c8ee5ceef7e9556adde2f616",
+      "finding": "The supplied rectangle selects the guard behind the foreground portrait and excludes the foreground face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/608/live/067645.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a secondary person\u2019s face beside the foreground man; intended identity remains unresolved.",
+      "supplied_bbox_pixels": "[2, 47, 37, 114]",
+      "crop_width": "35",
+      "crop_height": "67",
+      "source_sha256": "547da2a535cfe0e21fdb70a404c369274843eee17e4bc28b69f4da90b7a6504b",
+      "bbox_sha256": "07a1a50604be23923c46294d91c9fe8970f28ef2952731048314e5036d6ee223",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-11.png",
+      "review_id": 32,
+      "previous_finding": "The crop contains a secondary person\u2019s face beside the foreground man; intended identity remains unresolved.",
+      "evidence_sha256": "c08324a0be712d52833c432790d6d0532394707c72e931365198bb191d5938a0",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/608/live/012311.jpg",
+          "crop_box": [
+            174,
+            56,
+            316,
+            225
+          ],
+          "source_sha256": "055c0993bfcce25f8966410758e7d350b4365d013cf81d47ed216955b955a40c"
+        },
+        {
+          "relative_path": "Data/train/608/live/024930.jpg",
+          "crop_box": [
+            86,
+            69,
+            219,
+            234
+          ],
+          "source_sha256": "83f76260696f25bb82bbfb1dc0eedcc47e66fa0fbf1369c71b9c3f519577267f"
+        },
+        {
+          "relative_path": "Data/train/608/live/063225.jpg",
+          "crop_box": [
+            113,
+            104,
+            340,
+            422
+          ],
+          "source_sha256": "6089a43d840282657c10cf6e06ad4fe5a9e5c6d4cb6fc3526f6739c806626c12"
+        }
+      ],
+      "subject_evidence": "subject-11.png",
+      "subject_evidence_sha256": "e38e1cde7a93c004392bf632fcdddd4a099b7d64c8ee5ceef7e9556adde2f616",
+      "finding": "The supplied rectangle selects the background bystander left of the foreground portrait; the foreground face is outside the ROI.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6236/live/466195.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary background person\u2019s side face is selected; intended annotation identity and quality remain unresolved.",
+      "supplied_bbox_pixels": "[314, 162, 416, 359]",
+      "crop_width": "102",
+      "crop_height": "197",
+      "source_sha256": "d8a8b467e0671000971d3ea3e820786183e8fe8f0af9e44a4b19ca0b176111d0",
+      "bbox_sha256": "a6c186d7d48c9c1e2f3cec8e91be907b1fe5a5cada083b37b846916a5a7b770b",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-11.png",
+      "review_id": 33,
+      "previous_finding": "A secondary background person\u2019s side face is selected; intended annotation identity and quality remain unresolved.",
+      "evidence_sha256": "c08324a0be712d52833c432790d6d0532394707c72e931365198bb191d5938a0",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6236/live/006760.jpg",
+          "crop_box": [
+            531,
+            129,
+            816,
+            602
+          ],
+          "source_sha256": "ca8988635cd4e6eee7a89dafeda499a73d613576fc57a406b405c2302e519fe8"
+        },
+        {
+          "relative_path": "Data/train/6236/live/059034.jpg",
+          "crop_box": [
+            266,
+            76,
+            380,
+            284
+          ],
+          "source_sha256": "89a6db8b8bc5b16640a2c7341c8ac63934fbfa1bd88df57bed233ac57ab9d9df"
+        },
+        {
+          "relative_path": "Data/train/6236/live/074722.jpg",
+          "crop_box": [
+            333,
+            54,
+            411,
+            200
+          ],
+          "source_sha256": "cada334270c214b43a64c9c3c1272800bc6a315eda311221d4a6e995ead8fe06"
+        }
+      ],
+      "subject_evidence": "subject-11.png",
+      "subject_evidence_sha256": "e38e1cde7a93c004392bf632fcdddd4a099b7d64c8ee5ceef7e9556adde2f616",
+      "finding": "The supplied rectangle selects the background person behind the foreground seated portrait instead of its face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6263/live/159416.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The source is a composite of two portraits and the box selects one complete visible face; intended target attribution remains unresolved.",
+      "supplied_bbox_pixels": "[377, 288, 521, 468]",
+      "crop_width": "144",
+      "crop_height": "180",
+      "source_sha256": "07670d4cdbc7213ffb666e89a52ebe87ef14b68bf94cd2a94ccf81bc08a6db95",
+      "bbox_sha256": "38dffd72647576845176afd7e80556b92f2445c7da470441a6cd7c872dac1f12",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-12.png",
+      "review_id": 34,
+      "previous_finding": "The source is a composite of two portraits and the box selects one complete visible face; intended target attribution remains unresolved.",
+      "evidence_sha256": "a0214f0435b9e335a013ff29b19da1b4d048768557b69ef015fca19750544bf6",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6263/live/028792.jpg",
+          "crop_box": [
+            281,
+            79,
+            435,
+            252
+          ],
+          "source_sha256": "d9b344de28ae39b57aa19c6ff01e3b0544044b5a132e8f5856331e7ef9384f1b"
+        },
+        {
+          "relative_path": "Data/train/6263/live/033584.jpg",
+          "crop_box": [
+            39,
+            40,
+            120,
+            178
+          ],
+          "source_sha256": "83ef066e3f4870476eb93ec98179fe4c4ce5d4c8ecb4d3f82e784ddca7b4a76e"
+        },
+        {
+          "relative_path": "Data/train/6263/live/068511.jpg",
+          "crop_box": [
+            171,
+            44,
+            322,
+            247
+          ],
+          "source_sha256": "395e90f503a4d6925415da9a6140ec89cb01674ba69658d027438f5b365b93a3"
+        }
+      ],
+      "subject_evidence": "subject-12.png",
+      "subject_evidence_sha256": "f6f848afa0e1411b56610ce294c533b6a162bfecb6b61fdd98102c8d95b05e89",
+      "finding": "The supplied rectangle contains a complete, sharply visible portrait face in the composite source; the larger faded overlay does not invalidate this usable face crop. No source label is changed and semantic-identity certification is not inferred.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6318/live/070794.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary person\u2019s face is visible behind the foreground woman; identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[196, 295, 249, 399]",
+      "crop_width": "53",
+      "crop_height": "104",
+      "source_sha256": "caef315adc7e5666fe0f38613d60c8eac255b7b6aa6b674da3f2baa2d085a1c5",
+      "bbox_sha256": "d3b6bb1a798811f94ecbc888b58f846302766f6a737e092bc884529f2237134e",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-12.png",
+      "review_id": 35,
+      "previous_finding": "A secondary person\u2019s face is visible behind the foreground woman; identity and blur suitability remain unresolved.",
+      "evidence_sha256": "a0214f0435b9e335a013ff29b19da1b4d048768557b69ef015fca19750544bf6",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6318/live/008728.jpg",
+          "crop_box": [
+            169,
+            192,
+            474,
+            626
+          ],
+          "source_sha256": "284d8a4f8afbc490ab9170da0d903c715fca7a9341927f69e18fbc21dbccfaa2"
+        },
+        {
+          "relative_path": "Data/train/6318/live/025879.jpg",
+          "crop_box": [
+            184,
+            137,
+            397,
+            469
+          ],
+          "source_sha256": "391cae575e30b08514939d483c22bda0e2940c73464f0eed0994cb29c2331191"
+        },
+        {
+          "relative_path": "Data/train/6318/live/029608.jpg",
+          "crop_box": [
+            79,
+            105,
+            257,
+            379
+          ],
+          "source_sha256": "33802f01fb0f7fc7d290ac523b7774af07a03cfd024044cfa13a3fd52888183b"
+        }
+      ],
+      "subject_evidence": "subject-12.png",
+      "subject_evidence_sha256": "f6f848afa0e1411b56610ce294c533b6a162bfecb6b61fdd98102c8d95b05e89",
+      "finding": "The supplied ROI selects the background bystander left of the foreground woman and excludes the foreground portrait face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6479/live/478725.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A secondary background face is selected; target identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[45, 167, 68, 204]",
+      "crop_width": "23",
+      "crop_height": "37",
+      "source_sha256": "d80242123b03041841d347ee57047a2a83aa8ca00147f7f5c969a28959144281",
+      "bbox_sha256": "d2fa0ced88876f298146fb629da5697e7de94daf036d5fdeee77d4d320570eb6",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-12.png",
+      "review_id": 36,
+      "previous_finding": "A secondary background face is selected; target identity and blur suitability remain unresolved.",
+      "evidence_sha256": "a0214f0435b9e335a013ff29b19da1b4d048768557b69ef015fca19750544bf6",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6479/live/085580.jpg",
+          "crop_box": [
+            298,
+            169,
+            541,
+            530
+          ],
+          "source_sha256": "0cd715546e9abe826c4d0b622dd728cfea223f20ce5b7ffc9f2cb8ab04cebd07"
+        },
+        {
+          "relative_path": "Data/train/6479/live/085789.jpg",
+          "crop_box": [
+            140,
+            54,
+            267,
+            210
+          ],
+          "source_sha256": "b538d2529a0410d10d710442501543075fb91f60f6290a86d5a88564f77f7dea"
+        },
+        {
+          "relative_path": "Data/train/6479/live/108258.jpg",
+          "crop_box": [
+            139,
+            56,
+            261,
+            218
+          ],
+          "source_sha256": "92ded8288a0e1d8d2be90fa647f17acddd8a8d02680238e52b442da89fc9bcce"
+        }
+      ],
+      "subject_evidence": "subject-12.png",
+      "subject_evidence_sha256": "f6f848afa0e1411b56610ce294c533b6a162bfecb6b61fdd98102c8d95b05e89",
+      "finding": "The small background head patch is severely blurred in both bilinear and native-pixel views, without usable facial detail.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6675/live/228451.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The box contains a secondary background man\u2019s visible face; target attribution and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[384, 82, 426, 150]",
+      "crop_width": "42",
+      "crop_height": "68",
+      "source_sha256": "135819d42424a080ea8f73fe61ee86bae08e162b44b98c08dbff0579fde47735",
+      "bbox_sha256": "22df3c1d30d29a78f6586afb2658cd43b3ad92e769ed20d6dcc2894915c0655f",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-13.png",
+      "review_id": 37,
+      "previous_finding": "The box contains a secondary background man\u2019s visible face; target attribution and blur suitability remain unresolved.",
+      "evidence_sha256": "086a68751963732b8d6120e5609413d445f6e785f50e78614255bbe9fd197973",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6675/live/056864.jpg",
+          "crop_box": [
+            925,
+            107,
+            1130,
+            326
+          ],
+          "source_sha256": "5f2c85bb271e5f9ee2630a566a4e7689eb7f522209cba1ebf07f67ce50843c22"
+        },
+        {
+          "relative_path": "Data/train/6675/live/060155.jpg",
+          "crop_box": [
+            529,
+            140,
+            681,
+            383
+          ],
+          "source_sha256": "736fcb73d1ae3561fa7cb62252d4df81ecdb3ebe9235e79eec557afba22fd18d"
+        },
+        {
+          "relative_path": "Data/train/6675/live/075819.jpg",
+          "crop_box": [
+            252,
+            40,
+            349,
+            170
+          ],
+          "source_sha256": "260562426840ad2fc88157a8ce80e50ac2803cb2e5d993c3c5a12ce1183f7a44"
+        }
+      ],
+      "subject_evidence": "subject-13.png",
+      "subject_evidence_sha256": "fac1a87ae301bdcc7e65c14ce89923ae30093550d535b4eca7f0b010190c85eb",
+      "finding": "The supplied rectangle selects the distant background bystander at upper right, excluding the clearly presented foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6691/live/104370.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A secondary spectator\u2019s face is visible at upper left but target attribution and quality remain unresolved.",
+      "supplied_bbox_pixels": "[2, 26, 37, 98]",
+      "crop_width": "35",
+      "crop_height": "72",
+      "source_sha256": "739f37d1a71192343f9f0199a082779ea4c1200eb20ea35066e3e51b39cf3f08",
+      "bbox_sha256": "b310e7e11617443317665236e76a6c940658df354d104fa1453adb6dc042209c",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-13.png",
+      "review_id": 38,
+      "previous_finding": "A secondary spectator\u2019s face is visible at upper left but target attribution and quality remain unresolved.",
+      "evidence_sha256": "086a68751963732b8d6120e5609413d445f6e785f50e78614255bbe9fd197973",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6691/live/009642.jpg",
+          "crop_box": [
+            291,
+            60,
+            425,
+            291
+          ],
+          "source_sha256": "3380c9c704dfa3d2cb46d4f0d58e95550370f8dfc02a37e6d9f56ca6269bc52a"
+        },
+        {
+          "relative_path": "Data/train/6691/live/025511.jpg",
+          "crop_box": [
+            461,
+            54,
+            758,
+            417
+          ],
+          "source_sha256": "481e70802546f7884eca3d53680322071909668847ed16a04a8c92c8465e565b"
+        },
+        {
+          "relative_path": "Data/train/6691/live/030061.jpg",
+          "crop_box": [
+            238,
+            128,
+            463,
+            484
+          ],
+          "source_sha256": "a34cd53aa06278dee50cedfaf3c488c25288c83e9087cc2f389f93cc309a0ee5"
+        }
+      ],
+      "subject_evidence": "subject-13.png",
+      "subject_evidence_sha256": "fac1a87ae301bdcc7e65c14ce89923ae30093550d535b4eca7f0b010190c85eb",
+      "finding": "The crop selects a top-left boundary background head that is incomplete, dark and substantially blurred; usable complete facial detail is absent.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/6987/live/102146.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary woman\u2019s clear profile at right; target identity is unresolved and several faces alone do not invalidate it.",
+      "supplied_bbox_pixels": "[431, 86, 502, 246]",
+      "crop_width": "71",
+      "crop_height": "160",
+      "source_sha256": "5ce9252091f62cb7e87a2143461244e4d5dc65e6b36bff8037ad9762298bfc78",
+      "bbox_sha256": "6cb538ac0970e504c5c3b88cba509ea0e83b00e30db282eb97a7faa21dc6f5f9",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-13.png",
+      "review_id": 39,
+      "previous_finding": "The ROI contains a secondary woman\u2019s clear profile at right; target identity is unresolved and several faces alone do not invalidate it.",
+      "evidence_sha256": "086a68751963732b8d6120e5609413d445f6e785f50e78614255bbe9fd197973",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/6987/live/150636.jpg",
+          "crop_box": [
+            657,
+            214,
+            892,
+            438
+          ],
+          "source_sha256": "23e6f8d8489f749872dbe7394af9c6047883956c234766ebd374095cb7262446"
+        },
+        {
+          "relative_path": "Data/train/6987/live/176123.jpg",
+          "crop_box": [
+            125,
+            80,
+            285,
+            346
+          ],
+          "source_sha256": "bc9ed573d17cc3b5efb263d97d3f49fa62e5bec7026e638c946ad72bc8a49170"
+        },
+        {
+          "relative_path": "Data/train/6987/live/177888.jpg",
+          "crop_box": [
+            185,
+            60,
+            305,
+            257
+          ],
+          "source_sha256": "fdc3ae6b288ec8533c88ed25b29f6b8be03a8b16d8180abb8de405bb1218a65e"
+        }
+      ],
+      "subject_evidence": "subject-13.png",
+      "subject_evidence_sha256": "fac1a87ae301bdcc7e65c14ce89923ae30093550d535b4eca7f0b010190c85eb",
+      "finding": "The supplied rectangle selects the attendant working behind the foreground portrait instead of the foreground face being presented.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/75/live/387946.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary background face with a watermark; intended annotation identity remains unresolved.",
+      "supplied_bbox_pixels": "[162, 42, 192, 89]",
+      "crop_width": "30",
+      "crop_height": "47",
+      "source_sha256": "24cad797aabd499f89c90808bea873fa3f88fd4adbd595314a9a203756f6c13c",
+      "bbox_sha256": "0a8ca49804b412f77d6a865f949b54b93873dce3f71b0a542d250dae3f58bdbc",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-14.png",
+      "review_id": 40,
+      "previous_finding": "The ROI contains a secondary background face with a watermark; intended annotation identity remains unresolved.",
+      "evidence_sha256": "c942eb2396a665ec55c9599b51112b2f3f0205bdcec73718902ff22f74f9ace8",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/75/live/171962.jpg",
+          "crop_box": [
+            18,
+            25,
+            82,
+            130
+          ],
+          "source_sha256": "7ce6d26e11c9365770f5ba0ddd7eec449e357a9d0012deae9578b75dfc68f0d1"
+        },
+        {
+          "relative_path": "Data/train/75/live/233910.jpg",
+          "crop_box": [
+            148,
+            99,
+            226,
+            240
+          ],
+          "source_sha256": "35e2155f769d8821ac5791b874bb8a897a0ba42ec462f70f34ec99f8b4753096"
+        },
+        {
+          "relative_path": "Data/train/75/live/396257.jpg",
+          "crop_box": [
+            45,
+            17,
+            116,
+            123
+          ],
+          "source_sha256": "f91c80d742871680518e9f318a44f3bb90ff67eb80e11965d7ae784efeab5a04"
+        }
+      ],
+      "subject_evidence": "subject-14.png",
+      "subject_evidence_sha256": "079a908e82906a5106796de5ce82058c23940dfdc290a113b343c721fca0245f",
+      "finding": "The supplied rectangle selects the peripheral person behind the prominent foreground portrait and excludes its face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/7506/live/131477.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A small background face is visible but target identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[337, 207, 362, 237]",
+      "crop_width": "25",
+      "crop_height": "30",
+      "source_sha256": "323bd7ab440c9872a83b5b7bd850eaf1b21b035c94cef695ea2a60aad9e6838e",
+      "bbox_sha256": "e596a0a102338e9a8f1f723f4d19445f858fab3be9ecd123d352bec1f33d2c2a",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-14.png",
+      "review_id": 41,
+      "previous_finding": "A small background face is visible but target identity and blur suitability remain unresolved.",
+      "evidence_sha256": "c942eb2396a665ec55c9599b51112b2f3f0205bdcec73718902ff22f74f9ace8",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/7506/live/025472.jpg",
+          "crop_box": [
+            315,
+            218,
+            673,
+            734
+          ],
+          "source_sha256": "1e56cfd3ffc6ec57228d27e1966f8ec930b2309198805e6dcb19d3ae2eedff9a"
+        },
+        {
+          "relative_path": "Data/train/7506/live/040543.jpg",
+          "crop_box": [
+            117,
+            76,
+            315,
+            300
+          ],
+          "source_sha256": "240fcaa538c1d65a734cdd18acddf02abeedd7d7cd8cf034f1439d06f52355c2"
+        },
+        {
+          "relative_path": "Data/train/7506/live/049434.jpg",
+          "crop_box": [
+            164,
+            88,
+            278,
+            230
+          ],
+          "source_sha256": "38a7af49b7d4270564d1e602f83595ae3786271aa217b5598cd74b9beff063bf"
+        }
+      ],
+      "subject_evidence": "subject-14.png",
+      "subject_evidence_sha256": "079a908e82906a5106796de5ce82058c23940dfdc290a113b343c721fca0245f",
+      "finding": "The small background head patch has severely degraded native detail and does not preserve usable facial structure after enlargement.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/7647/spoof/228313.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "8",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The spoof source shows several depicted people and selects a blurred secondary face; presentation-label consistency and usable detail need closer review.",
+      "supplied_bbox_pixels": "[285, 77, 385, 251]",
+      "crop_width": "100",
+      "crop_height": "174",
+      "source_sha256": "70cd623c833f3ac34ac37ebae25a1b6756bb8b87224bc282fdcd0fb1a30e227c",
+      "bbox_sha256": "0eaca106f3cfcd6ca7de4e3605e4e6b47f93153542cd750455df14c7fa3c766f",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-14.png",
+      "review_id": 42,
+      "previous_finding": "The spoof source shows several depicted people and selects a blurred secondary face; presentation-label consistency and usable detail need closer review.",
+      "evidence_sha256": "c942eb2396a665ec55c9599b51112b2f3f0205bdcec73718902ff22f74f9ace8",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/7647/live/017114.jpg",
+          "crop_box": [
+            138,
+            53,
+            247,
+            231
+          ],
+          "source_sha256": "51423171f21c3f618a262749a6119ede338e5ae42ae1ab90abbad33a2b835991"
+        },
+        {
+          "relative_path": "Data/train/7647/live/027455.jpg",
+          "crop_box": [
+            134,
+            53,
+            298,
+            307
+          ],
+          "source_sha256": "e5659325fb36bdfb4b10dc479fed7d3cd2e0ae69b021d0186b154a900d2b2f89"
+        },
+        {
+          "relative_path": "Data/train/7647/live/035830.jpg",
+          "crop_box": [
+            104,
+            78,
+            233,
+            274
+          ],
+          "source_sha256": "74b15e747af78ac54ce1c86a3f6b2b352ec0c7116a28fa5329e7a62217b418fe"
+        }
+      ],
+      "subject_evidence": "subject-14.png",
+      "subject_evidence_sha256": "079a908e82906a5106796de5ce82058c23940dfdc290a113b343c721fca0245f",
+      "finding": "The selected secondary depicted face is strongly overexposed and blurred; both enlargement modes show washed-out facial structure rather than usable detail.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/7683/live/360555.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary background man\u2019s side face at right; intended identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[387, 237, 457, 351]",
+      "crop_width": "70",
+      "crop_height": "114",
+      "source_sha256": "087c5f1310d007a95969a5d37650f1c0dd39298e3ed1d57d44ae547f2d5866d9",
+      "bbox_sha256": "ef6f62485fb3601d295037fbb8b85fb9a34610d44d8d81000e64bd8720f283a2",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-15.png",
+      "review_id": 43,
+      "previous_finding": "The ROI contains a secondary background man\u2019s side face at right; intended identity and blur suitability remain unresolved.",
+      "evidence_sha256": "57f839a1737b23a280ffabe7ef2c21278454d063e067e8e5b584ae488b21d877",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/7683/live/036631.jpg",
+          "crop_box": [
+            58,
+            31,
+            167,
+            179
+          ],
+          "source_sha256": "6639facfc80daf965571f19b1ba93bc694c06ef2db4541fdee3c4b8447961498"
+        },
+        {
+          "relative_path": "Data/train/7683/live/071814.jpg",
+          "crop_box": [
+            109,
+            89,
+            251,
+            303
+          ],
+          "source_sha256": "be0400d45f3d93f6a07b51d9545c3a160f22ac8b52792fc729d314a28ff00d49"
+        },
+        {
+          "relative_path": "Data/train/7683/live/071955.jpg",
+          "crop_box": [
+            38,
+            33,
+            154,
+            218
+          ],
+          "source_sha256": "e8951fe663f2df28f7eebf11ebfbe5624d295356bf02198ac503ec4b12368c40"
+        }
+      ],
+      "subject_evidence": "subject-15.png",
+      "subject_evidence_sha256": "699aaac87ffa0efb01e9299aec134ab8e852dcf8c20691c42372df99167c4ecb",
+      "finding": "The supplied ROI selects a distant background bystander at the right boundary, excluding the clear foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8070/live/234121.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "A small background person\u2019s face is visible; intended target identity and blur suitability remain unresolved.",
+      "supplied_bbox_pixels": "[37, 33, 53, 62]",
+      "crop_width": "16",
+      "crop_height": "29",
+      "source_sha256": "25653f65d36e229767ea7d2dc241ff6d8ce3435f3c7f03e974bea8d1eb466a7b",
+      "bbox_sha256": "3117450f59e7f640cb3830eb2a7ce4512328c1a382566a408ee7de55a3d40332",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-15.png",
+      "review_id": 44,
+      "previous_finding": "A small background person\u2019s face is visible; intended target identity and blur suitability remain unresolved.",
+      "evidence_sha256": "57f839a1737b23a280ffabe7ef2c21278454d063e067e8e5b584ae488b21d877",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8070/live/006786.jpg",
+          "crop_box": [
+            45,
+            45,
+            182,
+            239
+          ],
+          "source_sha256": "6e4abc19103173b221139c2b9c29724d785257e8ae8db33d3eacb40357aa0f6f"
+        },
+        {
+          "relative_path": "Data/train/8070/live/019428.jpg",
+          "crop_box": [
+            161,
+            39,
+            258,
+            192
+          ],
+          "source_sha256": "95ff50cae6c4f7eb43aecfff9932da136c9c11b92a52c77f69a56b8e54607fd1"
+        },
+        {
+          "relative_path": "Data/train/8070/live/025447.jpg",
+          "crop_box": [
+            238,
+            71,
+            354,
+            186
+          ],
+          "source_sha256": "057421c42e20b5e88453ea1d76bd599f4e2ecf5f4bbb977031811204f6848b6a"
+        }
+      ],
+      "subject_evidence": "subject-15.png",
+      "subject_evidence_sha256": "699aaac87ffa0efb01e9299aec134ab8e852dcf8c20691c42372df99167c4ecb",
+      "finding": "The tiny background spectator ROI is dark and highly blurred; native-pixel inspection confirms insufficient usable facial structure.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8079/live/084106.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The ROI contains the seated secondary man\u2019s visible profile at right; intended annotation identity remains unresolved.",
+      "supplied_bbox_pixels": "[778, 48, 886, 173]",
+      "crop_width": "108",
+      "crop_height": "125",
+      "source_sha256": "0a8275a7e7529c02597f971b76dd87bcc31bda128332579d13bb81fac182f741",
+      "bbox_sha256": "e0bfb6c232f3a9c7cb7b91257051d727f7d5cfdcaf8c2a08a6d6fbf793159efe",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-15.png",
+      "review_id": 45,
+      "previous_finding": "The ROI contains the seated secondary man\u2019s visible profile at right; intended annotation identity remains unresolved.",
+      "evidence_sha256": "57f839a1737b23a280ffabe7ef2c21278454d063e067e8e5b584ae488b21d877",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8079/live/035280.jpg",
+          "crop_box": [
+            166,
+            79,
+            310,
+            218
+          ],
+          "source_sha256": "a3d7725b6a071f8b78d165a92168f0c85ab61cfcc3644234599950fa8c347fc1"
+        },
+        {
+          "relative_path": "Data/train/8079/live/049693.jpg",
+          "crop_box": [
+            185,
+            75,
+            294,
+            246
+          ],
+          "source_sha256": "93a0578b85f5984baba9dcf7a23497d4d4a713e3dfa65b920d62e7701578ce8d"
+        },
+        {
+          "relative_path": "Data/train/8079/live/052699.jpg",
+          "crop_box": [
+            190,
+            50,
+            300,
+            231
+          ],
+          "source_sha256": "1e9633ee4c62b7390995e9a54743b2bf987dd654148c82b3490bd8ff0d088af4"
+        }
+      ],
+      "subject_evidence": "subject-15.png",
+      "subject_evidence_sha256": "699aaac87ffa0efb01e9299aec134ab8e852dcf8c20691c42372df99167c4ecb",
+      "finding": "The ROI contains a complete, sharply visible profile of one of the foreground seated people. Both are presented in the foreground; neither multiple faces nor a larger neighbouring face invalidates this profile.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8155/spoof/165548.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny ROI is on the phone-displayed face and remains recognizable, but native detail is limited; quality is unresolved rather than invalid from detector failure.",
+      "supplied_bbox_pixels": "[233, 316, 247, 340]",
+      "crop_width": "14",
+      "crop_height": "24",
+      "source_sha256": "03b17c2ed26d4210b915b0b8b2f657a1f8d8fdf80704c049c78677df0859b7b0",
+      "bbox_sha256": "f30741248813f0fc3ff97b7c66b831d830a1e3eecf7ff99027b0a63963d3cbbf",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-16.png",
+      "review_id": 46,
+      "previous_finding": "The tiny ROI is on the phone-displayed face and remains recognizable, but native detail is limited; quality is unresolved rather than invalid from detector failure.",
+      "evidence_sha256": "f15eddd38fd4544d56121641bf904bef27543689a54800f047c54e9cc544da37",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8155/live/001445.jpg",
+          "crop_box": [
+            260,
+            152,
+            524,
+            468
+          ],
+          "source_sha256": "209035ed526074b5eac8d7807988d09df28d25211dbd36384acbca7e44dc21dc"
+        },
+        {
+          "relative_path": "Data/train/8155/live/006018.jpg",
+          "crop_box": [
+            262,
+            88,
+            437,
+            276
+          ],
+          "source_sha256": "d5257a9cb82649c2907e763b6d81cb1b028863c598bebe3ba9fc05944391a4db"
+        },
+        {
+          "relative_path": "Data/train/8155/live/046302.jpg",
+          "crop_box": [
+            276,
+            50,
+            408,
+            195
+          ],
+          "source_sha256": "a025fb7bf6e4a6763a928642f66bb815046c240160312bf8120bf3fa671f013d"
+        }
+      ],
+      "subject_evidence": "subject-16.png",
+      "subject_evidence_sha256": "10ac2ee7a4bf8172462fa577e8102ff13fdbee44962c111ce98588bbb151d52e",
+      "finding": "The ROI is on the phone-displayed spoof face and retains distinguishable eyes, nose and mouth at native scale. Pixelation is visible but no wrong region or missing-face defect is observed; small size and detector miss alone are not exclusions.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8173/spoof/490476.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny crop contains the phone-displayed face; limited native detail requires quality review, not automatic exclusion.",
+      "supplied_bbox_pixels": "[225, 246, 239, 267]",
+      "crop_width": "14",
+      "crop_height": "21",
+      "source_sha256": "f14632e9868238a3e5dfa6b3a4497d11fc78c6418aeb894c72b3107b6113c207",
+      "bbox_sha256": "f5c50de925fc1e3b2f0207317e485d371c83ca0c03ba4a01a0541d3525fb1c68",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-16.png",
+      "review_id": 47,
+      "previous_finding": "The tiny crop contains the phone-displayed face; limited native detail requires quality review, not automatic exclusion.",
+      "evidence_sha256": "f15eddd38fd4544d56121641bf904bef27543689a54800f047c54e9cc544da37",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8173/live/017372.jpg",
+          "crop_box": [
+            108,
+            81,
+            243,
+            285
+          ],
+          "source_sha256": "023ed03cc1860361433485551153c83b96847e3c74933f5aebdaba2659aee7d2"
+        },
+        {
+          "relative_path": "Data/train/8173/live/048516.jpg",
+          "crop_box": [
+            150,
+            64,
+            235,
+            203
+          ],
+          "source_sha256": "8ba7c76d93ef87cbcf5178e302deb4a3aca98ed06fb6625a4e4c54778c2ab88c"
+        },
+        {
+          "relative_path": "Data/train/8173/live/054733.jpg",
+          "crop_box": [
+            302,
+            112,
+            477,
+            325
+          ],
+          "source_sha256": "955423fc2ddae93769a6e86b5b2d5949a730772340406a246bf460ad2be4c17b"
+        }
+      ],
+      "subject_evidence": "subject-16.png",
+      "subject_evidence_sha256": "10ac2ee7a4bf8172462fa577e8102ff13fdbee44962c111ce98588bbb151d52e",
+      "finding": "The ROI targets the phone-displayed face and preserves coherent eyes, nose and mouth despite coarse pixels. It is retained as a valid spoof face without imposing an unagreed pixel-size cutoff.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8174/spoof/152628.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny phone-face crop remains recognizable; sufficient native detail for training is unresolved.",
+      "supplied_bbox_pixels": "[247, 283, 261, 301]",
+      "crop_width": "14",
+      "crop_height": "18",
+      "source_sha256": "1a9e7e99725d8b15d3eef0a030a283a14686a2b8f60ab261534f99f77b055d61",
+      "bbox_sha256": "d1c13935e88c20293be0a2310c559608531982901db6e2f1a306cf3162864161",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-16.png",
+      "review_id": 48,
+      "previous_finding": "The tiny phone-face crop remains recognizable; sufficient native detail for training is unresolved.",
+      "evidence_sha256": "f15eddd38fd4544d56121641bf904bef27543689a54800f047c54e9cc544da37",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8174/live/027648.jpg",
+          "crop_box": [
+            222,
+            68,
+            342,
+            214
+          ],
+          "source_sha256": "fbbe444b9e2f61eed4e85882f8b42db0d3903f51d5fec3d4a5c44e94face4cc9"
+        },
+        {
+          "relative_path": "Data/train/8174/live/036979.jpg",
+          "crop_box": [
+            249,
+            261,
+            716,
+            1004
+          ],
+          "source_sha256": "85a06c57373aceda770fbf5b9d882186fc80d0bdbb121e5b31614bf31e5a4e06"
+        },
+        {
+          "relative_path": "Data/train/8174/live/092320.jpg",
+          "crop_box": [
+            588,
+            124,
+            1411,
+            1097
+          ],
+          "source_sha256": "7f60baae369f204516a4e2a5c2cbec727b164934b954ef75970d42343f848848"
+        }
+      ],
+      "subject_evidence": "subject-16.png",
+      "subject_evidence_sha256": "10ac2ee7a4bf8172462fa577e8102ff13fdbee44962c111ce98588bbb151d52e",
+      "finding": "The ROI contains the phone-displayed spoof face with coherent facial layout in both enlargement modes; coarse sampling alone is not a confirmed content defect.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8174/spoof/298059.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The phone-displayed partial/profile face is recognizable but native detail and completeness require review.",
+      "supplied_bbox_pixels": "[210, 332, 224, 356]",
+      "crop_width": "14",
+      "crop_height": "24",
+      "source_sha256": "e61453b0e0879dec69bd3483fceb03ffbe31cc90a444d73d4a56d429251c45ab",
+      "bbox_sha256": "4018496d8cc999c27642d102c8c9bc79730a1ba91ead54b847887a698c003713",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-17.png",
+      "review_id": 49,
+      "previous_finding": "The phone-displayed partial/profile face is recognizable but native detail and completeness require review.",
+      "evidence_sha256": "9c719809a460ed6898d339406f7aa0f998f989414f46c96f17111ccaec05840e",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8174/live/027648.jpg",
+          "crop_box": [
+            222,
+            68,
+            342,
+            214
+          ],
+          "source_sha256": "fbbe444b9e2f61eed4e85882f8b42db0d3903f51d5fec3d4a5c44e94face4cc9"
+        },
+        {
+          "relative_path": "Data/train/8174/live/036979.jpg",
+          "crop_box": [
+            249,
+            261,
+            716,
+            1004
+          ],
+          "source_sha256": "85a06c57373aceda770fbf5b9d882186fc80d0bdbb121e5b31614bf31e5a4e06"
+        },
+        {
+          "relative_path": "Data/train/8174/live/092320.jpg",
+          "crop_box": [
+            588,
+            124,
+            1411,
+            1097
+          ],
+          "source_sha256": "7f60baae369f204516a4e2a5c2cbec727b164934b954ef75970d42343f848848"
+        }
+      ],
+      "subject_evidence": "subject-17.png",
+      "subject_evidence_sha256": "942f8ffc7d852369409a3fa781e77112fda267c1674508b9772dcf41e2804dbe",
+      "finding": "The phone-displayed side face preserves coherent profile structure, including eye, nose and mouth. Low native resolution alone does not establish an unusable spoof crop.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8176/spoof/150306.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The tiny phone-face crop retains recognizable facial structure; quality suitability remains unresolved.",
+      "supplied_bbox_pixels": "[134, 179, 148, 205]",
+      "crop_width": "14",
+      "crop_height": "26",
+      "source_sha256": "2f54e73b2e82e765eba2ce8d2a1f38230373eb543d34a6e95ca46fb5fa5dbbc8",
+      "bbox_sha256": "42d11338e2d3248edea6b539622e2e18c998364b920e18798513c91152379bc0",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-17.png",
+      "review_id": 50,
+      "previous_finding": "The tiny phone-face crop retains recognizable facial structure; quality suitability remains unresolved.",
+      "evidence_sha256": "9c719809a460ed6898d339406f7aa0f998f989414f46c96f17111ccaec05840e",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8176/live/391864.jpg",
+          "crop_box": [
+            149,
+            95,
+            345,
+            361
+          ],
+          "source_sha256": "b4f731eae78efcdf33b7643a26025b107c362254866d3c773c4fa6e4152e1e34"
+        },
+        {
+          "relative_path": "Data/train/8176/live/469741.jpg",
+          "crop_box": [
+            115,
+            89,
+            326,
+            399
+          ],
+          "source_sha256": "377ea532e1513c28058bb015be83894cd0b544323ebd0e92fc9e1f6a406bb8fa"
+        }
+      ],
+      "subject_evidence": "subject-17.png",
+      "subject_evidence_sha256": "942f8ffc7d852369409a3fa781e77112fda267c1674508b9772dcf41e2804dbe",
+      "finding": "The tall narrow supplied rectangle retains an incomplete portion of the displayed face, cutting away usable full facial layout; native-pixel inspection confirms missing facial regions rather than only a detector miss.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8182/spoof/314894.jpg",
+      "split": "validation",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny crop contains the phone-displayed face but limited native detail leaves quality suitability unresolved.",
+      "supplied_bbox_pixels": "[239, 321, 253, 347]",
+      "crop_width": "14",
+      "crop_height": "26",
+      "source_sha256": "fde90549a9b6910645515d2570871fd7fe565976b76261bc056698f2155f4a37",
+      "bbox_sha256": "ba01eadebbe5c310e2f2ada095dd50377f75584fb00346f890ce4f745798e5fb",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-17.png",
+      "review_id": 51,
+      "previous_finding": "The tiny crop contains the phone-displayed face but limited native detail leaves quality suitability unresolved.",
+      "evidence_sha256": "9c719809a460ed6898d339406f7aa0f998f989414f46c96f17111ccaec05840e",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8182/live/217777.jpg",
+          "crop_box": [
+            113,
+            80,
+            246,
+            294
+          ],
+          "source_sha256": "f83f9f01d9b6bd8720e7bc628c4c72308815bf1b51972e8ec709e761e6994ba8"
+        }
+      ],
+      "subject_evidence": "subject-17.png",
+      "subject_evidence_sha256": "942f8ffc7d852369409a3fa781e77112fda267c1674508b9772dcf41e2804dbe",
+      "finding": "The supplied ROI is on the displayed spoof face and preserves the facial outline, eyes, nose and mouth despite coarse sampling and bright colour; no wrong-region defect is observed.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8182/spoof/355631.jpg",
+      "split": "validation",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny phone-displayed face is recognizable but usable native detail remains unresolved.",
+      "supplied_bbox_pixels": "[259, 308, 273, 332]",
+      "crop_width": "14",
+      "crop_height": "24",
+      "source_sha256": "4fca692c9d85c0c1045fec0541e58cb441306ea854e9a7700e014a60e2169696",
+      "bbox_sha256": "34adef93b31829d572517554c9069ac90ff931ad0c03d7b796227673365cb73e",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-18.png",
+      "review_id": 52,
+      "previous_finding": "The tiny phone-displayed face is recognizable but usable native detail remains unresolved.",
+      "evidence_sha256": "30e495e8a279a46953ac65271d243051d7ff361f1119593976a5d761f5d5bdab",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8182/live/217777.jpg",
+          "crop_box": [
+            113,
+            80,
+            246,
+            294
+          ],
+          "source_sha256": "f83f9f01d9b6bd8720e7bc628c4c72308815bf1b51972e8ec709e761e6994ba8"
+        }
+      ],
+      "subject_evidence": "subject-18.png",
+      "subject_evidence_sha256": "6e5005973d46c799075bd218544f0d69b569a221ac57ce7a92e10652235b2d09",
+      "finding": "The phone-displayed face remains coherent in the native-pixel view; the correct displayed region is retained and small size alone is not an exclusion.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8219/spoof/113254.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The supplied ROI is on the phone-displayed face; its limited native detail requires quality review.",
+      "supplied_bbox_pixels": "[285, 275, 299, 299]",
+      "crop_width": "14",
+      "crop_height": "24",
+      "source_sha256": "8c057438cb3dcc56d2f8336f92dcbe2534647685927d2dc3a9c9f7df1487f86c",
+      "bbox_sha256": "e95e5bdf1c594b1678595da5fe0aa91c1cda6b5509f108c98cec59e5c3bb4809",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-18.png",
+      "review_id": 53,
+      "previous_finding": "The supplied ROI is on the phone-displayed face; its limited native detail requires quality review.",
+      "evidence_sha256": "30e495e8a279a46953ac65271d243051d7ff361f1119593976a5d761f5d5bdab",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8219/live/242067.jpg",
+          "crop_box": [
+            140,
+            138,
+            340,
+            423
+          ],
+          "source_sha256": "726f8f76212e7438fa4b4119ce985aa32366ddbebd66c332b1c036a23ee6b10a"
+        },
+        {
+          "relative_path": "Data/train/8219/live/489064.jpg",
+          "crop_box": [
+            128,
+            62,
+            267,
+            248
+          ],
+          "source_sha256": "bb6a3a3098adb207e33c82af67f2e2f2ca8aec67735ce54a2f3ac6b040a36514"
+        }
+      ],
+      "subject_evidence": "subject-18.png",
+      "subject_evidence_sha256": "6e5005973d46c799075bd218544f0d69b569a221ac57ce7a92e10652235b2d09",
+      "finding": "The supplied rectangle contains the phone-displayed spoof face with coherent eyes, nose and mouth at native scale; the input is coarse but not a confirmed content failure.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8219/spoof/213838.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny phone-displayed face remains recognizable but native detail sufficiency is unresolved.",
+      "supplied_bbox_pixels": "[283, 281, 297, 307]",
+      "crop_width": "14",
+      "crop_height": "26",
+      "source_sha256": "e1dd8f945981c8e3d039c925690b3d2f9e088e2d19a54f7237446e656852307b",
+      "bbox_sha256": "32062067b031002753384089ccc6e022ccf38549e6378061f2ebcd664ac23101",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-18.png",
+      "review_id": 54,
+      "previous_finding": "The tiny phone-displayed face remains recognizable but native detail sufficiency is unresolved.",
+      "evidence_sha256": "30e495e8a279a46953ac65271d243051d7ff361f1119593976a5d761f5d5bdab",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8219/live/242067.jpg",
+          "crop_box": [
+            140,
+            138,
+            340,
+            423
+          ],
+          "source_sha256": "726f8f76212e7438fa4b4119ce985aa32366ddbebd66c332b1c036a23ee6b10a"
+        },
+        {
+          "relative_path": "Data/train/8219/live/489064.jpg",
+          "crop_box": [
+            128,
+            62,
+            267,
+            248
+          ],
+          "source_sha256": "bb6a3a3098adb207e33c82af67f2e2f2ca8aec67735ce54a2f3ac6b040a36514"
+        }
+      ],
+      "subject_evidence": "subject-18.png",
+      "subject_evidence_sha256": "6e5005973d46c799075bd218544f0d69b569a221ac57ce7a92e10652235b2d09",
+      "finding": "The supplied ROI targets the displayed face and retains its facial layout; coarse sampling is documented without inventing a minimum-size cutoff.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8219/spoof/437296.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The tiny phone-displayed face is recognizable; quality suitability remains unresolved rather than rejected by size alone.",
+      "supplied_bbox_pixels": "[222, 375, 236, 396]",
+      "crop_width": "14",
+      "crop_height": "21",
+      "source_sha256": "130810a162a82c28baca05d52c671c9ad604cb24913259a97bd5bccab04f85c6",
+      "bbox_sha256": "fc6e98981b8dad33a1aab5507f5d2e445ebca7026ba66e6555024132b15d6f46",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-19.png",
+      "review_id": 55,
+      "previous_finding": "The tiny phone-displayed face is recognizable; quality suitability remains unresolved rather than rejected by size alone.",
+      "evidence_sha256": "ac63d3dae18821112bb7b7b8c7add5423bcc56f1fe1fda79974067979bda7932",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8219/live/242067.jpg",
+          "crop_box": [
+            140,
+            138,
+            340,
+            423
+          ],
+          "source_sha256": "726f8f76212e7438fa4b4119ce985aa32366ddbebd66c332b1c036a23ee6b10a"
+        },
+        {
+          "relative_path": "Data/train/8219/live/489064.jpg",
+          "crop_box": [
+            128,
+            62,
+            267,
+            248
+          ],
+          "source_sha256": "bb6a3a3098adb207e33c82af67f2e2f2ca8aec67735ce54a2f3ac6b040a36514"
+        }
+      ],
+      "subject_evidence": "subject-19.png",
+      "subject_evidence_sha256": "446363da7f5ef1f50aeff54fcf3ec5f41f74fd54ffd6fce08bf4102be5918799",
+      "finding": "The supplied ROI contains the displayed spoof face with coherent facial structure in both enlargement modes; no wrong-region or missing-face defect is confirmed.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8291/live/128896.jpg",
+      "split": "validation",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains the rear drummer\u2019s recognizable face; intended annotated identity and crop quality remain unresolved.",
+      "supplied_bbox_pixels": "[555, 335, 601, 406]",
+      "crop_width": "46",
+      "crop_height": "71",
+      "source_sha256": "f2416b8c2fce35afa834587401abd0081b2be83c61efaf9cd937eea80c119f13",
+      "bbox_sha256": "6f8864895352b41eee160f0dec9fcb503fa52c332d61c754cb16ccc79c5d4267",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-19.png",
+      "review_id": 56,
+      "previous_finding": "The ROI contains the rear drummer\u2019s recognizable face; intended annotated identity and crop quality remain unresolved.",
+      "evidence_sha256": "ac63d3dae18821112bb7b7b8c7add5423bcc56f1fe1fda79974067979bda7932",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8291/live/018409.jpg",
+          "crop_box": [
+            144,
+            87,
+            231,
+            228
+          ],
+          "source_sha256": "c0dc52da3386b11d19eb6002ba27fea4f40ddee37e5cdac0f75facf04b418f5f"
+        },
+        {
+          "relative_path": "Data/train/8291/live/035438.jpg",
+          "crop_box": [
+            110,
+            64,
+            180,
+            172
+          ],
+          "source_sha256": "22a90c73b933d7333d960529d8c273b676f3af96ffebc4978b79b2ef406e956b"
+        },
+        {
+          "relative_path": "Data/train/8291/live/042705.jpg",
+          "crop_box": [
+            156,
+            90,
+            256,
+            243
+          ],
+          "source_sha256": "010584befa9733a4115cb7365bedf41844d63568f657fa90358e9c1e3ddcf722"
+        }
+      ],
+      "subject_evidence": "subject-19.png",
+      "subject_evidence_sha256": "446363da7f5ef1f50aeff54fcf3ec5f41f74fd54ffd6fce08bf4102be5918799",
+      "finding": "The supplied ROI selects the background drummer rather than the prominent foreground portrait; the foreground target face is completely outside the box.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/834/live/487488.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "A secondary woman\u2019s downward profile is visible behind the foreground man; target identity remains unresolved.",
+      "supplied_bbox_pixels": "[1, 65, 76, 207]",
+      "crop_width": "75",
+      "crop_height": "142",
+      "source_sha256": "e4e4f29b671b709b4dd10983cd9e3437cf9b8f47a8651df81b2135cba464676a",
+      "bbox_sha256": "df2f208f4606f93c303a361130652c876c6ead7a033bd367f4213ef01d71e825",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-19.png",
+      "review_id": 57,
+      "previous_finding": "A secondary woman\u2019s downward profile is visible behind the foreground man; target identity remains unresolved.",
+      "evidence_sha256": "ac63d3dae18821112bb7b7b8c7add5423bcc56f1fe1fda79974067979bda7932",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/834/live/008673.jpg",
+          "crop_box": [
+            66,
+            37,
+            163,
+            176
+          ],
+          "source_sha256": "ed38ef453c9aa7147f5df4be3a9a496cf572a792b91086c661ab8cfdde1dd7fe"
+        },
+        {
+          "relative_path": "Data/train/834/live/174817.jpg",
+          "crop_box": [
+            110,
+            95,
+            271,
+            338
+          ],
+          "source_sha256": "9fee89cb1c805299e3575e424bcc14e647cfc080b3f7a532bda39794ddb80742"
+        },
+        {
+          "relative_path": "Data/train/834/live/183420.jpg",
+          "crop_box": [
+            36,
+            24,
+            113,
+            140
+          ],
+          "source_sha256": "5133a8167f55585880a0ea08a5f3b97280fab7480ccc143b54ac3d89317ba8cd"
+        }
+      ],
+      "subject_evidence": "subject-19.png",
+      "subject_evidence_sha256": "446363da7f5ef1f50aeff54fcf3ec5f41f74fd54ffd6fce08bf4102be5918799",
+      "finding": "The supplied ROI selects the peripheral background person partly behind the foreground portrait; it excludes the foreground presented face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8365/live/319074.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The source is a composite advertising graphic and the ROI selects its inset portrait; live-label interpretation and intended target remain unresolved.",
+      "supplied_bbox_pixels": "[267, 28, 304, 68]",
+      "crop_width": "37",
+      "crop_height": "40",
+      "source_sha256": "16e3af3c4c0f1675074ca3f815929b357d89fc188cb48506b22fc7f91cbb1d00",
+      "bbox_sha256": "45597bdc04fce138c8128447cb583bffe9187dd453ecaf223dad5c7609fb42fc",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-20.png",
+      "review_id": 58,
+      "previous_finding": "The source is a composite advertising graphic and the ROI selects its inset portrait; live-label interpretation and intended target remain unresolved.",
+      "evidence_sha256": "34f023a4fdbf561d3d22a55dcba6bde60d666a9213bb48fa9edef88114b77cc3",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8365/live/003607.jpg",
+          "crop_box": [
+            126,
+            64,
+            195,
+            179
+          ],
+          "source_sha256": "8e031784821414d48dbcbf96d0582bd4a1f90913e33be9596a8d9e5ef746cf4a"
+        },
+        {
+          "relative_path": "Data/train/8365/live/030348.jpg",
+          "crop_box": [
+            163,
+            76,
+            249,
+            224
+          ],
+          "source_sha256": "13759ec6740c5e105c11d6d0d2e9517582d0a26ac5dcad7e6fb8bba1b8bcee99"
+        },
+        {
+          "relative_path": "Data/train/8365/live/055113.jpg",
+          "crop_box": [
+            301,
+            137,
+            523,
+            498
+          ],
+          "source_sha256": "1eafcdd37708248af021c40b7063016dba74b10bf00053c9a30cdee778f3dc23"
+        }
+      ],
+      "subject_evidence": "subject-20.png",
+      "subject_evidence_sha256": "406d5c9bd4af773bd8eedd964c9d42cf429213efb7f1f69476a49aca8eefe87b",
+      "finding": "The supplied ROI selects the separate small inset portrait above the main portrait in the promotional graphic; it excludes the main presented face region.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8402/spoof/075762.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The source spoof photograph contains several depicted faces; the secondary sunglasses face is visible but target attribution and detail remain unresolved.",
+      "supplied_bbox_pixels": "[313, 117, 433, 317]",
+      "crop_width": "120",
+      "crop_height": "200",
+      "source_sha256": "c9f9399b85742ff48f7d44618bf6302fd6a8a61eb53cb7e09c1e9421dc15a30b",
+      "bbox_sha256": "522ef10eaf1b8255c66719d4d44631176918405c3be259a000c6a4599f3621bb",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-20.png",
+      "review_id": 59,
+      "previous_finding": "The source spoof photograph contains several depicted faces; the secondary sunglasses face is visible but target attribution and detail remain unresolved.",
+      "evidence_sha256": "34f023a4fdbf561d3d22a55dcba6bde60d666a9213bb48fa9edef88114b77cc3",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8402/live/037625.jpg",
+          "crop_box": [
+            332,
+            112,
+            478,
+            347
+          ],
+          "source_sha256": "365e8a4fb3736d019e1069e0e9e2c7700817d3cca0cd9d11391d55bc758efc50"
+        },
+        {
+          "relative_path": "Data/train/8402/live/069393.jpg",
+          "crop_box": [
+            282,
+            112,
+            424,
+            363
+          ],
+          "source_sha256": "6c074842b89375c1dfd13cfdeccff6730ecc221dc6de19cc5534d0239f1e710c"
+        },
+        {
+          "relative_path": "Data/train/8402/live/074412.jpg",
+          "crop_box": [
+            360,
+            107,
+            492,
+            358
+          ],
+          "source_sha256": "5f794d5635d02cf9bb42ea9230e98080b905ba78ea6211c4a25b671a467eb79d"
+        }
+      ],
+      "subject_evidence": "subject-20.png",
+      "subject_evidence_sha256": "406d5c9bd4af773bd8eedd964c9d42cf429213efb7f1f69476a49aca8eefe87b",
+      "finding": "The selected peripheral depicted region is partly obscured by a large black object/lens and cut at the display edge; it does not preserve a complete usable face from the presented foreground portrait.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8529/live/143575.jpg",
+      "split": "validation",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The ROI contains a secondary background woman\u2019s visible face; intended annotation identity remains unresolved.",
+      "supplied_bbox_pixels": "[78, 220, 120, 275]",
+      "crop_width": "42",
+      "crop_height": "55",
+      "source_sha256": "f481bb8717f48cdf055dcc1205d96adbc3890a9045f1fe172ff94cefc4c0aede",
+      "bbox_sha256": "a5fffadd970bc6fb1a69c72a4957e9b955e8cb8e45beb9e384cf86c6cc2d1121",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-20.png",
+      "review_id": 60,
+      "previous_finding": "The ROI contains a secondary background woman\u2019s visible face; intended annotation identity remains unresolved.",
+      "evidence_sha256": "34f023a4fdbf561d3d22a55dcba6bde60d666a9213bb48fa9edef88114b77cc3",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8529/live/006472.jpg",
+          "crop_box": [
+            192,
+            40,
+            274,
+            190
+          ],
+          "source_sha256": "100d15c0e687c945909d7bf225982b36f4624b056a86c372d909633973a22a68"
+        },
+        {
+          "relative_path": "Data/train/8529/live/068777.jpg",
+          "crop_box": [
+            320,
+            125,
+            465,
+            354
+          ],
+          "source_sha256": "88ee11d6e7e7ad9de39ac2530017d225086f2e2c306172d68e0c003b9ce0790a"
+        },
+        {
+          "relative_path": "Data/train/8529/live/080643.jpg",
+          "crop_box": [
+            185,
+            97,
+            363,
+            374
+          ],
+          "source_sha256": "7bcbea4248c3ca629577d1dee22d561f2caccb47e1a644a67572e754305cd5ca"
+        }
+      ],
+      "subject_evidence": "subject-20.png",
+      "subject_evidence_sha256": "406d5c9bd4af773bd8eedd964c9d42cf429213efb7f1f69476a49aca8eefe87b",
+      "finding": "The supplied ROI selects the background attendee at lower left instead of the clear foreground portrait face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8536/spoof/303214.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The ROI selects a secondary depicted face within the phone image; target attribution and native quality remain unresolved.",
+      "supplied_bbox_pixels": "[84, 227, 120, 296]",
+      "crop_width": "36",
+      "crop_height": "69",
+      "source_sha256": "ce5c090df189a96171a43d92df711104f242fb58cc23b76dc556fdffb55e0aa5",
+      "bbox_sha256": "593638d4ae74095e2f940c6dd09ec9306666427aa1fac1d45e643d1c450c8a66",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-21.png",
+      "review_id": 61,
+      "previous_finding": "The ROI selects a secondary depicted face within the phone image; target attribution and native quality remain unresolved.",
+      "evidence_sha256": "996cab0cdd2088359b8c3b068aa34648e85b77438987aa4890af876555c83bc3",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8536/live/023918.jpg",
+          "crop_box": [
+            67,
+            169,
+            277,
+            472
+          ],
+          "source_sha256": "7dc5b55dc879842f7666b4cf6ab93b2722aa4227ec6c0bfc310c1709ee835121"
+        },
+        {
+          "relative_path": "Data/train/8536/live/033544.jpg",
+          "crop_box": [
+            129,
+            122,
+            300,
+            356
+          ],
+          "source_sha256": "a224a75d2d642cc6a79b8015a1103e9f4663ea3fb9dfde6fc5a00259213913fc"
+        },
+        {
+          "relative_path": "Data/train/8536/live/037130.jpg",
+          "crop_box": [
+            147,
+            68,
+            336,
+            279
+          ],
+          "source_sha256": "9dc6c2be8d79244bafed1e7d17a3b4e46ad51bc3e82b85a43dbb9fd3dfff50f5"
+        }
+      ],
+      "subject_evidence": "subject-21.png",
+      "subject_evidence_sha256": "5c8c1fea293dcc8230a052ce656995930f185720a29b7782e53cb9d5cc54962a",
+      "finding": "The supplied rectangle selects a partial peripheral head at the left display boundary, partly occluded by the foreground hair; it lacks complete usable facial structure.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8759/live/004968.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "0",
+      "attack_family": "live",
+      "binary_label": "0",
+      "decision": "confirmed_wrong_target",
+      "reason_code": "target",
+      "reason": "The crop contains a secondary background woman\u2019s downward face; intended identity and quality remain unresolved.",
+      "supplied_bbox_pixels": "[9, 95, 41, 150]",
+      "crop_width": "32",
+      "crop_height": "55",
+      "source_sha256": "14efab5ac8041cce7c4cc3198ff7cca4695b07fe0fdb244ae1659e148d0780c3",
+      "bbox_sha256": "a88d2b31e90f848fbdb46ab6192c0ed14d5018edcff70953e0ef343cb0f3da3d",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-21.png",
+      "review_id": 62,
+      "previous_finding": "The crop contains a secondary background woman\u2019s downward face; intended identity and quality remain unresolved.",
+      "evidence_sha256": "996cab0cdd2088359b8c3b068aa34648e85b77438987aa4890af876555c83bc3",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8759/live/025570.jpg",
+          "crop_box": [
+            114,
+            20,
+            210,
+            174
+          ],
+          "source_sha256": "dcf74c1528bcd271e2f976271909255a0031a0dd4539d254a0f10d2adf231314"
+        },
+        {
+          "relative_path": "Data/train/8759/live/036776.jpg",
+          "crop_box": [
+            143,
+            55,
+            267,
+            246
+          ],
+          "source_sha256": "2628c6c0d3f9e48a0b57d0426a784e7e8fe7e38e0f263550c786c004c531b881"
+        },
+        {
+          "relative_path": "Data/train/8759/live/044073.jpg",
+          "crop_box": [
+            88,
+            60,
+            182,
+            225
+          ],
+          "source_sha256": "d0c2a753132c46f22079fa91316c13ba16b296d08a51f74350e89c5de8c70deb"
+        }
+      ],
+      "subject_evidence": "subject-21.png",
+      "subject_evidence_sha256": "5c8c1fea293dcc8230a052ce656995930f185720a29b7782e53cb9d5cc54962a",
+      "finding": "The supplied ROI selects the background attendee behind the foreground portrait rather than its face.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8759/spoof/395004.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "A secondary face appears in a small overlaid display region on the phone; whether this is the intended spoof target and sufficiently usable remains unresolved.",
+      "supplied_bbox_pixels": "[263, 407, 345, 540]",
+      "crop_width": "82",
+      "crop_height": "133",
+      "source_sha256": "c8d48d3dc8141b3fd070cec8625d54fbd909d643afcd6c7e51f78d14ae717b63",
+      "bbox_sha256": "f97f3b3ffd3438f36bd08e6f105404ae026627876bf5a1a7ecb6dac67b06a2c7",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-21.png",
+      "review_id": 63,
+      "previous_finding": "A secondary face appears in a small overlaid display region on the phone; whether this is the intended spoof target and sufficiently usable remains unresolved.",
+      "evidence_sha256": "996cab0cdd2088359b8c3b068aa34648e85b77438987aa4890af876555c83bc3",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8759/live/025570.jpg",
+          "crop_box": [
+            114,
+            20,
+            210,
+            174
+          ],
+          "source_sha256": "dcf74c1528bcd271e2f976271909255a0031a0dd4539d254a0f10d2adf231314"
+        },
+        {
+          "relative_path": "Data/train/8759/live/036776.jpg",
+          "crop_box": [
+            143,
+            55,
+            267,
+            246
+          ],
+          "source_sha256": "2628c6c0d3f9e48a0b57d0426a784e7e8fe7e38e0f263550c786c004c531b881"
+        },
+        {
+          "relative_path": "Data/train/8759/live/044073.jpg",
+          "crop_box": [
+            88,
+            60,
+            182,
+            225
+          ],
+          "source_sha256": "d0c2a753132c46f22079fa91316c13ba16b296d08a51f74350e89c5de8c70deb"
+        }
+      ],
+      "subject_evidence": "subject-21.png",
+      "subject_evidence_sha256": "5c8c1fea293dcc8230a052ce656995930f185720a29b7782e53cb9d5cc54962a",
+      "finding": "The supplied ROI contains a coherent secondary depicted face within the phone presentation. Its visible face structure is usable; another larger displayed face is not an automatic reason to exclude or replace it. Source labels remain unchanged.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8812/spoof/014792.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The tiny phone-face crop is recognizable but heavily enlarged; sufficient native detail remains unresolved.",
+      "supplied_bbox_pixels": "[109, 211, 122, 243]",
+      "crop_width": "13",
+      "crop_height": "32",
+      "source_sha256": "e21a07b97300c1d43dc03fac79be61682c00d4a6280fe12cd67685998b1b4917",
+      "bbox_sha256": "734cd0176ad1fdd580c5c0fd02135b385d7ad929603f745ab8a3566692e03db9",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-22.png",
+      "review_id": 64,
+      "previous_finding": "The tiny phone-face crop is recognizable but heavily enlarged; sufficient native detail remains unresolved.",
+      "evidence_sha256": "c5fba90b703aae97a4e9c9869e887e73811a52d9fce887ee393befb2bd9da64d",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8812/live/012877.jpg",
+          "crop_box": [
+            209,
+            63,
+            354,
+            212
+          ],
+          "source_sha256": "71f001055c1fb866c26f5cbd2230a75cd244f15da176ef2049a6d8f4d2e723f7"
+        },
+        {
+          "relative_path": "Data/train/8812/live/030133.jpg",
+          "crop_box": [
+            103,
+            91,
+            249,
+            318
+          ],
+          "source_sha256": "65bb5738ef49fd78f4433ca477c61e780a6f4111359cc703a5e8be5a11519b0d"
+        },
+        {
+          "relative_path": "Data/train/8812/live/071598.jpg",
+          "crop_box": [
+            102,
+            63,
+            238,
+            272
+          ],
+          "source_sha256": "47ef8adb99c5f6ec47aef9ba7186247a8bde08198beb19de825026f262aa814e"
+        }
+      ],
+      "subject_evidence": "subject-22.png",
+      "subject_evidence_sha256": "b55938ae3fe2b042d42f23ea76df6153cc7f505a4debde02818a245fb7f704d7",
+      "finding": "The tall narrow ROI retains only part of the displayed head, with an incomplete eye/face strip and severe horizontal distortion; complete usable facial layout is absent.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/8812/spoof/241936.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_unusable_crop",
+      "reason_code": "unusable",
+      "reason": "The tiny phone-face ROI retains recognizable facial parts but quality and completeness require closer review.",
+      "supplied_bbox_pixels": "[148, 318, 160, 350]",
+      "crop_width": "12",
+      "crop_height": "32",
+      "source_sha256": "37c0afd3d277c7172594b65089dd0d59ccae5532e70b305349789e8b7fadfd7d",
+      "bbox_sha256": "b4e79402233590b159abdeb2e762406d68e1217b61855215399eb3fa2de29ab1",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-22.png",
+      "review_id": 65,
+      "previous_finding": "The tiny phone-face ROI retains recognizable facial parts but quality and completeness require closer review.",
+      "evidence_sha256": "c5fba90b703aae97a4e9c9869e887e73811a52d9fce887ee393befb2bd9da64d",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/8812/live/012877.jpg",
+          "crop_box": [
+            209,
+            63,
+            354,
+            212
+          ],
+          "source_sha256": "71f001055c1fb866c26f5cbd2230a75cd244f15da176ef2049a6d8f4d2e723f7"
+        },
+        {
+          "relative_path": "Data/train/8812/live/030133.jpg",
+          "crop_box": [
+            103,
+            91,
+            249,
+            318
+          ],
+          "source_sha256": "65bb5738ef49fd78f4433ca477c61e780a6f4111359cc703a5e8be5a11519b0d"
+        },
+        {
+          "relative_path": "Data/train/8812/live/071598.jpg",
+          "crop_box": [
+            102,
+            63,
+            238,
+            272
+          ],
+          "source_sha256": "47ef8adb99c5f6ec47aef9ba7186247a8bde08198beb19de825026f262aa814e"
+        }
+      ],
+      "subject_evidence": "subject-22.png",
+      "subject_evidence_sha256": "b55938ae3fe2b042d42f23ea76df6153cc7f505a4debde02818a245fb7f704d7",
+      "finding": "The narrow ROI retains only a partial eye/nose/lip strip of the displayed face rather than its complete facial layout; enlargement severely stretches the fragment.",
+      "replacement_bbox_accepted": false
+    },
+    {
+      "relative_path": "Data/train/9035/spoof/413382.jpg",
+      "split": "train",
+      "original_split": "train",
+      "source_type": "9",
+      "attack_family": "screen",
+      "binary_label": "1",
+      "decision": "confirmed_valid_usable_roi",
+      "reason_code": "valid",
+      "reason": "The ROI contains a secondary depicted face on the same phone-displayed spoof; target attribution and native detail remain unresolved.",
+      "supplied_bbox_pixels": "[160, 206, 216, 315]",
+      "crop_width": "56",
+      "crop_height": "109",
+      "source_sha256": "cba256f75733286dd1d602595364257b00fb013c0cef99c4a2d5ce7b1c8032fe",
+      "bbox_sha256": "5869a61b80244f0787093b90870019d4a65635fe49c2dbbe9792c3a4ac85df70",
+      "review_method": "Codex second-pass visual inspection of source scene, supplied ROI, bilinear enlargement and nearest-pixel enlargement; no detector-count veto, automatic size cutoff or face-identity matching",
+      "evidence": "page-22.png",
+      "review_id": 66,
+      "previous_finding": "The ROI contains a secondary depicted face on the same phone-displayed spoof; target attribution and native detail remain unresolved.",
+      "evidence_sha256": "c5fba90b703aae97a4e9c9869e887e73811a52d9fce887ee393befb2bd9da64d",
+      "subject_references": [
+        {
+          "relative_path": "Data/train/9035/live/095650.jpg",
+          "crop_box": [
+            47,
+            59,
+            174,
+            259
+          ],
+          "source_sha256": "20e33ead20f7cf069c534aa590eba862661582d47e728caddaacd1a9716472fc"
+        },
+        {
+          "relative_path": "Data/train/9035/live/109328.jpg",
+          "crop_box": [
+            56,
+            76,
+            183,
+            280
+          ],
+          "source_sha256": "a15c4483000bf6fc565f39015a423517be3285a3fb004b5ffc49df97190b5b3a"
+        },
+        {
+          "relative_path": "Data/train/9035/live/114038.jpg",
+          "crop_box": [
+            40,
+            37,
+            122,
+            147
+          ],
+          "source_sha256": "8d673f28409e40aaf302578ff2d39cd836de8ff0d70663f856c75891fa9aff68"
+        }
+      ],
+      "subject_evidence": "subject-22.png",
+      "subject_evidence_sha256": "b55938ae3fe2b042d42f23ea76df6153cc7f505a4debde02818a245fb7f704d7",
+      "finding": "The supplied ROI contains a coherent secondary depicted face on the same phone display, with visible eyes, nose and mouth. The neighbouring larger face and detector disagreement do not invalidate this spoof crop.",
+      "replacement_bbox_accepted": false
+    }
+  ],
+  "subject_reference_limit": "Additional same-folder reference panels record dataset subject assignments only; they are not face-identity verification and do not establish semantic-label correctness. Decisions use source-scene context and supplied-crop content.",
+  "review_summary": {
+    "confirmed_wrong_target": 37,
+    "confirmed_unusable_crop": 15,
+    "confirmed_wrong_roi": 1,
+    "confirmed_valid_usable_roi": 13
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "schema": "liveness-source-crop-audit-v1",
+  "updated_at": "2026-11-26T08:17:05.928248+00:00",
+  "inputs": {
+    "root": "/home/trang/Documents/Swinburne/COS30082-Applied-Machine-Learning/Project/facial-attendance/data/raw/liveness/celeba-spoof-full",
+    "inventory_sha256": "b4262e03e92bddbf21e48ce29980506423ca5fbf07aa1e3d728b253dced1b35b",
+    "annotation_sha256": {
+      "train": "e10a6102e7f5b1ca18b192d9c2708049d343551ee6267f4bd52f04a74bd70360",
+      "validation": "2c509deb64114a7c23cf817083292ead63d0219856b5bca6af5b1f54c67d656c",
+      "test": "5024238665680fd6df3a1b4b1cf00b75cc60386e6c6978822df86cfe794bd14d"
+    },
+    "full_scope_counts": {
+      "train": 444357,
+      "validation": 49504,
+      "test": 67170
+    },
+    "requested_rows": 561031,
+    "sample_per_split": null,
+    "included_paths": [],
+    "detector_sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+    "detector_runtime": "Existing pinned YuNet/OpenCV CPU locator",
+    "size_bands_pixels": [
+      16,
+      32,
+      64,
+      112,
+      224
+    ],
+    "size_policy": "Descriptive bands only; no minimum acceptance threshold chosen",
+    "source_sha256": {
+      "entry_point": "b60c4255f2ab8b98c9da74dcd9389dce667c8ed3aada6f512f08b02cca693fe3",
+      "audit_module": "e6fe4698feb18650884e6b00b99e495fac2000241b7955ee2ac669ecec10fdcf"
+    }
+  },
+  "completed_rows": 561031,
+  "split_counts": {
+    "test": 67170,
+    "train": 444357,
+    "validation": 49504
+  },
+  "errors": {},
+  "native_min_edge_bands": [
+    [
+      "test",
+      "ge_224",
+      15735
+    ],
+    [
+      "test",
+      "lt_112",
+      13680
+    ],
+    [
+      "test",
+      "lt_16",
+      19
+    ],
+    [
+      "test",
+      "lt_224",
+      35986
+    ],
+    [
+      "test",
+      "lt_32",
+      72
+    ],
+    [
+      "test",
+      "lt_64",
+      1678
+    ],
+    [
+      "train",
+      "ge_224",
+      93854
+    ],
+    [
+      "train",
+      "lt_112",
+      71963
+    ],
+    [
+      "train",
+      "lt_16",
+      92
+    ],
+    [
+      "train",
+      "lt_224",
+      263290
+    ],
+    [
+      "train",
+      "lt_32",
+      1187
+    ],
+    [
+      "train",
+      "lt_64",
+      13971
+    ],
+    [
+      "validation",
+      "ge_224",
+      9825
+    ],
+    [
+      "validation",
+      "lt_112",
+      8125
+    ],
+    [
+      "validation",
+      "lt_16",
+      10
+    ],
+    [
+      "validation",
+      "lt_224",
+      29741
+    ],
+    [
+      "validation",
+      "lt_32",
+      163
+    ],
+    [
+      "validation",
+      "lt_64",
+      1640
+    ]
+  ],
+  "review_flags": [
+    [
+      "test",
+      "clipped_box",
+      1058
+    ],
+    [
+      "test",
+      "detector_no_face",
+      8731
+    ],
+    [
+      "test",
+      "detector_no_overlap",
+      37
+    ],
+    [
+      "test",
+      "larger_disagreeing_face",
+      21
+    ],
+    [
+      "test",
+      "multiple_detector_faces",
+      201
+    ],
+    [
+      "train",
+      "clipped_box",
+      9614
+    ],
+    [
+      "train",
+      "detector_no_face",
+      57457
+    ],
+    [
+      "train",
+      "detector_no_overlap",
+      194
+    ],
+    [
+      "train",
+      "full_image_fallback",
+      1
+    ],
+    [
+      "train",
+      "larger_disagreeing_face",
+      118
+    ],
+    [
+      "train",
+      "multiple_detector_faces",
+      995
+    ],
+    [
+      "validation",
+      "clipped_box",
+      1134
+    ],
+    [
+      "validation",
+      "detector_no_face",
+      6647
+    ],
+    [
+      "validation",
+      "detector_no_overlap",
+      18
+    ],
+    [
+      "validation",
+      "larger_disagreeing_face",
+      14
+    ],
+    [
+      "validation",
+      "multiple_detector_faces",
+      123
+    ]
+  ],
+  "elapsed_seconds_this_execution": 6414.056905163001,
+  "completed": true,
+  "semantic_review": "Unverified: automated diagnostics do not establish intended target identity",
+  "cache_pixel_parity": "Not checked: original source images and boxes only",
+  "eligibility_changes": 0
+}

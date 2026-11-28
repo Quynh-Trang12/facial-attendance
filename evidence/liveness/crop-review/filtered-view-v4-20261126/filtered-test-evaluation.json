@@ -1,0 +1,258 @@
+{
+  "split": "test",
+  "checkpoint_sha256": "6715d53461e6d123d34ca714c7b24b8b66a726949889bcf4f72955fceb1aa430",
+  "model_version": "f16fbfaf36046f75",
+  "inference_precision": "float32",
+  "threshold_source": "validation EER operating point",
+  "metrics": {
+    "samples": 67129,
+    "live": 19887,
+    "spoof": 47242,
+    "attack_accepted_as_live": 5774,
+    "live_rejected_as_spoof": 26,
+    "threshold": 0.46483826637268066,
+    "APCER": 0.12222175183099784,
+    "BPCER": 0.0013073867350530497,
+    "ACER": 0.06176456928302545,
+    "accuracy": 0.9135991896199854,
+    "ROC_AUC": 0.9985784883993403
+  },
+  "by_attack": {
+    "print": {
+      "samples": 15104,
+      "live": 0,
+      "spoof": 15104,
+      "attack_accepted_as_live": 1869,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.12374205508474577,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.8762579449152542,
+      "ROC_AUC": null
+    },
+    "screen": {
+      "samples": 14615,
+      "live": 0,
+      "spoof": 14615,
+      "attack_accepted_as_live": 3686,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.2522066370167636,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.7477933629832364,
+      "ROC_AUC": null
+    }
+  },
+  "by_source_type": {
+    "0": {
+      "samples": 19887,
+      "live": 19887,
+      "spoof": 0,
+      "attack_accepted_as_live": 0,
+      "live_rejected_as_spoof": 26,
+      "threshold": 0.46483826637268066,
+      "APCER": null,
+      "BPCER": 0.0013073867350530497,
+      "ACER": null,
+      "accuracy": 0.998692613264947,
+      "ROC_AUC": null
+    },
+    "1": {
+      "samples": 3600,
+      "live": 0,
+      "spoof": 3600,
+      "attack_accepted_as_live": 125,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.034722222222222224,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9652777777777778,
+      "ROC_AUC": null
+    },
+    "2": {
+      "samples": 5421,
+      "live": 0,
+      "spoof": 5421,
+      "attack_accepted_as_live": 507,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.09352517985611511,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9064748201438849,
+      "ROC_AUC": null
+    },
+    "3": {
+      "samples": 6083,
+      "live": 0,
+      "spoof": 6083,
+      "attack_accepted_as_live": 1237,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.20335360841689956,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.7966463915831005,
+      "ROC_AUC": null
+    },
+    "4": {
+      "samples": 4287,
+      "live": 0,
+      "spoof": 4287,
+      "attack_accepted_as_live": 54,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.012596221133659902,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9874037788663401,
+      "ROC_AUC": null
+    },
+    "5": {
+      "samples": 6097,
+      "live": 0,
+      "spoof": 6097,
+      "attack_accepted_as_live": 68,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.011153026078399212,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9888469739216008,
+      "ROC_AUC": null
+    },
+    "6": {
+      "samples": 3529,
+      "live": 0,
+      "spoof": 3529,
+      "attack_accepted_as_live": 86,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.02436950977614055,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9756304902238595,
+      "ROC_AUC": null
+    },
+    "7": {
+      "samples": 6473,
+      "live": 0,
+      "spoof": 6473,
+      "attack_accepted_as_live": 3235,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.499768268190947,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.500231731809053,
+      "ROC_AUC": null
+    },
+    "8": {
+      "samples": 3659,
+      "live": 0,
+      "spoof": 3659,
+      "attack_accepted_as_live": 173,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.04728067778081443,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9527193222191855,
+      "ROC_AUC": null
+    },
+    "9": {
+      "samples": 4483,
+      "live": 0,
+      "spoof": 4483,
+      "attack_accepted_as_live": 278,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.062012045505242024,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.937987954494758,
+      "ROC_AUC": null
+    },
+    "10": {
+      "samples": 3610,
+      "live": 0,
+      "spoof": 3610,
+      "attack_accepted_as_live": 11,
+      "live_rejected_as_spoof": 0,
+      "threshold": 0.46483826637268066,
+      "APCER": 0.0030470914127423824,
+      "BPCER": null,
+      "ACER": null,
+      "accuracy": 0.9969529085872576,
+      "ROC_AUC": null
+    }
+  },
+  "published_benchmark": {
+    "TPR_at_FPR": {
+      "0.01": {
+        "threshold_descriptive_only": 0.0018623643554747105,
+        "observed_FPR": 0.009905968723286569,
+        "TPR": 0.9707252021506286
+      },
+      "0.005": {
+        "threshold_descriptive_only": 0.010377192869782448,
+        "observed_FPR": 0.004927842309046111,
+        "TPR": 0.9482240379323483
+      },
+      "0.001": {
+        "threshold_descriptive_only": 0.7141132354736328,
+        "observed_FPR": 0.0009051138934982652,
+        "TPR": 0.8585157275305871
+      }
+    },
+    "nearest_discrete_EER": 0.01643448197697372,
+    "descriptive_EER_operating_point": {
+      "samples": 67129,
+      "live": 19887,
+      "spoof": 47242,
+      "attack_accepted_as_live": 776,
+      "live_rejected_as_spoof": 327,
+      "threshold": 0.0004750989901367575,
+      "APCER": 0.016426061555395624,
+      "BPCER": 0.01644290239855182,
+      "ACER": 0.01643448197697372,
+      "accuracy": 0.9835689493363524,
+      "ROC_AUC": 0.9985784883993403
+    },
+    "source": "https://github.com/ZhangYuanhan-AI/CelebA-Spoof/blob/master/intra_dataset_code/client.py",
+    "scope": "Descriptive test-set threshold sweeps only; deployment threshold remains frozen from validation"
+  },
+  "original_metrics": {
+    "samples": 67170,
+    "live": 19923,
+    "spoof": 47247,
+    "attack_accepted_as_live": 5779,
+    "live_rejected_as_spoof": 27,
+    "threshold": 0.46483826637268066,
+    "APCER": 0.12231464431604123,
+    "BPCER": 0.001355217587712694,
+    "ACER": 0.06183493095187696,
+    "accuracy": 0.9135626023522406,
+    "ROC_AUC": 0.9985151688531293
+  },
+  "excluded_samples": 41,
+  "cache_view_sha256": "439bc14889c86c445aede82901b18b571157fc735e1f006bc7fe27e7485f622f",
+  "data": {
+    "inventory_sha256": "b4262e03e92bddbf21e48ce29980506423ca5fbf07aa1e3d728b253dced1b35b",
+    "test": {
+      "annotations_sha256": "5024238665680fd6df3a1b4b1cf00b75cc60386e6c6978822df86cfe794bd14d"
+    }
+  },
+  "original_report": "evidence/liveness/liveness-continuation/evaluation/aenet-full/6715d53461e6d123/public-test/evaluation.json",
+  "original_report_sha256": "ad88923c8618ee77c32f321f9dc611cd81f60415fedf1dee66067e195228b4ac",
+  "predictions": "evidence/liveness/liveness-continuation/evaluation/aenet-full/6715d53461e6d123/public-test/predictions.csv",
+  "predictions_sha256": "a0473fd45048ec3144aad887d4eb781f43680ee27ee454cc590efcbb911027d8",
+  "source_sha256": "e2004ab70353941d624bd57b338431a8fa1c7a6b17e9b0c24462c01f048b8028",
+  "recalculation_seconds": 13.320508015007363,
+  "scope": "Current retained test subset; existing per-image scores, unchanged selected checkpoint and validation threshold. No inference, retraining or deployment-threshold fitting. Test has prior experimental exposure; this is not the intact public benchmark.",
+  "filtered_predictions": "evidence/liveness/crop-review/filtered-view-v4-20261126/filtered-test-evaluation-predictions.csv",
+  "filtered_predictions_sha256": "e08f6d5a01b4d9b0e7590e3a9ef85cffff059c865393fc0b45711c35e7b81d3b"
+}
