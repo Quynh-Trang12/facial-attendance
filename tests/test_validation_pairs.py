@@ -1,8 +1,8 @@
 """Seeded val_data pair list on generated images; they are not Kaggle data."""
 
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 from PIL import Image
 
@@ -20,7 +20,9 @@ def build_layout(root: Path, val_counts: dict[str, int]) -> FaceLayout:
             for index in range(images):
                 path = root / "classification_data" / split / identity / f"{index}.png"
                 path.parent.mkdir(parents=True, exist_ok=True)
-                Image.new("RGB", (8, 8), color=(index * 40, len(identity), 0)).save(path)
+                Image.new("RGB", (8, 8), color=(index * 40, len(identity), 0)).save(
+                    path
+                )
     (root / "verification_data").mkdir()
     Image.new("RGB", (8, 8)).save(root / "verification_data" / "a.png")
     (root / "verification_pairs_val.txt").write_text("a.png a.png 1\n")
@@ -36,7 +38,9 @@ class ValidationPairTests(unittest.TestCase):
         counts = {f"n{i:03d}": 1 if i % 4 == 0 else 2 for i in range(20)}
         self.layout = build_layout(self.root, counts)
         train = ClassificationFaces(self.layout, "train_data")
-        self.val = ClassificationFaces(self.layout, "val_data", class_to_idx=train.class_to_idx)
+        self.val = ClassificationFaces(
+            self.layout, "val_data", class_to_idx=train.class_to_idx
+        )
         self.train = train
 
     def identity(self, path: Path) -> str:
@@ -57,8 +61,12 @@ class ValidationPairTests(unittest.TestCase):
         self.assertEqual(len({(p.left, p.right) for p in negatives}), 15)
 
     def test_seeded_and_val_only(self):
-        self.assertEqual(build_validation_pairs(self.val), build_validation_pairs(self.val))
-        self.assertNotEqual(build_validation_pairs(self.val), build_validation_pairs(self.val, seed=7))
+        self.assertEqual(
+            build_validation_pairs(self.val), build_validation_pairs(self.val)
+        )
+        self.assertNotEqual(
+            build_validation_pairs(self.val), build_validation_pairs(self.val, seed=7)
+        )
         with self.assertRaises(ValueError):
             build_validation_pairs(self.train)
 
@@ -68,7 +76,9 @@ class ValidationPairTests(unittest.TestCase):
         digest = write_pairs(file, self.layout, pairs)
         self.assertTrue(file.read_text().startswith("classification_data/val_data/"))
         self.assertEqual(read_pairs(file, self.layout), pairs)
-        self.assertEqual(write_pairs(self.root / "again.txt", self.layout, pairs), digest)
+        self.assertEqual(
+            write_pairs(self.root / "again.txt", self.layout, pairs), digest
+        )
 
 
 if __name__ == "__main__":

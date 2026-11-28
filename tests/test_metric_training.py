@@ -8,8 +8,8 @@ if importlib.util.find_spec("torch") is None:
     raise unittest.SkipTest("torch is not installed in this environment")
 
 import json
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 import torch
 
@@ -19,8 +19,13 @@ from facial_attendance.recognition.metric_training import (
     load_metric_config,
     train_metric,
 )
-from facial_attendance.recognition.model import FaceEmbeddingNet, build_meta, load_checkpoint, save_checkpoint
-from test_validation_pairs import build_layout
+from facial_attendance.recognition.model import (
+    FaceEmbeddingNet,
+    build_meta,
+    load_checkpoint,
+    save_checkpoint,
+)
+from tests.test_validation_pairs import build_layout
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -28,9 +33,19 @@ ROOT = Path(__file__).resolve().parents[1]
 def tiny_config(**changes) -> MetricConfig:
     # The fixture has 3 training images per identity, so K = 3 uses every one.
     settings = dict(
-        epochs=2, identities_per_batch=2, images_per_identity=3, margin=0.2,
-        learning_rate=0.05, momentum=0.9, weight_decay=5e-4, seed=42, embedding_dim=512,
-        input_size=64, eval_batch_size=8, num_workers=0, mixed_precision=True,
+        epochs=2,
+        identities_per_batch=2,
+        images_per_identity=3,
+        margin=0.2,
+        learning_rate=0.05,
+        momentum=0.9,
+        weight_decay=5e-4,
+        seed=42,
+        embedding_dim=512,
+        input_size=64,
+        eval_batch_size=8,
+        num_workers=0,
+        mixed_precision=True,
     )
     return MetricConfig(**(settings | changes))
 
@@ -45,16 +60,31 @@ class MetricTrainingTests(unittest.TestCase):
 
     def run_training(self, config, **options):
         return train_metric(
-            config, self.layout, output_root=self.root / "runs", exclusions_file=None,
-            device=torch.device("cpu"), log=self.logs.append, **options,
+            config,
+            self.layout,
+            output_root=self.root / "runs",
+            exclusions_file=None,
+            device=torch.device("cpu"),
+            log=self.logs.append,
+            **options,
         )
 
     def test_repository_config_matches_experiment_settings(self):
         config = load_metric_config(ROOT / "configs/face-metric.toml")
         self.assertEqual(
-            (config.epochs, config.identities_per_batch, config.images_per_identity, config.batch_size,
-             config.margin, config.learning_rate, config.momentum, config.weight_decay, config.seed,
-             config.embedding_dim, config.input_size),
+            (
+                config.epochs,
+                config.identities_per_batch,
+                config.images_per_identity,
+                config.batch_size,
+                config.margin,
+                config.learning_rate,
+                config.momentum,
+                config.weight_decay,
+                config.seed,
+                config.embedding_dim,
+                config.input_size,
+            ),
             (30, 64, 4, 256, 0.2, 0.05, 0.9, 5e-4, 42, 512, 64),
         )
         with self.assertRaises(ValueError):
@@ -102,8 +132,15 @@ class MetricTrainingTests(unittest.TestCase):
     def test_warm_start_copies_the_classification_backbone_and_drops_the_head(self):
         source = FaceEmbeddingNet(num_classes=4)
         checkpoint = self.root / "classification-best.pt"
-        save_checkpoint(checkpoint, source, build_meta(source, model_id="cls-run", approach="classification"))
-        run = self.run_training(tiny_config(epochs=1, learning_rate=0.0, momentum=0.0, weight_decay=0.0), warm_start=checkpoint)
+        save_checkpoint(
+            checkpoint,
+            source,
+            build_meta(source, model_id="cls-run", approach="classification"),
+        )
+        run = self.run_training(
+            tiny_config(epochs=1, learning_rate=0.0, momentum=0.0, weight_decay=0.0),
+            warm_start=checkpoint,
+        )
         manifest = json.loads((run / "manifest.json").read_text())
         self.assertIn("-metric-warm-", run.name)
         self.assertEqual(manifest["initialisation"]["model_id"], "cls-run")

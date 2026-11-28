@@ -8,23 +8,31 @@ if importlib.util.find_spec("torch") is None:
     raise unittest.SkipTest("torch is not installed in this environment")
 
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 import torch
 
 from facial_attendance.recognition.model import load_checkpoint
 from facial_attendance.recognition.training import TrainConfig, load_config, train
-from test_validation_pairs import build_layout
+from tests.test_validation_pairs import build_layout
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def tiny_config(**changes) -> TrainConfig:
     settings = dict(
-        epochs=2, batch_size=8, learning_rate=0.05, momentum=0.9, weight_decay=5e-4,
-        seed=42, embedding_dim=512, input_size=64, eval_batch_size=8, num_workers=0,
+        epochs=2,
+        batch_size=8,
+        learning_rate=0.05,
+        momentum=0.9,
+        weight_decay=5e-4,
+        seed=42,
+        embedding_dim=512,
+        input_size=64,
+        eval_batch_size=8,
+        num_workers=0,
         mixed_precision=True,
     )
     return TrainConfig(**(settings | changes))
@@ -40,15 +48,28 @@ class TrainingTests(unittest.TestCase):
 
     def run_training(self, config, **options):
         return train(
-            config, self.layout, output_root=self.root / "runs", exclusions_file=None,
-            device=torch.device("cpu"), log=self.logs.append, **options,
+            config,
+            self.layout,
+            output_root=self.root / "runs",
+            exclusions_file=None,
+            device=torch.device("cpu"),
+            log=self.logs.append,
+            **options,
         )
 
     def test_repository_config_matches_experiment_settings(self):
         config = load_config(ROOT / "configs/face-classification.toml")
         self.assertEqual(
-            (config.epochs, config.batch_size, config.learning_rate, config.momentum,
-             config.weight_decay, config.seed, config.embedding_dim, config.input_size),
+            (
+                config.epochs,
+                config.batch_size,
+                config.learning_rate,
+                config.momentum,
+                config.weight_decay,
+                config.seed,
+                config.embedding_dim,
+                config.input_size,
+            ),
             (30, 256, 0.1, 0.9, 5e-4, 42, 512, 64),
         )
         with self.assertRaises(ValueError):
@@ -64,12 +85,17 @@ class TrainingTests(unittest.TestCase):
         self.assertEqual(manifest["selection"]["selected_epoch"], best["epoch"])
         self.assertIsNone(manifest["selection"]["threshold"])
         for split in ("val_data", "test_data"):
-            self.assertEqual(manifest["classification_accuracy"][split]["images"], 8 if split == "val_data" else 4)
+            self.assertEqual(
+                manifest["classification_accuracy"][split]["images"],
+                8 if split == "val_data" else 4,
+            )
         model, meta = load_checkpoint(run / "best.pt")
         self.assertEqual(meta["model_version"], manifest["output"]["model_version"])
         self.assertEqual(meta["model_id"], run.name)
         self.assertIn("-classification-", run.name)
-        self.assertIn("trained from scratch", manifest["architecture"]["trainable_layers"])
+        self.assertIn(
+            "trained from scratch", manifest["architecture"]["trainable_layers"]
+        )
         self.assertEqual(manifest["data"]["identities"], 4)
         self.assertTrue((run / "val-pairs.txt").read_text())
 

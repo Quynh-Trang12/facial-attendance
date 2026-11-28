@@ -6,10 +6,10 @@ reused for every checkpoint of both approaches; the official trials never select
 The file uses the official trial format, so the shared evaluator reads it unchanged.
 """
 
+import random
 from collections import defaultdict
 from hashlib import sha256
 from pathlib import Path, PurePosixPath
-import random
 
 from .data_loader import ClassificationFaces, FaceLayout, FacePair
 
@@ -41,7 +41,9 @@ def build_validation_pairs(
             raise ValueError("Too few identities to draw distinct negative pairs")
         left_id, right_id = rng.sample(identities, 2)
         key = tuple(
-            sorted((rng.choice(by_identity[left_id]), rng.choice(by_identity[right_id])))
+            sorted(
+                (rng.choice(by_identity[left_id]), rng.choice(by_identity[right_id]))
+            )
         )
         if key not in seen:
             seen.add(key)
@@ -72,7 +74,9 @@ def read_pairs(file: Path, layout: FaceLayout) -> tuple[FacePair, ...]:
     for line_number, line in enumerate(Path(file).read_text().splitlines(), start=1):
         columns = line.split()
         if len(columns) != 3 or columns[2] not in {"0", "1"}:
-            raise ValueError(f"{Path(file).name} line {line_number}: expected `left right 0|1`")
+            raise ValueError(
+                f"{Path(file).name} line {line_number}: expected `left right 0|1`"
+            )
         left, right = (layout.root / PurePosixPath(c) for c in columns[:2])
         pairs.append(FacePair(left.resolve(), right.resolve(), int(columns[2])))
     return tuple(pairs)

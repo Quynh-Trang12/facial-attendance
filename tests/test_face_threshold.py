@@ -7,12 +7,17 @@ if importlib.util.find_spec("torch") is None:
     raise unittest.SkipTest("torch is not installed in this environment")
 
 import json
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 import torch
 
-from facial_attendance.recognition.model import FaceEmbeddingNet, build_meta, load_checkpoint, save_checkpoint
+from facial_attendance.recognition.model import (
+    FaceEmbeddingNet,
+    build_meta,
+    load_checkpoint,
+    save_checkpoint,
+)
 
 
 def load_script():
@@ -40,10 +45,17 @@ class SetThresholdTests(unittest.TestCase):
         cls.directory.cleanup()
 
     def selection(self, **changes):
-        decision = {"selected_approach": "metric", "selected_model_id": "run-m",
-                    "selected_model_version": self.meta["model_version"], "threshold": 0.4619967254593038,
-                    "threshold_rule": "lowest validation cosine with FAR <= 1%", "validation_far": 0.00998,
-                    "validation_tar": 0.8797, "reject_all": False, **changes}
+        decision = {
+            "selected_approach": "metric",
+            "selected_model_id": "run-m",
+            "selected_model_version": self.meta["model_version"],
+            "threshold": 0.4619967254593038,
+            "threshold_rule": "lowest validation cosine with FAR <= 1%",
+            "validation_far": 0.00998,
+            "validation_tar": 0.8797,
+            "reject_all": False,
+            **changes,
+        }
         file = self.root / f"selection-{len(list(self.root.glob('selection-*')))}.json"
         file.write_text(json.dumps({"decision": decision}))
         return file
@@ -64,13 +76,25 @@ class SetThresholdTests(unittest.TestCase):
 
     def test_another_model_is_refused(self):
         with self.assertRaisesRegex(ValueError, "model_version"):
-            self.script.deploy(self.best, self.selection(selected_model_version="000000000000"), self.output())
+            self.script.deploy(
+                self.best,
+                self.selection(selected_model_version="000000000000"),
+                self.output(),
+            )
         with self.assertRaisesRegex(ValueError, "approach"):
-            self.script.deploy(self.best, self.selection(selected_approach="classification"), self.output())
+            self.script.deploy(
+                self.best,
+                self.selection(selected_approach="classification"),
+                self.output(),
+            )
 
     def test_no_usable_threshold_or_existing_output_is_refused(self):
         with self.assertRaisesRegex(ValueError, "no usable threshold"):
-            self.script.deploy(self.best, self.selection(reject_all=True, threshold=None), self.output())
+            self.script.deploy(
+                self.best,
+                self.selection(reject_all=True, threshold=None),
+                self.output(),
+            )
         with self.assertRaisesRegex(ValueError, "already exists"):
             self.script.deploy(self.best, self.selection(), self.best)
 

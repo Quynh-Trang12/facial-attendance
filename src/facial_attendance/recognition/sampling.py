@@ -1,7 +1,7 @@
 """Identity-balanced P×K batches for triplet loss with online mining."""
 
-from collections import defaultdict
 import random
+from collections import defaultdict
 
 from .data_loader import ClassificationFaces
 
@@ -32,11 +32,15 @@ class IdentityBatchSampler:
             raise ValueError("Triplet batches may only be sampled from train_data")
         # One identity gives no negatives, and one image per identity gives no positives.
         if identities_per_batch < 2 or images_per_identity < 2:
-            raise ValueError("A triplet batch needs at least 2 identities and 2 images each")
+            raise ValueError(
+                "A triplet batch needs at least 2 identities and 2 images each"
+            )
         by_identity = defaultdict(list)
         for index, sample in enumerate(dataset.samples):
             by_identity[sample.identity].append(index)
-        short = sorted(i for i, idx in by_identity.items() if len(idx) < images_per_identity)
+        short = sorted(
+            i for i, idx in by_identity.items() if len(idx) < images_per_identity
+        )
         if short:
             raise ValueError(
                 f"{len(short)} training identities have fewer than {images_per_identity} "
@@ -73,5 +77,7 @@ class IdentityBatchSampler:
             batch = []
             # Identities are drawn uniformly so large identity folders do not dominate.
             for identity in rng.sample(identities, self.identities_per_batch):
-                batch += rng.sample(self.by_identity[identity], self.images_per_identity)
+                batch += rng.sample(
+                    self.by_identity[identity], self.images_per_identity
+                )
             yield batch

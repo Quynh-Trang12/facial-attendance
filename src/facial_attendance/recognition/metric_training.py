@@ -12,20 +12,27 @@ are mined online and checked by `triplet_loss`; the per-epoch totals of that che
 into the history. The best epoch has the highest cosine AUC on the val_data pairs.
 """
 
-from collections.abc import Callable
-from dataclasses import asdict, dataclass, fields
-from datetime import datetime, timezone
-from hashlib import sha256
 import json
-from pathlib import Path
 import time
 import tomllib
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, fields
+from datetime import UTC, datetime
+from hashlib import sha256
+from pathlib import Path
 
 import torch
 
 from .data_loader import ClassificationFaces, FaceLayout
 from .metric import triplet_loss
-from .model import ARCHITECTURE, FaceEmbeddingNet, build_meta, eval_transform, save_checkpoint, train_transform
+from .model import (
+    ARCHITECTURE,
+    FaceEmbeddingNet,
+    build_meta,
+    eval_transform,
+    save_checkpoint,
+    train_transform,
+)
 from .sampling import IdentityBatchSampler
 from .training import (
     _autocast,
@@ -95,7 +102,9 @@ def embed_split(model, dataset, config: MetricConfig, device, amp) -> torch.Tens
     )
     chunks = []
     for images, _ in loader:
-        images = images.to(device, non_blocking=True).to(memory_format=torch.channels_last)
+        images = images.to(device, non_blocking=True).to(
+            memory_format=torch.channels_last
+        )
         with _autocast(device, amp):
             chunks.append(model.embed(images).float().cpu())
     return torch.cat(chunks)
@@ -105,15 +114,26 @@ def load_warm_start(model: FaceEmbeddingNet, checkpoint: Path) -> dict:
     """Copy the backbone and embedding layer of a classification checkpoint; drop its head."""
     content = torch.load(Path(checkpoint), map_location="cpu", weights_only=True)
     meta = content["meta"]
-    if meta.get("architecture") != ARCHITECTURE or meta.get("embedding_dim") != model.embedding_dim:
+    if (
+        meta.get("architecture") != ARCHITECTURE
+        or meta.get("embedding_dim") != model.embedding_dim
+    ):
         raise ValueError("Warm start needs the same architecture and embedding size")
-    weights = {k: v for k, v in content["state_dict"].items() if not k.startswith("head.")}
-    model.load_state_dict(weights)  # strict: every backbone and embedding weight must be present
-    return {"checkpoint": str(checkpoint), "model_id": meta["model_id"], "model_version": meta["model_version"]}
+    weights = {
+        k: v for k, v in content["state_dict"].items() if not k.startswith("head.")
+    }
+    model.load_state_dict(
+        weights
+    )  # strict: every backbone and embedding weight must be present
+    return {
+        "checkpoint": str(checkpoint),
+        "model_id": meta["model_id"],
+        "model_version": meta["model_version"],
+    }
 
 
 def _new_run_id(seed: int, commit: str | None, warm: bool) -> str:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     approach = f"{APPROACH}-warm" if warm else APPROACH
     return f"{stamp}-{approach}-{(commit or 'nogit')[:7]}-s{seed}"
 
@@ -132,12 +152,19 @@ def train_metric(
 ) -> Path:
     """Train or resume one triplet run and return its directory."""
     if resume is not None and warm_start is not None:
-        raise ValueError("A warm start begins a new run; resume continues an existing one")
+        raise ValueError(
+            "A warm start begins a new run; resume continues an existing one"
+        )
     torch.manual_seed(config.seed)
-    train_set = ClassificationFaces(layout, "train_data", transform=train_transform(config.input_size))
+    train_set = ClassificationFaces(
+        layout, "train_data", transform=train_transform(config.input_size)
+    )
     mapping = train_set.class_to_idx
     val_set = ClassificationFaces(
-        layout, "val_data", class_to_idx=mapping, transform=eval_transform(config.input_size)
+        layout,
+        "val_data",
+        class_to_idx=mapping,
+        transform=eval_transform(config.input_size),
     )
     sampler = IdentityBatchSampler(
         train_set,
@@ -148,18 +175,32 @@ def train_metric(
 
     git = git_state()
     if resume is None:
-        run_dir = Path(output_root) / _new_run_id(config.seed, git["git_commit"], warm_start is not None)
+        run_dir = Path(output_root) / _new_run_id(
+            config.seed, git["git_commit"], warm_start is not None
+        )
         run_dir.mkdir(parents=True, exist_ok=False)
         _write_json(run_dir / "config.json", asdict(config))
         _write_json(run_dir / "changes.json", changes or [])
-        write_pairs(run_dir / "val-pairs.txt", layout, build_validation_pairs(val_set, seed=config.seed))
+        write_pairs(
+            run_dir / "val-pairs.txt",
+            layout,
+            build_validation_pairs(val_set, seed=config.seed),
+        )
     else:
         run_dir = Path(resume)
         stored = json.loads((run_dir / "config.json").read_text())
-        differing = {k for k, v in asdict(config).items() if stored.get(k) != v and k not in RUNTIME_ONLY}
+        differing = {
+            k
+            for k, v in asdict(config).items()
+            if stored.get(k) != v and k not in RUNTIME_ONLY
+        }
         if differing:
-            raise ValueError(f"Resume must keep the run's settings; differs in {sorted(differing)}")
-        config = MetricConfig(**(stored | {k: getattr(config, k) for k in RUNTIME_ONLY}))
+            raise ValueError(
+                f"Resume must keep the run's settings; differs in {sorted(differing)}"
+            )
+        config = MetricConfig(
+            **(stored | {k: getattr(config, k) for k in RUNTIME_ONLY})
+        )
         changes = json.loads((run_dir / "changes.json").read_text())
     run_id = run_dir.name
     pairs = read_pairs(run_dir / "val-pairs.txt", layout)
@@ -167,7 +208,9 @@ def train_metric(
 
     # No identity head: the triplet objective trains the embedding directly.
     model = FaceEmbeddingNet(None, config.embedding_dim)
-    initialisation = load_warm_start(model, warm_start) if warm_start is not None else None
+    initialisation = (
+        load_warm_start(model, warm_start) if warm_start is not None else None
+    )
     model = model.to(device).to(memory_format=torch.channels_last)
     optimizer = torch.optim.SGD(
         model.parameters(),
@@ -175,11 +218,19 @@ def train_metric(
         momentum=config.momentum,
         weight_decay=config.weight_decay,
     )
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=config.epochs
+    )
     amp = config.mixed_precision and device.type == "cuda"
     scaler = torch.amp.GradScaler(device.type, enabled=amp)
 
-    state = {"epoch": 0, "history": [], "best": None, "sessions": [], "initialisation": initialisation}
+    state = {
+        "epoch": 0,
+        "history": [],
+        "best": None,
+        "sessions": [],
+        "initialisation": initialisation,
+    }
     if resume is not None:
         saved = torch.load(run_dir / "last.pt", map_location=device, weights_only=False)
         model.load_state_dict(saved["model"])
@@ -189,7 +240,11 @@ def train_metric(
         state = saved["state"]
         log(f"Resuming {run_id} after epoch {state['epoch']}")
     state["sessions"].append(
-        {"started_utc": datetime.now(timezone.utc).isoformat(), "from_epoch": state["epoch"], **git}
+        {
+            "started_utc": datetime.now(UTC).isoformat(),
+            "from_epoch": state["epoch"],
+            **git,
+        }
     )
 
     trainable = (
@@ -229,9 +284,15 @@ def train_metric(
         "data": {
             "root": str(layout.root),
             "exclusions_file": str(exclusions_file) if exclusions_file else None,
-            "exclusions_sha256": file_sha256(exclusions_file) if exclusions_file else None,
-            "samples_sha256": samples_sha256(layout, {"train_data": train_set, "val_data": val_set}),
-            "identity_mapping_sha256": sha256(json.dumps(mapping, sort_keys=True).encode()).hexdigest(),
+            "exclusions_sha256": file_sha256(exclusions_file)
+            if exclusions_file
+            else None,
+            "samples_sha256": samples_sha256(
+                layout, {"train_data": train_set, "val_data": val_set}
+            ),
+            "identity_mapping_sha256": sha256(
+                json.dumps(mapping, sort_keys=True).encode()
+            ).hexdigest(),
             "val_pairs_sha256": file_sha256(run_dir / "val-pairs.txt"),
             "official_pairs_sha256": file_sha256(layout.pairs_file),
             "images": {"train_data": len(train_set), "val_data": len(val_set)},
@@ -242,23 +303,29 @@ def train_metric(
 
     def manifest(status: str):
         best = state["best"]
-        content = base | git | {
-            "status": status,
-            "sessions": state["sessions"],
-            "epochs_completed": state["epoch"],
-            "selection": None if best is None else {
-                "metric": "cosine AUC on val_data pairs",
-                "selected_epoch": best["epoch"],
-                "value": best["cosine_auc"],
-                "threshold": None,
-                "threshold_source": "chosen by FAC-05 on the same validation pairs",
-            },
-            "output": {
-                "model_id": run_id,
-                "model_version": None if best is None else best["model_version"],
-                "checkpoint": str(run_dir / "best.pt"),
-            },
-        }
+        content = (
+            base
+            | git
+            | {
+                "status": status,
+                "sessions": state["sessions"],
+                "epochs_completed": state["epoch"],
+                "selection": None
+                if best is None
+                else {
+                    "metric": "cosine AUC on val_data pairs",
+                    "selected_epoch": best["epoch"],
+                    "value": best["cosine_auc"],
+                    "threshold": None,
+                    "threshold_source": "chosen by FAC-05 on the same validation pairs",
+                },
+                "output": {
+                    "model_id": run_id,
+                    "model_version": None if best is None else best["model_version"],
+                    "checkpoint": str(run_dir / "best.pt"),
+                },
+            }
+        )
         _write_json(run_dir / "manifest.json", content)
 
     from torch.utils.data import DataLoader
@@ -277,7 +344,9 @@ def train_metric(
         started, steps, loss_sum = time.time(), 0, 0.0
         totals = dict.fromkeys(COUNTS, 0) | dict.fromkeys(MEANS, 0.0)
         for step, (images, targets) in enumerate(loader, start=1):
-            images = images.to(device, non_blocking=True).to(memory_format=torch.channels_last)
+            images = images.to(device, non_blocking=True).to(
+                memory_format=torch.channels_last
+            )
             targets = targets.to(device, non_blocking=True)
             with _autocast(device, amp):
                 embeddings = model.embed(images)
@@ -292,7 +361,9 @@ def train_metric(
             for key in totals:
                 totals[key] += stats[key]
             if step % 200 == 0:
-                log(f"epoch {epoch} step {step}/{len(loader)} loss {loss_sum / steps:.4f}")
+                log(
+                    f"epoch {epoch} step {step}/{len(loader)} loss {loss_sum / steps:.4f}"
+                )
             if config.max_steps_per_epoch and step >= config.max_steps_per_epoch:
                 break
         if not torch.isfinite(torch.tensor(loss_sum)):
@@ -300,7 +371,9 @@ def train_metric(
         learning_rate = scheduler.get_last_lr()[0]
         scheduler.step()
 
-        scores = pair_scores(embed_split(model, val_set, config, device, amp), val_paths, pairs)
+        scores = pair_scores(
+            embed_split(model, val_set, config, device, amp), val_paths, pairs
+        )
         record = {
             "epoch": epoch,
             "learning_rate": learning_rate,
@@ -322,7 +395,11 @@ def train_metric(
         if state["best"] is None or scores["cosine_auc"] > state["best"]["cosine_auc"]:
             meta = build_meta(model, model_id=run_id, approach=APPROACH)
             save_checkpoint(run_dir / "best.pt", model, meta)
-            state["best"] = {"epoch": epoch, "cosine_auc": scores["cosine_auc"], "model_version": meta["model_version"]}
+            state["best"] = {
+                "epoch": epoch,
+                "cosine_auc": scores["cosine_auc"],
+                "model_version": meta["model_version"],
+            }
         state["epoch"] = epoch
         temporary = run_dir / "last.pt.tmp"
         torch.save(
@@ -341,5 +418,7 @@ def train_metric(
 
     manifest("complete")
     best = state["best"]
-    log(f"Done: {run_id} selected epoch {best['epoch']} val-pair cosine AUC {best['cosine_auc']:.4f}")
+    log(
+        f"Done: {run_id} selected epoch {best['epoch']} val-pair cosine AUC {best['cosine_auc']:.4f}"
+    )
     return run_dir

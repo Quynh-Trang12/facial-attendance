@@ -23,8 +23,11 @@ from facial_attendance.recognition.data_loader import (  # noqa: E402 — reposi
     sample_training_pairs,
 )
 from facial_attendance.recognition.download import COMPETITION, download_face_data  # noqa: E402 — repository path is configured before local imports.
-from facial_attendance.recognition.exclusions import DEFAULT_EXCLUSIONS, apply_exclusions
-from facial_attendance.recognition.sampling import (
+from facial_attendance.recognition.exclusions import (  # noqa: E402 — source checkout bootstrap precedes local imports.
+    DEFAULT_EXCLUSIONS,
+    apply_exclusions,
+)
+from facial_attendance.recognition.sampling import (  # noqa: E402 — source checkout bootstrap precedes local imports.
     IDENTITIES_PER_BATCH,
     IMAGES_PER_IDENTITY,
     IdentityBatchSampler,
@@ -126,7 +129,9 @@ def inspect_triplet_batch(train, *, image_size: int, seed: int, shape) -> dict:
         seed=seed,
     )
     indices = next(iter(sampler))
-    images, targets = next(iter(DataLoader(train, batch_sampler=sampler, num_workers=0)))
+    images, targets = next(
+        iter(DataLoader(train, batch_sampler=sampler, num_workers=0))
+    )
     samples = [train.samples[i] for i in indices]
     per_target = Counter(targets.tolist())
     if (

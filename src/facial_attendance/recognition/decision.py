@@ -20,10 +20,10 @@ tau comes from the checkpoint's meta["threshold"]; the margin and min_score come
 config file. Neither the margin nor tau has a default here.
 """
 
+import tomllib
 from dataclasses import dataclass
 from math import isfinite
 from numbers import Real
-import tomllib
 
 ACCEPTED = "accepted"
 EMPTY_GALLERY = "empty_gallery"
@@ -53,7 +53,9 @@ def _number(value, name) -> float:
 def threshold_from_meta(meta) -> float:
     """The deployed tau; refuse a checkpoint whose threshold was never chosen."""
     if meta.get("threshold") is None:
-        raise ValueError("The checkpoint has no meta['threshold']; choose one before deploying")
+        raise ValueError(
+            "The checkpoint has no meta['threshold']; choose one before deploying"
+        )
     return _number(meta["threshold"], "meta['threshold']")
 
 

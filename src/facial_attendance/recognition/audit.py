@@ -1,13 +1,13 @@
 """Whole-dataset label, duplicate and leakage audit for the face competition data."""
 
+import csv
+import json
+import random
 from collections import Counter, defaultdict
 from collections.abc import Callable
-import csv
 from dataclasses import dataclass
 from hashlib import sha256
-import json
 from pathlib import Path
-import random
 from statistics import median
 
 from .data_loader import (
@@ -41,8 +41,17 @@ HASH_CHUNK = 1 << 20
 
 
 INVENTORY_COLUMNS = (
-    "path", "split", "identity", "width", "height", "mode", "decode_status",
-    "file_sha256", "duplicate_group", "decision", "reason",
+    "path",
+    "split",
+    "identity",
+    "width",
+    "height",
+    "mode",
+    "decode_status",
+    "file_sha256",
+    "duplicate_group",
+    "decision",
+    "reason",
 )
 
 
@@ -145,7 +154,9 @@ class _Auditor:
         for done, (partition, identity, path) in enumerate(items, start=1):
             size, mode, error = _decode(path)
             self.records.append(
-                ImageRecord(partition, identity, path, file_sha256(path), size, mode, error)
+                ImageRecord(
+                    partition, identity, path, file_sha256(path), size, mode, error
+                )
             )
             if error is not None:
                 self.decode_failures.append(
@@ -217,7 +228,10 @@ def cleaning_decisions(records: list[ImageRecord]) -> dict[Path, tuple[str, Path
                 kept[record.identity] = record.path
         first_kept = next(iter(kept.values()))
         for record in group:
-            if record.partition == VERIFICATION or kept.get(record.identity) == record.path:
+            if (
+                record.partition == VERIFICATION
+                or kept.get(record.identity) == record.path
+            ):
                 continue
             if record.partition != owner:
                 decisions[record.path] = (owner, first_kept)
@@ -246,19 +260,21 @@ def write_inventory(file: Path, records: list[ImageRecord], relative: Callable):
         writer.writerow(INVENTORY_COLUMNS)
         for record in sorted(records, key=lambda r: r.path):
             reason, _ = decisions.get(record.path, ("", None))
-            writer.writerow([
-                relative(record.path),
-                record.partition,
-                record.identity or "",
-                *(record.size or ("", "")),
-                record.mode or "",
-                "ok" if record.error is None else record.error,
-                record.sha256,
-                # The shared hash names the group of identical files.
-                record.sha256 if copies[record.sha256] > 1 else "",
-                "exclude" if reason else "keep",
-                reason,
-            ])
+            writer.writerow(
+                [
+                    relative(record.path),
+                    record.partition,
+                    record.identity or "",
+                    *(record.size or ("", "")),
+                    record.mode or "",
+                    "ok" if record.error is None else record.error,
+                    record.sha256,
+                    # The shared hash names the group of identical files.
+                    record.sha256 if copies[record.sha256] > 1 else "",
+                    "exclude" if reason else "keep",
+                    reason,
+                ]
+            )
 
 
 def _sampler_check(train, records: list[ImageRecord], *, seed: int) -> dict:
@@ -336,7 +352,9 @@ def _known_identities(records: list[ImageRecord], trials) -> dict:
         for record in records
         if record.partition == VERIFICATION and record.sha256 in identities_by_digest
     }
-    scored = {path for trial in trials for path in (trial.left, trial.right)} & set(named)
+    scored = {path for trial in trials for path in (trial.left, trial.right)} & set(
+        named
+    )
     sides_named = [(trial.left in named) + (trial.right in named) for trial in trials]
     return {
         "is_lower_bound": True,
@@ -467,7 +485,9 @@ def audit_dataset(
     triplets, triplet_error = None, None
     if triplet_batch is not None:
         try:
-            triplets = _triplet_check(train, auditor.records, seed=seed, shape=triplet_batch)
+            triplets = _triplet_check(
+                train, auditor.records, seed=seed, shape=triplet_batch
+            )
         except ValueError as error:
             # The sampler refuses identities with fewer than K images; that is a finding.
             triplet_error = str(error)

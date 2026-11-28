@@ -8,16 +8,16 @@ cosine AUC on the seeded val_data pairs; top-1 on val_data is monitored only, an
 on test_data is measured once, on the selected checkpoint.
 """
 
-from collections.abc import Callable
-from dataclasses import asdict, dataclass, fields
-from datetime import datetime, timezone
-from hashlib import sha256
 import json
-from pathlib import Path
 import platform
 import subprocess
 import time
 import tomllib
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, fields
+from datetime import UTC, datetime
+from hashlib import sha256
+from pathlib import Path
 
 import torch
 from torch import nn
@@ -81,11 +81,17 @@ def file_sha256(path: Path) -> str:
 def git_state() -> dict:
     def run(*args):
         return subprocess.run(
-            ["git", "-C", str(REPOSITORY), *args], capture_output=True, text=True, check=True
+            ["git", "-C", str(REPOSITORY), *args],
+            capture_output=True,
+            text=True,
+            check=True,
         ).stdout.strip()
 
     try:
-        return {"git_commit": run("rev-parse", "HEAD"), "git_dirty": bool(run("status", "--porcelain"))}
+        return {
+            "git_commit": run("rev-parse", "HEAD"),
+            "git_dirty": bool(run("status", "--porcelain")),
+        }
     except (OSError, subprocess.CalledProcessError):
         return {"git_commit": None, "git_dirty": None}
 
@@ -127,7 +133,9 @@ def evaluate_split(model, dataset, config, device, amp) -> dict:
     correct, loss_sum, embeddings = 0, 0.0, []
     criterion = nn.CrossEntropyLoss(reduction="sum")
     for images, targets in _loader(dataset, config.eval_batch_size, config, device):
-        images = images.to(device, non_blocking=True).to(memory_format=torch.channels_last)
+        images = images.to(device, non_blocking=True).to(
+            memory_format=torch.channels_last
+        )
         targets = targets.to(device, non_blocking=True)
         with _autocast(device, amp):
             embedding = model.embed(images)
@@ -169,7 +177,7 @@ def _write_json(file: Path, content):
 
 
 def _new_run_id(seed: int, commit: str | None) -> str:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     return f"{stamp}-{APPROACH}-{(commit or 'nogit')[:7]}-s{seed}"
 
 
@@ -198,11 +206,17 @@ def train(
 ) -> Path:
     """Train or resume one run and return its directory."""
     torch.manual_seed(config.seed)
-    train_set = ClassificationFaces(layout, "train_data", transform=train_transform(config.input_size))
+    train_set = ClassificationFaces(
+        layout, "train_data", transform=train_transform(config.input_size)
+    )
     mapping = train_set.class_to_idx
     evaluation = eval_transform(config.input_size)
-    val_set = ClassificationFaces(layout, "val_data", class_to_idx=mapping, transform=evaluation)
-    test_set = ClassificationFaces(layout, "test_data", class_to_idx=mapping, transform=evaluation)
+    val_set = ClassificationFaces(
+        layout, "val_data", class_to_idx=mapping, transform=evaluation
+    )
+    test_set = ClassificationFaces(
+        layout, "test_data", class_to_idx=mapping, transform=evaluation
+    )
     datasets = {"train_data": train_set, "val_data": val_set, "test_data": test_set}
 
     git = git_state()
@@ -212,16 +226,24 @@ def train(
         run_dir.mkdir(parents=True, exist_ok=False)
         _write_json(run_dir / "config.json", asdict(config))
         _write_json(run_dir / "changes.json", changes or [])
-        write_pairs(run_dir / "val-pairs.txt", layout, build_validation_pairs(val_set, seed=config.seed))
+        write_pairs(
+            run_dir / "val-pairs.txt",
+            layout,
+            build_validation_pairs(val_set, seed=config.seed),
+        )
     else:
         run_dir = Path(resume)
         run_id = run_dir.name
         stored = json.loads((run_dir / "config.json").read_text())
         differing = {
-            k for k, v in asdict(config).items() if stored.get(k) != v and k not in RUNTIME_ONLY
+            k
+            for k, v in asdict(config).items()
+            if stored.get(k) != v and k not in RUNTIME_ONLY
         }
         if differing:
-            raise ValueError(f"Resume must keep the run's settings; differs in {sorted(differing)}")
+            raise ValueError(
+                f"Resume must keep the run's settings; differs in {sorted(differing)}"
+            )
         config = TrainConfig(**(stored | {k: getattr(config, k) for k in RUNTIME_ONLY}))
         changes = json.loads((run_dir / "changes.json").read_text())
     pairs = read_pairs(run_dir / "val-pairs.txt", layout)
@@ -235,7 +257,9 @@ def train(
         momentum=config.momentum,
         weight_decay=config.weight_decay,
     )
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=config.epochs
+    )
     amp = config.mixed_precision and device.type == "cuda"
     scaler = torch.amp.GradScaler(device.type, enabled=amp)
     criterion = nn.CrossEntropyLoss()
@@ -250,7 +274,11 @@ def train(
         state = saved["state"]
         log(f"Resuming {run_id} after epoch {state['epoch']}")
     state["sessions"].append(
-        {"started_utc": datetime.now(timezone.utc).isoformat(), "from_epoch": state["epoch"], **git}
+        {
+            "started_utc": datetime.now(UTC).isoformat(),
+            "from_epoch": state["epoch"],
+            **git,
+        }
     )
 
     base = {
@@ -275,9 +303,13 @@ def train(
         "data": {
             "root": str(layout.root),
             "exclusions_file": str(exclusions_file) if exclusions_file else None,
-            "exclusions_sha256": file_sha256(exclusions_file) if exclusions_file else None,
+            "exclusions_sha256": file_sha256(exclusions_file)
+            if exclusions_file
+            else None,
             "samples_sha256": samples_sha256(layout, datasets),
-            "identity_mapping_sha256": sha256(json.dumps(mapping, sort_keys=True).encode()).hexdigest(),
+            "identity_mapping_sha256": sha256(
+                json.dumps(mapping, sort_keys=True).encode()
+            ).hexdigest(),
             "val_pairs_sha256": file_sha256(run_dir / "val-pairs.txt"),
             "official_pairs_sha256": file_sha256(layout.pairs_file),
             "images": {split: len(d) for split, d in datasets.items()},
@@ -288,33 +320,49 @@ def train(
 
     def manifest(status: str, extra: dict | None = None):
         best = state["best"]
-        content = base | git | {
-            "status": status,
-            "sessions": state["sessions"],
-            "epochs_completed": state["epoch"],
-            "selection": None if best is None else {
-                "metric": "cosine AUC on val_data pairs",
-                "selected_epoch": best["epoch"],
-                "value": best["cosine_auc"],
-                "threshold": None,
-                "threshold_source": "chosen by FAC-05 on the same validation pairs",
-            },
-            "output": {
-                "model_id": run_id,
-                "model_version": None if best is None else best["model_version"],
-                "checkpoint": str(run_dir / "best.pt"),
-            },
-        } | (extra or {})
+        content = (
+            base
+            | git
+            | {
+                "status": status,
+                "sessions": state["sessions"],
+                "epochs_completed": state["epoch"],
+                "selection": None
+                if best is None
+                else {
+                    "metric": "cosine AUC on val_data pairs",
+                    "selected_epoch": best["epoch"],
+                    "value": best["cosine_auc"],
+                    "threshold": None,
+                    "threshold_source": "chosen by FAC-05 on the same validation pairs",
+                },
+                "output": {
+                    "model_id": run_id,
+                    "model_version": None if best is None else best["model_version"],
+                    "checkpoint": str(run_dir / "best.pt"),
+                },
+            }
+            | (extra or {})
+        )
         _write_json(run_dir / "manifest.json", content)
 
     while state["epoch"] < config.epochs:
         epoch = state["epoch"] + 1
         model.train()
         generator = torch.Generator().manual_seed(config.seed + epoch)
-        loader = _loader(train_set, config.batch_size, config, device, shuffle=True, generator=generator)
+        loader = _loader(
+            train_set,
+            config.batch_size,
+            config,
+            device,
+            shuffle=True,
+            generator=generator,
+        )
         started, seen, loss_sum, correct = time.time(), 0, 0.0, 0
         for step, (images, targets) in enumerate(loader, start=1):
-            images = images.to(device, non_blocking=True).to(memory_format=torch.channels_last)
+            images = images.to(device, non_blocking=True).to(
+                memory_format=torch.channels_last
+            )
             targets = targets.to(device, non_blocking=True)
             with _autocast(device, amp):
                 logits = model(images)
@@ -327,7 +375,9 @@ def train(
             loss_sum += loss.item() * len(targets)
             correct += (logits.argmax(1) == targets).sum().item()
             if step % 200 == 0:
-                log(f"epoch {epoch} step {step}/{len(loader)} loss {loss_sum / seen:.4f}")
+                log(
+                    f"epoch {epoch} step {step}/{len(loader)} loss {loss_sum / seen:.4f}"
+                )
             if config.max_steps_per_epoch and step >= config.max_steps_per_epoch:
                 break
         if not torch.isfinite(torch.tensor(loss_sum)):
@@ -355,7 +405,11 @@ def train(
         if state["best"] is None or scores["cosine_auc"] > state["best"]["cosine_auc"]:
             meta = build_meta(model, model_id=run_id, approach=APPROACH)
             save_checkpoint(run_dir / "best.pt", model, meta)
-            state["best"] = {"epoch": epoch, "cosine_auc": scores["cosine_auc"], "model_version": meta["model_version"]}
+            state["best"] = {
+                "epoch": epoch,
+                "cosine_auc": scores["cosine_auc"],
+                "model_version": meta["model_version"],
+            }
         state["epoch"] = epoch
         temporary = run_dir / "last.pt.tmp"
         torch.save(
@@ -388,5 +442,7 @@ def train(
             }
         },
     )
-    log(f"Done: {meta['model_id']} selected epoch {state['best']['epoch']} val top-1 {val['top1']:.4f} test top-1 {test['top1']:.4f}")
+    log(
+        f"Done: {meta['model_id']} selected epoch {state['best']['epoch']} val top-1 {val['top1']:.4f} test top-1 {test['top1']:.4f}"
+    )
     return run_dir

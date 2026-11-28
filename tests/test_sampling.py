@@ -1,9 +1,9 @@
 """P×K triplet batches on generated-image fixtures; they are not Kaggle data."""
 
-from collections import Counter
-from pathlib import Path
 import tempfile
 import unittest
+from collections import Counter
+from pathlib import Path
 
 from PIL import Image
 
@@ -56,7 +56,9 @@ class IdentityBatchSamplerTests(unittest.TestCase):
             self.assertEqual(len(identities), 5)
             self.assertEqual(set(identities.values()), {3})
             # Distinct files, so every anchor–positive pair compares two different images.
-            self.assertEqual(len({self.train.samples[i].path for i in batch}), len(batch))
+            self.assertEqual(
+                len({self.train.samples[i].path for i in batch}), len(batch)
+            )
 
     def test_targets_separate_positives_from_negatives(self):
         batch = next(iter(self.sampler()))
@@ -117,7 +119,9 @@ class IdentityBatchSamplerTests(unittest.TestCase):
         train = ClassificationFaces(
             self.layout, "train_data", transform=image_transform(8)
         )
-        sampler = IdentityBatchSampler(train, identities_per_batch=4, images_per_identity=2)
+        sampler = IdentityBatchSampler(
+            train, identities_per_batch=4, images_per_identity=2
+        )
         images, targets = next(iter(DataLoader(train, batch_sampler=sampler)))
         self.assertEqual(tuple(images.shape), (8, 3, 8, 8))
         self.assertEqual(sorted(Counter(targets.tolist()).values()), [2, 2, 2, 2])

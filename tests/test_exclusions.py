@@ -1,10 +1,10 @@
 """Applying an exclusion list, on generated-image fixtures; they are not Kaggle data."""
 
-from hashlib import sha256
 import inspect
-from pathlib import Path
 import tempfile
 import unittest
+from hashlib import sha256
+from pathlib import Path
 
 from PIL import Image
 
@@ -31,7 +31,13 @@ class ExclusionTests(unittest.TestCase):
         for split in ("train_data", "val_data", "test_data"):
             for identity in ("10", "2"):
                 for index in range(3 if split == "train_data" else 1):
-                    path = self.root / "classification_data" / split / identity / f"{index}.PNG"
+                    path = (
+                        self.root
+                        / "classification_data"
+                        / split
+                        / identity
+                        / f"{index}.PNG"
+                    )
                     path.parent.mkdir(parents=True, exist_ok=True)
                     Image.new("L", (9, 7), color=50 + index).save(path)
         verification = self.root / "verification_data"
@@ -50,7 +56,9 @@ class ExclusionTests(unittest.TestCase):
 
     def test_discover_is_unchanged_and_loads_the_published_data(self):
         self.assertEqual(FaceLayout.discover(self.root).excluded, frozenset())
-        self.assertEqual(load_face_layout(self.root, exclusions=None).excluded, frozenset())
+        self.assertEqual(
+            load_face_layout(self.root, exclusions=None).excluded, frozenset()
+        )
 
     def test_listed_images_are_not_loaded_and_targets_do_not_change(self):
         layout = self.exclude(self.entry("classification_data/train_data/10/0.PNG"))
@@ -86,8 +94,13 @@ class ExclusionTests(unittest.TestCase):
 
     def test_list_must_match_this_dataset(self):
         missing = ("classification_data/train_data/10/missing.PNG", "x", "0" * 64, KEPT)
-        changed = self.entry("classification_data/train_data/10/0.PNG")[:2] + ("0" * 64, KEPT)
-        no_kept = self.entry("classification_data/train_data/10/0.PNG", "verification_data/z.png")
+        changed = self.entry("classification_data/train_data/10/0.PNG")[:2] + (
+            "0" * 64,
+            KEPT,
+        )
+        no_kept = self.entry(
+            "classification_data/train_data/10/0.PNG", "verification_data/z.png"
+        )
         trial = ("verification_data/a.png", "x", "0" * 64, KEPT)
         for entry, message in (
             (missing, "not a classification image"),
@@ -96,11 +109,16 @@ class ExclusionTests(unittest.TestCase):
             (trial, "not a classification image"),
         ):
             self.file.unlink(missing_ok=True)
-            with self.subTest(message), self.assertRaisesRegex(ValueError, f"line 3: .*{message}"):
+            with (
+                self.subTest(message),
+                self.assertRaisesRegex(ValueError, f"line 3: .*{message}"),
+            ):
                 self.exclude(entry)
 
     def test_rows_need_every_column(self):
-        self.file.write_text("classification_data/train_data/10/0.PNG\tverification_data\n")
+        self.file.write_text(
+            "classification_data/train_data/10/0.PNG\tverification_data\n"
+        )
         with self.assertRaisesRegex(ValueError, "line 1: expected 4"):
             load_face_layout(self.root, exclusions=self.file)
 

@@ -10,8 +10,8 @@ if importlib.util.find_spec("numpy") is None:
 import contextlib
 import io
 import json
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 import numpy as np
 
@@ -29,7 +29,9 @@ def rank_auc(labels, scores):
     """Mann-Whitney AUC with ties counted as one half."""
     labels, scores = np.asarray(labels), np.asarray(scores)
     pos, neg = scores[labels == 1], scores[labels == 0]
-    greater = (pos[:, None] > neg[None, :]).sum() + 0.5 * (pos[:, None] == neg[None, :]).sum()
+    greater = (pos[:, None] > neg[None, :]).sum() + 0.5 * (
+        pos[:, None] == neg[None, :]
+    ).sum()
     return greater / (len(pos) * len(neg))
 
 
@@ -44,25 +46,55 @@ class ExportCheckTests(unittest.TestCase):
         self.official = self.root / "official.txt"
         self.official.write_text("verification_data/a.jpg b.jpg 1\na.jpg b.jpg 0\n")
         self.val = self.root / "val.txt"
-        self.val.write_text("classification_data/val_data/x/1.jpg classification_data/val_data/y/1.jpg 0\n")
+        self.val.write_text(
+            "classification_data/val_data/x/1.jpg classification_data/val_data/y/1.jpg 0\n"
+        )
         self.export = self.root / "exports"
         self.export.mkdir()
-        self.write_export(["verification_data/a.jpg", "b.jpg", "a.jpg"],
-                          ["classification_data/val_data/x/1.jpg", "classification_data/val_data/y/1.jpg"])
+        self.write_export(
+            ["verification_data/a.jpg", "b.jpg", "a.jpg"],
+            [
+                "classification_data/val_data/x/1.jpg",
+                "classification_data/val_data/y/1.jpg",
+            ],
+        )
 
     def write_export(self, official, val, model_id="run-m", dim=512):
         (self.export / "export-summary.json").write_text(
-            json.dumps({"model_id": model_id, "model_version": "abc123abc123", "classification": None}))
-        for name, paths in (("official-embeddings.npz", official), ("val-pairs-embeddings.npz", val)):
+            json.dumps(
+                {
+                    "model_id": model_id,
+                    "model_version": "abc123abc123",
+                    "classification": None,
+                }
+            )
+        )
+        for name, paths in (
+            ("official-embeddings.npz", official),
+            ("val-pairs-embeddings.npz", val),
+        ):
             target = self.export / name
             target.unlink(missing_ok=True)
-            np.savez(target, paths=np.array(paths), raw_embeddings=np.ones((len(paths), dim), np.float32))
+            np.savez(
+                target,
+                paths=np.array(paths),
+                raw_embeddings=np.ones((len(paths), dim), np.float32),
+            )
 
     def check(self):
-        return check_export(self.export, "metric", official_trials=self.official, val_pairs=self.val, expected=EXPECTED)
+        return check_export(
+            self.export,
+            "metric",
+            official_trials=self.official,
+            val_pairs=self.val,
+            expected=EXPECTED,
+        )
 
     def test_trial_strings_keep_the_written_prefixes(self):
-        self.assertEqual(trial_path_strings(self.official), {"verification_data/a.jpg", "b.jpg", "a.jpg"})
+        self.assertEqual(
+            trial_path_strings(self.official),
+            {"verification_data/a.jpg", "b.jpg", "a.jpg"},
+        )
 
     def test_matching_export_is_accepted_with_file_hashes(self):
         result = self.check()
@@ -71,22 +103,39 @@ class ExportCheckTests(unittest.TestCase):
         self.assertEqual(len(result["files"]["val-pairs-embeddings.npz"]["sha256"]), 64)
 
     def test_wrong_model_is_refused(self):
-        self.write_export(["verification_data/a.jpg", "b.jpg", "a.jpg"],
-                          ["classification_data/val_data/x/1.jpg", "classification_data/val_data/y/1.jpg"],
-                          model_id="other-run")
+        self.write_export(
+            ["verification_data/a.jpg", "b.jpg", "a.jpg"],
+            [
+                "classification_data/val_data/x/1.jpg",
+                "classification_data/val_data/y/1.jpg",
+            ],
+            model_id="other-run",
+        )
         with self.assertRaisesRegex(ValueError, "model_id"):
             self.check()
 
     def test_missing_or_extra_paths_are_refused(self):
-        val = ["classification_data/val_data/x/1.jpg", "classification_data/val_data/y/1.jpg"]
-        for official in (["verification_data/a.jpg", "b.jpg"], ["verification_data/a.jpg", "b.jpg", "a.jpg", "c.jpg"]):
+        val = [
+            "classification_data/val_data/x/1.jpg",
+            "classification_data/val_data/y/1.jpg",
+        ]
+        for official in (
+            ["verification_data/a.jpg", "b.jpg"],
+            ["verification_data/a.jpg", "b.jpg", "a.jpg", "c.jpg"],
+        ):
             self.write_export(official, val)
             with self.assertRaisesRegex(ValueError, "exactly the paths"):
                 self.check()
 
     def test_wrong_embedding_shape_is_refused(self):
-        self.write_export(["verification_data/a.jpg", "b.jpg", "a.jpg"],
-                          ["classification_data/val_data/x/1.jpg", "classification_data/val_data/y/1.jpg"], dim=128)
+        self.write_export(
+            ["verification_data/a.jpg", "b.jpg", "a.jpg"],
+            [
+                "classification_data/val_data/x/1.jpg",
+                "classification_data/val_data/y/1.jpg",
+            ],
+            dim=128,
+        )
         with self.assertRaisesRegex(ValueError, "raw embeddings"):
             self.check()
 
@@ -99,17 +148,33 @@ class BootstrapTests(unittest.TestCase):
         self.strong = self.labels * 2.0 + rng.normal(0, 1, 600)
 
     def test_identical_scores_give_a_zero_interval(self):
-        result = paired_bootstrap(self.labels, self.weak, self.weak, rank_auc, replicates=200)
-        self.assertEqual((result["observed"], result["low"], result["high"]), (0.0, 0.0, 0.0))
+        result = paired_bootstrap(
+            self.labels, self.weak, self.weak, rank_auc, replicates=200
+        )
+        self.assertEqual(
+            (result["observed"], result["low"], result["high"]), (0.0, 0.0, 0.0)
+        )
         self.assertFalse(result["excludes_zero"])
 
     def test_clear_difference_excludes_zero_and_is_seeded(self):
-        result = paired_bootstrap(self.labels, self.weak, self.strong, rank_auc, replicates=200)
+        result = paired_bootstrap(
+            self.labels, self.weak, self.strong, rank_auc, replicates=200
+        )
         self.assertGreater(result["low"], 0)
         self.assertTrue(result["excludes_zero"])
-        self.assertAlmostEqual(result["observed"], rank_auc(self.labels, self.strong) - rank_auc(self.labels, self.weak))
-        self.assertEqual(result, paired_bootstrap(self.labels, self.weak, self.strong, rank_auc, replicates=200))
-        reversed_ = paired_bootstrap(self.labels, self.strong, self.weak, rank_auc, replicates=200)
+        self.assertAlmostEqual(
+            result["observed"],
+            rank_auc(self.labels, self.strong) - rank_auc(self.labels, self.weak),
+        )
+        self.assertEqual(
+            result,
+            paired_bootstrap(
+                self.labels, self.weak, self.strong, rank_auc, replicates=200
+            ),
+        )
+        reversed_ = paired_bootstrap(
+            self.labels, self.strong, self.weak, rank_auc, replicates=200
+        )
         self.assertAlmostEqual(reversed_["high"], -result["low"])
 
     def test_misaligned_or_single_class_input_is_refused(self):
@@ -121,8 +186,12 @@ class BootstrapTests(unittest.TestCase):
 
 class DecisionTests(unittest.TestCase):
     def test_higher_cosine_auc_is_selected_and_a_tie_is_not(self):
-        self.assertEqual(select_approach({"classification": 0.9884, "metric": 0.9911}), "metric")
-        self.assertEqual(select_approach({"metric": 0.97, "classification": 0.98}), "classification")
+        self.assertEqual(
+            select_approach({"classification": 0.9884, "metric": 0.9911}), "metric"
+        )
+        self.assertEqual(
+            select_approach({"metric": 0.97, "classification": 0.98}), "classification"
+        )
         with self.assertRaises(ValueError):
             select_approach({"classification": 0.99, "metric": 0.99})
 
@@ -135,8 +204,12 @@ class DecisionTests(unittest.TestCase):
         self.assertAlmostEqual(point["far"], 1 / 4)
 
     def test_roc_point_is_the_one_that_accepts_scores_at_or_above_the_threshold(self):
-        roc = [{"fpr": 0.0, "tpr": 0.0, "threshold": None}, {"fpr": 0.0, "tpr": 0.4, "threshold": 0.9},
-               {"fpr": 0.2, "tpr": 0.8, "threshold": 0.6}, {"fpr": 1.0, "tpr": 1.0, "threshold": 0.1}]
+        roc = [
+            {"fpr": 0.0, "tpr": 0.0, "threshold": None},
+            {"fpr": 0.0, "tpr": 0.4, "threshold": 0.9},
+            {"fpr": 0.2, "tpr": 0.8, "threshold": 0.6},
+            {"fpr": 1.0, "tpr": 1.0, "threshold": 0.1},
+        ]
         self.assertEqual(roc_point_at(roc, 0.7)["tpr"], 0.4)
         self.assertEqual(roc_point_at(roc, 0.6)["tpr"], 0.8)
         self.assertEqual(roc_point_at(roc, 0.95)["tpr"], 0.0)
@@ -164,11 +237,18 @@ class RecheckScriptTests(unittest.TestCase):
 
     def setUp(self):
         from facial_attendance.recognition.comparison import (
-            EXPECTED_MODELS, OFFICIAL_TRIALS_SHA256, VAL_PAIRS_SHA256, file_sha256)
+            EXPECTED_MODELS,
+            OFFICIAL_TRIALS_SHA256,
+            VAL_PAIRS_SHA256,
+            file_sha256,
+        )
 
         self.check = load_script("check_face_comparison")
         self.models, self.sha = EXPECTED_MODELS, file_sha256
-        self.trials = {"validation": VAL_PAIRS_SHA256, "official": OFFICIAL_TRIALS_SHA256}
+        self.trials = {
+            "validation": VAL_PAIRS_SHA256,
+            "official": OFFICIAL_TRIALS_SHA256,
+        }
         directory = tempfile.TemporaryDirectory(prefix="face-recheck-fixture-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
@@ -176,10 +256,14 @@ class RecheckScriptTests(unittest.TestCase):
         labels = np.repeat([1, 0], 200)
         self.scores = {}
         for step in ("validation", "official"):
-            keys = [(f"{step}/{i}a.jpg", f"{step}/{i}b.jpg") for i in range(len(labels))]
+            keys = [
+                (f"{step}/{i}a.jpg", f"{step}/{i}b.jpg") for i in range(len(labels))
+            ]
             for approach, gap in (("classification", 1.2), ("metric", 1.8)):
                 cosine = np.tanh((labels * gap + rng.normal(0, 1, len(labels))) / 3)
-                distance = np.abs(1.5 - labels * gap * 0.5 + rng.normal(0, 0.5, len(labels)))
+                distance = np.abs(
+                    1.5 - labels * gap * 0.5 + rng.normal(0, 0.5, len(labels))
+                )
                 self.scores[step, approach] = (keys, labels, cosine, distance)
         self.write_records()
 
@@ -188,30 +272,51 @@ class RecheckScriptTests(unittest.TestCase):
         folder = self.root / step / f"{step}-{approach}"
         folder.mkdir(parents=True, exist_ok=True)
         rows = ["left,right,label,cosine,euclidean_distance,negative_euclidean"]
-        rows += [f"{l},{r},{y},{c!r},{d!r},{-d!r}" for (l, r), y, c, d in
-                 zip(keys, labels.tolist(), cosine.tolist(), distance.tolist())]
+        rows += [
+            f"{left},{right},{y},{c!r},{d!r},{-d!r}"
+            for (left, right), y, c, d in zip(
+                keys, labels.tolist(), cosine.tolist(), distance.tolist()
+            )
+        ]
         (folder / "pair_scores.csv").write_text("\n".join(rows) + "\n")
         roc = [{"fpr": 0.0, "tpr": 0.0, "threshold": None}]
         for t in sorted(set(cosine.tolist()), reverse=True):
             point = operating_point(labels, cosine, t)
             roc.append({"fpr": point["far"], "tpr": point["tar"], "threshold": t})
-        auc = {"cosine": rank_auc(labels, cosine), "negative_euclidean": rank_auc(labels, -distance)}
+        auc = {
+            "cosine": rank_auc(labels, cosine),
+            "negative_euclidean": rank_auc(labels, -distance),
+        }
         model = self.models[approach]
-        metrics = {"mode": step, "run_id": model["model_id"], "checkpoint_id": model["model_version"],
-                   "git_commit": self.check.EVALUATOR_COMMIT, "git_tracked_dirty": False,
-                   "inputs": {"trials": {"sha256": self.trials[step]}},
-                   "metrics": {"cosine": {"auc": auc["cosine"], "roc": roc},
-                               "negative_euclidean": {"auc": auc["negative_euclidean"]}}}
+        metrics = {
+            "mode": step,
+            "run_id": model["model_id"],
+            "checkpoint_id": model["model_version"],
+            "git_commit": self.check.EVALUATOR_COMMIT,
+            "git_tracked_dirty": False,
+            "inputs": {"trials": {"sha256": self.trials[step]}},
+            "metrics": {
+                "cosine": {"auc": auc["cosine"], "roc": roc},
+                "negative_euclidean": {"auc": auc["negative_euclidean"]},
+            },
+        }
         (folder / "metrics.json").write_text(json.dumps(metrics))
-        return {"auc": auc, "count": len(labels), "positive_count": int(labels.sum()),
-                "negative_count": int((labels == 0).sum()), "output": folder.name,
-                "metrics_sha256": self.sha(folder / "metrics.json"),
-                "pair_scores_sha256": self.sha(folder / "pair_scores.csv")}
+        return {
+            "auc": auc,
+            "count": len(labels),
+            "positive_count": int(labels.sum()),
+            "negative_count": int((labels == 0).sum()),
+            "output": folder.name,
+            "metrics_sha256": self.sha(folder / "metrics.json"),
+            "pair_scores_sha256": self.sha(folder / "pair_scores.csv"),
+        }
 
     def bootstrap(self, step, name):
         labels = self.scores[step, "classification"][1]
         column = {"cosine": lambda s: s[2], "negative_euclidean": lambda s: -s[3]}[name]
-        first, second = (column(self.scores[step, a]) for a in ("classification", "metric"))
+        first, second = (
+            column(self.scores[step, a]) for a in ("classification", "metric")
+        )
         return paired_bootstrap(labels, first, second, rank_auc)
 
     def write_records(self, threshold_shift=0):
@@ -221,41 +326,74 @@ class RecheckScriptTests(unittest.TestCase):
             _, labels, cosine, _ = self.scores["validation", approach]
             tau = brute_threshold(labels.tolist(), cosine.tolist())
             point = operating_point(labels, cosine, tau)
-            validation[approach]["threshold_selection"] = {"threshold": tau, "far": point["far"], "tar": point["tar"]}
+            validation[approach]["threshold_selection"] = {
+                "threshold": tau,
+                "far": point["far"],
+                "tar": point["tar"],
+            }
         chosen = validation["metric"]["threshold_selection"]
         candidates = sorted(set(self.scores["validation", "metric"][2].tolist()))
         tau = candidates[candidates.index(chosen["threshold"]) + threshold_shift]
         self.selection = {
-            "created_utc": "2026-01-01T00:00:00+00:00", "validation": validation,
+            "created_utc": "2026-01-01T00:00:00+00:00",
+            "validation": validation,
             "bootstrap": {"cosine": self.bootstrap("validation", "cosine")},
-            "decision": {"selected_approach": "metric", "selected_model_id": self.models["metric"]["model_id"],
-                         "selected_model_version": self.models["metric"]["model_version"], "threshold": tau,
-                         "validation_far": chosen["far"], "validation_tar": chosen["tar"], "reject_all": False}}
+            "decision": {
+                "selected_approach": "metric",
+                "selected_model_id": self.models["metric"]["model_id"],
+                "selected_model_version": self.models["metric"]["model_version"],
+                "threshold": tau,
+                "validation_far": chosen["far"],
+                "validation_tar": chosen["tar"],
+                "reject_all": False,
+            },
+        }
         (self.root / "selection.json").write_text(json.dumps(self.selection))
-        official = {a: self.write_run("official", a) for a in ("classification", "metric")}
+        official = {
+            a: self.write_run("official", a) for a in ("classification", "metric")
+        }
         _, labels, cosine, _ = self.scores["official", "metric"]
         point = operating_point(labels, cosine, tau)
-        summary = {"created_utc": "2026-01-02T00:00:00+00:00", "comparison_code": {"commit": "0" * 40},
-                   "selection_sha256": self.sha(self.root / "selection.json"),
-                   "decision_unchanged": self.selection["decision"], "official": official,
-                   "bootstrap": {n: self.bootstrap("official", n) for n in ("cosine", "negative_euclidean")},
-                   "operating_point": {"approach": "metric", **point}}
+        summary = {
+            "created_utc": "2026-01-02T00:00:00+00:00",
+            "comparison_code": {"commit": "0" * 40},
+            "selection_sha256": self.sha(self.root / "selection.json"),
+            "decision_unchanged": self.selection["decision"],
+            "official": official,
+            "bootstrap": {
+                n: self.bootstrap("official", n)
+                for n in ("cosine", "negative_euclidean")
+            },
+            "operating_point": {"approach": "metric", **point},
+        }
         (self.root / "official-summary.json").write_text(json.dumps(summary))
 
     def run_check(self):
         report = self.root / "report.json"
         with contextlib.redirect_stdout(io.StringIO()):
-            code = self.check.main(["--selection", str(self.root / "selection.json"),
-                                    "--validation-dir", str(self.root / "validation"),
-                                    "--official-summary", str(self.root / "official-summary.json"),
-                                    "--official-dir", str(self.root / "official"), "--output", str(report)])
+            code = self.check.main(
+                [
+                    "--selection",
+                    str(self.root / "selection.json"),
+                    "--validation-dir",
+                    str(self.root / "validation"),
+                    "--official-summary",
+                    str(self.root / "official-summary.json"),
+                    "--official-dir",
+                    str(self.root / "official"),
+                    "--output",
+                    str(report),
+                ]
+            )
         checks = json.loads(report.read_text())["checks"]
         return code, {c["check"] for c in checks if c["ok"] is False}, checks
 
     def test_rank_auc_matches_pairwise_count_with_ties(self):
         labels = np.array([1, 1, 0, 0, 1, 0])
         scores = np.array([0.9, 0.5, 0.5, 0.1, 0.5, 0.7])
-        self.assertAlmostEqual(self.check.rank_auc(labels, scores), rank_auc(labels, scores))
+        self.assertAlmostEqual(
+            self.check.rank_auc(labels, scores), rank_auc(labels, scores)
+        )
 
     def test_far_threshold_moves_tied_scores_together(self):
         labels = [0] * 99 + [0, 1, 1]
@@ -267,20 +405,26 @@ class RecheckScriptTests(unittest.TestCase):
     def test_consistent_records_pass(self):
         code, failed, checks = self.run_check()
         self.assertEqual((code, failed), (0, set()))
-        self.assertEqual(sum(c["ok"] is None for c in checks), 1)  # the commit order needs the real history
+        self.assertEqual(
+            sum(c["ok"] is None for c in checks), 1
+        )  # the commit order needs the real history
 
     def test_a_threshold_above_the_rule_fails(self):
         self.write_records(threshold_shift=1)
         code, failed, _ = self.run_check()
         self.assertEqual(code, 1)
-        self.assertIn("validation metric: threshold is the lowest cosine with FAR <= 1%", failed)
+        self.assertIn(
+            "validation metric: threshold is the lowest cosine with FAR <= 1%", failed
+        )
 
     def test_an_edited_score_file_fails_its_hash(self):
         scores = self.root / "official" / "official-classification" / "pair_scores.csv"
         scores.write_text(scores.read_text().replace(",1,", ",0,", 1))
         code, failed, _ = self.run_check()
         self.assertEqual(code, 1)
-        self.assertIn("official classification: output files are the recorded ones", failed)
+        self.assertIn(
+            "official classification: output files are the recorded ones", failed
+        )
 
     def test_a_distance_passed_without_negation_fails(self):
         keys, labels, cosine, distance = self.scores["official", "metric"]
@@ -288,20 +432,31 @@ class RecheckScriptTests(unittest.TestCase):
         self.write_records()
         code, failed, _ = self.run_check()
         self.assertEqual(code, 1)
-        self.assertIn("official metric: score direction (cosine in [-1, 1], AUC input is minus the distance)", failed)
+        self.assertIn(
+            "official metric: score direction (cosine in [-1, 1], AUC input is minus the distance)",
+            failed,
+        )
 
 
-@unittest.skipUnless(importlib.util.find_spec("torch"), "torch is not installed in this environment")
+@unittest.skipUnless(
+    importlib.util.find_spec("torch"), "torch is not installed in this environment"
+)
 class HeadlessExportTests(unittest.TestCase):
     def test_metric_checkpoint_exports_embeddings_without_class_predictions(self):
         import torch
 
-        script = Path(__file__).resolve().parents[1] / "scripts/export_face_embeddings.py"
+        script = (
+            Path(__file__).resolve().parents[1] / "scripts/export_face_embeddings.py"
+        )
         spec = importlib.util.spec_from_file_location("export_for_test", script)
         export_cli = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(export_cli)
-        from facial_attendance.recognition.model import FaceEmbeddingNet, build_meta, save_checkpoint
-        from test_validation_pairs import build_layout
+        from facial_attendance.recognition.model import (
+            FaceEmbeddingNet,
+            build_meta,
+            save_checkpoint,
+        )
+        from tests.test_validation_pairs import build_layout
 
         directory = tempfile.TemporaryDirectory(prefix="headless-export-fixture-")
         self.addCleanup(directory.cleanup)
@@ -309,13 +464,29 @@ class HeadlessExportTests(unittest.TestCase):
         layout = build_layout(root / "data", {f"n{i}": 2 for i in range(4)})
         torch.manual_seed(0)
         model = FaceEmbeddingNet(None).eval()
-        save_checkpoint(root / "best.pt", model, build_meta(model, model_id="run-m", approach="metric"))
+        save_checkpoint(
+            root / "best.pt",
+            model,
+            build_meta(model, model_id="run-m", approach="metric"),
+        )
         exclusions = root / "none.tsv"
         exclusions.write_text("# no exclusions\n")
         output = root / "exports"
         with contextlib.redirect_stdout(io.StringIO()):
-            export_cli.main(["--data-root", str(layout.root), "--exclusions", str(exclusions),
-                         "--checkpoint", str(root / "best.pt"), "--output", str(output), "--device", "cpu"])
+            export_cli.main(
+                [
+                    "--data-root",
+                    str(layout.root),
+                    "--exclusions",
+                    str(exclusions),
+                    "--checkpoint",
+                    str(root / "best.pt"),
+                    "--output",
+                    str(output),
+                    "--device",
+                    "cpu",
+                ]
+            )
         summary = json.loads((output / "export-summary.json").read_text())
         self.assertIsNone(summary["classification"])
         self.assertEqual(summary["official_trials"]["images"], 1)

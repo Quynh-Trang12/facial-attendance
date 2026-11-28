@@ -30,7 +30,9 @@ def check_batch_shape(targets: torch.Tensor):
         raise ValueError("A triplet batch needs at least 2 identities")
     if int(counts.min()) < 2:
         short = identities[counts < 2].tolist()
-        raise ValueError(f"Identities with fewer than 2 images in the batch: {short[:5]}")
+        raise ValueError(
+            f"Identities with fewer than 2 images in the batch: {short[:5]}"
+        )
 
 
 def check_triplets(targets: torch.Tensor, anchors, positives, negatives):
@@ -74,7 +76,12 @@ def triplet_loss(
     per_pair = (d_ap - d_neg + margin).clamp_min(0)
     loss = per_pair.mean()
     # The counts are a record, not part of the graph.
-    d_ap, d_neg, per_pair, unit = d_ap.detach(), d_neg.detach(), per_pair.detach(), unit.detach()
+    d_ap, d_neg, per_pair, unit = (
+        d_ap.detach(),
+        d_neg.detach(),
+        per_pair.detach(),
+        unit.detach(),
+    )
     stats = {
         "anchor_positive_pairs": len(anchors),
         "semi_hard": int((has_farther & (d_neg < d_ap + margin)).sum()),

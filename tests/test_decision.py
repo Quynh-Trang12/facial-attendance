@@ -1,8 +1,8 @@
 """The gallery decision names a person only when the best match is strong and unambiguous."""
 
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 from facial_attendance.recognition.decision import (
     ACCEPTED,
@@ -24,7 +24,9 @@ MARGIN = 0.125
 class DecideTests(unittest.TestCase):
     def test_accepts_clear_best_match(self):
         decision = decide(["an", "lynn", "que"], [0.75, 0.5, 0.25], TAU, MARGIN)
-        self.assertEqual((decision.label, decision.accepted, decision.reason), ("an", True, ACCEPTED))
+        self.assertEqual(
+            (decision.label, decision.accepted, decision.reason), ("an", True, ACCEPTED)
+        )
         self.assertEqual((decision.best_score, decision.runner_up_score), (0.75, 0.5))
 
     def test_rejects_best_score_below_threshold(self):
@@ -61,7 +63,9 @@ class DecideTests(unittest.TestCase):
         self.assertEqual(decision.label, "an")
         self.assertEqual(decision.runner_up_score, 0.25)
         # One person with several templates is still a one-person gallery.
-        self.assertEqual(decide(["an", "an"], [0.5625, 0.55], TAU, MARGIN).reason, AMBIGUOUS)
+        self.assertEqual(
+            decide(["an", "an"], [0.5625, 0.55], TAU, MARGIN).reason, AMBIGUOUS
+        )
 
     def test_tie_between_two_people_is_unknown_even_without_margin(self):
         for margin in (MARGIN, 0.0):
@@ -105,24 +109,38 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(load_min_score(ROOT / "configs/recognition.toml"), 0.69)
 
     def test_min_score_raises_the_floor_but_not_the_single_person_stand_in(self):
-        self.assertEqual(decide(["a", "b"], [0.68, 0.2], tau=0.462, margin=0.1, min_score=0.69).reason,
-                         BELOW_THRESHOLD)
-        self.assertTrue(decide(["a", "b"], [0.70, 0.2], tau=0.462, margin=0.1, min_score=0.69).accepted)
+        self.assertEqual(
+            decide(
+                ["a", "b"], [0.68, 0.2], tau=0.462, margin=0.1, min_score=0.69
+            ).reason,
+            BELOW_THRESHOLD,
+        )
+        self.assertTrue(
+            decide(
+                ["a", "b"], [0.70, 0.2], tau=0.462, margin=0.1, min_score=0.69
+            ).accepted
+        )
         # One person: tau stands in for s2, so 0.70 - 0.462 >= 0.1 passes.
         single = decide(["a"], [0.70], tau=0.462, margin=0.1, min_score=0.69)
         self.assertEqual((single.accepted, single.runner_up_score), (True, 0.462))
         # A min_score below tau never lowers the floor.
-        self.assertEqual(decide(["a", "b"], [0.45, 0.1], tau=0.462, margin=0.1, min_score=0.3).reason,
-                         BELOW_THRESHOLD)
+        self.assertEqual(
+            decide(
+                ["a", "b"], [0.45, 0.1], tau=0.462, margin=0.1, min_score=0.3
+            ).reason,
+            BELOW_THRESHOLD,
+        )
 
     def test_min_score_is_optional_and_validated(self):
         with tempfile.TemporaryDirectory() as directory:
             config = Path(directory) / "recognition.toml"
             config.write_text("[decision]\nmargin = 0.15\n", encoding="utf-8")
             self.assertIsNone(load_min_score(config))
-            for body in ("[decision]\nmargin = 0.1\nmin_score = 1.5\n",
-                         "[decision]\nmargin = 0.1\nmin_score = \"0.69\"\n",
-                         "[decision]\nmin_score = 0.69\n"):
+            for body in (
+                "[decision]\nmargin = 0.1\nmin_score = 1.5\n",
+                '[decision]\nmargin = 0.1\nmin_score = "0.69"\n',
+                "[decision]\nmin_score = 0.69\n",
+            ):
                 with self.subTest(body=body):
                     config.write_text(body, encoding="utf-8")
                     with self.assertRaises(ValueError):
@@ -131,8 +149,13 @@ class SettingsTests(unittest.TestCase):
     def test_margin_config_is_validated(self):
         with tempfile.TemporaryDirectory() as directory:
             config = Path(directory) / "recognition.toml"
-            for body in ("", "[decision]\n", "[decision]\nmargin = -0.1\n",
-                         "[decision]\nmargin = \"0.15\"\n", "[decision]\nmargin = 0.15\nextra = 1\n"):
+            for body in (
+                "",
+                "[decision]\n",
+                "[decision]\nmargin = -0.1\n",
+                '[decision]\nmargin = "0.15"\n',
+                "[decision]\nmargin = 0.15\nextra = 1\n",
+            ):
                 with self.subTest(body=body):
                     config.write_text(body, encoding="utf-8")
                     with self.assertRaises(ValueError):

@@ -12,8 +12,8 @@ new file with `threshold` and `threshold_source` filled in. The weights, and so
 
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -31,30 +31,67 @@ def deploy(checkpoint: Path, selection_file: Path, output: Path) -> dict:
     if decision["reject_all"] or decision["threshold"] is None:
         raise ValueError("selection.json has no usable threshold")
     model, meta = load_checkpoint(checkpoint)
-    for key, want in (("model_id", decision["selected_model_id"]),
-                      ("model_version", decision["selected_model_version"]),
-                      ("approach", decision["selected_approach"])):
+    for key, want in (
+        ("model_id", decision["selected_model_id"]),
+        ("model_version", decision["selected_model_version"]),
+        ("approach", decision["selected_approach"]),
+    ):
         if meta.get(key) != want:
-            raise ValueError(f"Checkpoint {key} is {meta.get(key)!r}; selection.json selected {want!r}")
+            raise ValueError(
+                f"Checkpoint {key} is {meta.get(key)!r}; selection.json selected {want!r}"
+            )
     if meta.get("threshold") not in (None, decision["threshold"]):
-        raise ValueError(f"Checkpoint already holds a different threshold {meta['threshold']}")
-    source = (f"FAC-05 selection.json sha256 {file_sha256(selection_file)}: "
-              f"{decision['threshold_rule']} on validation pairs {VAL_PAIRS_SHA256[:12]} "
-              f"(FAR {decision['validation_far']:.4f}, TAR {decision['validation_tar']:.4f}); "
-              "accept when cosine >= threshold")
-    save_checkpoint(output, model, {**meta, "threshold": decision["threshold"], "threshold_source": source})
+        raise ValueError(
+            f"Checkpoint already holds a different threshold {meta['threshold']}"
+        )
+    source = (
+        f"FAC-05 selection.json sha256 {file_sha256(selection_file)}: "
+        f"{decision['threshold_rule']} on validation pairs {VAL_PAIRS_SHA256[:12]} "
+        f"(FAR {decision['validation_far']:.4f}, TAR {decision['validation_tar']:.4f}); "
+        "accept when cosine >= threshold"
+    )
+    save_checkpoint(
+        output,
+        model,
+        {**meta, "threshold": decision["threshold"], "threshold_source": source},
+    )
     _, written = load_checkpoint(output)
-    if written["model_version"] != meta["model_version"] or written["threshold"] != decision["threshold"]:
-        raise ValueError("The written checkpoint does not reload with the same weights and threshold")
-    return {"output": str(output), "sha256": file_sha256(output),
-            **{k: written[k] for k in ("model_id", "model_version", "approach", "threshold", "threshold_source")}}
+    if (
+        written["model_version"] != meta["model_version"]
+        or written["threshold"] != decision["threshold"]
+    ):
+        raise ValueError(
+            "The written checkpoint does not reload with the same weights and threshold"
+        )
+    return {
+        "output": str(output),
+        "sha256": file_sha256(output),
+        **{
+            k: written[k]
+            for k in (
+                "model_id",
+                "model_version",
+                "approach",
+                "threshold",
+                "threshold_source",
+            )
+        },
+    }
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--checkpoint", type=Path, required=True, help="The selected run's best.pt")
-    parser.add_argument("--selection", type=Path, required=True, help="Committed selection.json")
-    parser.add_argument("--output", type=Path, required=True, help="New checkpoint file")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--checkpoint", type=Path, required=True, help="The selected run's best.pt"
+    )
+    parser.add_argument(
+        "--selection", type=Path, required=True, help="Committed selection.json"
+    )
+    parser.add_argument(
+        "--output", type=Path, required=True, help="New checkpoint file"
+    )
     args = parser.parse_args(argv)
     print(json.dumps(deploy(args.checkpoint, args.selection, args.output), indent=2))
     return 0

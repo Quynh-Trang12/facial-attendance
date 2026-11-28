@@ -41,7 +41,9 @@ class FaceEmbeddingNet(nn.Module):
         backbone = resnet18(weights=None)
         # The ImageNet stem (7x7 stride 2, then max-pool) would shrink a 64-pixel face
         # to 16x16 before the first block; a 3x3 stride-1 stem keeps the spatial detail.
-        backbone.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+        backbone.conv1 = nn.Conv2d(
+            3, 64, kernel_size=3, stride=1, padding=1, bias=False
+        )
         backbone.maxpool = nn.Identity()
         backbone.fc = nn.Identity()  # global average pooling output, 512 values
         self.backbone = backbone

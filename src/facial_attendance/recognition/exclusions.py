@@ -40,7 +40,9 @@ def read_exclusions(root: Path, file: Path) -> frozenset[Path]:
                 relative, _, digest, kept = columns
                 path = (root / PurePosixPath(relative)).resolve()
                 if not path.is_relative_to(base) or not path.is_file():
-                    problem = f"{relative} is not a classification image of this dataset"
+                    problem = (
+                        f"{relative} is not a classification image of this dataset"
+                    )
                 elif _file_sha256(path) != digest:
                     problem = f"{relative} does not have the listed content hash"
                 elif not (root / PurePosixPath(kept)).resolve().is_file():
@@ -66,7 +68,9 @@ def load_face_layout(
     return layout if exclusions is None else apply_exclusions(layout, exclusions)
 
 
-def write_exclusions(file: Path, entries: list[tuple[str, str, str, str]], header: list[str]):
+def write_exclusions(
+    file: Path, entries: list[tuple[str, str, str, str]], header: list[str]
+):
     """Write rows of COLUMNS once; a new list changes what every model trains on."""
     file = Path(file)
     file.parent.mkdir(parents=True, exist_ok=True)

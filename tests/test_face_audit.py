@@ -2,14 +2,14 @@
 
 import contextlib
 import csv
-from hashlib import sha256
 import importlib.util
 import io
 import json
-from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from hashlib import sha256
+from pathlib import Path
 
 from PIL import Image
 
@@ -46,7 +46,9 @@ class AuditFixture(unittest.TestCase):
 
     def audit(self, layout=None, **options) -> dict:
         # Identity "c" is too small for P×K batches; triplet checks have their own tests.
-        return audit_dataset(layout or self.layout, **({"triplet_batch": None} | options))
+        return audit_dataset(
+            layout or self.layout, **({"triplet_batch": None} | options)
+        )
 
     def image(self, relative: str, *, size=(8, 8), mode="RGB"):
         # A distinct colour per file keeps the clean fixture free of accidental duplicates.
@@ -187,9 +189,7 @@ class FaceAuditTests(AuditFixture):
     def test_manifest_digest_changes_with_content(self):
         before = self.audit(self.layout)["dataset_manifest_sha256"]
         self.image("classification_data/train_data/a/0.png")
-        self.assertNotEqual(
-            before, self.audit(self.layout)["dataset_manifest_sha256"]
-        )
+        self.assertNotEqual(before, self.audit(self.layout)["dataset_manifest_sha256"])
 
 
 class ExclusionTests(AuditFixture):
@@ -257,8 +257,12 @@ class ExclusionTests(AuditFixture):
         self.generate()
         rows = {row[0]: row for row in self.rows()}
         for path, (_, _, digest, kept) in rows.items():
-            self.assertEqual(digest, sha256((self.root / path).read_bytes()).hexdigest())
-            self.assertEqual(digest, sha256((self.root / kept).read_bytes()).hexdigest())
+            self.assertEqual(
+                digest, sha256((self.root / path).read_bytes()).hexdigest()
+            )
+            self.assertEqual(
+                digest, sha256((self.root / kept).read_bytes()).hexdigest()
+            )
         self.assertEqual(
             rows["classification_data/train_data/a/8.png"][3],
             "classification_data/train_data/a/2.png",
@@ -270,7 +274,9 @@ class ExclusionTests(AuditFixture):
 
     def test_inventory_has_one_row_per_image_with_the_list_decisions(self):
         inventory = self.root / "runs/inventory.csv"
-        report = self.audit(self.layout, write_exclusions=self.exclusions, inventory=inventory)
+        report = self.audit(
+            self.layout, write_exclusions=self.exclusions, inventory=inventory
+        )
         with inventory.open(newline="") as handle:
             rows = list(csv.DictReader(handle))
         self.assertEqual(tuple(rows[0]), INVENTORY_COLUMNS)
@@ -278,9 +284,13 @@ class ExclusionTests(AuditFixture):
         self.assertEqual(report["inventory"], {"rows": len(rows)})
         excluded = {r["path"]: r["reason"] for r in rows if r["decision"] == "exclude"}
         self.assertEqual(excluded, self.listed())
-        copy = next(r for r in rows if r["path"] == "classification_data/train_data/a/8.png")
+        copy = next(
+            r for r in rows if r["path"] == "classification_data/train_data/a/8.png"
+        )
         self.assertEqual(copy["duplicate_group"], copy["file_sha256"])
-        self.assertEqual((copy["width"], copy["height"], copy["mode"]), ("8", "8", "RGB"))
+        self.assertEqual(
+            (copy["width"], copy["height"], copy["mode"]), ("8", "8", "RGB")
+        )
         self.assertEqual(copy["decode_status"], "ok")
         unique = next(r for r in rows if r["path"] == "verification_data/v3.png")
         self.assertEqual((unique["duplicate_group"], unique["identity"]), ("", ""))
@@ -337,7 +347,9 @@ class ExclusionTests(AuditFixture):
 
     def test_listed_image_outside_an_identity_folder_is_a_failure(self):
         stray = self.root / "classification_data/train_data/stray.png"
-        self.copy("classification_data/train_data/a/2.png", stray.relative_to(self.root))
+        self.copy(
+            "classification_data/train_data/a/2.png", stray.relative_to(self.root)
+        )
         self.generate()
         digest = sha256(stray.read_bytes()).hexdigest()
         with self.exclusions.open("a") as handle:
@@ -354,7 +366,10 @@ class ExclusionTests(AuditFixture):
 class CoverageAndTripletTests(AuditFixture):
     def test_coverage_counts_identities_by_images_left(self):
         self.copy("verification_data/v0.png", "classification_data/train_data/a/9.png")
-        self.copy("classification_data/train_data/b/0.png", "classification_data/train_data/b/9.png")
+        self.copy(
+            "classification_data/train_data/b/0.png",
+            "classification_data/train_data/b/9.png",
+        )
         report = self.audit()
         train = report["partitions"]["train_data"]
         self.assertEqual(
@@ -393,11 +408,16 @@ class CoverageAndTripletTests(AuditFixture):
 
     def test_triplet_batches_flag_held_out_copies(self):
         # Two images per identity, so the only batch draws every image.
-        self.copy("classification_data/val_data/a/0.png", "classification_data/train_data/c/1.png")
+        self.copy(
+            "classification_data/val_data/a/0.png",
+            "classification_data/train_data/c/1.png",
+        )
         (self.root / "classification_data/train_data/a/2.png").unlink()
         report = self.audit(triplet_batch=(3, 2))
         self.assertEqual(report["triplet_batches"]["images_shared_with_held_out"], 1)
-        self.assertTrue(any(f.startswith("Triplet batches:") for f in report["failures"]))
+        self.assertTrue(
+            any(f.startswith("Triplet batches:") for f in report["failures"])
+        )
 
 
 class KnownIdentityTests(AuditFixture):
@@ -446,8 +466,16 @@ class AuditCliTests(AuditFixture):
         self.image("classification_data/train_data/c/1.png")
 
     def run_cli(self, *extra) -> tuple[int, dict]:
-        args = ["--data-root", str(self.root), "--output", str(self.output),
-                "--triplet-batch", "3", "2", *extra]
+        args = [
+            "--data-root",
+            str(self.root),
+            "--output",
+            str(self.output),
+            "--triplet-batch",
+            "3",
+            "2",
+            *extra,
+        ]
         args += [] if "--exclusions" in extra else ["--raw"]
         with (
             contextlib.redirect_stdout(io.StringIO()),

@@ -49,7 +49,9 @@ class DataCliTests(unittest.TestCase):
         args = self.cli.parse_arguments(["--output", self.output])
         self.assertEqual(args.exclusions, self.cli.DEFAULT_EXCLUSIONS)
         self.assertEqual(tuple(args.triplet_batch), (64, 4))
-        with patch.object(self.cli, "apply_exclusions", return_value="filtered") as apply:
+        with patch.object(
+            self.cli, "apply_exclusions", return_value="filtered"
+        ) as apply:
             self.assertEqual(self.cli.select_images("layout", args), "filtered")
         apply.assert_called_once_with("layout", self.cli.DEFAULT_EXCLUSIONS)
         raw = self.cli.parse_arguments(["--raw", "--output", self.output])

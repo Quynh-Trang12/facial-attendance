@@ -1,23 +1,26 @@
 """Audit every face image for label, duplicate and leakage problems; never train here."""
 
 import argparse
-from datetime import datetime, timezone
-from hashlib import sha256
-from importlib.metadata import PackageNotFoundError, version
 import json
-from pathlib import Path
 import sys
 import traceback
+from datetime import UTC, datetime
+from hashlib import sha256
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from facial_attendance.config import load_paths
-from facial_attendance.recognition.audit import audit_dataset
-from facial_attendance.recognition.data_loader import FaceLayout
-from facial_attendance.recognition.download import COMPETITION, download_face_data
-from facial_attendance.recognition.exclusions import DEFAULT_EXCLUSIONS, apply_exclusions
-from facial_attendance.recognition.sampling import (
+from facial_attendance.config import load_paths  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.audit import audit_dataset  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.data_loader import FaceLayout  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.download import COMPETITION, download_face_data  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.exclusions import (  # noqa: E402 — source checkout bootstrap precedes local imports.
+    DEFAULT_EXCLUSIONS,
+    apply_exclusions,
+)
+from facial_attendance.recognition.sampling import (  # noqa: E402 — source checkout bootstrap precedes local imports.
     IDENTITIES_PER_BATCH,
     IMAGES_PER_IDENTITY,
 )
@@ -114,7 +117,7 @@ def main(argv: list[str] | None = None) -> int:
         # Local audits never call Kaggle, so a missing client must not lose the report.
         kagglehub_version = None
     report = {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "timestamp_utc": datetime.now(UTC).isoformat(),
         "task": "FAC-02",
         "status": "FAIL",
         "competition": COMPETITION,

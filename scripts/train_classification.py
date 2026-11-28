@@ -5,33 +5,56 @@ Resume:   python scripts/train_classification.py --download --resume /content/dr
 """
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from facial_attendance.config import load_paths
-from facial_attendance.recognition.data_loader import FaceLayout
-from facial_attendance.recognition.download import download_face_data
-from facial_attendance.recognition.exclusions import DEFAULT_EXCLUSIONS, apply_exclusions
-from facial_attendance.recognition.training import load_config, train
+from facial_attendance.config import load_paths  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.data_loader import FaceLayout  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.download import download_face_data  # noqa: E402 — source checkout bootstrap precedes local imports.
+from facial_attendance.recognition.exclusions import (  # noqa: E402 — source checkout bootstrap precedes local imports.
+    DEFAULT_EXCLUSIONS,
+    apply_exclusions,
+)
+from facial_attendance.recognition.training import load_config, train  # noqa: E402 — source checkout bootstrap precedes local imports.
 
 
 def parse_arguments(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     source = parser.add_mutually_exclusive_group()
-    source.add_argument("--download", action="store_true", help="Use the Kaggle competition API")
-    source.add_argument("--data-root", type=Path, help="Override the configured dataset location")
-    parser.add_argument("--paths-config", type=Path, default=ROOT / "configs/project.toml")
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/face-classification.toml")
+    source.add_argument(
+        "--download", action="store_true", help="Use the Kaggle competition API"
+    )
+    source.add_argument(
+        "--data-root", type=Path, help="Override the configured dataset location"
+    )
+    parser.add_argument(
+        "--paths-config", type=Path, default=ROOT / "configs/project.toml"
+    )
+    parser.add_argument(
+        "--config", type=Path, default=ROOT / "configs/face-classification.toml"
+    )
     parser.add_argument("--exclusions", type=Path, default=DEFAULT_EXCLUSIONS)
-    parser.add_argument("--output-root", type=Path, help="Parent of new run directories (default: paths.checkpoints/FAC-03)")
-    parser.add_argument("--resume", type=Path, help="Run directory to continue from its last.pt")
-    parser.add_argument("--device", default=None, help="cuda, cpu, ... (default: cuda when available)")
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        help="Parent of new run directories (default: paths.checkpoints/FAC-03)",
+    )
+    parser.add_argument(
+        "--resume", type=Path, help="Run directory to continue from its last.pt"
+    )
+    parser.add_argument(
+        "--device", default=None, help="cuda, cpu, ... (default: cuda when available)"
+    )
     parser.add_argument("--num-workers", type=int)
     parser.add_argument("--eval-batch-size", type=int)
-    smoke = parser.add_argument_group("smoke runs (recorded as changes; not a reported result)")
+    smoke = parser.add_argument_group(
+        "smoke runs (recorded as changes; not a reported result)"
+    )
     smoke.add_argument("--epochs", type=int)
     smoke.add_argument("--max-steps-per-epoch", type=int)
     smoke.add_argument("--batch-size", type=int)
@@ -62,7 +85,9 @@ def main(argv=None) -> int:
         for name, value in overrides.items()
         if value is not None and name not in {"num_workers", "eval_batch_size"}
     ]
-    device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
+    device = torch.device(
+        args.device or ("cuda" if torch.cuda.is_available() else "cpu")
+    )
     train(
         config,
         layout,

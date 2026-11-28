@@ -8,9 +8,9 @@ if importlib.util.find_spec("torch") is None:
     raise unittest.SkipTest("torch is not installed in this environment")
 
 import csv
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -31,7 +31,7 @@ from facial_attendance.recognition.model import (
     model_version,
     save_checkpoint,
 )
-from test_validation_pairs import build_layout
+from tests.test_validation_pairs import build_layout
 
 
 class FaceModelTests(unittest.TestCase):
@@ -106,7 +106,9 @@ class ExportTests(unittest.TestCase):
         (self.layout.root / "verification_data" / "b.png").write_bytes(
             (self.layout.root / "verification_data" / "a.png").read_bytes()
         )
-        self.layout.pairs_file.write_text("verification_data/a.png b.png 1\na.png b.png 0\n")
+        self.layout.pairs_file.write_text(
+            "verification_data/a.png b.png 1\na.png b.png 0\n"
+        )
         torch.manual_seed(0)
         self.model = FaceEmbeddingNet(num_classes=4).eval()
         self.meta = build_meta(self.model, model_id="run-x", approach="classification")
@@ -119,23 +121,37 @@ class ExportTests(unittest.TestCase):
 
     def test_official_embeddings_keyed_by_trial_strings(self):
         output = self.root / "out" / "official.npz"
-        summary = export_trial_embeddings(self.model, self.meta, self.layout, self.layout.pairs_file, output)
+        summary = export_trial_embeddings(
+            self.model, self.meta, self.layout, self.layout.pairs_file, output
+        )
         self.assertEqual(summary["images"], 3)
         with np.load(output, allow_pickle=False) as data:
-            self.assertEqual(list(data["paths"]), ["verification_data/a.png", "b.png", "a.png"])
+            self.assertEqual(
+                list(data["paths"]), ["verification_data/a.png", "b.png", "a.png"]
+            )
             self.assertEqual(data["raw_embeddings"].shape, (3, 512))
             self.assertEqual(data["raw_embeddings"].dtype, np.float32)
         with self.assertRaises(FileExistsError):
-            export_trial_embeddings(self.model, self.meta, self.layout, self.layout.pairs_file, output)
+            export_trial_embeddings(
+                self.model, self.meta, self.layout, self.layout.pairs_file, output
+            )
 
     def test_predictions_csv_matches_dataset(self):
-        summary = export_predictions(self.model, self.meta, self.layout, "test_data", self.root / "pred")
+        summary = export_predictions(
+            self.model, self.meta, self.layout, "test_data", self.root / "pred"
+        )
         with (self.root / "pred" / "test_data-predictions.csv").open() as handle:
             rows = list(csv.DictReader(handle))
         self.assertEqual(len(rows), summary["images"])
         self.assertEqual(set(rows[0]), {"id", "true", "predicted"})
-        test = ClassificationFaces(self.layout, "test_data", class_to_idx=ClassificationFaces(self.layout, "train_data").class_to_idx)
-        self.assertEqual([int(r["true"]) for r in rows], [s.target for s in test.samples])
+        test = ClassificationFaces(
+            self.layout,
+            "test_data",
+            class_to_idx=ClassificationFaces(self.layout, "train_data").class_to_idx,
+        )
+        self.assertEqual(
+            [int(r["true"]) for r in rows], [s.target for s in test.samples]
+        )
 
 
 if __name__ == "__main__":
