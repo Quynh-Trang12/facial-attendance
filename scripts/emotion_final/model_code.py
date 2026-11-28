@@ -1,4 +1,5 @@
 """ResNet-18 architecture with TorchVision-compatible parameter names."""
+
 import torch
 from torch import nn
 
@@ -8,8 +9,9 @@ class BasicBlock(nn.Module):
 
     def __init__(self, in_channels, out_channels, stride=1):
         super().__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, 3, stride=stride,
-                               padding=1, bias=False)
+        self.conv1 = nn.Conv2d(
+            in_channels, out_channels, 3, stride=stride, padding=1, bias=False
+        )
         self.bn1 = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(out_channels, out_channels, 3, padding=1, bias=False)
@@ -47,7 +49,9 @@ class ResNet18(nn.Module):
         self.fc = nn.Linear(512, num_classes)
         for module in self.modules():
             if isinstance(module, nn.Conv2d):
-                nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
+                nn.init.kaiming_normal_(
+                    module.weight, mode="fan_out", nonlinearity="relu"
+                )
             elif isinstance(module, nn.BatchNorm2d):
                 nn.init.ones_(module.weight)
                 nn.init.zeros_(module.bias)
@@ -68,11 +72,12 @@ class ResNet18(nn.Module):
 
 
 def set_training_stage(model, stage):
-    if stage not in {'head', 'finetune'}:
-        raise ValueError('Expected head or finetune.')
+    if stage not in {"head", "finetune"}:
+        raise ValueError("Expected head or finetune.")
     for name, parameter in model.named_parameters():
-        parameter.requires_grad = name.startswith('fc.') or (
-            stage == 'finetune' and name.startswith('layer4.'))
+        parameter.requires_grad = name.startswith("fc.") or (
+            stage == "finetune" and name.startswith("layer4.")
+        )
 
 
 def freeze_bn_statistics(model):

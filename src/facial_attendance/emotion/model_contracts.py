@@ -10,7 +10,11 @@ DIAGNOSTIC_LABELS = (*LEGACY_LABELS, "Sad", "Happy")
 
 def label_order(source, model_id, checkpoint_sha256):
     if model_id == RESNET18_MODEL_ID or checkpoint_sha256 == RESNET18_SHA256:
-        if source == "model" and model_id == RESNET18_MODEL_ID and checkpoint_sha256 == RESNET18_SHA256:
+        if (
+            source == "model"
+            and model_id == RESNET18_MODEL_ID
+            and checkpoint_sha256 == RESNET18_SHA256
+        ):
             return RESNET18_LABELS
         return ()
     return LEGACY_LABELS
