@@ -30,7 +30,8 @@ class YuNetFaceDetector:
             str(self.path), "", (320, 320), 0.9, 0.3, 5000
         )
 
-    def detect(self, frame):
+    def detect(self, frame, *, with_landmarks=False):
+        """Return source-pixel xywh boxes, optionally paired with five landmarks."""
         height, width = frame.shape[:2]
         # Full-HD inputs can put large faces outside YuNet's useful scale.
         # Localize on a bounded image, but return source coordinates so PAD
@@ -55,5 +56,19 @@ class YuNetFaceDetector:
             right = min(width, math.ceil((x + w) * scale_x))
             bottom = min(height, math.ceil((y + h) * scale_y))
             if right > left and bottom > top:
-                boxes.append((left, top, right - left, bottom - top))
+                box = (left, top, right - left, bottom - top)
+                if with_landmarks:
+                    if len(face) != 15 or not all(
+                        math.isfinite(float(value)) for value in face[4:14]
+                    ):
+                        raise ValueError("YuNet returned invalid face landmarks")
+                    # Landmarks and the clipped box must share original-frame
+                    # coordinates even when resized dimensions were rounded.
+                    landmarks = tuple(
+                        (float(x) * scale_x, float(y) * scale_y)
+                        for x, y in zip(face[4:14:2], face[5:14:2])
+                    )
+                    boxes.append((box, landmarks))
+                else:
+                    boxes.append(box)
         return boxes
