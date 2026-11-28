@@ -231,22 +231,51 @@ class LiveAppTests(unittest.TestCase):
         app = self.app
         del app._draw_frame
         app._preview_viewport_size = (640, 360)
+        app._preview_mirrored = True
         frame = np.zeros((720, 1280, 3), dtype=np.uint8)
+        frame[100:250, 100:300, 2] = 255
+        frame.flags.writeable = False
         app.feed.latest.return_value = replace(self.packet(), frame=frame)
         with patch("PIL.ImageTk.PhotoImage") as photo:
             self.run_one_face()
+            self.assertIs(app.detector.job[1], frame)
+            request = app.inference.job[1][0]
+            self.assertIs(request.frame, frame)
+            self.assertEqual(request.bbox, BOX)
+            self.assertEqual(tuple(request.face_crop[0, 0]), (0, 0, 255))
             context = app.controller.state.context
             app._resize_preview(SimpleNamespace(width=960, height=680))
             app._tick()
-            self.assertEqual(photo.call_args.args[0].size, (960, 540))
+            image = photo.call_args.args[0]
+            self.assertEqual(image.size, (960, 540))
+            self.assertEqual(image.getpixel((810, 100)), (255, 0, 0))
+            self.assertEqual(image.getpixel((150, 100)), (0, 0, 0))
             app.canvas.place_configure.assert_called_with(width=960, height=540)
             app.canvas.create_rectangle.assert_called_with(
-                75, 75, 225, 187.5, outline="#ffce65", width=2, tags="region")
+                735, 75, 885, 187.5, outline="#ffce65", width=2, tags="region")
             self.assertEqual(app.controller.state.context, context)
             app._resize_preview(SimpleNamespace(width=640, height=420))
             app._tick()
             self.assertEqual(photo.call_args.args[0].size, (640, 360))
             app.canvas.create_image.assert_called_once()
+
+    def test_registration_overlay_requires_developer_mode_and_a_visible_preview(self):
+        app = self.app
+        app._registration_overlay = Mock()
+        app._trial_profiles = Mock()
+        app._preview_item = "image"
+        app._developer_mode = True
+        app._render()
+        app._registration_overlay.update.assert_called_with(
+            app._trial_profiles.guidance.return_value, app.preview_size, self.now)
+
+        app._developer_mode = False
+        app._render()
+        app._registration_overlay.update.assert_called_with(None, app.preview_size, self.now)
+        app._developer_mode = True
+        app._preview_item = None
+        app._render()
+        app._registration_overlay.update.assert_called_with(None, app.preview_size, self.now)
 
     def test_camera_preview_continues_and_work_slots_remain_bounded_while_detection_is_busy(self):
         app = self.app
@@ -398,6 +427,7 @@ class LiveAppTests(unittest.TestCase):
         self.assertIn("DEMO / SIMULATED OUTPUT", texts)
         self.assertFalse(any(text in {"Freeze frame", "Run stubs"} for text in texts))
         self.assertFalse(app._debug_visible)
+        self.assertTrue(app._preview_mirrored)
         self.assertEqual(app.controller.action, "attendance")
 
     def test_cli_selects_automatic_app_by_default_and_manual_only_by_explicit_flag(self):

@@ -26,12 +26,12 @@ PYTHONPATH=src python -m facial_attendance.ui.webcam_app \
   --camera 0 --detector yunet \
   --face-checkpoint artifacts/models/face-recognition-resnet18.pt \
   --emotion-checkpoint artifacts/models/emotion-recognition-resnet18-v1.pt \
-  --local-profile-db artifacts/attendance-verification-test/demo/profiles.sqlite3 \
-  --attendance-db artifacts/attendance-verification-test/demo/attendance.sqlite3 \
+  --local-profile-db artifacts/attendance-verification-test/demo-box/profiles.sqlite3 \
+  --attendance-db artifacts/attendance-verification-test/demo-box/attendance.sqlite3 \
   --opencv-threads 1
 ```
 
-The two paths above start a fresh demo workspace. The app creates the profile file on the first successful registration and the attendance file on the first successful attendance write. Use the same profile path when reopening a demo to recognize its existing registrations. To test manual recording, omit `--attendance-auto-record-test`. For preview and local profiles with recording locked, keep `--attendance` and omit the three attendance test flags and both database overrides. See the [demo guide](docs/attendance-demo.md) for the Windows command, storage, and checks.
+The local webcam workspace uses the tight YuNet box for Face Recognition. Register again in the new demo workspace to generate compatible profiles. The two files are created on the first successful registration and attendance write respectively. Reuse the same box profile path when reopening the demo. For manual recording, omit `--attendance-auto-record-test`. For preview and local profiles with recording locked, keep `--attendance` and omit the three attendance test flags and both database overrides. See the [demo guide](docs/attendance-demo.md) for the Windows command, storage, and checks.
 
 ## Walk through the app
 

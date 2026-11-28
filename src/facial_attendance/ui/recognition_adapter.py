@@ -43,11 +43,13 @@ class TrainedPreviewAdapters(StubAdapters):
     trained_recognition = True
 
     def __init__(self, face_checkpoint, *, emotion_checkpoint=None, gallery_path=None,
-                 controlled_registration=False, scenario="Live match"):
+                 controlled_registration=False, scenario="Live match", crop_to_detector_box=False):
         super().__init__(scenario)
         if controlled_registration and gallery_path is not None:
             raise ValueError("Controlled enrollment cannot modify an external gallery.")
-        self.face_inference = FaceInference(face_checkpoint).load()
+        if crop_to_detector_box and gallery_path is not None:
+            raise ValueError("Read-only galleries require the original square crop.")
+        self.face_inference = FaceInference(face_checkpoint, crop_to_detector_box=crop_to_detector_box).load()
         self.controlled_registration = controlled_registration
         if controlled_registration:
             self.matcher = ControlledTestEnrollment(self.face_inference)

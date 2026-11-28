@@ -378,7 +378,8 @@ class LiveWebcamApp:
         self._runtime_info = dict(runtime_info or {})
         self._completed_diagnostic = None  # One frozen historical envelope, never authorization.
         self._identity_overlay = None
-        self._preview_mirrored = False  # Same display transform for image, box and label.
+        self._preview_mirrored = True  # Applied only to the displayed image and overlay coordinates.
+        self._registration_overlay = None
         self._local_workspace = local_profile_store is not None
         self.released_liveness = released_liveness
         self._attendance_verification = attendance_verification
@@ -591,6 +592,8 @@ class LiveWebcamApp:
                                                                       if released_liveness is not None else None),
                                                  liveness_preview=self.liveness_preview)
             if self._local_workspace:
+                from .registration_overlay import RegistrationOverlay
+                self._registration_overlay = RegistrationOverlay(self.canvas)
                 self.registration_button.configure(text="Register new person")
                 ttk.Button(profile_controls, text="Clear local profiles…",
                            command=self._trial_profiles.clear).pack(anchor="w")
@@ -1154,6 +1157,10 @@ class LiveWebcamApp:
                 score_error=sample is not None and sample.frame_status == "error",
             )
         profiles = getattr(self, "_trial_profiles", None)
+        overlay = getattr(self, "_registration_overlay", None)
+        if overlay is not None:
+            guidance = profiles.guidance() if self._developer_mode and self._preview_item is not None else None
+            overlay.update(guidance, self.preview_size, render_time)
         can_register = self._can_start_local_registration(render_time)
         registering = workspace and profiles is not None and profiles.active
         registration_requested = getattr(self, "_registration_requested", False)
@@ -1599,7 +1606,7 @@ def main(argv=None) -> int:
             from .recognition_adapter import TrainedPreviewAdapters
             adapters = TrainedPreviewAdapters(args.face_checkpoint, emotion_checkpoint=args.emotion_checkpoint,
                         gallery_path=args.gallery, controlled_registration=args.controlled_registration_demo,
-                        scenario=args.dev_scenario)
+                        scenario=args.dev_scenario, crop_to_detector_box=args.local_workspace)
         except Exception as error:
             parser.exit(1, f"Trained integration unavailable: {error}\n")
     elif args.emotion_checkpoint:
@@ -1615,8 +1622,8 @@ def main(argv=None) -> int:
     profile_store = None
     attendance = None
     if args.local_workspace:
-        from .local_profile_store import LOCAL_PROFILE_DB, LocalProfileStore
-        profile_store = LocalProfileStore(args.local_profile_db or LOCAL_PROFILE_DB)
+        from .local_profile_store import LOCAL_BOX_PROFILE_DB, LOCAL_PROFILE_DB, LocalProfileStore
+        profile_store = LocalProfileStore(args.local_profile_db or LOCAL_BOX_PROFILE_DB, crop_to_detector_box=True)
         if args.attendance:
             from ..attendance.service import AttendanceService
             from ..attendance.store import AttendanceStore
@@ -1629,7 +1636,7 @@ def main(argv=None) -> int:
                     / "attendance.sqlite3"
                 )
                 store = AttendanceStore(attendance_path)
-                for profile_path in (profile_store.path, LOCAL_PROFILE_DB.resolve()):
+                for profile_path in (profile_store.path, LOCAL_PROFILE_DB.resolve(), LOCAL_BOX_PROFILE_DB.resolve()):
                     if store.path == profile_path or (
                         store.path.exists() and profile_path.exists() and store.path.samefile(profile_path)
                     ):
