@@ -4,15 +4,32 @@ from dataclasses import dataclass
 from time import monotonic
 from uuid import uuid4
 
-from ..recognition.evaluation import EvaluationResult, RecognitionEvaluation, SandboxInference, frame_fingerprint
+from ..recognition.evaluation import (
+    EvaluationResult,
+    RecognitionEvaluation,
+    SandboxInference,
+    frame_fingerprint,
+)
 from ..recognition.gallery_matching import empty_gallery
 from ..recognition.inference import cosine
 from .emotion_presentation import geometry
 from .live_preview import SingleWorker
-from .liveness_preview import CHECKPOINT_SHA256, EPOCH, MODEL_ID, MODEL_VERSION, THRESHOLD, valid_spoof_score
+from .liveness_preview import (
+    CHECKPOINT_SHA256,
+    EPOCH,
+    MODEL_ID,
+    MODEL_VERSION,
+    THRESHOLD,
+    valid_spoof_score,
+)
 from .registration_pose import FacePose
-from .webcam_prototype import Completion, Context, Liveness, OperationError, CONTRACT_VERSION
-
+from .webcam_prototype import (
+    CONTRACT_VERSION,
+    Completion,
+    Context,
+    Liveness,
+    OperationError,
+)
 
 REGISTRATION_PREPROCESSING = "aenet-full-yunet-bgr-rgb-bilinear224-div255-fp32-v1"
 REGISTRATION_POLICY = "aenet-full-per-capture-threshold-v1"
@@ -56,8 +73,18 @@ class TrialProfiles:
         Pose("Look slightly down", (0, 1)),
     )
 
-    def __init__(self, parent, adapters, on_gallery_change, *, store=None, loaded_gallery=None,
-                 liveness_provenance=None, liveness_preview=None, pose_estimator=None):
+    def __init__(
+        self,
+        parent,
+        adapters,
+        on_gallery_change,
+        *,
+        store=None,
+        loaded_gallery=None,
+        liveness_provenance=None,
+        liveness_preview=None,
+        pose_estimator=None,
+    ):
         import tkinter as tk
         from tkinter import ttk
 
@@ -100,7 +127,9 @@ class TrialProfiles:
             pose = pose_estimator(job.request) if pose_estimator is not None else None
             return ReferenceResult(evaluation, pose)
 
-        self.worker = SingleWorker(reference if store is not None else inference, "trial-reference")
+        self.worker = SingleWorker(
+            reference if store is not None else inference, "trial-reference"
+        )
         self._neutral_pose = None
         self.source = None
         self._attempt_started_at = None
@@ -403,23 +432,35 @@ class TrialProfiles:
                 if result.error is not None:
                     self._abort("Reference inference failed. Select Retry.")
                     return
-                if not isinstance(result.value, ReferenceResult) or result.value.evaluation.job is not job:
+                if (
+                    not isinstance(result.value, ReferenceResult)
+                    or result.value.evaluation.job is not job
+                ):
                     return
                 evaluation = result.value.evaluation
-                if (not self._is_live_for_attempt(self._pending_liveness)
-                        or self._pending_liveness.context != job.request.context):
+                if (
+                    not self._is_live_for_attempt(self._pending_liveness)
+                    or self._pending_liveness.context != job.request.context
+                ):
                     self._abort("Reference verification failed. Select Retry.")
                     return
                 if self.session.references and not self.session.policy.accepts_cosine(
-                        cosine(self.session.references[0], evaluation.vector)):
-                    self._restart("Face changed. Retake all five photos of the same person.")
+                    cosine(self.session.references[0], evaluation.vector)
+                ):
+                    self._restart(
+                        "Face changed. Retake all five photos of the same person."
+                    )
                     return
                 expected = self.POSES[len(self.session.references)]
                 pose = result.value.pose
                 if pose is None:
-                    raise ValueError(f"Could not check face direction. {expected.instruction}, then capture again.")
+                    raise ValueError(
+                        f"Could not check face direction. {expected.instruction}, then capture again."
+                    )
                 if not pose.matches(expected.direction, self._neutral_pose):
-                    raise ValueError(f"Face direction does not match. {expected.instruction}, then capture again.")
+                    raise ValueError(
+                        f"Face direction does not match. {expected.instruction}, then capture again."
+                    )
                 # Newer frames may arrive while embedding this already-verified capture.
                 current = job.source
             elif result.error is not None:
@@ -441,9 +482,14 @@ class TrialProfiles:
             else:
                 if count == 1:
                     self._neutral_pose = result.value.pose
-                self._accepted_liveness.append((job.request.context, self._pending_liveness))
-                message = (f"Sample accepted. {self.POSES[count].instruction}, then select Capture reference."
-                           if count < len(self.POSES) else "Registration ready. Select Save profile.")
+                self._accepted_liveness.append(
+                    (job.request.context, self._pending_liveness)
+                )
+                message = (
+                    f"Sample accepted. {self.POSES[count].instruction}, then select Capture reference."
+                    if count < len(self.POSES)
+                    else "Registration ready. Select Save profile."
+                )
                 self._show_progress(message, feedback="accepted")
         self._pending_liveness = None
         self._update_controls()
