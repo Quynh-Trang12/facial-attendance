@@ -1,0 +1,73 @@
+{
+  "architecture": "ResNet-18",
+  "labels": [
+    "sad",
+    "happy",
+    "neutral"
+  ],
+  "label_ids": {
+    "0": "sad",
+    "1": "happy",
+    "2": "neutral"
+  },
+  "seed": 42,
+  "counts": {
+    "train": {
+      "sad": 3581,
+      "happy": 5541,
+      "neutral": 3781
+    },
+    "val": {
+      "sad": 890,
+      "happy": 1384,
+      "neutral": 943
+    }
+  },
+  "initialization": "ImageNet1K_V1; no emotion checkpoint",
+  "head_epochs": 3,
+  "finetune_epochs": 7,
+  "micro_batch": 32,
+  "effective_batch": 256,
+  "optimizer": "Adam",
+  "weight_decay": 0.0001,
+  "dropout": 0.3,
+  "head_warmup_lr": 0.001,
+  "finetune_head_lr": 0.0003,
+  "layer4_lr": 0.0001,
+  "selection": "highest validation Neutral F1; ties: higher macro F1, lower validation loss, earlier epoch",
+  "preprocessing": {
+    "size": [
+      224,
+      224
+    ],
+    "grayscale_channels": 3,
+    "resize": "bilinear",
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ],
+    "training_augmentation": "horizontal flip with probability 0.5"
+  },
+  "batch_norm_running_statistics": "frozen",
+  "class_weights": null,
+  "sampling": "all unique training images, shuffled once per epoch",
+  "feature_cache": "float32 layer3 outputs for original and flipped training images; validation original only; frozen layers unchanged",
+  "device": "cpu",
+  "torch": "2.13.0+cpu",
+  "numpy": "2.2.6",
+  "dataset_manifest_sha256": "54ac9d2ea037dbb2d879acd9d960f11161bfc353b89f5ca8a0151f221d2ac4ec",
+  "sample_manifest_sha256": "2b52f0348edd351addf22dbf06c8aa83c282a7d58b43ea7e02229095a6631cab",
+  "model_source_sha256": "8b1827e9800f6196176c154f258c87af514f5b4175db5fbd0e9e2449fdbb19af",
+  "pretrained_weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+  "test_accessed": false,
+  "training_source_sha256": "05dbc0112d16b02f4afa4f841c5947fd58ba351280e407ef65943dcd6611b19c",
+  "dataset_version": "sad-happy-neutral-geometry-v2-20261121",
+  "dataset_zip_sha256": "f94320ce10a3403722d4b693c0ca0f32786ad41f0683a31bc1a619790e3cd039",
+  "parent_dataset_manifest_sha256": "ce7e0c90e6b44243392587c135bad92542a050c66c9f38f1d6311643669b9429"
+}

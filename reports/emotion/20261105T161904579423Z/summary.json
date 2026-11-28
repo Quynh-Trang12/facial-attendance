@@ -1,0 +1,74 @@
+{
+  "run_id": "20261105T161904579423Z",
+  "source": "https://www.kaggle.com/datasets/msambare/fer2013",
+  "license_metadata": "Database: Open Database, Contents: Database Contents",
+  "license_metadata_checked": "2026-11-05",
+  "counts": {
+    "train": {
+      "angry": 3995,
+      "disgust": 436,
+      "fear": 4097,
+      "happy": 7215,
+      "sad": 4830,
+      "surprise": 3171,
+      "neutral": 4965
+    },
+    "test": {
+      "angry": 958,
+      "disgust": 111,
+      "fear": 1024,
+      "happy": 1774,
+      "sad": 1247,
+      "surprise": 831,
+      "neutral": 1233
+    }
+  },
+  "class_to_id": {
+    "angry": 0,
+    "disgust": 1,
+    "fear": 2,
+    "happy": 3,
+    "sad": 4,
+    "surprise": 5,
+    "neutral": 6
+  },
+  "image_files": 35887,
+  "decoded": 35887,
+  "decoding_errors": 0,
+  "unexpected_files": 0,
+  "dimensions": {
+    "48x48": 35887
+  },
+  "modes": {
+    "L": 35887
+  },
+  "constant_images": 12,
+  "duplicate_stats": {
+    "file_sha256": {
+      "groups": 1516,
+      "redundant_files": 1853,
+      "cross_split_groups": 531,
+      "conflicting_label_groups": 57,
+      "train_files_overlapping_test": 703
+    },
+    "pixel_sha256": {
+      "groups": 1516,
+      "redundant_files": 1853,
+      "cross_split_groups": 531,
+      "conflicting_label_groups": 57,
+      "train_files_overlapping_test": 703
+    }
+  },
+  "python": "3.13.9",
+  "numpy": "2.4.2",
+  "pillow": "12.1.1",
+  "matplotlib": "3.10.8",
+  "seed": 42,
+  "config_sha256": "c8d757bfc8beed1354fbad3b3beaf9b58c1cd2a91f18fd3bc6ef8f378bdde8a7",
+  "notebook_sha256": "4da0047980ef65a35673bb2c067a2dc1f748835a04cdc273f51f5e292a7067e6",
+  "manifest_sha256": "e2c11e102a41d79eccd2e46669ce981a8636f55dbfd927ebc93c05b7592a71b7",
+  "limitations": [
+    "Exact bytes/pixels only; no near-duplicate or identity audit.",
+    "No independent visual label review; no split revision or training."
+  ]
+}

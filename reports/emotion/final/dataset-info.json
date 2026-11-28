@@ -1,0 +1,59 @@
+{
+  "version": "sad-happy-neutral-geometry-v2-20261121",
+  "review_date": "2026-11-21",
+  "source_dataset": "FER2013",
+  "source_url": "https://www.kaggle.com/datasets/msambare/fer2013",
+  "parent_manifest_sha256": "ce7e0c90e6b44243392587c135bad92542a050c66c9f38f1d6311643669b9429",
+  "review_decisions_sha256": "9ad839ddee49a3b363845b5a71f6a0a130fe5d1c357f611fe8837ec2644b8cab",
+  "manifest_sha256": "54ac9d2ea037dbb2d879acd9d960f11161bfc353b89f5ca8a0151f221d2ac4ec",
+  "parent_images": 20716,
+  "retained_images": 20253,
+  "excluded_images": 463,
+  "excluded_by_reason": {
+    "extreme_profile": 284,
+    "severe_crop": 179
+  },
+  "retained_counts": {
+    "train": {
+      "sad": 3581,
+      "happy": 5541,
+      "neutral": 3781
+    },
+    "val": {
+      "sad": 890,
+      "happy": 1384,
+      "neutral": 943
+    },
+    "test": {
+      "sad": 1186,
+      "happy": 1749,
+      "neutral": 1198
+    }
+  },
+  "excluded_counts": {
+    "train/sad": 144,
+    "test/sad": 49,
+    "train/happy": 73,
+    "test/neutral": 26,
+    "test/happy": 17,
+    "train/neutral": 66,
+    "val/happy": 22,
+    "val/neutral": 21,
+    "val/sad": 45
+  },
+  "model_ids": {
+    "sad": 0,
+    "happy": 1,
+    "neutral": 2
+  },
+  "labels_changed": 0,
+  "split_membership_changed": 0,
+  "policy": {
+    "severe_crop": "Image boundary removes an eye or the mouth region; ordinary tight forehead/chin crops retained.",
+    "extreme_profile": "Head rotation hides one eye and much of the far side of the face; slight turns and borderline cases retained."
+  },
+  "review_method": "AI-assisted visual screening of all 20,716 images on 41 shuffled contact sheets; 4,415 candidates reviewed on 35 enlarged sheets; all proposed exclusions checked again. Class, split and model predictions hidden on review sheets. Saved visual decisions fix the exact package membership.",
+  "limitations": "Subjective visual review at original 48x48 resolution; may miss cases. This is a geometry audit, not a complete content or expression-label audit. Unrelated content flags retained separately. No independent reviewer confirmation yet.",
+  "evaluation": "No training or model inference performed. Previous metrics belong to the parent dataset. Evaluate any new model separately; do not transfer earlier results to this version.",
+  "verification": "All retained image bytes match parent SHA256; original grayscale 48x48 images; one copy per decoded-pixel hash across all splits; file inventory and ZIP contents verified."
+}

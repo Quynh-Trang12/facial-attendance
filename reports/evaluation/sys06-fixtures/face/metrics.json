@@ -1,0 +1,67 @@
+{
+  "module": "face",
+  "split": "validation",
+  "metrics": {
+    "count": 3,
+    "correct": 2,
+    "accuracy": 0.6666666666666666,
+    "macro_f1": 0.6666666666666666,
+    "label_order": [
+      0,
+      1
+    ],
+    "confusion_matrix": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "confusion_axes": "rows=true, columns=predicted",
+    "per_class": [
+      {
+        "id": 0,
+        "name": "synthetic-person-a",
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "support": 1
+      },
+      {
+        "id": 1,
+        "name": "synthetic-person-b",
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666,
+        "support": 2
+      }
+    ]
+  },
+  "task": "classification",
+  "run_id": "sys06-synthetic-face",
+  "checkpoint_id": "synthetic",
+  "created_utc": "2026-11-11T14:42:12.878968+00:00",
+  "python": "3.13.9",
+  "numpy": "2.2.6",
+  "sklearn": "1.9.1",
+  "git_commit": "c6e4f6754a4cadd479c32f8774be1ecb81f2583f",
+  "git_tracked_dirty": true,
+  "git_working_tree_dirty": true,
+  "inputs": {
+    "label_map": {
+      "sha256": "4c321e2af6691882030d002fa48def619735be1691ab586db89875f010a0f0fc",
+      "filename": "face_labels.json"
+    },
+    "predictions": {
+      "sha256": "ebf3d4221405793047c6c0f547265f783fb256d608134d0c82aa0c3724e93959",
+      "filename": "face.csv"
+    }
+  },
+  "source_sha256": {
+    "scripts/evaluate.py": "17bf5e29261331f444076096eebd63edd915633273d9a0f045e80d13762da2c5",
+    "src/facial_attendance/evaluation/metrics.py": "ed930d684fb5b5e1a4d5b334d6bd18418996d59dd9179014e9491f3a3c1d95d4"
+  }
+}

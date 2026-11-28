@@ -1,0 +1,130 @@
+{
+  "split": "webcam",
+  "policy_id": "synthetic-policy",
+  "metrics": {
+    "count": 6,
+    "scored_count": 4,
+    "unscored_count": 2,
+    "roc": {
+      "auc": 0.75,
+      "count": 4,
+      "negative_count": 2,
+      "positive_count": 2,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": null
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.5,
+          "threshold": 0.9
+        },
+        {
+          "fpr": 0.5,
+          "tpr": 0.5,
+          "threshold": 0.4
+        },
+        {
+          "fpr": 0.5,
+          "tpr": 1.0,
+          "threshold": 0.2
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.1
+        }
+      ]
+    },
+    "roc_unavailable_reason": null,
+    "truth_order": [
+      "live",
+      "spoof"
+    ],
+    "status_order": [
+      "live",
+      "spoof",
+      "uncertain",
+      "failure"
+    ],
+    "outcome_table": [
+      [
+        1,
+        0,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        0,
+        1
+      ]
+    ],
+    "live_count": 3,
+    "spoof_count": 3,
+    "spoof_acceptance_rate": 0.3333333333333333,
+    "live_rejection_rate": 0.0,
+    "genuine_user_blocking_rate": 0.6666666666666666,
+    "uncertain_count": 1,
+    "uncertain_rate": 0.16666666666666666,
+    "failure_count": 2,
+    "failure_rate": 0.3333333333333333,
+    "by_family": {
+      "live": {
+        "live": 1,
+        "spoof": 0,
+        "uncertain": 1,
+        "failure": 1,
+        "total": 3
+      },
+      "print": {
+        "live": 1,
+        "spoof": 0,
+        "uncertain": 0,
+        "failure": 0,
+        "total": 1,
+        "spoof_acceptance_rate": 1.0
+      },
+      "screen": {
+        "live": 0,
+        "spoof": 1,
+        "uncertain": 0,
+        "failure": 0,
+        "total": 1,
+        "spoof_acceptance_rate": 0.0
+      },
+      "video_replay": {
+        "live": 0,
+        "spoof": 0,
+        "uncertain": 0,
+        "failure": 1,
+        "total": 1,
+        "spoof_acceptance_rate": 0.0
+      }
+    }
+  },
+  "policy_note": "Statuses come from the versioned adapter policy. This evaluator does not select a threshold or replace quality checks.",
+  "task": "liveness",
+  "run_id": "sys06-synthetic-liveness",
+  "checkpoint_id": "synthetic",
+  "created_utc": "2026-11-11T14:42:17.966526+00:00",
+  "python": "3.13.9",
+  "numpy": "2.2.6",
+  "sklearn": "1.9.1",
+  "git_commit": "c6e4f6754a4cadd479c32f8774be1ecb81f2583f",
+  "git_tracked_dirty": true,
+  "git_working_tree_dirty": true,
+  "inputs": {
+    "predictions": {
+      "sha256": "b73ec288c81609a42cced8b43d08cd7bc5462af3c9d66e0fb581941ac3918a54",
+      "filename": "liveness.csv"
+    }
+  },
+  "source_sha256": {
+    "scripts/evaluate.py": "17bf5e29261331f444076096eebd63edd915633273d9a0f045e80d13762da2c5",
+    "src/facial_attendance/evaluation/metrics.py": "ed930d684fb5b5e1a4d5b334d6bd18418996d59dd9179014e9491f3a3c1d95d4"
+  }
+}
